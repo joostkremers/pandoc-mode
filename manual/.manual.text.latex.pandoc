@@ -1,0 +1,9 @@
+# pandoc-mode settings file for manual.text #
+# saved on 2009.10.30 14:38 #
+
+read::markdown
+write::latex
+output::t
+custom-header::/home/joost/src/pandoc-mode/manual/header.tex
+number-sections::t
+standalone::t

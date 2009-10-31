@@ -1,0 +1,9 @@
+# pandoc-mode settings file for manual.text #
+# saved on 2009.10.28 12:06 #
+
+read::markdown
+write::html
+output::t
+css::manual.css
+standalone::t
+table-of-contents::t

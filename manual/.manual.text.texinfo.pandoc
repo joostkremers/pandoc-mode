@@ -1,0 +1,6 @@
+# pandoc-mode settings file for manual.text #
+# saved on 2009.10.28 14:46 #
+
+read::markdown
+write::texinfo
+output::t
