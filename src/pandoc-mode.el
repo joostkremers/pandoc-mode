@@ -42,7 +42,7 @@
   :type 'file)
 
 (defcustom pandoc-@@directives '(("include" . pandoc-process-include-directive)
-			       ("lisp" . pandoc-process-lisp-directive))
+				 ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without angle brackets, the function
 is the function to be called, which should take one argument, the
@@ -191,17 +191,19 @@ this list."
 
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
-  :init-value nil :lighter " Pandoc" :global nil
+  :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc-get 'write))) :global nil
   (setq pandoc-local-options (copy-alist pandoc-options))
   (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))
   (setq pandoc-settings-modified-flag nil))
 
 (defun turn-on-pandoc ()
   "Unconditionally turn on pandoc-mode."
+  (interactive)
   (pandoc-mode 1))
 
 (defun turn-off-pandoc ()
   "Unconditionally turn off pandoc-mode"
+  (interactive)
   (pandoc-mode -1))
 
 (defun conditionally-turn-on-pandoc ()

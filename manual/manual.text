@@ -107,6 +107,10 @@ When you switch output formats, either through the menu or with the keyboard,
 Emacs checks if a corresponding settings file exists and loads it if one is
 found.
 
+Note that the current output format is always visible in the mode line: the
+"lighter" for `pandoc-mode` in the mode line has the form `Pandoc/<format>`,
+where `<format>` is the current output format.
+
 
 ## Auxiliary files and options ##
 
