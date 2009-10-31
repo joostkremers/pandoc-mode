@@ -301,7 +301,7 @@ extension `.pdf', regardless of the setting of `output'."
       (pandoc-process-directives)
       (if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
 	  (message "Running pandoc for output format %s... Finished." (pandoc-get 'write))
-	(message "Error in pandoc process. Type `C-c / v' to view output.")
+	(message "Error in pandoc process.")
 	(display-buffer pandoc-output-buffer)))))
 
 (defun pandoc-run-markdown2pdf (prefix)
@@ -326,7 +326,7 @@ extension `.pdf', regardless of the setting of `output'."
 	  (insert (format "Running `markdown2pdf %s'\n\n" (mapconcat #'identity option-list " "))))
 	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-markdown2pdf-script nil pandoc-output-buffer t option-list))
 	    (message "Running markdown2pdf... Finished.")
-	  (message "Error in markdown2pdf process. Type `C-c / v' to view output.")
+	  (message "Error in markdown2pdf process.")
 	  (display-buffer pandoc-output-buffer))))))
 
 (defun pandoc-create-settings-filename (filename output-format)
