@@ -294,7 +294,7 @@ extension `.pdf', regardless of the setting of `output'."
     (message "Running pandoc for output format %s..." (pandoc-get 'write))
     (with-current-buffer pandoc-output-buffer
       (erase-buffer)
-      (insert (format "Running `pandoc %s'\n\n" option-list)))
+      (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
     (with-temp-buffer  ; we do this in a temp buffer so we can process @@-directives without having to undo them.
       (setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
       (insert-buffer-substring-no-properties buffer)
@@ -323,7 +323,7 @@ extension `.pdf', regardless of the setting of `output'."
 	(message "Running markdown2pdf...")
 	(with-current-buffer pandoc-output-buffer
 	  (erase-buffer)
-	  (insert (format "Running `markdown2pdf %s'\n\n" option-list)))
+	  (insert (format "Running `markdown2pdf %s'\n\n" (mapconcat #'identity option-list " "))))
 	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-markdown2pdf-script nil pandoc-output-buffer t option-list))
 	    (message "Running markdown2pdf... Finished.")
 	  (message "Error in markdown2pdf process. Type `C-c / v' to view output.")
