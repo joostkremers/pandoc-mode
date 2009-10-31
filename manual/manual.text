@@ -1,6 +1,6 @@
 % Emacs pandoc-mode
 % Joost Kremers
-% @@lisp (format-time-string "%Y.%m.%d") lisp@@
+% @@lisp (format-time-string "%d %b %Y") lisp@@
 
 <div id="main">
 
@@ -194,7 +194,7 @@ file with the suffix replaced by `.pdf`.
 
 # Using `@@`-directives #
 
-`pandoc-mode` includes a facility to make specific, automatic changes ot the
+`pandoc-mode` includes a facility to make specific, automatic changes to the
 text file before sending it to pandoc. This is done with so-called
 `@@`-directives. These are particular strings that delimit a block of text. The
 beginning of this block is marked with `@@directive` and the end with
@@ -211,10 +211,10 @@ same input format).
 
 For example, if you write the following in your document:
 
-    \@@lisp (format-time-string "%Y.%m.%d") lisp@@
+    \@@lisp (format-time-string "%d %b %Y") lisp@@
 
 the result will be that the day on which the document was processed is included
-into the document: @@lisp (format-time-string "%Y.%m.%d") lisp@@.
+into the document: @@lisp (format-time-string "%d %b %Y") lisp@@.
 
 This substitution works everywhere in the document, including in code and code
 blocks, and also in the %-header block. So by putting the above string in the
@@ -222,7 +222,7 @@ third line of the %-header block, the meta data for your documents will always
 show the date on which the file was created by pandoc.
 
 If it should ever happen that you need to write a literal "`\@@lisp`" in your
-document, you can simply put a backslash \\ before the first @: `\\@@lisp`.
+document, you can simply put a backslash \\ before the first `@`: `\\@@lisp`.
 Emacs removes the backslash (which is necessary in case the string `\\@@lisp` is
 contained in a code block) and then continues searching for the next directive.
 
@@ -257,7 +257,7 @@ Although `pandoc-mode` can be controlled through the menu, all functions (except
 `pandoc-set-default-format`) are bound to key sequences so that they can be
 invoked through the keyboard. The general key prefix for `pandoc-mode` is `C-c
 /`. A complete list of key sequences and the functions bound to them is given
-below:
+below.
 
 Note that functions that set pandoc options can be called with the prefix
 argument `C-u -` (or `M--`) to unset the relevant option. Any other prefix
@@ -314,6 +314,6 @@ switches, either `t` or `nil`, which correspond to 'on' or 'off', respectively.
 
 Lines that do not correspond to this format are simply ignored. So if you insist
 on writing your own settings file by hand, make sure all your options have the
-right format, so make sure they contain a double colon and no spaces.
+right forma, that is, that they contain *no* spaces and a *double* colon.
 
 </div>
