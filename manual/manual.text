@@ -116,18 +116,19 @@ where `<format>` is the current output format.
 
 The settings part of the menu contains two more submenus: "Files" and "Options".
 Under "Files", you can set various files that may be used by pandoc. These
-include the output file, a CSS style sheet, files to be included in the header
-or before/after the body, and a custom header file. All of these submenus have
-two options: no file, or specify a file. (The exception being the output file,
-which has three options. See the section
-['Setting an output file'](#setting-an-output-file) for details). They can be set
-through the menu, or through the keyboard, with the key sequence `C-c / o` plus
-an additional letter, `c` for the CSS style sheet, `H` for the additional
-header, `B` for the file to be included before the body, `A` for the file to be
-included after the body, and `C` for the custom header file. (These letters
-correspond to the relevant short switches accepted by the pandoc binary.) If you
-type these sequences with the prefix argument `C-u -` (or `M--`, which is
-equivalent), they are unset.
+include the CSS style sheet, files to be included in the header or before/after
+the body, and a custom header file. All of these submenus have two options: no
+file, or specify a file. They can be set through the menu, or through the
+keyboard, with the key sequence `C-c / o` plus an additional letter, `c` for the
+CSS style sheet, `H` for the additional header, `B` for the file to be included
+before the body, `A` for the file to be included after the body, and `C` for the
+custom header file. (These letters correspond to the relevant short switches
+accepted by the pandoc binary.) If you type these sequences with the prefix
+argument `C-u -` (or `M--`, which is equivalent), they are unset.
+
+The "Files" submenu also contains options for the output file and output
+directory. These are treated somewhat differently from the other files, see the
+section ['Setting an output file'](#setting-an-output-file) for details.
 
 Under "Options", you can set various other options. Some of these require user
 input, others can only be toggled on or off. (For details on what these options
@@ -183,14 +184,16 @@ without any prefix argument, you are asked for an output file. If you type it
 with the prefix argument `C-u -` (or `M--`), output is sent to stdout; with any
 other prefix argument, Emacs will create an output filename itself.
 
-Note that any output file you set is always just the base filename, it does not
-specify a directory. Which directory the output file is written to depends on
-the setting "Output Directory". If you don't specify any output directory, the
-output file will be written to the same directory that the input file is in.
+The output file you set is always just the base filename, it does not specify a
+directory. Which directory the output file is written to depends on the setting
+"Output Directory". This is not actually a pandoc option. Emacs creates an
+output destination out of the settings for the output directory and output file.
 
-The output directory can be set with the key sequence `C-c / o D`. When preceded
-by the prefix argument `C-u -` (or `M--`), the output directory is unset,
-meaning the input directory will be used.
+If you don't specify any output directory, the output file will be written to
+the same directory that the input file is in. The output directory can also be
+set with the key sequence `C-c / o D`. When preceded by the prefix argument `C-u
+-` (or `M--`), the output directory is unset, meaning the input directory will
+be used.
 
 
 ## Running markdown2pdf ##
@@ -201,9 +204,13 @@ available for markdown files and runs the command `markdown2pdf` on the buffer.
 and then runs it through `pdflatex`. Therefore, if you choose "Create PDF",
 Emacs checks if your current output format is `latex`. If not, it checks if you
 have a settings file for LaTeX and uses those settings if it finds one. If it
-doesn't, the current settings are used. In either case, however, the setting for
-the output file is ignored: the output file is created on the basis of the input
-file with the suffix replaced by `.pdf`.
+doesn't, the current settings are used.
+
+If you have specified an output file in the "latex" profile, this name will also
+be used as the output file for `markdown2pdf`, but with the `.tex` suffix
+replaced with `.pdf`. Otherwise, the output filename is created based on the
+input filename. (Note that `markdown2pdf` always writes its output to a file, it
+is never redirected to the buffer `*Pandoc output*`).
 
 
 # Using `@@`-directives #
@@ -294,6 +301,7 @@ Key               Description
 `C-c / o B`       Include before body.
 `C-c / o c`       Set custom CSS file.
 `C-c / o C`       Set custom header file.
+`C-c / o D`       Set the output directory.
 `C-c / o e`       Set email obfuscation.
 `C-c / o H`       Include after the header.
 `C-c / o j`       Set jsMath URL.

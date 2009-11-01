@@ -238,23 +238,25 @@ extension `.pdf', regardless of the setting of `output'."
   (let* ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
 	 (write (if pdf nil
 		  (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
-	 (output (if pdf t (pandoc-get 'output)))
-    	 (special-options (list read write
-				(cond
-				 ((eq output t)
-				  (format "--output=%s/%s%s"
-					  (or (pandoc-get 'output-dir)
-					      (file-name-directory input-file))
-					  (file-name-sans-extension (file-name-nondirectory input-file))
-					  (if pdf
-					      ".pdf"
-					    (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
-				 ((stringp output)
-				  (format "--output=%s/%s"
-					  (or (pandoc-get 'output-dir)
-					      (file-name-directory input-file))
-					  output))
-				 (t nil))))
+	 (output (cond
+		  ((or (eq (pandoc-get 'output) t)
+		       (and (null (pandoc-get 'output))
+			    pdf))
+		   (format "--output=%s/%s%s"
+			   (or (pandoc-get 'output-dir)
+			       (file-name-directory input-file))
+			   (file-name-sans-extension (file-name-nondirectory input-file))
+			   (if pdf
+			       ".pdf"
+			     (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
+		  ((stringp (pandoc-get 'output))
+		   (format "--output=%s/%s"
+			   (or (pandoc-get 'output-dir)
+			       (file-name-directory input-file))
+			   (if pdf
+			       (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
+			     (pandoc-get 'output))))
+		  (t nil)))
 	 (other-options (mapcar #'(lambda (switch)
 				    (let ((value (pandoc-get switch)))
 				      (cond
@@ -262,7 +264,7 @@ extension `.pdf', regardless of the setting of `output'."
 				       ((stringp value) (format "--%s=%s" switch value))
 				       (t nil))))
 				pandoc-switches)))
-    (delq nil (append special-options other-options))))
+    (delq nil (append (list read write output) other-options))))
 
 (defun pandoc-process-directives ()
   "Processes pandoc-mode @@directives in the current buffer."
