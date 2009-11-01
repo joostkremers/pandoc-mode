@@ -158,11 +158,12 @@ which, as the name suggests, runs pandoc on the document, passing all options
 you have set. By default, pandoc sends the output to stdout, which is redirected
 to the buffer `*Pandoc output*`. The output buffer is not normally shown, but
 you can make it visible through the menu or by typing `C-c / v`. Error messages
-from pandoc are also displayed in this buffer. Note that when you run pandoc,
-pandoc doesn't read the file on disk, rather, Emacs feeds it the contents of the
-buffer through stdin. This means that you don't actually have to save your file
-before running pandoc. Whatever is in your buffer, saved or not, is passed to
-pandoc.
+from pandoc are also displayed in this buffer.
+
+Note that when you run pandoc, pandoc doesn't read the file on disk, rather,
+Emacs feeds it the contents of the buffer through stdin. This means that you
+don't actually have to save your file before running pandoc. Whatever is in your
+buffer, saved or not, is passed to pandoc.
 
 
 ## Setting an output file ##
@@ -186,8 +187,9 @@ other prefix argument, Emacs will create an output filename itself.
 
 The output file you set is always just the base filename, it does not specify a
 directory. Which directory the output file is written to depends on the setting
-"Output Directory". This is not actually a pandoc option. Emacs creates an
-output destination out of the settings for the output directory and output file.
+"Output Directory" (which is not actually a pandoc option, of course). Emacs
+creates an output destination out of the settings for the output directory and
+output file.
 
 If you don't specify any output directory, the output file will be written to
 the same directory that the input file is in. The output directory can also be
@@ -213,7 +215,7 @@ input filename. (Note that `markdown2pdf` always writes its output to a file, it
 is never redirected to the buffer `*Pandoc output*`).
 
 
-# Using `@@`-directives #
+# Using @@-directives #
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the
 text file before sending it to pandoc. This is done with so-called
@@ -248,7 +250,7 @@ Emacs removes the backslash (which is necessary in case the string `\\@@lisp` is
 contained in a code block) and then continues searching for the next directive.
 
 
-## Defining `@@`-directives ##
+## Defining @@-directives ##
 
 One of the customization options for `pandoc-mode` (`M-x customize-group` `RET`
 `pandoc` `RET`) is `pandoc-@@directives`. This variable contains a list of
@@ -257,6 +259,11 @@ to this list (and remove the predefined ones, if you wish). The function that is
 linked to a directive should take one argument, the text between the opening and
 closing directives, and should return a string. This string is then inserted in
 the buffer.
+
+In Elisp, you can use the function `pandoc-get` to access the various pandoc
+options for the current buffer. For example, `(pandoc-get 'write)` gives the
+output format. This could be usefull to make the output of an `@@`-directive
+dependent on the output format.
 
 Note that the directives are processed in the order in which they appear in
 `pandoc-@@directives`. So in the default case, `\@@include` directives are
@@ -331,11 +338,12 @@ form:
 
 `<option>` is one of pandoc's long options without the two dashes. (For the
 input and output formats, the forms `read` and `write` are used, not the
-alternative forms `from` and `to`.) `<value>` is a string or, for binary
-switches, either `t` or `nil`, which correspond to 'on' or 'off', respectively.
+alternative forms `from` and `to`. Additionally, the option `output-dir` is
+valid.) `<value>` is a string or, for binary switches, either `t` or `nil`,
+which correspond to 'on' or 'off', respectively.
 
 Lines that do not correspond to this format are simply ignored. So if you insist
 on writing your own settings file by hand, make sure all your options have the
-right forma, that is, that they contain *no* spaces and a *double* colon.
+right form, that is, that they contain *no* spaces and a *double* colon.
 
 </div>
