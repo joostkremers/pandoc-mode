@@ -144,6 +144,11 @@ completion works here and is case-insensitive). Calling `C-c / t` without any
 prefix argument toggles the relevant option. Calling it with the prefix argument
 `C-u -` (or `M--`) unsets it, while any other prefix argument sets it.
 
+One remark about the CSS style sheet: Emacs always cuts off the directory part
+of the filename you specify as CSS style sheet. That is, the `.css` file must be
+in the same directory as the HTML file, otherwise it won't be found. (This is a
+limitation that will be eliminated in a future version of `pandoc-mode`.)
+
 
 ## Running pandoc ##
 
@@ -177,6 +182,15 @@ The output file can also be set with the key sequence `C-c / o o`. When typed
 without any prefix argument, you are asked for an output file. If you type it
 with the prefix argument `C-u -` (or `M--`), output is sent to stdout; with any
 other prefix argument, Emacs will create an output filename itself.
+
+Note that any output file you set is always just the base filename, it does not
+specify a directory. Which directory the output file is written to depends on
+the setting "Output Directory". If you don't specify any output directory, the
+output file will be written to the same directory that the input file is in.
+
+The output directory can be set with the key sequence `C-c / o D`. When preceded
+by the prefix argument `C-u -` (or `M--`), the output directory is unset,
+meaning the input directory will be used.
 
 
 ## Running markdown2pdf ##

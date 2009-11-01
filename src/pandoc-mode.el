@@ -88,15 +88,15 @@ this list."
   "List of pandoc output formats plus file extensions.")
 
 (defvar pandoc-switches
-  '(standalone          tab-stop		  
-    preserve-tabs       reference-links		  
-    strict              smart			  
-    parse-raw           jsmath			  
-    latexmathml         mimetex			  
-    gladtex             number-sections		  
-    incremental         sanitize-html		  
-    no-wrap             table-of-contents css	  
-    email-obfuscation   include-before-body	  
+  '(standalone          tab-stop
+    preserve-tabs       reference-links
+    strict              smart
+    parse-raw           jsmath
+    latexmathml         mimetex
+    gladtex             number-sections
+    incremental         sanitize-html
+    no-wrap             table-of-contents css
+    email-obfuscation   include-before-body
     include-in-header   custom-header title-prefix
     include-after-body)
   "List of switches accepted by the pandoc binary. Switches that
@@ -122,7 +122,7 @@ this list."
     (read-lhs)                     ; input is literal Haskell
     (write . "native")             ; see pandoc-output-formats
     (write-lhs)                    ; output is literal Haskell
-    
+
     (output)                       ; a string
 			           ; NIL means stdout (redirected to a temp buffer)
 			           ; T means create output filename on the basis of
@@ -153,7 +153,10 @@ this list."
     (smart)                        ; NIL, T
     (standalone)                   ; NIL, T
     (strict)                       ; NIL, T
-    (table-of-contents))           ; NIL, T
+    (table-of-contents)            ; NIL, T
+
+    ;; this is not actually a pandoc option:
+    (output-dir))                  ; a string; NIL means use input directory.
   "Pandoc option alist.")
 
 (defvar pandoc-local-options nil "A buffer-local variable holding a file's pandoc options.")
@@ -172,7 +175,7 @@ this list."
     (define-key map "\C-c/l" 'pandoc-load-settings-file)
     (define-key map "\C-c/w" 'pandoc-set-write)
     (define-key map "\C-c/v" 'pandoc-view-output)
-    (define-key map "\C-c/V" 'pandoc-view-settings)            
+    (define-key map "\C-c/V" 'pandoc-view-settings)
     (define-key map "\C-c/oo" 'pandoc-set-output)
     (define-key map "\C-c/oc" 'pandoc-set-css)
     (define-key map "\C-c/oH" 'pandoc-set-include-in-header)
@@ -185,7 +188,8 @@ this list."
     (define-key map "\C-c/oj" 'pandoc-set-jsmath)
     (define-key map "\C-c/oM" 'pandoc-set-mimetex)
     (define-key map "\C-c/oe" 'pandoc-set-email-obfuscation)
-    (define-key map "\C-c/t" 'pandoc-toggle-interactive)       
+    (define-key map "\C-c/oD" 'pandoc-set-output-dir)
+    (define-key map "\C-c/t" 'pandoc-toggle-interactive)
     map)
   "Keymap for pandoc-mode.")
 
@@ -211,13 +215,13 @@ this list."
 This is for use in major mode hooks."
   (when (file-exists-p (pandoc-create-settings-filename (buffer-file-name) "default"))
     (turn-on-pandoc)))
-  
+
 (defun pandoc-set (option value)
   "Sets pandoc OPTION to VALUE."
   (when (assq option pandoc-local-options)
     (setcdr (assq option pandoc-local-options) value)
     (setq pandoc-settings-modified-flag t)))
-  
+
 (defun pandoc-get (option)
   "Returns the value of OPTION."
   (cdr (assq option pandoc-local-options)))
@@ -238,13 +242,18 @@ extension `.pdf', regardless of the setting of `output'."
     	 (special-options (list read write
 				(cond
 				 ((eq output t)
-				  (format "--output=%s%s"
-					  (file-name-sans-extension input-file)
+				  (format "--output=%s/%s%s"
+					  (or (pandoc-get 'output-dir)
+					      (file-name-directory input-file))
+					  (file-name-sans-extension (file-name-nondirectory input-file))
 					  (if pdf
 					      ".pdf"
 					    (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
 				 ((stringp output)
-				  (format "--output=%s" output))
+				  (format "--output=%s/%s"
+					  (or (pandoc-get 'output-dir)
+					      (file-name-directory input-file))
+					  output))
 				 (t nil))))
 	 (other-options (mapcar #'(lambda (switch)
 				    (let ((value (pandoc-get switch)))
@@ -278,7 +287,7 @@ extension `.pdf', regardless of the setting of `output'."
 (defun pandoc-process-lisp-directive (lisp)
   "Process @@lisp directives."
   (format "%s" (eval (car (read-from-string lisp)))))
-  
+
 (defun pandoc-process-include-directive (include-file)
   "Process @@include directives."
   (with-temp-buffer
@@ -448,8 +457,8 @@ Returns an alist with the options and their values."
     (set-buffer pandoc-output-buffer)
     (erase-buffer)
     (insert-file-contents (pandoc-create-settings-filename filename format)))
-  (display-buffer pandoc-output-buffer))  
-  
+  (display-buffer pandoc-output-buffer))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to set specific options. ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -478,7 +487,7 @@ output format."
   (pandoc-set 'output
 	      (cond
 	       ((eq prefix '-) nil)
-	       ((null prefix) (expand-file-name (read-file-name "Output file: ")))
+	       ((null prefix) (file-name-nondirectory (expand-file-name (read-file-name "Output file: "))))
 	       (t t))))
 
 (defun pandoc-set-css (prefix)
@@ -600,6 +609,17 @@ is unset."
   (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
 					"unset")))
 
+(defun pandoc-set-output-dir (prefix)
+  "Set the option `Output Directory'.
+If called with the prefix argument C-u - (or M--), the output
+directory is set to NIL, which means use the directory of the
+input file."
+  (interactive "P")
+  (pandoc-set 'output-dir
+	      (if (eq prefix '-)
+		  nil
+		(expand-file-name (read-directory-name "Output directory: " nil nil t)))))
+
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
 If called with the prefix argument C-u - (or M--), the options is
@@ -673,7 +693,7 @@ set. Without any prefix argument, the option is toggled."
 		    :active (member (pandoc-get 'write)
 				    '("markdown" "rst" "latex" "html"))
 		    :style toggle :selected (pandoc-get 'write-lhs)]))
-    
+
     ("Files"
      ("Output File"
       ["Output To Stdout" (pandoc-set 'output nil) :active t
@@ -682,32 +702,37 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (eq (pandoc-get 'output) t)]
       ["Set Output File..." pandoc-set-output :active t
       :style radio :selected (stringp (pandoc-get 'output))])
+     ("Output Directory"
+      ["Use Input Directory" (pandoc-set 'output-dir nil) :actine t
+       :style radio :selected (null (pandoc-get 'output-dir))]
+      ["Set Output Directory" pandoc-set-output-dir :active t
+       :style radio :selected (pandoc-get 'output-dir)])
      ("CSS Style Sheet"
       ["No CSS Style Sheet" (pandoc-set 'css nil) :active t
        :style radio :selected (null (pandoc-get 'css))]
       ["Set CSS Style Sheet..." pandoc-set-css :active t
-      :style radio :selected (stringp (pandoc-get 'css))])
+      :style radio :selected (pandoc-get 'css)])
      ("Include In Header"
       ["Nothing Included In Header" (pandoc-set 'include-in-header nil) :active t
        :style radio :selected (null (pandoc-get 'include-in-header))]
       ["Include In Header..." pandoc-set-include-in-header :active t
-      :style radio :selected (stringp (pandoc-get 'include-in-header))])
+      :style radio :selected (pandoc-get 'include-in-header)])
      ("Include Before Body"
       ["Nothing Included Before Body" (pandoc-set 'include-before-body nil) :active t
        :style radio :selected (null (pandoc-get 'include-before-body))]
       ["Include Before Body..." pandoc-set-include-before-body :active t
-      :style radio :selected (stringp (pandoc-get 'include-before-body))])
+      :style radio :selected (pandoc-get 'include-before-body)])
      ("Include After Body"
       ["Nothing Included After Body" (pandoc-set 'include-after-body nil) :active t
        :style radio :selected (null (pandoc-get 'include-after-body))]
       ["Include After Body..." pandoc-set-include-after-body :active t
-      :style radio :selected (stringp (pandoc-get 'include-after-body))])
+      :style radio :selected (pandoc-get 'include-after-body)])
      ("Custom Header"
       ["No Custom Header" (pandoc-set 'custom-header nil) :active t
        :style radio :selected (null (pandoc-get 'custom-header))]
       ["Set Custom Header File..." pandoc-set-custom-header :active t
-      :style radio :selected (stringp (pandoc-get 'custom-header))]))
-    
+      :style radio :selected (pandoc-get 'custom-header)]))
+
     ("Options"
      ("Title Prefix"
       ["No Title Prefix" (pandoc-set 'title-prefix nil) :active t
