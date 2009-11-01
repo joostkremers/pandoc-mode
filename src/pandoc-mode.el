@@ -172,7 +172,6 @@ this list."
     (define-key map "\C-c/r" 'pandoc-run-pandoc)
     (define-key map "\C-c/p" 'pandoc-run-markdown2pdf)
     (define-key map "\C-c/s" 'pandoc-save-settings-interactive)
-    (define-key map "\C-c/l" 'pandoc-load-settings-file)
     (define-key map "\C-c/w" 'pandoc-set-write)
     (define-key map "\C-c/v" 'pandoc-view-output)
     (define-key map "\C-c/V" 'pandoc-view-settings)
@@ -410,7 +409,6 @@ settings have not been saved."
   "Load the options in SETTINGS-FILE for the current buffer.
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
-  (interactive "FLoad settings file: ")
   (when (and (not no-confirm)
 	     pandoc-settings-modified-flag
 	     (y-or-n-p (format "Current settings for format %s modified. Save first? " (pandoc-get 'write))))
@@ -648,7 +646,6 @@ set. Without any prefix argument, the option is toggled."
     ["Create PDF" pandoc-run-markdown2pdf
      :active (string= (pandoc-get 'read) "markdown")]
     ["View Output Buffer" pandoc-view-output :active t]
-    ["Load Settings File..." pandoc-load-settings-file :active t]
     ["Save File Settings" pandoc-save-settings-interactive :active t]
     ["Set As Default Format" pandoc-set-default-format :active t]
     "--"

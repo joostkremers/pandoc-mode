@@ -103,9 +103,10 @@ settings file is created if one doesn't exist yet). This symbolic link has
 `pandoc-load-default-settings`, making it possible to automatically load a
 specific settings file when `pandoc-mode` is invoked.
 
-When you switch output formats, either through the menu or with the keyboard,
-Emacs checks if a corresponding settings file exists and loads it if one is
-found.
+When you switch output formats, either through the menu or with the keyboard
+(with `C-c / w`), Emacs checks if a corresponding settings file exists and loads
+it if one is found. That is, you can load a different settings file by simply
+switching output formats.
 
 Note that the current output format is always visible in the mode line: the
 "lighter" for `pandoc-mode` in the mode line has the form `Pandoc/<format>`,
@@ -296,7 +297,6 @@ toggles the value of a binary switch.
 
 Key               Description
 --------------    --------------------------------
-`C-c / l`         Load a settings file.
 `C-c / p`         Run markdown2pdf.
 `C-c / r`         Run pandoc.
 `C-c / s`         Save the current settings.
