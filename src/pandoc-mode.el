@@ -45,7 +45,7 @@
   :group 'pandoc
   :type 'file)
 
-(defcustom pandoc-@@directives '(("include" . pandoc-process-include-directive)
+(defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
 				 ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without angle brackets, the function
@@ -302,7 +302,7 @@ gets the suffix `.pdf'."
     (delq nil (append (list read write output) other-options))))
 
 (defun pandoc-process-directives ()
-  "Processes pandoc-mode @@directives in the current buffer."
+  "Processes pandoc-mode @@-directives in the current buffer."
   (interactive)
   (mapc #'(lambda (directive)
 	    (goto-char (point-min))
@@ -319,7 +319,7 @@ gets the suffix `.pdf'."
 		    (delete-region beg-open end-close)
 		    (insert (funcall (cdr directive) text))
 		    (goto-char beg-open))))))
-	pandoc-@@directives))
+	pandoc-directives))
 
 (defun pandoc-process-lisp-directive (lisp)
   "Process @@lisp directives."
@@ -441,14 +441,19 @@ asking."
 		      type
 		      (file-name-nondirectory filename))
 	      (format "# saved on %s #\n\n" (format-time-string "%Y.%m.%d %H:%M")))
-      (mapc #'(lambda (option)
-		(when (cdr option)
-		  (insert (format "%s::%s\n" (car option) (cdr option)))))
-	    options)
+      (pandoc-insert-options options)
       (let ((make-backup-files nil))
 	(write-region (point-min) (point-max) settings-file))
       (message "%s file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
     (setq pandoc-settings-modified-flag nil)))
+
+(defun pandoc-insert-options (options)
+  "Insert OPTIONS in the current buffer.
+Options are written out in the format <option>::<value>."
+  (mapc #'(lambda (option)
+	    (when (cdr option)
+	      (insert (format "%s::%s\n" (car option) (cdr option)))))
+	options))
 
 (defun pandoc-undo-file-settings ()
   "Undo all settings specific to the current file.
@@ -523,11 +528,10 @@ Returns an alist with the options and their values."
 (defun pandoc-view-settings ()
   "Displays the settings file in the *Pandoc output* buffer."
   (interactive)
-  (let ((filename (buffer-file-name))
-	(format (pandoc-get 'write)))
+  (let ((options pandoc-local-options))
     (set-buffer pandoc-output-buffer)
     (erase-buffer)
-    (insert-file-contents (pandoc-create-settings-filename 'settings filename format)))
+    (pandoc-insert-options options))
   (display-buffer pandoc-output-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -723,6 +727,7 @@ set. Without any prefix argument, the option is toggled."
      ["Save Project File" pandoc-save-project-file :active t]
      ["Undo File Settings" pandoc-undo-file-settings :active t])
     "--"
+    ["View Current Settings" pandoc-view-settings :active t]
     ,(append (cons "Input Format"
 		   (mapcar #'(lambda (option)
 			       (vector (car option)

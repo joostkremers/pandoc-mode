@@ -84,7 +84,8 @@ ability to save the settings for a specific output format. If you choose "Save
 File Settings" from the menu (`C-c / s`), Emacs saves the current settings to a
 hidden file in the same directory as the file you're editing. The name of this
 file is derived from the input file, appended with the name of the output format
-and the string `.pandoc`.
+and the string `.pandoc`. (See the section ['Settings Files'](#settings-files)
+for details.)
 
 A single document can have a settings file for each output format that pandoc
 supports. For example, for this manual, which is written in markdown, I have
@@ -216,6 +217,49 @@ input filename. (Note that `markdown2pdf` always writes its output to a file, it
 is never redirected to the buffer `*Pandoc output*`).
 
 
+# Projects #
+
+If you have more than one file in a single directory for which you want to apply
+the same pandoc settings, it is rather cumbersome to create a settings file for
+each of them, and ever more cumbersome if you want to change something in those
+settings. To deal with such cases, `pandoc-mode` allows you to create a project
+file. A project file is called `Project.<format>.pandoc` and is essentially a
+normal settings file. The difference is that it defines settings that apply to
+all files in the directory.
+
+In order to distinguish settings from a project file and settings from a
+file-specific settings file, the former are called "project settings" and the
+latter "local settings". You can create a project file by selecting "Project |
+Save Project File" from the menu (or with the key sequence `C-c / P s`). Emacs
+then simply saves the settings of the current file to the project file. This
+means that all the settings for the current input file become project settings.
+
+Just as a local settings file, a project file also contains an output format in
+its filename. This means that you can have different project files for different
+output formats. Furthermore, it is also possible to define a default project
+format: when you set a default format through the menu, Emacs makes both the
+project file *and* the local settings file for the current output format the
+default. If there is no project file for the current output format, however, a
+default will not be created. (This differs from local settings files: if you set
+a default output format, Emacs will create a local settings file if none
+exists).
+
+When Emacs loads pandoc settings for a file, it first looks for and loads the
+project file for the selected output format, and then reads the file's local
+settings file, if one exists. This means that the local settings may actually
+override the project settings: if both files contain a value for a specific
+option, the one in the local settings file overrides the one in the project file.
+
+This means that if you open a file and a project settings file is loaded for it,
+you can make changes to the options and save those to a local settings file
+(with the menu option "Save File Settings" or the key sequence `C-c / s`). If
+you want to undo any file-specific settings and return to the settings defined
+in the project file, you can select the menu item "Project | Undo File Settings"
+(`C-c / P u`). This erases the local options, but only *in memory*. If you want
+to make the change permanent, you need to save the local settings file (which
+will then be empty) or just delete it completely.
+
+
 # Using @@-directives #
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the
@@ -250,29 +294,27 @@ document, you can simply put a backslash \\ before the first `@`: `\\@@lisp`.
 Emacs removes the backslash (which is necessary in case the string `\\@@lisp` is
 contained in a code block) and then continues searching for the next directive.
 
+Defining `@@`-directives yourself is done in two steps. First, go to the
+customization buffer with `M-x customize-group` `RET` `pandoc` `RET`. One of the
+options there is `pandoc-directives`. This variable contains a list of
+directives and the functions that they are linked with. You can add a directive
+by providing a name and a function to call. The second step is ---obviously---
+to define the function. It should take one argument, the text between the
+opening and closing directives, and should return a string. This string is then
+inserted in the buffer.
 
-## Defining @@-directives ##
-
-One of the customization options for `pandoc-mode` (`M-x customize-group` `RET`
-`pandoc` `RET`) is `pandoc-@@directives`. This variable contains a list of
-directives and the functions that they are linked with. You can add directives
-to this list (and remove the predefined ones, if you wish). The function that is
-linked to a directive should take one argument, the text between the opening and
-closing directives, and should return a string. This string is then inserted in
-the buffer.
-
-In Elisp, you can use the function `pandoc-get` to access the various pandoc
-options for the current buffer. For example, `(pandoc-get 'write)` gives the
-output format. This could be usefull to make the output of an `@@`-directive
+Note that in Elisp, you can use the function `pandoc-get` to access the various
+pandoc options for the current buffer. For example, `(pandoc-get 'write)` gives
+the output format. This could be usefull to make the output of an `@@`-directive
 dependent on the output format.
 
-Note that the directives are processed in the order in which they appear in
-`pandoc-@@directives`. So in the default case, `\@@include` directives are
-processed before `\@@lisp` directives, which means that any `\@@lisp` directive
-in a file included by `\@@include` gets processed, but if a `\@@lisp` directive
-produces an `\@@include`, it does *not* get processed. (If this should ever be a
-problem, you can always create a directive `\@@include2` and have it processed
-after `\@@lisp`.)
+The directives are processed in the order in which they appear in the
+customization buffer (and hence in the variable `pandoc-directives`). So in the
+default case, `\@@include` directives are processed before `\@@lisp` directives,
+which means that any `\@@lisp` directive in a file included by `\@@include` gets
+processed, but if a `\@@lisp` directive produces an `\@@include`, it does *not*
+get processed. (If this should ever be a problem, you can always create a
+directive `\@@include2` and have it processed after `\@@lisp`.)
 
 After Emacs has processed a directive and inserted the text it produced in the
 buffer, processing of directives is resumed from the *start* of the inserted
@@ -299,7 +341,9 @@ Key               Description
 --------------    --------------------------------
 `C-c / p`         Run markdown2pdf.
 `C-c / r`         Run pandoc.
-`C-c / s`         Save the current settings.
+`C-c / s`         Save a settings file.
+`C-c / P s`       Save a project file.
+`C-c / P u`       Undo file settings.
 `C-c / t`         Toggle a binary option.
 `C-c / v`         View the output buffer.
 `C-c / V`         View the current settings file.
@@ -322,14 +366,14 @@ Key               Description
 
 # Settings Files #
 
-When you save the current settings, Emacs creates a settings file in the same
-directory as the text file you're working on. The name of a settings file is
-composed of the name of your text file, plus a suffix indicating the output
-format and the suffix `.pandoc`. Furthermore it is a dot-file, so that it
-becomes a hidden file on Unix-like OSes. For example, the source file for this
-manual is called `manual.text`. Its HTML settings file is called
-`.manual.text.html.pandoc`, its LaTeX settings file is
-`.manual.text.latex.pandoc`, etc.
+As explained above, there are two types of settings files: project files, which
+apply to all input files in a single directory, and local settings files, which
+apply only to single input files. Both types of settings files are specific to a
+single output format, which is specified in the name. Local settings files are
+hidden (on Unix-like OSes, anyway) and consist of the name of the input file,
+plus a string indicating the output format and the suffix `.pandoc`. Project
+files are not hidden files and consist of the string `Project` plus the output
+format and the suffix `.pandoc`.
 
 The format of a settings file is very straightforward. It contains lines of the
 form:
@@ -342,8 +386,9 @@ alternative forms `from` and `to`. Additionally, the option `output-dir` is
 valid.) `<value>` is a string or, for binary switches, either `t` or `nil`,
 which correspond to 'on' or 'off', respectively.
 
-Lines that do not correspond to this format are simply ignored. So if you insist
-on writing your own settings file by hand, make sure all your options have the
-right form, that is, that they contain *no* spaces and a *double* colon.
+Lines that do not correspond to this format are simply ignored (and can be used
+for comments). If for some reason you end up writing your own settings file by
+hand, make sure all your options have the right form, that is, that they contain
+*no* spaces and a *double* colon.
 
 </div>
