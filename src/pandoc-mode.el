@@ -29,6 +29,10 @@
 
 (require 'easymenu)
 
+(defmacro nor (&rest args)
+  "Returns T if none of its arguments are true."
+  `(not (or ,@args)))
+
 (defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'Wp)
 
 (defcustom pandoc-binary "/usr/bin/pandoc"
@@ -162,6 +166,9 @@ this list."
 (defvar pandoc-local-options nil "A buffer-local variable holding a file's pandoc options.")
 (make-variable-buffer-local 'pandoc-local-options)
 
+(defvar pandoc-project-options nil "A buffer-local variable holding a file's project options.")
+(make-variable-buffer-local 'pandoc-project-options)
+
 (defvar pandoc-settings-modified-flag nil "T if the current settings were modified and not saved.")
 (make-variable-buffer-local 'pandoc-settings-modified-flag)
 
@@ -171,7 +178,9 @@ this list."
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/r" 'pandoc-run-pandoc)
     (define-key map "\C-c/p" 'pandoc-run-markdown2pdf)
-    (define-key map "\C-c/s" 'pandoc-save-settings-interactive)
+    (define-key map "\C-c/s" 'pandoc-save-settings-file)
+    (define-key map "\C-c/Ps" 'pandoc-save-project-file)
+    (define-key map "\C-c/Pu" 'pandoc-undo-file-settings)
     (define-key map "\C-c/w" 'pandoc-set-write)
     (define-key map "\C-c/v" 'pandoc-view-output)
     (define-key map "\C-c/V" 'pandoc-view-settings)
@@ -212,7 +221,7 @@ this list."
 (defun conditionally-turn-on-pandoc ()
   "Turn on pandoc-mode if a pandoc settings file exists.
 This is for use in major mode hooks."
-  (when (file-exists-p (pandoc-create-settings-filename (buffer-file-name) "default"))
+  (when (file-exists-p (pandoc-create-settings-filename 'settings (buffer-file-name) "default"))
     (turn-on-pandoc)))
 
 (defun pandoc-set (option value)
@@ -221,21 +230,48 @@ This is for use in major mode hooks."
     (setcdr (assq option pandoc-local-options) value)
     (setq pandoc-settings-modified-flag t)))
 
+(defun pandoc-set* (option value)
+  "Sets the project value of OPTION to VALUE."
+  (when (assq option pandoc-project-options)
+    (setcdr (assq option pandoc-project-options) value)
+    (setq pandoc-settings-modified-flag t)))
+
 (defun pandoc-get (option)
-  "Returns the value of OPTION."
+  "Returns the local value of OPTION."
   (cdr (assq option pandoc-local-options)))
 
+(defun pandoc-get* (option)
+  "Returns the project value of OPTION."
+  (cdr (assq option pandoc-project-options)))
+
 (defun pandoc-toggle (option)
-  "Toggles an on/off option."
+  "Toggles the local value of an on/off option."
   (pandoc-set option (not (pandoc-get option))))
 
-(defun pandoc-create-command-option-list (options input-file &optional pdf)
-  "Create a list of strings with switches that can be passed to pandoc.
-INPUT-FILE is the name of the input file. If PDF is non-nil, the
-output file is set to the base name of the input file with the
-extension `.pdf', regardless of the setting of `output'."
+(defun pandoc-toggle* (option)
+  "Toggles the project value of an on/off option."
+  (pandoc-set* option (not (pandoc-get* option))))
+
+(defun pandoc-create-settings-filename (type filename output-format)
+  "Create a settings filename.
+TYPE is the type of settings file, either 'settings or 'project.
+FILENAME should be an absolute filename, the return value is an
+absolute filename as well."
+  (cond
+   ((eq type 'settings)
+    (concat (file-name-directory filename) "." (file-name-nondirectory filename) "." output-format ".pandoc"))
+   ((eq type 'project)
+    (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
+
+(defun pandoc-create-command-option-list (input-file &optional pdf)
+  "Create a list of strings with pandoc switches for the current buffer.
+INPUT-FILE is the name of the input file. If PDF is non-nil, an
+output file is always set, derived either from the input file or
+from the output file set for the \"latex\" output profile, and
+gets the suffix `.pdf'."
   (let* ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
-	 (write (if pdf nil
+	 (write (if pdf
+		    nil
 		  (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
 	 (output (cond
 		  ((or (eq (pandoc-get 'output) t)
@@ -299,9 +335,9 @@ extension `.pdf', regardless of the setting of `output'."
 (defun pandoc-run-pandoc ()
   "Run pandoc on the current document."
   (interactive)
-  (let ((option-list (pandoc-create-command-option-list pandoc-local-options (buffer-file-name)))
+  (let ((option-list (pandoc-create-command-option-list (buffer-file-name)))
 	(buffer (current-buffer)))
-    (message "Running pandoc for output format %s..." (pandoc-get 'write))
+    (message "Running pandoc for output format \"%s\"..." (pandoc-get 'write))
     (with-current-buffer pandoc-output-buffer
       (erase-buffer)
       (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
@@ -310,27 +346,30 @@ extension `.pdf', regardless of the setting of `output'."
       (insert-buffer-substring-no-properties buffer)
       (pandoc-process-directives)
       (if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
-	  (message "Running pandoc for output format %s... Finished." (pandoc-get 'write))
+	  (message "Running pandoc for output format \"%s\"... Finished." (pandoc-get 'write))
 	(message "Error in pandoc process.")
 	(display-buffer pandoc-output-buffer)))))
 
 (defun pandoc-run-markdown2pdf (prefix)
-  "Run markdown2pdf on the current document."
+  "Run markdown2pdf on the current document.
+If there is a settings and/or project file for LaTeX output, the
+options in them are used. If called with a prefix argument,
+however, no check for the existence of LaTeX settings is made and
+the buffer's current settings are used."
   (interactive "P")
-  (let ((latex-settings-file (pandoc-create-settings-filename (buffer-file-name) "latex"))
-	(output-format (pandoc-get 'write))
+  (let ((output-format (pandoc-get 'write))
 	(buffer (current-buffer))
 	(filename (buffer-file-name)))
     (with-temp-buffer  ; we do this in a temp buffer so we can process @@-directives without having to undo them.
-      (if (and (not (string= output-format "latex"))
-	       (file-exists-p latex-settings-file)
-	       (null prefix))
-	  (pandoc-load-settings-file latex-settings-file t)
-	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer)))
-      (let ((option-list (pandoc-create-command-option-list pandoc-local-options filename t)))
+      (unless (and (not (string= output-format "latex"))
+		   (null prefix)
+		   (pandoc-load-settings-for-file (expand-file-name filename) "latex" t))
+	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
+	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
+      (let ((option-list (pandoc-create-command-option-list filename t)))
 	(insert-buffer-substring-no-properties buffer)
-	(pandoc-process-directives)
 	(message "Running markdown2pdf...")
+	(pandoc-process-directives)
 	(with-current-buffer pandoc-output-buffer
 	  (erase-buffer)
 	  (insert (format "Running `markdown2pdf %s'\n\n" (mapconcat #'identity option-list " "))))
@@ -339,60 +378,84 @@ extension `.pdf', regardless of the setting of `output'."
 	  (message "Error in markdown2pdf process.")
 	  (display-buffer pandoc-output-buffer))))))
 
-(defun pandoc-create-settings-filename (filename output-format)
-  "Creates the settings filename associated with FILENAME for OUTPUT-FORMAT.
-FILENAME should be an absolute filename, the return value is an
-absolute filename as well."
-   (concat (file-name-directory filename) "." (file-name-nondirectory filename) "." output-format ".pandoc"))
-
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
 This is done by creating a symbolic link to the relevant settings
-file. (Therefore, this function is not available on Windows.)"
+files. (Therefore, this function is not available on Windows.)"
   (interactive)
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
-    (let ((current-settings-file (file-name-nondirectory (pandoc-create-settings-filename (buffer-file-name) (pandoc-get 'write))))
-	  (default-settings-file (pandoc-create-settings-filename (buffer-file-name) "default")))
+    (let ((current-settings-file (file-name-nondirectory (pandoc-create-settings-filename 'settings (buffer-file-name) (pandoc-get 'write))))
+	  (current-project-file (file-name-nondirectory (pandoc-create-settings-filename 'project (buffer-file-name) (pandoc-get 'write)))))
       (when (not (file-exists-p current-settings-file))
-	(pandoc-save-settings (pandoc-get 'write)))
-      (make-symbolic-link current-settings-file default-settings-file t)
+	(pandoc-save-settings 'settings (pandoc-get 'write)))
+      (make-symbolic-link current-settings-file (pandoc-create-settings-filename 'settings (buffer-file-name) "default") t)
+      (when (file-exists-p current-project-file)
+	  (make-symbolic-link current-project-file (pandoc-create-settings-filename 'project (buffer-file-name) "default") t))
       (message "`%s' set as default output format." (pandoc-get 'write)))))
 
-(defun pandoc-save-settings-interactive ()
+(defun pandoc-save-settings-file ()
   "Save the settings of the current buffer.
 This function just calls pandoc-save-settings with the
 appropriate output format."
   (interactive)
-  (pandoc-save-settings (pandoc-get 'write)))
+  (pandoc-save-settings 'settings (pandoc-get 'write)))
 
-(defun pandoc-save-settings (format &optional no-confirm)
-  "Save the settings of the current buffer.
-The settings are saved to a dot file with the same name as the
-file whose settings are being saved, appended with the output
-format and the suffix `.pandoc'.
+(defun pandoc-save-project-file ()
+  "Save the current settings as a project file.
+In order to achieve this, the current local settings are copied
+to the project settings."
+  (interactive)
+  (setq pandoc-project-options (copy-alist pandoc-local-options))
+  (pandoc-save-settings 'project (pandoc-get 'write)))
 
-If optional argument NO-CONFIRM is non-nil, any existing settings
-file is overwritten without asking."
-  (let* ((filename (buffer-file-name))
-	 (settings-file (pandoc-create-settings-filename filename format)))
+(defun pandoc-save-settings (type format &optional no-confirm)
+  "Save the settings of the current buffer for FORMAT.
+TYPE must be a quoted symbol and specifies the type of settings
+file. If its value is 'settings, a normal settings file is
+created for the current file. If TYPE's value is 'project, a
+project settings file is written. If optional argument NO-CONFIRM
+is non-nil, any existing settings file is overwritten without
+asking."
+  (let ((settings-file (pandoc-create-settings-filename type (buffer-file-name) format))
+	(filename (buffer-file-name))
+	;; If TYPE is 'settings, we only need the options in
+	;; pandoc-local-options that differ from pandoc-project-options. Note
+	;; that we convert all values to strings, so that options that are nil
+	;; in pandoc-local-options but non-nil in pandoc-project-options are
+	;; also saved below.
+	(options (cond ((eq type 'settings) (delq nil (mapcar #'(lambda (option)
+								  (when (not (equal (pandoc-get option)
+										    (pandoc-get* option)))
+								    (cons option (format "%s" (pandoc-get option)))))
+							      (mapcar #'car pandoc-options))))
+		       ((eq type 'project) pandoc-project-options))))
     (if (and (not no-confirm)
 	     (file-exists-p settings-file)
-	     (not (y-or-n-p (format "Settings file `%s' already exists. Overwrite? " (file-name-nondirectory settings-file)))))
-	(message "Settings file not written.")
-      (let ((local-options pandoc-local-options)) ; we're doing this in a temp buffer, but we need access to the original buffer's options.
-	(with-temp-buffer
-	  (insert (format "# pandoc-mode settings file for %s #\n" (file-name-nondirectory filename))
-		  (format "# saved on %s #\n\n" (format-time-string "%Y.%m.%d %H:%M")))
-	  (mapc #'(lambda (option)
-		    (when (cdr option)
-		      (insert (format "%s::%s\n" (car option) (cdr option)))))
-		local-options)
-	  (message settings-file)
-	  (let ((make-backup-files nil))
-	    (write-region (point-min) (point-max) settings-file))
-	  (message "Settings file written to `%s'." (file-name-nondirectory settings-file)))
-	(setq pandoc-settings-modified-flag nil)))))
+	     (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
+				    (capitalize (symbol-name type))
+				    (file-name-nondirectory settings-file)))))
+	(message "%s file not written." (capitalize type)))
+    (with-temp-buffer
+      (insert (format "# pandoc-mode %s file for %s #\n"
+		      type
+		      (file-name-nondirectory filename))
+	      (format "# saved on %s #\n\n" (format-time-string "%Y.%m.%d %H:%M")))
+      (mapc #'(lambda (option)
+		(when (cdr option)
+		  (insert (format "%s::%s\n" (car option) (cdr option)))))
+	    options)
+      (let ((make-backup-files nil))
+	(write-region (point-min) (point-max) settings-file))
+      (message "%s file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
+    (setq pandoc-settings-modified-flag nil)))
+
+(defun pandoc-undo-file-settings ()
+  "Undo all settings specific to the current file.
+Project settings associated with the current file are kept."
+  (interactive)
+  (setq pandoc-local-options (copy-alist pandoc-project-options))
+  (message "Local file settings undone for current session. Save local settings to make persistent."))
 
 (defun pandoc-load-default-settings ()
   "Load the default settings of the file in the current buffer.
@@ -403,46 +466,54 @@ This function is for use in pandoc-mode-hook."
   "Load the options for FORMAT from the corresponding settings file.
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
-  (pandoc-load-settings-file (pandoc-create-settings-filename (expand-file-name (buffer-file-name)) format) no-confirm))
+  (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm))
 
-(defun pandoc-load-settings-file (settings-file &optional no-confirm)
-  "Load the options in SETTINGS-FILE for the current buffer.
-If NO-CONFIRM is t, no confirmation is asked if the current
-settings have not been saved."
+(defun pandoc-load-settings-for-file (file format &optional no-confirm)
+  "Load the options for FILE.
+Both the file's own settings file and the directory's project
+file are read, if they exist. If NO-CONFIRM is t, no confirmation
+is asked if the current settings have not been saved. FILE must
+be an absolute path name. Returns NIL if no settings or project
+file is found for FILE, otherwise non-NIL."
   (when (and (not no-confirm)
 	     pandoc-settings-modified-flag
-	     (y-or-n-p (format "Current settings for format %s modified. Save first? " (pandoc-get 'write))))
+	     (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
-  (let ((full-settings-filename (expand-file-name settings-file)))
-    (if (file-exists-p full-settings-filename)
-	(progn
-	  (setq pandoc-local-options (copy-alist pandoc-options))
-	  (mapc #'(lambda (option)
-		    (pandoc-set (car option) (cdr option)))
-		(pandoc-read-settings-from-file full-settings-filename))
-	  (message "Settings file `%s' loaded." (file-name-nondirectory full-settings-filename))
-	  (setq pandoc-settings-modified-flag nil))
-      (message "Settings file `%s' not found." full-settings-filename))))
+  (let ((project-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format)))
+	(local-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))))
+    (unless (nor project-settings local-settings)
+      (setq pandoc-project-options (copy-alist pandoc-options)
+	    pandoc-local-options (copy-alist pandoc-options))
+      (mapc #'(lambda (option)
+		(pandoc-set (car option) (cdr option))
+		(pandoc-set* (car option) (cdr option)))
+	    project-settings)
+      ;; the local settings are processed second, so that they can override the
+      ;; project settings.
+      (mapc #'(lambda (option)
+		(pandoc-set (car option) (cdr option)))
+	    local-settings)
+      (setq pandoc-settings-modified-flag nil)
+      (message "Settings loaded for format \"%s\"." format))))
 
 (defun pandoc-read-settings-from-file (settings-file)
   "Read the options in SETTINGS-FILE.
 Returns an alist with the options and their values."
-  (if (file-readable-p settings-file)
-      (let ((options nil))
-	(with-temp-buffer
-	  (insert-file-contents settings-file)
-	  (goto-char (point-min))
-	  (let (options)
-	    (while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
-	      (let ((option (match-string 1))
-		    (value (match-string 2)))
-		(add-to-list 'options (cons (intern option) (cond
-							     ((string-match "^[0-9]$" value) (string-to-number value))
-							     ((string= "t" value) t)
-							     ((string= "nil" value) nil)
-							     (t value))))))
-	    options)))
-    (error "Settings file `%s' not readable" settings-file)))
+  (when (file-readable-p settings-file)
+    (let (options)
+      (with-temp-buffer
+	(insert-file-contents settings-file)
+	(goto-char (point-min))
+	(let (options)
+	  (while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
+	    (let ((option (match-string 1))
+		  (value (match-string 2)))
+	      (add-to-list 'options (cons (intern option) (cond
+							   ((string-match "^[0-9]$" value) (string-to-number value))
+							   ((string= "t" value) t)
+							   ((string= "nil" value) nil)
+							   (t value))))))
+	  options)))))
 
 (defun pandoc-view-output ()
   "Displays the *Pandoc output* buffer."
@@ -456,7 +527,7 @@ Returns an alist with the options and their values."
 	(format (pandoc-get 'write)))
     (set-buffer pandoc-output-buffer)
     (erase-buffer)
-    (insert-file-contents (pandoc-create-settings-filename filename format)))
+    (insert-file-contents (pandoc-create-settings-filename 'settings filename format)))
   (display-buffer pandoc-output-buffer))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -465,14 +536,14 @@ Returns an alist with the options and their values."
 
 (defun pandoc-set-write (format)
   "Sets the output format to FORMAT.
-If a settings file exists for FORMAT, it is loaded. If none
-exists, all options are unset (except the input format)."
+If a settings and/or project file exists for FORMAT, they are
+loaded. If none exists, all options are unset (except the input
+format)."
   (interactive (list (completing-read "Set output format to: " pandoc-output-formats)))
   (when (and pandoc-settings-modified-flag
-	     (y-or-n-p (format "Current settings for output format `%s' changed. Save? " (pandoc-get 'write))))
+	     (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
-  (if (file-exists-p (pandoc-create-settings-filename (buffer-file-name) format))
-      (pandoc-load-settings-profile format t)
+  (unless (pandoc-load-settings-profile format t)
     (setq pandoc-local-options (copy-alist pandoc-options))
     (pandoc-set 'write format)
     (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))))
@@ -646,8 +717,11 @@ set. Without any prefix argument, the option is toggled."
     ["Create PDF" pandoc-run-markdown2pdf
      :active (string= (pandoc-get 'read) "markdown")]
     ["View Output Buffer" pandoc-view-output :active t]
-    ["Save File Settings" pandoc-save-settings-interactive :active t]
+    ["Save File Settings" pandoc-save-settings-file :active t]
     ["Set As Default Format" pandoc-set-default-format :active t]
+    ("Project"
+     ["Save Project File" pandoc-save-project-file :active t]
+     ["Undo File Settings" pandoc-undo-file-settings :active t])
     "--"
     ,(append (cons "Input Format"
 		   (mapcar #'(lambda (option)
