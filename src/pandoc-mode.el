@@ -45,8 +45,8 @@
   :group 'pandoc
   :type 'file)
 
-(defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
-			       ("lisp" . pandoc-process-lisp-directive))
+(defcustom pandoc-directives '(("include" pandoc-process-include-directive t)
+			       ("lisp" pandoc-process-lisp-directive t))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without angle brackets, the function
 is the function to be called, which should take one argument, the
@@ -60,7 +60,7 @@ the same type (i.e., an @@include directive loading a text that
 also contains @@include directives) or if it is lower on the
 list, not if it appears higher on the list."
   :group 'pandoc
-  :type '(alist :key-type (string :tag "Directive") :value-type function))
+  :type '(repeat (list (string :tag "Directive") function (choice (const :tag "Takes argument" t) (const :tag "Takes no argument" nil)))))
 
 (defvar pandoc-major-modes
   '((haskell-mode . "native")
@@ -315,15 +315,20 @@ gets the suffix `.pdf'."
 		  (delete-region (match-beginning 1) (match-end 1))
 		(let ((beg-open (match-beginning 0))
 		      (end-open (match-end 0)))
-		  (search-forward (concat (car directive) "@@"))
-		  (let* ((beg-close (match-beginning 0))
-			 (end-close (match-end 0))
-			 (text (buffer-substring-no-properties end-open beg-close)))
-		    (goto-char beg-open)
-		    (delete-region beg-open end-close)
-		    (insert (funcall (cdr directive) text))
-		    (goto-char beg-open))))))
-	pandoc-directives))
+		  (cond
+		   ((nth 2 directive) ; directive takes an argument
+		    (search-forward (concat (car directive) "@@"))
+		    (let* ((beg-close (match-beginning 0))
+			   (end-close (match-end 0))
+			   (text (buffer-substring-no-properties end-open beg-close)))
+		      (goto-char beg-open)
+		      (delete-region beg-open end-close)
+		      (insert (funcall (nth 1 directive) text))))
+		   ((not (nth 2 directive)) ; directive takes no argument
+		    (delete-region beg-open end-open)
+		    (insert (funcall (nth 1 directive)))))
+		  (goto-char beg-open)))))
+	    pandoc-directives))
 
 (defun pandoc-process-lisp-directive (lisp)
   "Process @@lisp directives."
@@ -332,6 +337,8 @@ gets the suffix `.pdf'."
 (defun pandoc-process-include-directive (include-file)
   "Process @@include directives."
   (with-temp-buffer
+    ;; most likely the user will have put spaces between the directives and the
+    ;; filename to be read, so we remove those first.
     (string-match "^[[:space:]]\\(.*\\)[[:space:]]$" include-file)
     (insert-file-contents (match-string 1 include-file))
     (buffer-string)))

@@ -1,6 +1,6 @@
 % Emacs pandoc-mode
 % Joost Kremers
-% @@lisp (format-time-string "%d %b %Y") lisp@@
+% @@date
 
 <div id="main">
 
@@ -264,30 +264,50 @@ will then be empty) or just delete it completely.
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the
 text file before sending it to pandoc. This is done with so-called
-`@@`-directives. These are particular strings that delimit a block of text. The
-beginning of this block is marked with `@@directive` and the end with
-`directive@@` (where `directive` can be any user-defined string). Before pandoc
-is called, Emacs searches the text for these directives and replaces them with a
-piece of text that is produced by an Emacs function that is linked to the
-directive.
+`@@`-directives. An `@@`-directive triggers an Elisp function and is then
+replaced with the output of that function. An `@@`-directive takes the form
+`@@directive` (where `directive` can be any user-defined string). Before pandoc
+is called, Emacs searches the text for these directives and replaces them with
+the output of the functions they call.
 
-Two directives have been predefined: `\@@lisp` and `\@@include`. `\@@lisp` can
-be used to include Elisp code in the document which is then executed and
-replaced by the result, which should be a string. `\@@include` can be used to
-include another file into the current document (which must of course have the
-same input format).
+So suppose you define (e.g., in `~/.emacs`) a function `pandoc-current-date`:
 
-For example, if you write the following in your document:
+    (defun pandoc-current-date ()
+      (format-time-string "%d %b %Y"))
+
+Now you can define a directive `\@@date` that calls this function. The effect is
+that everytime you write `\@@date` in your document, it is replaced with the
+current date.
+
+`@@`-directives can also take an argument. In this case, the directive must
+enclose its argument: `@@directive ... directive@@`. The function such a
+directive calls must take exactly one argument, which will be the text enclosed
+by the directive. 
+
+Two directives have been predefined: `\@@lisp` and `\@@include`. Both of these
+take an argument. `\@@lisp` can be used to include Elisp code in the document
+which is then executed and replaced by the result, which should be a string.
+
+For example, another way to put the current date in your document, without
+defining a special function for it, is to write the following:
 
     \@@lisp (format-time-string "%d %b %Y") lisp@@
 
-the result will be that the day on which the document was processed is included
-into the document: @@lisp (format-time-string "%d %b %Y") lisp@@.
+Emacs takes the Elisp code between the `\@@lisp` directives, executes it, and
+replaces the directive with the result of the code.
 
-This substitution works everywhere in the document, including in code and code
-blocks, and also in the %-header block. So by putting the above string in the
-third line of the %-header block, the meta data for your documents will always
-show the date on which the file was created by pandoc.
+`\@@include` can be used to include another file into the current document
+(which must of course have the same input format):
+
+    \@@include copyright.text include@@
+
+This directive reads the file `copyright.text` and replaces the `\@@include`
+directive with its contents.
+
+Processing `@@`-directives works everywhere in the document, including in code
+and code blocks, and also in the %-header block. So by putting the above string
+in the third line of the %-header block, the meta data for your documents will
+always show the date on which the file was created by pandoc.
 
 If it should ever happen that you need to write a literal "`\@@lisp`" in your
 document, you can simply put a backslash \\ before the first `@`: `\\@@lisp`.
@@ -298,15 +318,24 @@ Defining `@@`-directives yourself is done in two steps. First, go to the
 customization buffer with `M-x customize-group` `RET` `pandoc` `RET`. One of the
 options there is `pandoc-directives`. This variable contains a list of
 directives and the functions that they are linked with. You can add a directive
-by providing a name and a function to call. The second step is ---obviously---
-to define the function. It should take one argument, the text between the
-opening and closing directives, and should return a string. This string is then
-inserted in the buffer.
+by providing a name and a function to call, and specifying whether the function
+takes an argument or not. The second step is ---obviously--- to define the
+function itself. It should take one argument, the text between the opening and
+closing directives, and should return a string. This string is then inserted in
+the buffer.
+
+One thing to keep in mind: functions that take an argument are passed *all* text
+between the opening and closing directive, including any whitespace between the
+directives and the text. So in the `@@`-include example above, the function is
+passed the string "\ `copyright.text`\ " (note the spaces). If those spaces are
+a problem (as they would be in the case of `\@@include`, because those spaces
+are *not* part of the actual filename), your function should make sure that they
+are removed.
 
 Note that in Elisp, you can use the function `pandoc-get` to access the various
 pandoc options for the current buffer. For example, `(pandoc-get 'write)` gives
-the output format. This could be usefull to make the output of an `@@`-directive
-dependent on the output format.
+the output format. This could be usefull for making the output of an
+`@@`-directive dependent on the output format.
 
 The directives are processed in the order in which they appear in the
 customization buffer (and hence in the variable `pandoc-directives`). So in the
