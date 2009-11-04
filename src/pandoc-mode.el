@@ -229,7 +229,7 @@ This is for use in major mode hooks."
     (turn-on-pandoc)))
 
 (defun pandoc-set (option value)
-  "Sets pandoc OPTION to VALUE."
+  "Sets the local value of OPTION to VALUE."
   (when (assq option pandoc-local-options)
     (setcdr (assq option pandoc-local-options) value)
     (setq pandoc-settings-modified-flag t)))
