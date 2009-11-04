@@ -46,7 +46,7 @@
   :type 'file)
 
 (defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
-				 ("lisp" . pandoc-process-lisp-directive))
+			       ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without angle brackets, the function
 is the function to be called, which should take one argument, the
@@ -54,7 +54,11 @@ text between @@directive ... directive@@, and should return a
 string that will replace the directive and its argument.
 
 The directives are processed in the order in which they appear in
-this list."
+this list. If a directive produces output that contains another
+directive, the new directive will only be processed if it is of
+the same type (i.e., an @@include directive loading a text that
+also contains @@include directives) or if it is lower on the
+list, not if it appears higher on the list."
   :group 'pandoc
   :type '(alist :key-type (string :tag "Directive") :value-type function))
 
