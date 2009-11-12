@@ -45,8 +45,8 @@
   :group 'pandoc
   :type 'file)
 
-(defcustom pandoc-directives '(("include" pandoc-process-include-directive t)
-			       ("lisp" pandoc-process-lisp-directive t))
+(defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
+			       ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without angle brackets, the function
 is the function to be called, which should take one argument, the
@@ -60,7 +60,12 @@ the same type (i.e., an @@include directive loading a text that
 also contains @@include directives) or if it is lower on the
 list, not if it appears higher on the list."
   :group 'pandoc
-  :type '(repeat (list (string :tag "Directive") function (choice (const :tag "Takes argument" t) (const :tag "Takes no argument" nil)))))
+  :type '(alist :key-type (string :tag "Directive") :value-type function))
+
+(defcustom pandoc-directives-hook nil
+  "*List of functions to call before the directives are processed."
+  :group 'pandoc
+  :type '(repeat function))
 
 (defvar pandoc-major-modes
   '((haskell-mode . "native")
@@ -240,9 +245,11 @@ This is for use in major mode hooks."
     (setcdr (assq option pandoc-project-options) value)
     (setq pandoc-settings-modified-flag t)))
 
-(defun pandoc-get (option)
+(defun pandoc-get (option &optional buffer)
   "Returns the local value of OPTION."
-  (cdr (assq option pandoc-local-options)))
+  (cdr (assq option (if buffer
+			(buffer-local-value 'pandoc-local-options buffer)
+		      pandoc-local-options))))
 
 (defun pandoc-get* (option)
   "Returns the project value of OPTION."
@@ -278,10 +285,11 @@ gets the suffix `.pdf'."
 		    nil
 		  (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
 	 (output (cond
-		  ((or (eq (pandoc-get 'output) t)
-		       (and (null (pandoc-get 'output))
-			    pdf))
-		   (format "--output=%s/%s%s"
+		  ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
+		       (and (null (pandoc-get 'output))                ; or if the user set no output file but either
+			    (or pdf                                    ; (i) we're running markdown2pdf, or
+				(string= (pandoc-get 'write) "odt")))) ; (ii) the output format is odt
+		   (format "--output=%s/%s%s"                          ; we create an output file name.
 			   (or (pandoc-get 'output-dir)
 			       (file-name-directory input-file))
 			   (file-name-sans-extension (file-name-nondirectory input-file))
@@ -308,26 +316,27 @@ gets the suffix `.pdf'."
 (defun pandoc-process-directives ()
   "Processes pandoc-mode @@-directives in the current buffer."
   (interactive)
+  (mapc #'funcall pandoc-directives-hook)
   (mapc #'(lambda (directive)
 	    (goto-char (point-min))
 	    (while (re-search-forward (concat "\\([\\]?\\)@@" (car directive)) nil t)
 	      (if (string= (match-string 1) "\\")
 		  (delete-region (match-beginning 1) (match-end 1))
-		(let ((beg-open (match-beginning 0))
-		      (end-open (match-end 0)))
-		  (cond
-		   ((nth 2 directive) ; directive takes an argument
-		    (search-forward (concat (car directive) "@@"))
-		    (let* ((beg-close (match-beginning 0))
-			   (end-close (match-end 0))
-			   (text (buffer-substring-no-properties end-open beg-close)))
-		      (goto-char beg-open)
-		      (delete-region beg-open end-close)
-		      (insert (funcall (nth 1 directive) text))))
-		   ((not (nth 2 directive)) ; directive takes no argument
-		    (delete-region beg-open end-open)
-		    (insert (funcall (nth 1 directive)))))
-		  (goto-char beg-open)))))
+		(let ((@@-beg (match-beginning 0))
+		      (@@-end (match-end 0)))
+		  (if (eq (char-after) ?{) ; if there is an argument
+		      ;; note: point is on the left brace, while scan-lists
+		      ;; returns the position *after* the right brace, so we
+		      ;; need to adjust to get the actual argument.
+		      (let* ((arg-beg (1+ (point)))
+			     (arg-end (1- (scan-lists (point) 1 0)))
+			     (text (buffer-substring-no-properties arg-beg arg-end)))
+			(goto-char @@-beg)
+			(delete-region @@-beg (1+ arg-end))
+			(insert (funcall (cdr directive) text)))
+		    (delete-region @@-beg @@-end) ; else there is no argument
+		    (insert (funcall (cdr directive))))
+		  (goto-char @@-beg)))))
 	    pandoc-directives))
 
 (defun pandoc-process-lisp-directive (lisp)
@@ -337,29 +346,50 @@ gets the suffix `.pdf'."
 (defun pandoc-process-include-directive (include-file)
   "Process @@include directives."
   (with-temp-buffer
-    ;; most likely the user will have put spaces between the directives and the
-    ;; filename to be read, so we remove those first.
-    (string-match "^[[:space:]]\\(.*\\)[[:space:]]$" include-file)
-    (insert-file-contents (match-string 1 include-file))
+    (insert-file-contents include-file)
     (buffer-string)))
 
-(defun pandoc-run-pandoc ()
-  "Run pandoc on the current document."
-  (interactive)
-  (let ((option-list (pandoc-create-command-option-list (buffer-file-name)))
-	(buffer (current-buffer)))
-    (message "Running pandoc for output format \"%s\"..." (pandoc-get 'write))
-    (with-current-buffer pandoc-output-buffer
-      (erase-buffer)
-      (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
-    (with-temp-buffer  ; we do this in a temp buffer so we can process @@-directives without having to undo them.
-      (setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
-      (insert-buffer-substring-no-properties buffer)
-      (pandoc-process-directives)
-      (if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
-	  (message "Running pandoc for output format \"%s\"... Finished." (pandoc-get 'write))
-	(message "Error in pandoc process.")
-	(display-buffer pandoc-output-buffer)))))
+(defun pandoc-call-external (buffer output-format &optional pdf)
+  "Call pandoc on the current document.
+This function creates a temporary buffer and sets up the required
+local options. BUFFER is the buffer whose contents must be sent
+to pandoc. Its contents is copied into the temporary buffer, the
+@@-directives are processed, after which pandoc called.
+
+OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
+format is used.
+
+If PDF is non-nil, markdown2pdf is called instead of pandoc."
+  (let ((filename (buffer-file-name buffer))
+	(command (if pdf pandoc-markdown2pdf-script pandoc-binary)))
+    (with-temp-buffer ; we do this in a temp buffer so we can process @@-directives without having to undo them.
+      (unless (and filename
+		   output-format
+		   (pandoc-load-settings-for-file (expand-file-name filename) output-format t))
+	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
+	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
+      (let ((option-list (pandoc-create-command-option-list filename pdf)))
+	(insert-buffer-substring-no-properties buffer)
+	(message "Running %s..." (file-name-nondirectory command))
+	(pandoc-process-directives)
+	(with-current-buffer pandoc-output-buffer
+	  (erase-buffer)
+	  (insert (format "Running `%s %s'\n\n" (file-name-nondirectory command) (mapconcat #'identity option-list " "))))
+	(if (= 0 (apply 'call-process-region (point-min) (point-max) command nil pandoc-output-buffer t option-list))
+	    (message "Running %s... Finished." (file-name-nondirectory command))
+	  (message "Error in %s process." (file-name-nondirectory command))
+	  (display-buffer pandoc-output-buffer))))))
+
+(defun pandoc-run-pandoc (prefix)
+  "Run pandoc on the current document.
+If called with a prefix argument, the user is asked for an output
+format. Otherwise, the output format currently set in the buffer
+is used."
+  (interactive "P")
+  (pandoc-call-external (current-buffer)
+			(if prefix
+			    (completing-read "Output format to use: " pandoc-output-formats nil t)
+			  nil)))
 
 (defun pandoc-run-markdown2pdf (prefix)
   "Run markdown2pdf on the current document.
@@ -368,26 +398,9 @@ options in them are used. If called with a prefix argument,
 however, no check for the existence of LaTeX settings is made and
 the buffer's current settings are used."
   (interactive "P")
-  (let ((output-format (pandoc-get 'write))
-	(buffer (current-buffer))
-	(filename (buffer-file-name)))
-    (with-temp-buffer  ; we do this in a temp buffer so we can process @@-directives without having to undo them.
-      (unless (and (not (string= output-format "latex"))
-		   (null prefix)
-		   (pandoc-load-settings-for-file (expand-file-name filename) "latex" t))
-	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
-	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
-      (let ((option-list (pandoc-create-command-option-list filename t)))
-	(insert-buffer-substring-no-properties buffer)
-	(message "Running markdown2pdf...")
-	(pandoc-process-directives)
-	(with-current-buffer pandoc-output-buffer
-	  (erase-buffer)
-	  (insert (format "Running `markdown2pdf %s'\n\n" (mapconcat #'identity option-list " "))))
-	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-markdown2pdf-script nil pandoc-output-buffer t option-list))
-	    (message "Running markdown2pdf... Finished.")
-	  (message "Error in markdown2pdf process.")
-	  (display-buffer pandoc-output-buffer))))))
+  (pandoc-call-external (current-buffer)
+			(if prefix nil "latex")
+			t))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
@@ -482,7 +495,9 @@ This function is for use in pandoc-mode-hook."
   "Load the options for FORMAT from the corresponding settings file.
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
-  (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm))
+  (if (buffer-file-name)
+      (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm)
+    (message "Buffer not associated with any file ")))
 
 (defun pandoc-load-settings-for-file (file format &optional no-confirm)
   "Load the options for FILE.
@@ -554,7 +569,7 @@ Returns an alist with the options and their values."
 If a settings and/or project file exists for FORMAT, they are
 loaded. If none exists, all options are unset (except the input
 format)."
-  (interactive (list (completing-read "Set output format to: " pandoc-output-formats)))
+  (interactive (list (completing-read "Set output format to: " pandoc-output-formats nil t)))
   (when (and pandoc-settings-modified-flag
 	     (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
