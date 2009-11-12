@@ -48,10 +48,9 @@
 (defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
 			       ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
-The directive must be given without angle brackets, the function
-is the function to be called, which should take one argument, the
-text between @@directive ... directive@@, and should return a
-string that will replace the directive and its argument.
+The directive must be given without `@@'; the function should
+return a string that will replace the directive and its
+argument (if any).
 
 The directives are processed in the order in which they appear in
 this list. If a directive produces output that contains another
