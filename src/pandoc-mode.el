@@ -458,7 +458,7 @@ asking."
 	     (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
 				    (capitalize (symbol-name type))
 				    (file-name-nondirectory settings-file)))))
-	(message "%s file not written." (capitalize type)))
+	(message "%s file not written." (capitalize (symbol-name type))))
     (with-temp-buffer
       (insert (format "# pandoc-mode %s file for %s #\n"
 		      type
