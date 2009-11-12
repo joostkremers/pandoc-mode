@@ -494,9 +494,8 @@ This function is for use in pandoc-mode-hook."
   "Load the options for FORMAT from the corresponding settings file.
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
-  (if (buffer-file-name)
-      (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm)
-    (message "Buffer not associated with any file ")))
+  (when (buffer-file-name)
+    (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm)))
 
 (defun pandoc-load-settings-for-file (file format &optional no-confirm)
   "Load the options for FILE.
