@@ -362,9 +362,13 @@ If PDF is non-nil, markdown2pdf is called instead of pandoc."
   (let ((filename (buffer-file-name buffer))
 	(command (if pdf pandoc-markdown2pdf-script pandoc-binary)))
     (with-temp-buffer ; we do this in a temp buffer so we can process @@-directives without having to undo them.
-      (unless (and filename
-		   output-format
-		   (pandoc-load-settings-for-file (expand-file-name filename) output-format t))
+      (if (and output-format ; if an output format was provided (and the buffer is visiting a file)
+	       filename)     ; we want to use settings for that format or no settings at all.
+	  (unless (pandoc-load-settings-for-file (expand-file-name filename) output-format t)
+	    (setq pandoc-local-options (copy-alist pandoc-options)
+		  pandoc-project-options (copy-alist pandoc-options))
+	    (pandoc-set 'write output-format)
+	    (pandoc-set 'read (pandoc-get 'read buffer)))
 	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
 	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
       (let ((option-list (pandoc-create-command-option-list filename pdf)))
