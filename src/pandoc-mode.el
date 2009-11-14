@@ -279,37 +279,37 @@ INPUT-FILE is the name of the input file. If PDF is non-nil, an
 output file is always set, derived either from the input file or
 from the output file set for the \"latex\" output profile, and
 gets the suffix `.pdf'."
-  (let* ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
-	 (write (if pdf
-		    nil
-		  (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
-	 (output (cond
-		  ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
-		       (and (null (pandoc-get 'output))                ; or if the user set no output file but either
-			    (or pdf                                    ; (i) we're running markdown2pdf, or
-				(string= (pandoc-get 'write) "odt")))) ; (ii) the output format is odt
-		   (format "--output=%s/%s%s"                          ; we create an output file name.
-			   (or (pandoc-get 'output-dir)
-			       (file-name-directory input-file))
-			   (file-name-sans-extension (file-name-nondirectory input-file))
-			   (if pdf
-			       ".pdf"
-			     (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
-		  ((stringp (pandoc-get 'output))
-		   (format "--output=%s/%s"
-			   (or (pandoc-get 'output-dir)
-			       (file-name-directory input-file))
-			   (if pdf
-			       (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
-			     (pandoc-get 'output))))
-		  (t nil)))
-	 (other-options (mapcar #'(lambda (switch)
-				    (let ((value (pandoc-get switch)))
-				      (cond
-				       ((eq value t) (format "--%s" switch))
-				       ((stringp value) (format "--%s=%s" switch value))
-				       (t nil))))
-				pandoc-switches)))
+  (let ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
+	(write (if pdf
+		   nil
+		 (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
+	(output (cond
+		 ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
+		      (and (null (pandoc-get 'output))                ; or if the user set no output file but either
+			   (or pdf                                    ; (i) we're running markdown2pdf, or
+			       (string= (pandoc-get 'write) "odt")))) ; (ii) the output format is odt
+		  (format "--output=%s/%s%s"                          ; we create an output file name.
+			  (or (pandoc-get 'output-dir)
+			      (file-name-directory input-file))
+			  (file-name-sans-extension (file-name-nondirectory input-file))
+			  (if pdf
+			      ".pdf"
+			    (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
+		 ((stringp (pandoc-get 'output))
+		  (format "--output=%s/%s"
+			  (or (pandoc-get 'output-dir)
+			      (file-name-directory input-file))
+			  (if pdf
+			      (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
+			    (pandoc-get 'output))))
+		 (t nil)))
+	(other-options (mapcar #'(lambda (switch)
+				   (let ((value (pandoc-get switch)))
+				     (cond
+				      ((eq value t) (format "--%s" switch))
+				      ((stringp value) (format "--%s=%s" switch value))
+				      (t nil))))
+			       pandoc-switches)))
     (delq nil (append (list read write output) other-options))))
 
 (defun pandoc-process-directives ()
