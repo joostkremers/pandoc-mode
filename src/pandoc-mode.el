@@ -325,20 +325,25 @@ not support output to stdout for odt."
 		  (delete-region (match-beginning 1) (match-end 1))
 		(let ((@@-beg (match-beginning 0))
 		      (@@-end (match-end 0)))
-		  (if (eq (char-after) ?{) ; if there is an argument
-		      ;; note: point is on the left brace, while scan-lists
-		      ;; returns the position *after* the right brace, so we
-		      ;; need to adjust to get the actual argument.
-		      (let* ((arg-beg (1+ (point)))
-			     (arg-end (1- (scan-lists (point) 1 0)))
-			     (text (buffer-substring-no-properties arg-beg arg-end)))
-			(goto-char @@-beg)
-			(delete-region @@-beg (1+ arg-end))
-			(insert (funcall (cdr directive) text)))
-		    (delete-region @@-beg @@-end) ; else there is no argument
-		    (insert (funcall (cdr directive))))
-		  (goto-char @@-beg)))))
-	    pandoc-directives))
+		  (cond
+		   ((eq (char-after) ?{) ; if there is an argument
+		    ;; note: point is on the left brace, while scan-lists
+		    ;; returns the position *after* the right brace, so we
+		    ;; need to adjust to get the actual argument.
+		    (let* ((arg-beg (1+ (point)))
+			   (arg-end (1- (scan-lists (point) 1 0)))
+			   (text (buffer-substring-no-properties arg-beg arg-end)))
+		      (goto-char @@-beg)
+		      (delete-region @@-beg (1+ arg-end))
+		      (insert (funcall (cdr directive) text)))
+		    (goto-char @@-beg))
+		   ((looking-at "[a-zA-Z0-9]") t) ; this means we're actually
+					; dealing with a different directive
+		   (t (goto-char @@-beg)
+		      (delete-region @@-beg @@-end) ; else there is no argument
+		      (insert (funcall (cdr directive)))
+		      (goto-char @@-beg)))))))
+	pandoc-directives))
 
 (defun pandoc-process-lisp-directive (lisp)
   "Process @@lisp directives."
