@@ -326,8 +326,8 @@ defining a special function for it, is to write the following:
 
     \@@lisp{(format-time-string "%d %b %Y")}
 
-Emacs takes the Elisp code between the `\@@lisp` directives, executes it, and
-replaces the directive with the result of the code.
+Emacs takes the Elisp code between the curly braces, executes it, and replaces
+the directive with the result of the code.
 
 `\@@include` can be used to include another file into the current document
 (which must of course have the same input format):
@@ -348,24 +348,6 @@ document, you can simply put a backslash \\ before the first `@`: `\\@@lisp`.
 Emacs removes the backslash (which is necessary in case the string `\\@@lisp` is
 contained in a code block) and then continues searching for the next directive.
 
-Defining `@@`-directives yourself is done in two steps. First, you need to
-define the function that the directive will call. This function may take at most
-one argument and should return a string, which is inserted into the buffer. The
-second step is to go to the customization buffer with `M-x customize-group`
-`RET` `pandoc` `RET`. One of the options there is `pandoc-directives`. This
-variable contains a list of directives and the functions that they are linked
-with. You can add a directive by providing a name (without `@@`) and the
-function to call.
-
-Note that in Elisp, you can use the function `pandoc-get` to access the various
-pandoc options for the current buffer. For example, `(pandoc-get 'write)` gives
-the output format. This could be usefull for making the output of an
-`@@`-directive dependent on the output format.
-
-Passing more than one argument to an `@@`-directive is not supported. However,
-if you really want to, you could use `split-string` to split the argument of the
-`@@`-directive and "fake" multiple arguments that way.
-
 The directives are processed in the order in which they appear in the
 customization buffer (and hence in the variable `pandoc-directives`). So in the
 default case, `\@@include` directives are processed before `\@@lisp` directives,
@@ -379,6 +361,40 @@ buffer, processing of directives is resumed from the *start* of the inserted
 text. That means that if an `\@@include` directive produces another `\@@include`
 directive, the newly inserted `\@@include` directive gets processed as well.
 
+
+## Defining @@-directives ##
+
+Defining `@@`-directives yourself is done in two steps. First, you need to
+define the function that the directive will call. This function may take at most
+one argument and should return a string, which is inserted into the buffer. The
+second step is to go to the customization buffer with `M-x customize-group`
+`RET` `pandoc` `RET`. One of the options there is `pandoc-directives`. This
+variable contains a list of directives and the functions that they are linked
+with. You can add a directive by providing a name (without `@@`) and the
+function to call. Note that directive names may only consists of letters (`a-z`,
+`A-Z`) or numbers (`0-9`). Other characters are not allowed. Directive names are
+case sensitive, so `@@Date` is not the same as `\@@date`.
+
+Note that in Elisp, you can use the function `pandoc-get` to access the various
+pandoc options for the current buffer. For example, `(pandoc-get 'write)` gives
+the output format. This could be usefull for making the output of an
+`@@`-directive dependent on the output format.
+
+Passing more than one argument to an `@@`-directive is not supported. However,
+if you really want to, you could use `split-string` to split the argument of the
+`@@`-directive and "fake" multiple arguments that way.
+
+A final note: the function that processes the `@@`-directives is called
+`pandoc-process-directives` and can be called interactively. This may be useful
+if a directive is not producing the output that you expect. By running
+`pandoc-process-directives` interactively, you can see what exactly your
+directives produce before the resulting text is sent to pandoc. The changes can
+of course be undone with `M-x undo` (usually bound to `C-/`), or do your test in
+the `*scratch*` buffer.
+
+
+## Directive hooks ##
+
 There is another customizable variable related to `@@`-directives:
 `pandoc-directives-hook`. This is a list of functions that are executed *before*
 the directives are processed. These functions are not supposed to change
@@ -389,15 +405,6 @@ As an example, for my own work, I have defined a directive `\@@ex` which
 increments a counter and then inserts it in the text, surrounded by parentheses.
 This counter needs to be set to 0 every time the document is processed, which is
 done in a function that is called through `pandoc-directives-hook`.
-
-Note: the function that processes the `@@`-directives is called
-`pandoc-process-directives` and can be called interactively. This may be useful
-if a directive is not producing the output that you expect. By running
-`pandoc-process-directives` interactively, you can see what exactly your
-directives produce before the resulting text is sent to pandoc. (The changes can
-of course be undone with `M-x undo` (usually bound to `C-/`).
-
-
 
 
 # Using The Keyboard #
