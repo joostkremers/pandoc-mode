@@ -112,7 +112,8 @@ list, not if it appears higher on the list."
     include-before-body include-after-body
     include-in-header   custom-header
     title-prefix        template
-    reference-odt)
+    reference-odt       xetex
+    id-prefix)
   "List of switches accepted by the pandoc binary. Switches that
   need special treatment (--read, --write and --output) are not
   in this list.")
@@ -129,7 +130,8 @@ list, not if it appears higher on the list."
     ("Smart" . smart)
     ("Standalone" . standalone)
     ("Strict" . strict)
-    ("Table of Contents" . table-of-contents)))
+    ("Table of Contents" . table-of-contents)
+    ("XeTeX" . xetex)))
 
 (defvar pandoc-options
   '((read)                         ; see pandoc-input-formats
@@ -155,7 +157,8 @@ list, not if it appears higher on the list."
     (latexmathml)                  ; a string or NIL
     (jsmath)                       ; a string or NIL
     (mimetex)                      ; a string, NIL or T
-
+    (id-prefix)                    ; a string or NIL
+    
     (email-obfuscation)            ; nil (="none"), "javascript" or "references"
 
     (gladtex)                      ; NIL, T
@@ -170,7 +173,8 @@ list, not if it appears higher on the list."
     (standalone)                   ; NIL, T
     (strict)                       ; NIL, T
     (table-of-contents)            ; NIL, T
-
+    (xetex)                        ; NIL, T
+    
     ;; this is not actually a pandoc option:
     (output-dir))                  ; a string; NIL means use input directory.
   "Pandoc option alist.")
@@ -211,6 +215,7 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/oM" 'pandoc-set-mimetex)
     (define-key map "\C-c/oe" 'pandoc-set-email-obfuscation)
     (define-key map "\C-c/oD" 'pandoc-set-output-dir)
+    (define-key map "\C-c/oi" 'pandoc-set-id-prefix)
     (define-key map "\C-c/t" 'pandoc-toggle-interactive)
     map)
   "Keymap for pandoc-mode.")
@@ -748,6 +753,16 @@ is unset."
   (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
 					"unset")))
 
+(defun pandoc-set-id-prefix (prefix)
+  "Set the id prefix.
+If called with the prefix argument C-u - (or M--), the id
+prefix is unset."
+  (interactive "P")
+  (pandoc-set 'id-prefix
+	      (if (eq prefix '-)
+		  nil
+		(read-string "ID prefix: "))))
+
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the prefix argument C-u - (or M--), the output
@@ -891,6 +906,11 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc-get 'title-prefix))]
       ["Set Title Prefix..." pandoc-set-title-prefix :active t
       :style radio :selected (pandoc-get 'title-prefix)])
+     ("ID Prefix"
+      ["No ID Prefix" (pandoc-set 'id-prefix nil) :active t
+       :style radio :selected (null (pandoc-get 'id-prefix))]
+      ["Set ID Prefix..." pandoc-set-id-prefix :active t
+      :style radio :selected (pandoc-get 'id-prefix)])
      ("Tab Stops"
       ["Default Tab Stops" (pandoc-set 'tab-stop nil) :active t
        :style radio :selected (null (pandoc-get 'tab-stop))]

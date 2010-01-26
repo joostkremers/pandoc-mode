@@ -137,10 +137,11 @@ Under "Options", you can set various other options. Some of these require user
 input, others can only be toggled on or off. (For details on what these options
 do, you can consult the pandoc documentation, they will not be discussed here.)
 Those that require user input can also be set through the keyboard with `C-c /
-o` plus an additional key: `T` for title prefix, `t` for tab stop, `m` for
-LaTeXMathML, `j` for jsMath, `M` for MimeTeX and `e` for email obfuscation. They
-can be unset through the keyboard either by providing an empty string or by
-calling the function with the prefix argument `C-u -` (or `M--`).
+o` plus an additional key: `T` for title prefix, `i` for the HTML ID prefix, `t`
+for tab stop, `m` for LaTeXMathML, `j` for jsMath, `M` for MimeTeX and `e` for
+email obfuscation. They can be unset through the keyboard either by providing an
+empty string or by calling the function with the prefix argument `C-u -` (or
+`M--`).
 
 Options that can only be toggled can be set or unset through the keyboard with
 the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
