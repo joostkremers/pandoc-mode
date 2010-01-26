@@ -113,7 +113,7 @@ list, not if it appears higher on the list."
     include-in-header   custom-header
     title-prefix        template
     reference-odt       xetex
-    id-prefix)
+    id-prefix           indented-code-classes)
   "List of switches accepted by the pandoc binary. Switches that
   need special treatment (--read, --write and --output) are not
   in this list.")
@@ -158,6 +158,7 @@ list, not if it appears higher on the list."
     (jsmath)                       ; a string or NIL
     (mimetex)                      ; a string, NIL or T
     (id-prefix)                    ; a string or NIL
+    (indented-code-classes)        ; a string or NIL
     
     (email-obfuscation)            ; nil (="none"), "javascript" or "references"
 
@@ -216,6 +217,7 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/oe" 'pandoc-set-email-obfuscation)
     (define-key map "\C-c/oD" 'pandoc-set-output-dir)
     (define-key map "\C-c/oi" 'pandoc-set-id-prefix)
+    (define-key map "\C-c/oI" 'pandoc-set-indented-code-classes)
     (define-key map "\C-c/t" 'pandoc-toggle-interactive)
     map)
   "Keymap for pandoc-mode.")
@@ -763,6 +765,16 @@ prefix is unset."
 		  nil
 		(read-string "ID prefix: "))))
 
+(defun pandoc-set-indented-code-classes (prefix)
+  "Set the option `Indented Code Classes'.
+If called with the prefix argument C-u - (or M--), the indented
+code classes option is unset."
+  (interactive "P")
+  (pandoc-set 'indented-code-classes
+	      (if (eq prefix '-)
+		  nil
+		(read-string "Indented Code Classes: "))))
+
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the prefix argument C-u - (or M--), the output
@@ -911,6 +923,11 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc-get 'id-prefix))]
       ["Set ID Prefix..." pandoc-set-id-prefix :active t
       :style radio :selected (pandoc-get 'id-prefix)])
+     ("Indented Code Classes"
+      ["No Indented Code Classes" (pandoc-set 'indented-code-classes nil) :active t
+       :style radio :selected (null (pandoc-get 'indented-code-classes))]
+      ["Set Indented Code Classes..." pandoc-set-indented-code-classes :active t
+      :style radio :selected (pandoc-get 'indented-code-classes)])
      ("Tab Stops"
       ["Default Tab Stops" (pandoc-set 'tab-stop nil) :active t
        :style radio :selected (null (pandoc-get 'tab-stop))]
