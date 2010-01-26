@@ -598,8 +598,8 @@ format)."
 
 (defun pandoc-set-template (prefix)
   "Set the template file.
-If called with the prefix argument C-u - (or M--), the include
-before body file is unset."
+If called with the prefix argument C-u - (or M--), the template
+file is unset."
   (interactive "P")
   (pandoc-set 'template
 	      (if (eq prefix '-)
