@@ -111,7 +111,8 @@ list, not if it appears higher on the list."
     css                 email-obfuscation
     include-before-body include-after-body
     include-in-header   custom-header
-    title-prefix        template)
+    title-prefix        template
+    reference-odt)
   "List of switches accepted by the pandoc binary. Switches that
   need special treatment (--read, --write and --output) are not
   in this list.")
@@ -147,6 +148,7 @@ list, not if it appears higher on the list."
     (include-after-body)           ; a file or NIL
     (custom-header)                ; a file or NIL
     (template)                     ; a file or NIL
+    (reference-odt)                ; a file or NIL
     
     (tab-stop)                     ; an integer or NIL
     (title-prefix)                 ; a string or NIL
@@ -195,6 +197,7 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/v" 'pandoc-view-output)
     (define-key map "\C-c/V" 'pandoc-view-settings)
     (define-key map "\C-c/fT" 'pandoc-set-template)
+    (define-key map "\C-c/fO" 'pandoc-set-reference-odt)
     (define-key map "\C-c/fo" 'pandoc-set-output)
     (define-key map "\C-c/fc" 'pandoc-set-css)
     (define-key map "\C-c/fH" 'pandoc-set-include-in-header)
@@ -603,6 +606,16 @@ before body file is unset."
 		  nil
 		(expand-file-name (read-file-name "Template file: ")))))
 
+(defun pandoc-set-reference-odt (prefix)
+  "Set the reference ODT file.
+If called with the prefix argument C-u - (or M--), the reference
+ODT file is unset."
+  (interactive "P")
+  (pandoc-set 'reference-odt
+	      (if (eq prefix '-)
+		  nil
+		(expand-file-name (read-file-name "Reference ODT file: ")))))
+
 (defun pandoc-set-output (prefix)
   "Set the output file.
 If called with the prefix argument C-u - (or M--), the output
@@ -837,10 +850,15 @@ set. Without any prefix argument, the option is toggled."
       ["Set Output Directory" pandoc-set-output-dir :active t
        :style radio :selected (pandoc-get 'output-dir)])
      ("Template File"
-      ["No Template" (pandoc-set 'template nil) :active t
+      ["No Template File" (pandoc-set 'template nil) :active t
        :style radio :selected (null (pandoc-get 'template))]
       ["Set Template File..." pandoc-set-template :active t
       :style radio :selected (pandoc-get 'template)])
+     ("Reference ODT File"
+      ["No Reference ODT File" (pandoc-set 'reference-odt nil) :active t
+       :style radio :selected (null (pandoc-get 'reference-odt))]
+      ["Set Reference ODT File..." pandoc-set-reference-odt :active t
+      :style radio :selected (pandoc-get 'reference-odt)])
      ("CSS Style Sheet"
       ["No CSS Style Sheet" (pandoc-set 'css nil) :active t
        :style radio :selected (null (pandoc-get 'css))]
