@@ -113,8 +113,8 @@ list, not if it appears higher on the list."
     include-in-header   custom-header
     title-prefix)
   "List of switches accepted by the pandoc binary. Switches that
-  need special treatment (--read, --write and --output) are not
-  in this list.")
+  need special treatment (--read, --write, --output and
+  --variable) are not in this list.")
 
 (defvar pandoc-binary-switches
   '(("gladTeX" . gladtex)
@@ -152,6 +152,8 @@ list, not if it appears higher on the list."
     (latexmathml)                  ; a string or NIL
     (jsmath)                       ; a string or NIL
     (mimetex)                      ; a string, NIL or T
+
+    (variable)                     ; an alist or NIL
 
     (email-obfuscation)            ; nil (="none"), "javascript" or "references"
 
@@ -234,15 +236,33 @@ This is for use in major mode hooks."
     (turn-on-pandoc)))
 
 (defun pandoc-set (option value)
-  "Sets the local value of OPTION to VALUE."
-  (when (assq option pandoc-local-options)
-    (setcdr (assq option pandoc-local-options) value)
+  "Sets the local value of OPTION to VALUE.
+If OPTION is 'variable, VALUE should be a cons of the
+form (variable-name . value), which is then added to the
+variables already stored."
+  (when (assq option pandoc-local-options) ; check if the option is licit
+    (let ((new-value
+	   (if (eq option 'variable)
+	       ;; new variables are added to the list; existing variables are overwritten.
+	       (cons value (assq-delete-all (car value) (pandoc-get 'variable)))
+	     ;; all other options simply override the existing value.
+	     value)))
+      (setcdr (assq option pandoc-local-options) new-value))
     (setq pandoc-settings-modified-flag t)))
 
 (defun pandoc-set* (option value)
-  "Sets the project value of OPTION to VALUE."
-  (when (assq option pandoc-project-options)
-    (setcdr (assq option pandoc-project-options) value)
+  "Sets the project value of OPTION to VALUE.
+If OPTION is 'variable, VALUE should be a cons of the
+form (variable-name . value), which is then added to the
+variables already stored."
+  (when (assq option pandoc-project-options) ; check if the option is licit
+    (let ((new-value
+	   (if (eq option 'variable)
+	       ;; new variables are added to the list; existing variables are overwritten.
+	       (cons value (assq-delete-all (car value) (pandoc-get* 'variable)))
+	     ;; all other options simply override the existing value.
+	     value)))
+      (setcdr (assq option pandoc-project-options) new-value))
     (setq pandoc-settings-modified-flag t)))
 
 (defun pandoc-get (option &optional buffer)
