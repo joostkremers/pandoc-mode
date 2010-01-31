@@ -239,12 +239,17 @@ This is for use in major mode hooks."
   "Sets the local value of OPTION to VALUE.
 If OPTION is 'variable, VALUE should be a cons of the
 form (variable-name . value), which is then added to the
-variables already stored."
+variables already stored, or just (variable-name), in which case
+the named variable is deleted from the list."
   (when (assq option pandoc-local-options) ; check if the option is licit
     (let ((new-value
 	   (if (eq option 'variable)
-	       ;; new variables are added to the list; existing variables are overwritten.
-	       (cons value (assq-delete-all (car value) (pandoc-get 'variable)))
+	       ;; new variables are added to the list; existing variables are
+	       ;; overwritten or deleted.
+	       (append (assq-delete-all (car value) (pandoc-get 'variable))
+		       (if (cdr value)
+			   (list value)
+			 nil))
 	     ;; all other options simply override the existing value.
 	     value)))
       (setcdr (assq option pandoc-local-options) new-value))
@@ -254,12 +259,17 @@ variables already stored."
   "Sets the project value of OPTION to VALUE.
 If OPTION is 'variable, VALUE should be a cons of the
 form (variable-name . value), which is then added to the
-variables already stored."
+variables already stored, or just (variable-name), in which case
+the named variable is deleted from the list."
   (when (assq option pandoc-project-options) ; check if the option is licit
     (let ((new-value
 	   (if (eq option 'variable)
-	       ;; new variables are added to the list; existing variables are overwritten.
-	       (cons value (assq-delete-all (car value) (pandoc-get* 'variable)))
+	       ;; new variables are added to the list; existing variables are
+	       ;; overwritten or deleted.
+	       (append (assq-delete-all (car value) (pandoc-get* 'variable))
+		       (if (cdr value)
+			   (list value)
+			 nil))
 	     ;; all other options simply override the existing value.
 	     value)))
       (setcdr (assq option pandoc-project-options) new-value))
