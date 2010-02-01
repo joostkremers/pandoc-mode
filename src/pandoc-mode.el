@@ -30,9 +30,14 @@
 (require 'easymenu)
 
 (defmacro nor (&rest args)
-  "Returns T if none of its arguments are true."
+  "Return T if none of its arguments are true."
   `(not (or ,@args)))
 
+(defun nonempty (string)
+  "Return STRING, unless it is \"\", in which case return NIL."
+  (when (not (string= string ""))
+    string))
+  
 (defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'Wp)
 
 (defcustom pandoc-binary "/usr/bin/pandoc"
