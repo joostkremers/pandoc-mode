@@ -698,9 +698,8 @@ If called with the prefix argument C-u - (or M--), no jsMath will be used."
 (defun pandoc-set-mimetex (prefix)
   "Render TeX math using the MimeTeX CGI script.
 If called with the prefix argument C-u - (or M--), MimeTeX is not
-used. file is unset. If called with any other prefix argument,
-the MimeTeX CGI script will assumed to be in
-/cgi-bin/mimetex.cgi."
+used. If called with any other prefix argument, the MimeTeX CGI
+script will assumed to be in /cgi-bin/mimetex.cgi."
   (interactive "P")
   (pandoc-set 'mimetex
 	      (cond
