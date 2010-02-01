@@ -640,6 +640,23 @@ output format."
 	       ((null prefix) (file-name-nondirectory (expand-file-name (read-file-name "Output file: "))))
 	       (t t))))
 
+(defun pandoc-set-template-variable (prefix)
+  "Add/change/remove a template variable.
+The user is asked for a variable name. If the function is called
+with a prefix value, this variable is removed from the list of
+variables, otherwise the user is asked for a value."
+  (interactive "P")
+  (let ((var (nonempty (completing-read "Variable name: " (pandoc-get 'variable)))))
+    (when var
+      (setq var (intern var))
+      (let ((value (if (eq prefix '-)
+		       nil
+		     (read-string "Value: " nil nil (cdr (assq var (pandoc-get 'variable)))))))
+	(pandoc-set 'variable (cons var value))
+	(message "Template variable %s %s." var (if value
+						    (format "added with value `%s'" value)
+						  "removed"))))))
+
 (defun pandoc-set-css (prefix)
   "Set the CSS style sheet.
 If called with the prefix argument C-u - (or M--), the CSS style
