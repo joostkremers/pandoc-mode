@@ -526,7 +526,12 @@ asking."
 Options are written out in the format <option>::<value>."
   (mapc #'(lambda (option)
 	    (when (cdr option)
-	      (insert (format "%s::%s\n" (car option) (cdr option)))))
+	      (cond
+	       ((eq (car option) 'variable)
+		(mapc #'(lambda (variable)
+			  (insert (format "variable::%s:%s\n" (car variable) (cdr variable))))
+		      (cdr option)))
+	       (t (insert (format "%s::%s\n" (car option) (cdr option)))))))
 	options))
 
 (defun pandoc-undo-file-settings ()
