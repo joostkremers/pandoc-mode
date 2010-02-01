@@ -342,6 +342,9 @@ not support output to stdout for odt."
 			      (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
 			    (pandoc-get 'output))))
 		 (t nil)))
+	(variables (mapcar #'(lambda (variable)
+			       (format "--variable=%s:%s" (car variable) (cdr variable)))
+			   (pandoc-get 'variable)))
 	(other-options (mapcar #'(lambda (switch)
 				   (let ((value (pandoc-get switch)))
 				     (cond
@@ -349,7 +352,7 @@ not support output to stdout for odt."
 				      ((stringp value) (format "--%s=%s" switch value))
 				      (t nil))))
 			       pandoc-switches)))
-    (delq nil (append (list read write output) other-options))))
+    (delq nil (append (list read write output) variables other-options))))
 
 (defun pandoc-process-directives ()
   "Processes pandoc-mode @@-directives in the current buffer."
