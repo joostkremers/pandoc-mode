@@ -585,20 +585,26 @@ file is found for FILE, otherwise non-NIL."
   "Read the options in SETTINGS-FILE.
 Returns an alist with the options and their values."
   (when (file-readable-p settings-file)
-    (let (options)
-      (with-temp-buffer
-	(insert-file-contents settings-file)
-	(goto-char (point-min))
-	(let (options)
-	  (while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
-	    (let ((option (match-string 1))
-		  (value (match-string 2)))
-	      (add-to-list 'options (cons (intern option) (cond
-							   ((string-match "^[0-9]$" value) (string-to-number value))
-							   ((string= "t" value) t)
-							   ((string= "nil" value) nil)
-							   (t value))))))
-	  options)))))
+    (with-temp-buffer
+      (insert-file-contents settings-file)
+      (goto-char (point-min))
+      (let (options
+	    variable-list)	     ; the template variables are collected here
+	(while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
+	  (let ((option (intern (match-string 1)))
+		(value (match-string 2)))
+	    (cond
+	     ((eq option 'variable)
+	      (string-match "^\\(.*?\\):\\(.*?\\)$" value)
+	      (add-to-list 'variable-list (cons (match-string 1 value) (match-string 2 value))))
+	     (t (add-to-list 'options (cons option (cond
+						    ((string-match "^[0-9]$" value) (string-to-number value))
+						    ((string= "t" value) t)
+						    ((string= "nil" value) nil)
+						    (t value))))))))
+	(when variable-list
+	  (add-to-list 'options (cons 'variable variable-list)))
+	options))))
 
 (defun pandoc-view-output ()
   "Displays the *Pandoc output* buffer."
