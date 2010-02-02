@@ -124,24 +124,20 @@ set through the menu, or through the keyboard, with the key sequence `C-c / f`
 plus an additional letter, `T` for the template file, `O` for the reference ODT
 file, `c` for the CSS style sheet, `H` for the additional header, `B` for the
 file to be included before the body, `A` for the file to be included after the
-body, and `C` for the custom header file. (These letters correspond to the
-relevant short switches accepted by the pandoc binary.) If you type these
-sequences with the prefix argument `C-u -` (or `M--`, which is equivalent), they
-are unset.
+body, and `C` for the custom header file. If you type these sequences with the
+prefix argument `C-u -` (or `M--`, which is equivalent), they are unset.
 
 The "Files" submenu also contains options for the output file and output
 directory. These are treated somewhat differently from the other files, see the
 section ['Setting an output file'](#setting-an-output-file) for details.
 
 Under "Options", you can set various other options. Some of these require user
-input, others can only be toggled on or off. (For details on what these options
-do, you can consult the pandoc documentation, they will not be discussed here.)
-Those that require user input can also be set through the keyboard with `C-c /
-o` plus an additional key: `T` for title prefix, `i` for the HTML ID prefix, `I`
-for indented code classes, `t` for tab stop, `m` for LaTeXMathML, `j` for
-jsMath, `M` for MimeTeX and `e` for email obfuscation. They can be unset through
-the keyboard either by providing an empty string or by calling the function with
-the prefix argument `C-u -` (or `M--`).
+input, others can only be toggled on or off. Those that require user input can
+also be set through the keyboard with `C-c / o` plus an additional key: `T` for
+title prefix, `i` for the HTML ID prefix, `I` for indented code classes, `t` for
+tab stop, `m` for LaTeXMathML, `j` for jsMath, `M` for MimeTeX and `e` for email
+obfuscation. They can be unset through the keyboard either by providing an empty
+string or by calling the function with the prefix argument `C-u -` (or `M--`).
 
 Options that can only be toggled can be set or unset through the keyboard with
 the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
@@ -154,6 +150,36 @@ of the filename you specify as CSS style sheet. That is, the `.css` file must be
 in the same directory as the HTML file, otherwise it won't be found. (This is a
 limitation that will be eliminated in a future version of `pandoc-mode`.)
 
+Note that you can get a list of all the settings that you have defined by typing
+`C-c / S`. This displays all settings in the `*Pandoc output*` buffer in the
+same manner in which they appear in a settings file, i.e., with the following
+format:
+
+    <option>::<value>
+
+
+## Template variables ##
+
+As of Pandoc v1.4, the custom header files are deprecated and replaced by
+so-called template files (see the Pandoc documentation for details). A template
+file can be set through the menu or with `C-c / f T`, as discussed in the
+previous section. When you create a custom template file, you may also specify
+your own variables. `pandoc-mode` allows you to set or change template variables
+through the menu (under the Options submenu) or the keyboard, with `C-c / v`.
+Emacs will ask you for the name of a variable and a value for it. If you provide
+a name that already exists (TAB completion works), the new value replaces the
+old one.
+
+Deleting a template variable is done with the corresponding menu item or by
+calling `C-c / v` with the prefix argument `C-u -` (or `M--`). Emacs will ask
+you for the variable name (TAB completion works here, too) and removes it from
+the list.
+
+Template variables are saved in the settings file and can also be viewed with
+`C-c / S`. They appear in the following format:
+
+    variable::<name>:<value>
+
 
 ## Running pandoc ##
 
@@ -162,7 +188,7 @@ which, as the name suggests, runs pandoc on the document, passing all options
 you have set. By default, pandoc sends the output to stdout, which is redirected
 to the buffer `*Pandoc output*`. (Except when the output format is "odt", in
 which case output is always sent to a file.) The output buffer is not normally
-shown, but you can make it visible through the menu or by typing `C-c / v`.
+shown, but you can make it visible through the menu or by typing `C-c / V`.
 Error messages from pandoc are also displayed in this buffer.
 
 Note that when you run pandoc, pandoc doesn't read the file on disk, rather,
@@ -177,7 +203,7 @@ the current buffer. If there is no settings file, pandoc will be called with
 just the output format and no other options.
 
 Note that specifying an output format this way does not change the output format
-or any of the settings is the buffer, it just changes the output profile used
+or any of the settings in the buffer, it just changes the output profile used
 for calling pandoc. This can be useful if you use different output formats but
 don't want to keep switching between profiles.
 
@@ -429,25 +455,30 @@ Key               Description
 `C-c / p`         Run markdown2pdf.
 `C-c / r`         Run pandoc.
 `C-c / s`         Save a settings file.
-`C-c / P s`       Save a project file.
-`C-c / P u`       Undo file settings.
+`C-c / S`         View the current settings file.
 `C-c / t`         Toggle a binary option.
-`C-c / v`         View the output buffer.
-`C-c / V`         View the current settings file.
+`C-c / v`         Set/change/remove a template variable.
+`C-c / V`         View the output buffer.
 `C-c / w`         Change the output format.
-`C-c / o A`       Include after body.
-`C-c / o B`       Include before body.
-`C-c / o c`       Set custom CSS file.
-`C-c / o C`       Set custom header file.
-`C-c / o D`       Set the output directory.
+`C-c / f A`       Include after body.
+`C-c / f B`       Include before body.
+`C-c / f c`       Set custom CSS file.
+`C-c / f C`       Set custom header file.
+`C-c / f D`       Set the output directory.
+`C-c / f O`       Set the reference ODT file.
+`C-c / f T`       Set the template file.
 `C-c / o e`       Set email obfuscation.
 `C-c / o H`       Include after the header.
+`C-c / o i`       Set the ID prefix.
+`C-c / o I`       Set the indented code classes.
 `C-c / o j`       Set jsMath URL.
 `C-c / o m`       Set LaTeXMathML URL.
 `C-c / o M`       Set MimeTeX URL.
 `C-c / o o`       Set output file.
 `C-c / o t`       Set tab stop.
 `C-c / o T`       Set the title prefix.
+`C-c / P s`       Save a project file.
+`C-c / P u`       Undo file settings.
 
 
 
