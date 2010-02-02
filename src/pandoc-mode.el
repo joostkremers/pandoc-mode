@@ -116,7 +116,9 @@ list, not if it appears higher on the list."
     css                 email-obfuscation
     include-before-body include-after-body
     include-in-header   custom-header
-    title-prefix)
+    title-prefix        template
+    reference-odt       xetex
+    id-prefix           indented-code-classes)
   "List of switches accepted by the pandoc binary. Switches that
   need special treatment (--read, --write, --output and
   --variable) are not in this list.")
@@ -133,7 +135,8 @@ list, not if it appears higher on the list."
     ("Smart" . smart)
     ("Standalone" . standalone)
     ("Strict" . strict)
-    ("Table of Contents" . table-of-contents)))
+    ("Table of Contents" . table-of-contents)
+    ("XeTeX" . xetex)))
 
 (defvar pandoc-options
   '((read)                         ; see pandoc-input-formats
@@ -151,12 +154,16 @@ list, not if it appears higher on the list."
     (include-before-body)          ; a file or NIL
     (include-after-body)           ; a file or NIL
     (custom-header)                ; a file or NIL
-
+    (template)                     ; a file or NIL
+    (reference-odt)                ; a file or NIL
+    
     (tab-stop)                     ; an integer or NIL
     (title-prefix)                 ; a string or NIL
     (latexmathml)                  ; a string or NIL
     (jsmath)                       ; a string or NIL
     (mimetex)                      ; a string, NIL or T
+    (id-prefix)                    ; a string or NIL
+    (indented-code-classes)        ; a string or NIL
 
     (variable)                     ; an alist or NIL
 
@@ -174,7 +181,8 @@ list, not if it appears higher on the list."
     (standalone)                   ; NIL, T
     (strict)                       ; NIL, T
     (table-of-contents)            ; NIL, T
-
+    (xetex)                        ; NIL, T
+    
     ;; this is not actually a pandoc option:
     (output-dir))                  ; a string; NIL means use input directory.
   "Pandoc option alist.")
@@ -201,12 +209,14 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/v" 'pandoc-set-template-variable)
     (define-key map "\C-c/V" 'pandoc-view-output)
     (define-key map "\C-c/S" 'pandoc-view-settings)
-    (define-key map "\C-c/oo" 'pandoc-set-output)
-    (define-key map "\C-c/oc" 'pandoc-set-css)
-    (define-key map "\C-c/oH" 'pandoc-set-include-in-header)
-    (define-key map "\C-c/oB" 'pandoc-set-include-before-body)
-    (define-key map "\C-c/oA" 'pandoc-set-include-after-body)
-    (define-key map "\C-c/oC" 'pandoc-set-custom-header)
+    (define-key map "\C-c/fT" 'pandoc-set-template)
+    (define-key map "\C-c/fO" 'pandoc-set-reference-odt)
+    (define-key map "\C-c/fo" 'pandoc-set-output)
+    (define-key map "\C-c/fc" 'pandoc-set-css)
+    (define-key map "\C-c/fH" 'pandoc-set-include-in-header)
+    (define-key map "\C-c/fB" 'pandoc-set-include-before-body)
+    (define-key map "\C-c/fA" 'pandoc-set-include-after-body)
+    (define-key map "\C-c/fC" 'pandoc-set-custom-header)
     (define-key map "\C-c/oT" 'pandoc-set-title-prefix)
     (define-key map "\C-c/ot" 'pandoc-set-tab-stop)
     (define-key map "\C-c/om" 'pandoc-set-latexmathml)
@@ -214,6 +224,8 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/oM" 'pandoc-set-mimetex)
     (define-key map "\C-c/oe" 'pandoc-set-email-obfuscation)
     (define-key map "\C-c/oD" 'pandoc-set-output-dir)
+    (define-key map "\C-c/oi" 'pandoc-set-id-prefix)
+    (define-key map "\C-c/oI" 'pandoc-set-indented-code-classes)
     (define-key map "\C-c/t" 'pandoc-toggle-interactive)
     map)
   "Keymap for pandoc-mode.")
@@ -641,6 +653,26 @@ format)."
     (pandoc-set 'write format)
     (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))))
 
+(defun pandoc-set-template (prefix)
+  "Set the template file.
+If called with the prefix argument C-u - (or M--), the template
+file is unset."
+  (interactive "P")
+  (pandoc-set 'template
+	      (if (eq prefix '-)
+		  nil
+		(expand-file-name (read-file-name "Template file: ")))))
+
+(defun pandoc-set-reference-odt (prefix)
+  "Set the reference ODT file.
+If called with the prefix argument C-u - (or M--), the reference
+ODT file is unset."
+  (interactive "P")
+  (pandoc-set 'reference-odt
+	      (if (eq prefix '-)
+		  nil
+		(expand-file-name (read-file-name "Reference ODT file: ")))))
+
 (defun pandoc-set-output (prefix)
   "Set the output file.
 If called with the prefix argument C-u - (or M--), the output
@@ -789,6 +821,26 @@ is unset."
   (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
 					"unset")))
 
+(defun pandoc-set-id-prefix (prefix)
+  "Set the id prefix.
+If called with the prefix argument C-u - (or M--), the id
+prefix is unset."
+  (interactive "P")
+  (pandoc-set 'id-prefix
+	      (if (eq prefix '-)
+		  nil
+		(read-string "ID prefix: "))))
+
+(defun pandoc-set-indented-code-classes (prefix)
+  "Set the option `Indented Code Classes'.
+If called with the prefix argument C-u - (or M--), the indented
+code classes option is unset."
+  (interactive "P")
+  (pandoc-set 'indented-code-classes
+	      (if (eq prefix '-)
+		  nil
+		(read-string "Indented Code Classes: "))))
+
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the prefix argument C-u - (or M--), the output
@@ -890,6 +942,16 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc-get 'output-dir))]
       ["Set Output Directory" pandoc-set-output-dir :active t
        :style radio :selected (pandoc-get 'output-dir)])
+     ("Template File"
+      ["No Template File" (pandoc-set 'template nil) :active t
+       :style radio :selected (null (pandoc-get 'template))]
+      ["Set Template File..." pandoc-set-template :active t
+      :style radio :selected (pandoc-get 'template)])
+     ("Reference ODT File"
+      ["No Reference ODT File" (pandoc-set 'reference-odt nil) :active t
+       :style radio :selected (null (pandoc-get 'reference-odt))]
+      ["Set Reference ODT File..." pandoc-set-reference-odt :active t
+      :style radio :selected (pandoc-get 'reference-odt)])
      ("CSS Style Sheet"
       ["No CSS Style Sheet" (pandoc-set 'css nil) :active t
        :style radio :selected (null (pandoc-get 'css))]
@@ -922,6 +984,16 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc-get 'title-prefix))]
       ["Set Title Prefix..." pandoc-set-title-prefix :active t
       :style radio :selected (pandoc-get 'title-prefix)])
+     ("ID Prefix"
+      ["No ID Prefix" (pandoc-set 'id-prefix nil) :active t
+       :style radio :selected (null (pandoc-get 'id-prefix))]
+      ["Set ID Prefix..." pandoc-set-id-prefix :active t
+      :style radio :selected (pandoc-get 'id-prefix)])
+     ("Indented Code Classes"
+      ["No Indented Code Classes" (pandoc-set 'indented-code-classes nil) :active t
+       :style radio :selected (null (pandoc-get 'indented-code-classes))]
+      ["Set Indented Code Classes..." pandoc-set-indented-code-classes :active t
+      :style radio :selected (pandoc-get 'indented-code-classes)])
      ("Tab Stops"
       ["Default Tab Stops" (pandoc-set 'tab-stop nil) :active t
        :style radio :selected (null (pandoc-get 'tab-stop))]

@@ -30,11 +30,10 @@ Installing `pandoc-mode` is easy: just put `pandoc-mode.el` into Emacs' loadpath
 
     (load "pandoc-mode")
 
-This command simply loads
-`pandoc-mode`, it obviously does not activate it. In order to activate it in a
-buffer, you need to type `M-x pandoc-mode`. If you want to start `pandoc-mode`
-automatically when you load e.g., a markdown file, you can add a hook to your
-`~/.emacs`:
+This command simply loads `pandoc-mode`, it obviously does not activate it. In
+order to activate it in a buffer, you need to type `M-x pandoc-mode`. If you
+want to start `pandoc-mode` automatically when you load e.g., a markdown file,
+you can add a hook to your `~/.emacs`:
 
     (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 
@@ -118,15 +117,17 @@ where `<format>` is the current output format.
 
 The settings part of the menu contains two more submenus: "Files" and "Options".
 Under "Files", you can set various files that may be used by pandoc. These
-include the CSS style sheet, files to be included in the header or before/after
-the body, and a custom header file. All of these submenus have two options: no
-file, or specify a file. They can be set through the menu, or through the
-keyboard, with the key sequence `C-c / o` plus an additional letter, `c` for the
-CSS style sheet, `H` for the additional header, `B` for the file to be included
-before the body, `A` for the file to be included after the body, and `C` for the
-custom header file. (These letters correspond to the relevant short switches
-accepted by the pandoc binary.) If you type these sequences with the prefix
-argument `C-u -` (or `M--`, which is equivalent), they are unset.
+include the template file, the reference ODT file, the CSS style sheet, files to
+be included in the header or before/after the body, and a custom header file.
+All of these submenus have two options: no file, or specify a file. They can be
+set through the menu, or through the keyboard, with the key sequence `C-c / f`
+plus an additional letter, `T` for the template file, `O` for the reference ODT
+file, `c` for the CSS style sheet, `H` for the additional header, `B` for the
+file to be included before the body, `A` for the file to be included after the
+body, and `C` for the custom header file. (These letters correspond to the
+relevant short switches accepted by the pandoc binary.) If you type these
+sequences with the prefix argument `C-u -` (or `M--`, which is equivalent), they
+are unset.
 
 The "Files" submenu also contains options for the output file and output
 directory. These are treated somewhat differently from the other files, see the
@@ -136,10 +137,11 @@ Under "Options", you can set various other options. Some of these require user
 input, others can only be toggled on or off. (For details on what these options
 do, you can consult the pandoc documentation, they will not be discussed here.)
 Those that require user input can also be set through the keyboard with `C-c /
-o` plus an additional key: `T` for title prefix, `t` for tab stop, `m` for
-LaTeXMathML, `j` for jsMath, `M` for MimeTeX and `e` for email obfuscation. They
-can be unset through the keyboard either by providing an empty string or by
-calling the function with the prefix argument `C-u -` (or `M--`).
+o` plus an additional key: `T` for title prefix, `i` for the HTML ID prefix, `I`
+for indented code classes, `t` for tab stop, `m` for LaTeXMathML, `j` for
+jsMath, `M` for MimeTeX and `e` for email obfuscation. They can be unset through
+the keyboard either by providing an empty string or by calling the function with
+the prefix argument `C-u -` (or `M--`).
 
 Options that can only be toggled can be set or unset through the keyboard with
 the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
