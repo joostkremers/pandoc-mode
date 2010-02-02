@@ -415,7 +415,7 @@ not support output to stdout for odt."
 This function creates a temporary buffer and sets up the required
 local options. BUFFER is the buffer whose contents must be sent
 to pandoc. Its contents is copied into the temporary buffer, the
-@@-directives are processed, after which pandoc called.
+@@-directives are processed, after which pandoc is called.
 
 OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
 format is used.
