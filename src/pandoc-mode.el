@@ -1025,7 +1025,9 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "javascript")]
       ["References" (pandoc-set 'email-obfuscation "references") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "references")])
-     ["Set Template Variable" pandoc-set-template-variable :active t]
+     ("Template Variables"
+      ["Set/Change Template Variable" pandoc-set-template-variable :active t]
+      ["Unset Template Variable" (pandoc-set-template-variable '-) :active t])
      ,@(mapcar #'(lambda (option)
 		   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
 			   :active t
