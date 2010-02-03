@@ -123,6 +123,18 @@ list, not if it appears higher on the list."
   need special treatment (--read, --write, --output and
   --variable) are not in this list.")
 
+(defvar pandoc-markdown2pdf-switches
+  '(preserve-tabs         tab-stop
+    strict                parse-raw
+    xetex                 number-sections
+    table-of-contents     template
+    variable              include-in-header
+    include-before-body   include-after-body
+    custom-header)
+  "List of switches accepted by the markdown2pdf binary. Switches
+  Switches that need special treatment (--read, --write and
+  --variable) are not in this list.")
+
 (defvar pandoc-binary-switches
   '(("gladTeX" . gladtex)
     ("Incremental" . incremental)
@@ -363,7 +375,9 @@ not support output to stdout for odt."
 				      ((eq value t) (format "--%s" switch))
 				      ((stringp value) (format "--%s=%s" switch value))
 				      (t nil))))
-			       pandoc-switches)))
+			       (if pdf
+				   pandoc-markdown2pdf-switches
+				 pandoc-switches))))
     (delq nil (append (list read write output) variables other-options))))
 
 (defun pandoc-process-directives ()
