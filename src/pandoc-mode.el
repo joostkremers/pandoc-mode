@@ -144,24 +144,24 @@ list, not if it appears higher on the list."
     (write . "native")             ; see pandoc-output-formats
     (write-lhs)                    ; output is literal Haskell
 
-    (output)                       ; a string
-			           ; NIL means stdout (redirected to a temp buffer)
-			           ; T means create output filename on the basis of
-                                   ; the input file name and the output format.
+    (output)                       ; a filename, NIL or T
 
-    (css)                          ; a file or NIL
-    (include-in-header)            ; a file or NIL
-    (include-before-body)          ; a file or NIL
-    (include-after-body)           ; a file or NIL
-    (custom-header)                ; a file or NIL
-    (template)                     ; a file or NIL
-    (reference-odt)                ; a file or NIL
+    (css)                          ; a filename or NIL
+
+    (include-in-header)            ; a filepath or NIL
+    (include-before-body)          ; a filepath or NIL
+    (include-after-body)           ; a filepath or NIL
+    (custom-header)                ; a filepath or NIL
+    (template)                     ; a filepath or NIL
+    (reference-odt)                ; a filepath or NIL
     
     (tab-stop)                     ; an integer or NIL
+
+    (mimetex)                      ; a string, NIL or T
+
     (title-prefix)                 ; a string or NIL
     (latexmathml)                  ; a string or NIL
     (jsmath)                       ; a string or NIL
-    (mimetex)                      ; a string, NIL or T
     (id-prefix)                    ; a string or NIL
     (indented-code-classes)        ; a string or NIL
 
@@ -184,7 +184,7 @@ list, not if it appears higher on the list."
     (xetex)                        ; NIL, T
     
     ;; this is not actually a pandoc option:
-    (output-dir))                  ; a string; NIL means use input directory.
+    (output-dir))                  ; a directory path or NIL
   "Pandoc option alist.")
 
 (defvar pandoc-local-options nil "A buffer-local variable holding a file's pandoc options.")
