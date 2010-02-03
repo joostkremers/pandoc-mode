@@ -463,13 +463,18 @@ is used."
 
 (defun pandoc-run-markdown2pdf (prefix)
   "Run markdown2pdf on the current document.
-If there is a settings and/or project file for LaTeX output, the
-options in them are used. If called with a prefix argument,
-however, no check for the existence of LaTeX settings is made and
-the buffer's current settings are used."
+If the output format of the current buffer is set to \"latex\",
+the buffer's options are used. If called with a prefix argument,
+or if the current buffer's output format is not \"latex\", a
+LaTeX settings file is searched for and loaded when found. If no
+such settings file is found, all options are unset except for the
+input and output formats."
   (interactive "P")
   (pandoc-call-external (current-buffer)
-			(if prefix nil "latex")
+			(if (or prefix
+				(not (string= (pandoc-get 'write) "latex")))
+			    "latex"
+			  nil)
 			t))
 
 (defun pandoc-set-default-format ()
