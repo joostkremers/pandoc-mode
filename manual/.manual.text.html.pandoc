@@ -7,4 +7,4 @@ output::pandoc-mode-manual.html
 css::manual.css
 standalone::t
 table-of-contents::t
-output-dir::/home/joost/Work/Website/local/public_html/
+output-dir::~/src/pandoc-mode/website/
