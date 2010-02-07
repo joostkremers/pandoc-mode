@@ -4,7 +4,7 @@
 read::markdown
 write::latex
 output::pandoc-mode-manual.tex
-custom-header::/home/joost/src/pandoc-mode/manual/header.tex
+custom-header::~/src/pandoc-mode/manual/header.tex
 number-sections::t
 standalone::t
-output-dir::/home/joost/Work/Website/local/public_html/
+output-dir::~/src/pandoc-mode/website/
