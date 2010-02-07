@@ -37,7 +37,7 @@
   "Return STRING, unless it is \"\", in which case return NIL."
   (when (not (string= string ""))
     string))
-  
+
 (defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'Wp)
 
 (defcustom pandoc-binary "/usr/bin/pandoc"
@@ -135,6 +135,17 @@ list, not if it appears higher on the list."
   that need special treatment (--read, --write and --variable)
   are not in this list.")
 
+(defvar pandoc-filepath-switches
+  '(include-in-header
+    include-before-body
+    include-after-body
+    custom-header
+    template
+    reference-odt)
+  "List of switches that have a file path as value, which are
+  expanded before they are sent to pandoc. For relative paths,
+  the file's working directory is used as base directory.")
+
 (defvar pandoc-binary-switches
   '(("gladTeX" . gladtex)
     ("Incremental" . incremental)
@@ -166,7 +177,7 @@ list, not if it appears higher on the list."
     (custom-header)                ; a filepath or NIL
     (template)                     ; a filepath or NIL
     (reference-odt)                ; a filepath or NIL
-    
+
     (tab-stop)                     ; an integer or NIL
 
     (mimetex)                      ; a string, NIL or T
@@ -194,7 +205,7 @@ list, not if it appears higher on the list."
     (strict)                       ; NIL, T
     (table-of-contents)            ; NIL, T
     (xetex)                        ; NIL, T
-    
+
     ;; this is not actually a pandoc option:
     (output-dir))                  ; a directory path or NIL
   "Pandoc option alist.")
@@ -352,16 +363,16 @@ not support output to stdout for odt."
 			   (or pdf                                    ; (i) we're running markdown2pdf, or
 			       (string= (pandoc-get 'write) "odt")))) ; (ii) the output format is odt
 		  (format "--output=%s/%s%s"                          ; we create an output file name.
-			  (or (pandoc-get 'output-dir)
-			      (file-name-directory input-file))
+			  (expand-file-name (or (pandoc-get 'output-dir)
+						(file-name-directory input-file)))
 			  (file-name-sans-extension (file-name-nondirectory input-file))
 			  (if pdf
 			      ".pdf"
 			    (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
 		 ((stringp (pandoc-get 'output))                      ; if the user set an output file,
 		  (format "--output=%s/%s"                            ; we combine it with the output directory
-			  (or (pandoc-get 'output-dir)
-			      (file-name-directory input-file))
+			  (expand-file-name (or (pandoc-get 'output-dir)
+						(file-name-directory input-file)))
 			  (if pdf                                     ; and check if we're running markdown2pdf
 			      (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
 			    (pandoc-get 'output))))
@@ -371,6 +382,8 @@ not support output to stdout for odt."
 			   (pandoc-get 'variable)))
 	(other-options (mapcar #'(lambda (switch)
 				   (let ((value (pandoc-get switch)))
+				     (when (and value (memq switch pandoc-filepath-switches))
+				       (setq value (expand-file-name value)))
 				     (cond
 				      ((eq value t) (format "--%s" switch))
 				      ((stringp value) (format "--%s=%s" switch value))
@@ -685,7 +698,7 @@ file is unset."
   (pandoc-set 'template
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "Template file: ")))))
+		(read-file-name "Template file: "))))
 
 (defun pandoc-set-reference-odt (prefix)
   "Set the reference ODT file.
@@ -695,7 +708,7 @@ ODT file is unset."
   (pandoc-set 'reference-odt
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "Reference ODT file: ")))))
+		(read-file-name "Reference ODT file: "))))
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
@@ -707,7 +720,7 @@ output format."
   (pandoc-set 'output
 	      (cond
 	       ((eq prefix '-) nil)
-	       ((null prefix) (file-name-nondirectory (expand-file-name (read-file-name "Output file: "))))
+	       ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
 	       (t t))))
 
 (defun pandoc-set-template-variable (prefix)
@@ -745,7 +758,7 @@ header file is unset."
   (pandoc-set 'include-in-header
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "File to include in the header: ")))))
+		(read-file-name "File to include in the header: "))))
 
 (defun pandoc-set-include-before-body (prefix)
   "Set the file to be included before the body.
@@ -755,7 +768,7 @@ before body file is unset."
   (pandoc-set 'include-before-body
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "File to include before the body: ")))))
+		(read-file-name "File to include before the body: "))))
 
 (defun pandoc-set-include-after-body (prefix)
   "Set the file to be included after the body.
@@ -765,7 +778,7 @@ after body file is unset."
   (pandoc-set 'include-after-body
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "File to include after the body: ")))))
+		(read-file-name "File to include after the body: "))))
 
 (defun pandoc-set-custom-header (prefix)
   "Select the custom header file.
@@ -775,7 +788,7 @@ header file is unset."
   (pandoc-set 'custom-header
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-file-name "Select the custom header file: ")))))
+		(read-file-name "Select the custom header file: "))))
 
 (defun pandoc-set-title-prefix (prefix)
   "Set title prefix.
@@ -874,7 +887,7 @@ input file."
   (pandoc-set 'output-dir
 	      (if (eq prefix '-)
 		  nil
-		(expand-file-name (read-directory-name "Output directory: " nil nil t)))))
+		(read-directory-name "Output directory: " nil nil t))))
 
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
