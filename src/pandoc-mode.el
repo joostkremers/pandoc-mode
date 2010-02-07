@@ -132,8 +132,8 @@ list, not if it appears higher on the list."
     include-before-body   include-after-body
     custom-header)
   "List of switches accepted by the markdown2pdf binary. Switches
-  Switches that need special treatment (--read, --write and
-  --variable) are not in this list.")
+  that need special treatment (--read, --write and --variable)
+  are not in this list.")
 
 (defvar pandoc-binary-switches
   '(("gladTeX" . gladtex)
