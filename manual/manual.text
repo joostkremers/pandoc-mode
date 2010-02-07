@@ -131,6 +131,19 @@ The "Files" submenu also contains options for the output file and output
 directory. These are treated somewhat differently from the other files, see the
 section ['Setting an output file'](#setting-an-output-file) for details.
 
+When Emacs calls `pandoc`, it expands filenames, so that they are absolute and
+don't contain any abbreviations (such as ~ for one's home directory). This means
+you can have relative filenames in your settings, or indeed ~, which can be
+practicle if you move settings files to different locations or e.g. between
+computers with different OSes. (For example, Linux expands ~ to `/home/<user>`,
+while on OS X it becomes `/Users/<user>`.)
+
+The CSS style sheet is an exception to this: Emacs always cuts off the directory
+part of the filename you specify as CSS style sheet and doesn't expand it. The
+reason for this is that the CSS style sheet will normally be transferred along
+with the output file(s) to a server, where it will most likely be in a different
+directory than on the computer you're generating your .html-files on.
+
 Under "Options", you can set various other options. Some of these require user
 input, others can only be toggled on or off. Those that require user input can
 also be set through the keyboard with `C-c / o` plus an additional key: `T` for
@@ -144,11 +157,6 @@ the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
 completion works here and is case-insensitive). Calling `C-c / t` without any
 prefix argument toggles the relevant option. Calling it with the prefix argument
 `C-u -` (or `M--`) unsets it, while any other prefix argument sets it.
-
-One remark about the CSS style sheet: Emacs always cuts off the directory part
-of the filename you specify as CSS style sheet. That is, the `.css` file must be
-in the same directory as the HTML file, otherwise it won't be found. (This is a
-limitation that will be eliminated in a future version of `pandoc-mode`.)
 
 Note that you can get a list of all the settings that you have defined by typing
 `C-c / S`. This displays all settings in the `*Pandoc output*` buffer in the
