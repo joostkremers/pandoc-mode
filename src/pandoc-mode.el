@@ -190,7 +190,7 @@ list, not if it appears higher on the list."
 
     (variable)                     ; an alist or NIL
 
-    (email-obfuscation)            ; nil (="none"), "javascript" or "references"
+    (email-obfuscation . "none")   ; "none", "javascript" or "references"
 
     (gladtex)                      ; NIL, T
     (incremental)                  ; NIL, T
@@ -1056,8 +1056,8 @@ set. Without any prefix argument, the option is toggled."
       ["Set MimeTeX GCI Script..." pandoc-set-mimetex :active t
       :style radio :selected (stringp (pandoc-get 'mimetex))])
      ("Email Obfuscation"
-      ["None" (pandoc-set 'email-obfuscation nil) :active t
-       :style radio :selected (not (pandoc-get 'email-obfuscation))]
+      ["None" (pandoc-set 'email-obfuscation "none") :active t
+       :style radio :selected (string= (pandoc-get 'email-obfuscation) "none")]
       ["Javascript" (pandoc-set 'email-obfuscation "javascript") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "javascript")]
       ["References" (pandoc-set 'email-obfuscation "references") :active t
