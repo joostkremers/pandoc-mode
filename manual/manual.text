@@ -116,16 +116,13 @@ where `<format>` is the current output format.
 ## Auxiliary files and options ##
 
 The settings part of the menu contains two more submenus: "Files" and "Options".
-Under "Files", you can set various files that may be used by pandoc. These
-include the template file, the reference ODT file, the CSS style sheet, files to
-be included in the header or before/after the body, and a custom header file.
-All of these submenus have two options: no file, or specify a file. They can be
-set through the menu, or through the keyboard, with the key sequence `C-c / f`
-plus an additional letter, `T` for the template file, `O` for the reference ODT
-file, `c` for the CSS style sheet, `H` for the additional header, `B` for the
-file to be included before the body, `A` for the file to be included after the
-body, and `C` for the custom header file. If you type these sequences with the
-prefix argument `C-u -` (or `M--`, which is equivalent), they are unset.
+Under "Files", you can set various files that may be used by pandoc, such as a
+template file, the reference ODT file, the CSS style sheet, files to be included
+in the header or before/after the body, etc. Most of these submenus have two
+options: no file, or specify a file. They can be set through the menu, or
+through the keyboard, with the key sequence `C-c / f` plus an additional letter,
+(which is indicated in the menu). If you type a key sequences with the prefix
+argument `C-u -` (or `M--`, which is equivalent), the option is unset.
 
 The "Files" submenu also contains options for the output file and output
 directory. These are treated somewhat differently from the other files, see the
@@ -146,11 +143,10 @@ directory than on the computer you're generating your .html-files on.
 
 Under "Options", you can set various other options. Some of these require user
 input, others can only be toggled on or off. Those that require user input can
-also be set through the keyboard with `C-c / o` plus an additional key: `T` for
-title prefix, `i` for the HTML ID prefix, `I` for indented code classes, `t` for
-tab stop, `m` for LaTeXMathML, `j` for jsMath, `M` for MimeTeX and `e` for email
-obfuscation. They can be unset through the keyboard either by providing an empty
-string or by calling the function with the prefix argument `C-u -` (or `M--`).
+also be set through the keyboard with `C-c / o` plus an additional key
+(indicated in the menu). They can be unset through the keyboard either by
+providing an empty string or by calling the function with the prefix argument
+`C-u -` (or `M--`).
 
 Options that can only be toggled can be set or unset through the keyboard with
 the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
@@ -475,8 +471,11 @@ Key               Description
 `C-c / f B`       Include before body.
 `C-c / f c`       Set custom CSS file.
 `C-c / f C`       Set custom header file.
-`C-c / f D`       Set the output directory.
-`C-c / f O`       Set the reference ODT file.
+`C-c / f D`       Set the data directory.
+`C-c / f e`       Set the EPUB style sheet.
+`C-c / f E`       Set the EPUB metadata.
+`C-c / f O`       Set the output directory.
+`C-c / f r`       Set the reference ODT file.
 `C-c / f T`       Set the template file.
 `C-c / o e`       Set email obfuscation.
 `C-c / o H`       Include after the header.
@@ -488,6 +487,7 @@ Key               Description
 `C-c / o o`       Set output file.
 `C-c / o t`       Set tab stop.
 `C-c / o T`       Set the title prefix.
+`C-c / o w`       Set the WebTeX URL.
 `C-c / P s`       Save a project file.
 `C-c / P u`       Undo file settings.
 

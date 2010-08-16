@@ -1,5 +1,5 @@
 # pandoc-mode settings file for manual.text #
-# saved on 2009.11.01 12:43 #
+# saved on 2010.07.30 14:02 #
 
 read::markdown
 write::html
@@ -7,4 +7,4 @@ output::pandoc-mode-manual.html
 css::manual.css
 standalone::t
 table-of-contents::t
-output-dir::~/src/pandoc-mode/website/
+output-dir::~/src/pandoc-mode/manual/
