@@ -227,6 +227,14 @@ list, not if it appears higher on the list."
     (output-dir))                  ; a directory path or NIL
   "Pandoc option alist.")
 
+;; Regarding storing of options: both per-file options and project are stored in
+;; buffer-local variables. Note that pandoc-local-options stores *all* options,
+;; the per-file ones and the project ones. The reason for this is that the
+;; per-file (a.k.a. local) options should be able to override the project
+;; options. We cannot say that if a local option has the value NIL, we check the
+;; project option and use its value if it has one, because the NIL value of the
+;; local option may actually be the overriding value.
+
 (defvar pandoc-local-options nil "A buffer-local variable holding a file's pandoc options.")
 (make-variable-buffer-local 'pandoc-local-options)
 
@@ -640,6 +648,10 @@ file is found for FILE, otherwise non-NIL."
 	     pandoc-settings-modified-flag
 	     (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
+  ;; We read the options from the settings files but do not store them in the
+  ;; pandoc-{local|project}-options variables. Rather, we set them one by one
+  ;; with pandoc-set(*), so we can make sure per-file settings override the
+  ;; project settings.
   (let ((project-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format)))
 	(local-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))))
     (unless (nor project-settings local-settings)
@@ -664,22 +676,22 @@ Returns an alist with the options and their values."
     (with-temp-buffer
       (insert-file-contents settings-file)
       (goto-char (point-min))
-      (let (options
-	    variable-list)	     ; the template variables are collected here
+      (let (options) ; alist holding the options we read
 	(while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
 	  (let ((option (intern (match-string 1)))
 		(value (match-string 2)))
-	    (cond
-	     ((eq option 'variable)
-	      (string-match "^\\(.*?\\):\\(.*?\\)$" value)
-	      (add-to-list 'variable-list (cons (match-string 1 value) (match-string 2 value))))
-	     (t (add-to-list 'options (cons option (cond
-						    ((string-match "^[0-9]$" value) (string-to-number value))
-						    ((string= "t" value) t)
-						    ((string= "nil" value) nil)
-						    (t value))))))))
-	(when variable-list
-	  (add-to-list 'options (cons 'variable variable-list)))
+	    ;; If the option is a variable, we read its name and value and add
+	    ;; them to the alist as a dotted list. note that there may be more
+	    ;; than one variable-value pair in OPTIONS.
+	    (add-to-list 'options (if (eq option 'variable)
+				      (progn
+					(string-match "^\\(.*?\\):\\(.*?\\)$" value)
+					(cons 'variable (cons (intern (match-string 1 value)) (match-string 2 value))))
+				    (cons option (cond
+						  ((string-match "^[0-9]$" value) (string-to-number value))
+						  ((string= "t" value) t)
+						  ((string= "nil" value) nil)
+						  (t value)))))))
 	options))))
 
 (defun pandoc-view-output ()
