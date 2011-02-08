@@ -57,10 +57,11 @@ exists for the file being loaded and reads its settings if it finds one.
 
 When you start `pandoc-mode`, a menu appears through which all of pandoc's
 options can be set and through which you can run pandoc on your current
-document, or load or save settings files. Although (almost) all functions
-provided by `pandoc-mode` can be accessed through the keyboard (see the section
-['Using The Keyboard'](#using-the-keyboard)), the menu is almost
-self-explanatory and therefore easier to use.
+document, or load or save settings files. The most important functions provided
+by `pandoc-mode` can also be accessed through the keyboard (see the section
+['Using The Keyboard'](#using-the-keyboard)), but setting options can only be
+done through the keyboard (although it is possible to bind your own keys to the
+functions to set options).
 
 The menu is divided into two parts. The upper half contains items related to
 running pandoc, the lower half is the part where the various settings can be set
@@ -119,14 +120,10 @@ The settings part of the menu contains two more submenus: "Files" and "Options".
 Under "Files", you can set various files that may be used by pandoc, such as a
 template file, the reference ODT file, the CSS style sheet, files to be included
 in the header or before/after the body, etc. Most of these submenus have two
-options: no file, or specify a file. They can be set through the menu, or
-through the keyboard, with the key sequence `C-c / f` plus an additional letter,
-(which is indicated in the menu). If you type a key sequences with the prefix
-argument `C-u -` (or `M--`, which is equivalent), the option is unset.
-
-The "Files" submenu also contains options for the output file and output
-directory. These are treated somewhat differently from the other files, see the
-section ['Setting an output file'](#setting-an-output-file) for details.
+options: no file, or specify a file. The "Files" submenu also contains options
+for the output file and output directory. These are treated somewhat differently
+from the other files, see the section
+['Setting an output file'](#setting-an-output-file) for details.
 
 When Emacs calls `pandoc`, it expands filenames, so that they are absolute and
 don't contain any abbreviations (such as ~ for one's home directory). This means
@@ -142,22 +139,11 @@ with the output file(s) to a server, where it will most likely be in a different
 directory than on the computer you're generating your .html-files on.
 
 Under "Options", you can set various other options. Some of these require user
-input, others can only be toggled on or off. Those that require user input can
-also be set through the keyboard with `C-c / o` plus an additional key
-(indicated in the menu). They can be unset through the keyboard either by
-providing an empty string or by calling the function with the prefix argument
-`C-u -` (or `M--`).
-
-Options that can only be toggled can be set or unset through the keyboard with
-the key sequence `C-c / t`. Emacs then asks you for the option to toggle (TAB
-completion works here and is case-insensitive). Calling `C-c / t` without any
-prefix argument toggles the relevant option. Calling it with the prefix argument
-`C-u -` (or `M--`) unsets it, while any other prefix argument sets it.
-
-Note that you can get a list of all the settings that you have defined by typing
-`C-c / S`. This displays all settings in the `*Pandoc output*` buffer in the
-same manner in which they appear in a settings file, i.e., with the following
-format:
+input, others can only be toggled on or off. Furthermore, the menu contains an
+option to get a list of all the settings that you have defined (this function is
+also available by typing `C-c / S`). This displays all settings in the `*Pandoc
+output*` buffer in the same manner in which they appear in a settings file,
+i.e., with the following format:
 
     <option>::<value>
 
@@ -165,14 +151,12 @@ format:
 ## Template variables ##
 
 As of Pandoc v1.4, the custom header files are deprecated and replaced by
-so-called template files (see the Pandoc documentation for details). A template
-file can be set through the menu or with `C-c / f T`, as discussed in the
-previous section. When you create a custom template file, you may also specify
-your own variables. `pandoc-mode` allows you to set or change template variables
-through the menu (under the Options submenu) or the keyboard, with `C-c / v`.
-Emacs will ask you for the name of a variable and a value for it. If you provide
-a name that already exists (TAB completion works), the new value replaces the
-old one.
+so-called template files (see the Pandoc documentation for details). When you
+create a custom template file, you may also specify your own variables.
+`pandoc-mode` allows you to set or change template variables through the menu
+(under the Options submenu) or the keyboard, with `C-c / v`. Emacs will ask you
+for the name of a variable and a value for it. If you provide a name that
+already exists (TAB completion works), the new value replaces the old one.
 
 Deleting a template variable is done with the corresponding menu item or by
 calling `C-c / v` with the prefix argument `C-u -` (or `M--`). Emacs will ask
@@ -190,10 +174,10 @@ Template variables are saved in the settings file and can also be viewed with
 The first item in the menu is "Run Pandoc" (also accessible with `C-c / r`),
 which, as the name suggests, runs pandoc on the document, passing all options
 you have set. By default, pandoc sends the output to stdout, which is redirected
-to the buffer `*Pandoc output*`. (Except when the output format is "odt", in
-which case output is always sent to a file.) The output buffer is not normally
-shown, but you can make it visible through the menu or by typing `C-c / V`.
-Error messages from pandoc are also displayed in this buffer.
+to the buffer `*Pandoc output*`. (Except when the output format is "odt" or
+"epub", in which case output is always sent to a file.) The output buffer is not
+normally shown, but you can make it visible through the menu or by typing `C-c /
+V`. Error messages from pandoc are also displayed in this buffer.
 
 Note that when you run pandoc, pandoc doesn't read the file on disk, rather,
 Emacs feeds it the contents of the buffer through stdin. This means that you
@@ -232,21 +216,12 @@ is an OpenOffice.org Document (ODT). Therefore, Emacs will always create an
 output filename in this case, unless of course you've explicitly set an output
 file yourself.
 
-The output file can also be set with the key sequence `C-c / o o`. When typed
-without any prefix argument, you are asked for an output file. If you type it
-with the prefix argument `C-u -` (or `M--`), output is sent to stdout; with any
-other prefix argument, Emacs will create an output filename itself.
-
 The output file you set is always just the base filename, it does not specify a
 directory. Which directory the output file is written to depends on the setting
 "Output Directory" (which is not actually a pandoc option). Emacs creates an
 output destination out of the settings for the output directory and output file.
-
 If you don't specify any output directory, the output file will be written to
-the same directory that the input file is in. The output directory can also be
-set with the key sequence `C-c / o D`. When preceded by the prefix argument `C-u
--` (or `M--`), the output directory is unset, meaning the input directory will
-be used.
+the same directory that the input file is in.
 
 
 ## Running markdown2pdf ##
@@ -444,53 +419,22 @@ done in a function that is called through `pandoc-directives-hook`.
 
 # Using The Keyboard #
 
-Although `pandoc-mode` can be controlled through the menu, all functions (with
-the exception of `pandoc-set-default-format`) are bound to key sequences so that
-they can be invoked through the keyboard. The general key prefix for
-`pandoc-mode` is `C-c /`. A complete list of key sequences and the functions
-bound to them is given below.
+Although `pandoc-mode` can be controlled through the menu, it is possible to
+bind all functions to keyboard sequences. `Pandoc-mode` uses the prefix `C-c /`,
+if you bind any functions to keys, it would be best to use this prefix as well.
+In order to make your life a little easier if you do decide to bind certain
+option setting functions to key sequences, all of these have been set up so that
+they can be used with the prefix key `C-u -` (or `M--`) to unsert the relevant
+option, and with any other prefix key to set the default value (if the option
+has one, of course).
 
-Note that functions that set pandoc options can be called with the prefix
-argument `C-u -` (or `M--`) to unset the relevant option. Any other prefix
-argument either sets a default value or, in the case of binary switches, just
-sets it. Calling a command without any prefix argument asks you for a value, or
-toggles the value of a binary switch.
+The option setting functions are all called `pandoc-set-<option>` (with the
+exception of the option `--read`, i.e., the input format, which is determined
+automatically and rarely needs to be set by the user). `<option>` corresponds to
+the long name of the relevant pandoc switch. Functions can be bound in the
+following manner:
 
-
-Key               Description
---------------    --------------------------------
-`C-c / p`         Run markdown2pdf.
-`C-c / r`         Run pandoc.
-`C-c / s`         Save a settings file.
-`C-c / S`         View the current settings file.
-`C-c / t`         Toggle a binary option.
-`C-c / v`         Set/change/remove a template variable.
-`C-c / V`         View the output buffer.
-`C-c / w`         Change the output format.
-`C-c / f A`       Include after body.
-`C-c / f B`       Include before body.
-`C-c / f c`       Set custom CSS file.
-`C-c / f C`       Set custom header file.
-`C-c / f D`       Set the data directory.
-`C-c / f e`       Set the EPUB style sheet.
-`C-c / f E`       Set the EPUB metadata.
-`C-c / f O`       Set the output directory.
-`C-c / f r`       Set the reference ODT file.
-`C-c / f T`       Set the template file.
-`C-c / o e`       Set email obfuscation.
-`C-c / o H`       Include after the header.
-`C-c / o i`       Set the ID prefix.
-`C-c / o I`       Set the indented code classes.
-`C-c / o j`       Set jsMath URL.
-`C-c / o m`       Set LaTeXMathML URL.
-`C-c / o M`       Set MimeTeX URL.
-`C-c / o o`       Set output file.
-`C-c / o t`       Set tab stop.
-`C-c / o T`       Set the title prefix.
-`C-c / o w`       Set the WebTeX URL.
-`C-c / P s`       Save a project file.
-`C-c / P u`       Undo file settings.
-
+    (define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
 
 
 # Settings Files #
