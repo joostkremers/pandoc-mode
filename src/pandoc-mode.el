@@ -1083,10 +1083,10 @@ is unset."
   (interactive "P")
   (pandoc-set 'email-obfuscation
 	      (if (eq prefix '-)
-		  nil
+		  "none"
 		(let ((value (completing-read "Set email obfuscation: " '("none" "javascript" "references") nil t)))
 		  (if (member value '("" "none"))
-		      nil
+		      "none"
 		    value))))
   (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
 					"unset")))
