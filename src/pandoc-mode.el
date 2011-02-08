@@ -165,20 +165,21 @@ list, not if it appears higher on the list."
 
 (defvar pandoc-markdown2pdf-switches
   '(preserve-tabs
+    tab-stop
     strict
+    parse-raw
     xetex
+    number-sections
+    listings
     table-of-contents
+    template
     variable
     include-in-header
     include-before-body
     include-after-body
-    custom-header
-    data-dir
-    tab-stop
-    parse-raw
-    number-sections
-    template
-    listings)
+    bibliography
+    csl
+    data-dir)
   "List of switches accepted by the markdown2pdf binary. Switches
   that need special treatment (--read, --write and --variable)
   are not in this list.")
