@@ -221,6 +221,7 @@ list, not if it appears higher on the list."
     ("Table of Contents" . table-of-contents)
     ("Use NatBib" . natbib)
     ("Use BibLaTeX" . biblatex)
+    ("Use only ASCII in HTML" . ascii)
     ;; ("Sanitize HTML" . sanitize-html) ; removed?
     ))
 
@@ -300,6 +301,7 @@ list, not if it appears higher on the list."
     (table-of-contents)
     (natbib)
     (biblatex)
+    (ascii)
     ;; (sanitize-html) ; removed?
     )
   "Pandoc option alist.")
