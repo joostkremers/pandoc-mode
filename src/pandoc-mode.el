@@ -108,7 +108,7 @@ list, not if it appears higher on the list."
     ("slidy" . ".html")
     ("rtf" . ".rtf")
     ("textile" . ".textile")
-    ("org-mode" . ".org")
+    ("org" . ".org")
     ("json" . ".json"))
   "List of pandoc output formats plus file extensions.")
 
