@@ -907,7 +907,7 @@ ODT file is unset."
 (defun pandoc-set-epub-metadata (prefix)
   "Set the EPUB metadata file.
 If called with the prefix argument C-u - (or M--), the EPUB
-metadata ODT file is unset."
+metadata file is unset."
   (interactive "P")
   (pandoc-set 'epub-metadata
 	      (if (eq prefix '-)
