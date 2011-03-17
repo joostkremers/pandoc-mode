@@ -152,6 +152,7 @@ list, not if it appears higher on the list."
     title-prefix
     reference-odt
     epub-stylesheet
+    epub-cover-image
     epub-metadata
     print-default-template
     bibliography
@@ -192,6 +193,7 @@ list, not if it appears higher on the list."
     custom-header
     template
     epub-stylesheet
+    epub-cover-image
     epub-metadata
     reference-odt
     bibliography ; TODO
@@ -252,6 +254,7 @@ list, not if it appears higher on the list."
     (custom-header)
     (template)
     (reference-odt)
+    (epub-cover-image)
     (epub-metadata)
     (bibliography)
     (csl)
@@ -911,6 +914,16 @@ metadata ODT file is unset."
 		  nil
 		(read-file-name "EPUB metadata file: "))))
 
+(defun pandoc-set-epub-cover-image (prefix)
+  "Set the EPUB cover image file.
+If called with the prefix argument C-u - (or M--), the EPUB
+cover image file is unset."
+  (interactive "P")
+  (pandoc-set 'epub-cover-image
+	      (if (eq prefix '-)
+		  nil
+		(read-file-name "EPUB cover image: "))))
+
 (defun pandoc-set-bibliography (prefix)
   "Set the bibliography file.
 If called with the prefix argument C-u - (or M--), the
@@ -1218,6 +1231,11 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (eq (pandoc-get 'epub-stylesheet) t)]
       ["Set EPUB Style Sheet..." pandoc-set-epub-stylesheet :active t
       :style radio :selected (stringp (pandoc-get 'epub-stylesheet))])
+     ("EPUB Cover Image"
+      ["No EPUB Cover Image" (pandoc-set 'epub-cover-image nil) :active t
+       :style radio :selected (null (pandoc-get 'epub-cover-image))]
+      ["Set EPUB Cover Image..." pandoc-set-epub-cover-image :active t
+      :style radio :selected (pandoc-get 'epub-cover-image)])
      ("EPUB Metadata File"
       ["No EPUB Metadata" (pandoc-set 'epub-metadata nil) :active t
        :style radio :selected (null (pandoc-get 'epub-metadata))]
