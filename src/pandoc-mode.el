@@ -161,8 +161,7 @@ list, not if it appears higher on the list."
     biblatex
     data-dir)
   "List of switches accepted by the pandoc binary. Switches that
-  need special treatment (--read, --write, --output and
-  --variable) are not in this list.")
+  need special treatment (--read, --write and --output) are not in this list.")
 
 (defvar pandoc-markdown2pdf-switches
   '(preserve-tabs
@@ -182,8 +181,8 @@ list, not if it appears higher on the list."
     csl
     data-dir)
   "List of switches accepted by the markdown2pdf binary. Switches
-  that need special treatment (--read, --write and --variable)
-  are not in this list.")
+  that need special treatment (--read and --write) are not in
+  this list.")
 
 (defvar pandoc-filepath-switches
   '(data-dir
