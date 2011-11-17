@@ -379,8 +379,9 @@ directive, the newly inserted `\@@include` directive gets processed as well.
 ## Defining @@-directives ##
 
 Defining `@@`-directives yourself is done in two steps. First, you need to
-define the function that the directive will call. This function may take at most
-one argument and should return a string, which is inserted into the buffer. The
+define the function that the directive will call. This function must take at
+least one argument to pass the output format and may take at most one additional
+argument. It should return a string, which is inserted into the buffer. The
 second step is to go to the customization buffer with `M-x customize-group`
 `RET` `pandoc` `RET`. One of the options there is `pandoc-directives`. This
 variable contains a list of directives and the functions that they are linked
@@ -388,11 +389,6 @@ with. You can add a directive by providing a name (without `@@`) and the
 function to call. Note that directive names may only consists of letters (`a-z`,
 `A-Z`) or numbers (`0-9`). Other characters are not allowed. Directive names are
 case sensitive, so `@@Date` is not the same as `\@@date`.
-
-Note that in Elisp, you can use the function `pandoc-get` to access the various
-pandoc options for the current buffer. For example, `(pandoc-get 'write)` gives
-the output format. This could be usefull for making the output of an
-`@@`-directive dependent on the output format.
 
 Passing more than one argument to an `@@`-directive is not supported. However,
 if you really want to, you could use `split-string` to split the argument of the
