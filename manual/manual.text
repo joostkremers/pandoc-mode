@@ -304,24 +304,28 @@ functions they call.
 
 So suppose you define (e.g., in `~/.emacs`) a function `pandoc-current-date`:
 
-    (defun pandoc-current-date ()
+    (defun pandoc-current-date (output-format)
       (format-time-string "%d %b %Y"))
 
 Now you can define a directive `\@@date` that calls this function. The effect is
 that every time you write `\@@date` in your document, it is replaced with the
 current date.
 
+Note that the function that the directive calls must have one argument. which is
+used to pass the output format to the function (as a string). This way you can
+have your directives do different things depending on the output format.
+
 `@@`-directives can also take the form `@@directive{...}`. Here, the text
 between curly braces is an argument, which is passed to the function that the
-directive calls. Note that there should be *no* space between the directive and
-the left brace. If there is, Emacs won't see the argument and will treat it as
-normal text.
+directive calls as its second argument. Note that there should be *no* space
+between the directive and the left brace. If there is, Emacs won't see the
+argument and will treat it as normal text.
 
 It is possible to define a directive that can take an optional argument. This is
 simply done by defining the argument that the directive's function takes as
 optional. Suppose you define `pandoc-current-date` as follows:
 
-    (defun pandoc-current-date (&optional text)
+    (defun pandoc-current-date (output-format &optional text)
       (format "%s%s" (if text (concat text ", ") "")
                      (format-time-string "%d %b %Y")))
 

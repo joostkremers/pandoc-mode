@@ -483,9 +483,11 @@ formats."
 				 pandoc-switches))))
     (delq nil (append (list read write output) variables other-options))))
 
-(defun pandoc-process-directives ()
-  "Processes pandoc-mode @@-directives in the current buffer."
-  (interactive)
+(defun pandoc-process-directives (output-format)
+  "Processes pandoc-mode @@-directives in the current buffer.
+OUTPUT-FORMAT is passed unchanged to the functions associated
+with the @@-directives."
+  (interactive (list (pandoc-get 'write)))
   (mapc #'funcall pandoc-directives-hook)
   (let ((case-fold-search nil))
     (mapc #'(lambda (directive)
@@ -505,7 +507,7 @@ formats."
 			     (text (buffer-substring-no-properties arg-beg arg-end)))
 			(goto-char @@-beg)
 			(delete-region @@-beg (1+ arg-end))
-			(insert (funcall (cdr directive) text)))
+			(insert (funcall (cdr directive) output-format text)))
 		      (goto-char @@-beg))
 		     ;; check if the next character is not a letter or number.
 		     ;; if it is, we're actually on a different directive.
@@ -513,15 +515,15 @@ formats."
 		     ;; otherwise there is no argument.
 		     (t (goto-char @@-beg)
 			(delete-region @@-beg @@-end) ; else there is no argument
-			(insert (funcall (cdr directive)))
+			(insert (funcall (cdr directive) output-format))
 			(goto-char @@-beg)))))))
 	  pandoc-directives)))
 
-(defun pandoc-process-lisp-directive (lisp)
+(defun pandoc-process-lisp-directive (output-format lisp)
   "Process @@lisp directives."
   (format "%s" (eval (car (read-from-string lisp)))))
 
-(defun pandoc-process-include-directive (include-file)
+(defun pandoc-process-include-directive (output-format include-file)
   "Process @@include directives."
   (with-temp-buffer
     (insert-file-contents include-file)
@@ -558,7 +560,7 @@ If PDF is non-nil, markdown2pdf is called instead of pandoc."
       (let ((option-list (pandoc-create-command-option-list filename pdf)))
 	(insert-buffer-substring-no-properties buffer)
 	(message "Running %s..." (file-name-nondirectory command))
-	(pandoc-process-directives)
+	(pandoc-process-directives (pandoc-get 'write))
 	(with-current-buffer pandoc-output-buffer
 	  (erase-buffer)
 	  (insert (format "Running `%s %s'\n\n" (file-name-nondirectory command) (mapconcat #'identity option-list " "))))
