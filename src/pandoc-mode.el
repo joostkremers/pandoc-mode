@@ -327,6 +327,20 @@ list, not if it appears higher on the list."
 
 (defvar pandoc-output-buffer (get-buffer-create " *Pandoc output*"))
 
+(defvar pandoc-@-counter 0 "Counter for (@)-lists.")
+(make-variable-buffer-local 'pandoc-@-counter)
+
+(defun pandoc-@-counter-inc ()
+  "Increment pandoc-@-counter and return the new value."
+  (when (= pandoc-@-counter 0) ; hasn't been updated in this buffer yet.
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward "(@\\([0-9]+?\\))" (point-max) t)
+        (let ((label (string-to-number (match-string 1))))
+          (when (> label pandoc-@-counter)
+            (setq pandoc-@-counter label))))))
+  (incf pandoc-@-counter))
+
 (defvar pandoc-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/r" 'pandoc-run-pandoc)
@@ -338,6 +352,7 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/v" 'pandoc-set-template-variable)
     (define-key map "\C-c/V" 'pandoc-view-output)
     (define-key map "\C-c/S" 'pandoc-view-settings)
+    (define-key map "\C-c/c" 'pandoc-insert-@)
     map)
   "Keymap for pandoc-mode.")
 
@@ -770,6 +785,12 @@ Returns an alist with the options and their values."
     (erase-buffer)
     (pandoc-insert-options options))
   (display-buffer pandoc-output-buffer))
+
+(defun pandoc-insert-@ ()
+  "Insert a new labeled (@) list marker at point."
+  (interactive)
+  (let ((label (pandoc-@-counter-inc)))
+    (insert (format "(@%s)" label))))	
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to set specific options. ;;
