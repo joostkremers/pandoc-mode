@@ -1,10 +1,10 @@
 # pandoc-mode settings file for manual.text #
-# saved on 2011.02.08 22:58 #
+# saved on 2011.11.28 00:52 #
 
 read::markdown
 write::latex
 output::pandoc-mode-manual.tex
 output-dir::~/src/pandoc-mode/website/
-template::/home/joost/src/pandoc-mode/manual/manual.template
 standalone::t
+xetex::t
 number-sections::t

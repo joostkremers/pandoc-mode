@@ -7,17 +7,17 @@
 # Introduction #
 
 `pandoc-mode` is an Emacs mode for interacting with
-[pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus
+[Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus
 libraries) that can convert a text written in one markup language into another
 markup language. Supported input formats are markdown and (subsets of)
 reStructuredText, HTML, and LaTeX. Supported output formats are markdown,
 reStructuredText, HTML, LaTeX, ConTeXt, PDF, RTF, DocBook XML, OpenDocument XML,
 OpenOffice.org text document (odt), GNU Texinfo, MediaWiki markup, groff man
-pages, and S5 HTML slide shows.
+pages, and several HTML-based slide show formats.
 
 `pandoc-mode` is implemented as a minor mode that can be activated alongside the
 major mode for any of the supported input formats. It provides facilities to set
-the various options that pandoc accepts and to run pandoc on the input file. It
+the various options that Pandoc accepts and to run Pandoc on the input file. It
 is possible to create different output profiles for a single input file, so that
 you can, for example, write your text in markdown and then translate it to HTML
 for online reading, PDF for offline reading and Texinfo for reading in Emacs.
@@ -37,12 +37,12 @@ you can add a hook to your `~/.emacs`:
 
     (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 
-However, if you do not want to start pandoc every time you work on a markdown
-document, you can use a different function in `markdown-mode-hook`: instead of
-using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`. This
-function checks if a default settings file exists for the file you're opening
-and only turns on `pandoc-mode` if it finds one. (For more info on the settings
-file, see the section ['Settings Files'](#settings-files).)
+However, if you do not want to start `pandoc-mode` every time you work on a
+markdown document, you can use a different function in `markdown-mode-hook`:
+instead of using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`.
+This function checks if a default settings file exists for the file you're
+opening and only turns on `pandoc-mode` if it finds one. (For more info on the
+settings file, see the section ['Settings Files'](#settings-files).)
 
 Additionally, if you want to automatically load a pandoc-mode settings file for
 the file you're opening, you can add the following to your `~/.emacs`:
@@ -55,8 +55,8 @@ exists for the file being loaded and reads its settings if it finds one.
 
 # Usage #
 
-When you start `pandoc-mode`, a menu appears through which all of pandoc's
-options can be set and through which you can run pandoc on your current
+When you start `pandoc-mode`, a menu appears through which all of Pandoc's
+options can be set and through which you can run Pandoc on your current
 document, or load or save settings files. The most important functions provided
 by `pandoc-mode` can also be accessed through the keyboard (see the section
 ['Using The Keyboard'](#using-the-keyboard)), but setting options can only be
@@ -64,7 +64,7 @@ done through the keyboard (although it is possible to bind your own keys to the
 functions to set options).
 
 The menu is divided into two parts. The upper half contains items related to
-running pandoc, the lower half is the part where the various settings can be set
+running Pandoc, the lower half is the part where the various settings can be set
 and changed.
 
 
@@ -74,11 +74,11 @@ The most important settings are the input and output formats. The input format
 is set automatically by Emacs on the basis of the major mode, but you can change
 it through the menu if you need to. The output format defaults to "Native
 Haskell", so most likely you will want to set it to something else before you
-run pandoc. Note that the output format can also be set through the keyboard
+run Pandoc. Note that the output format can also be set through the keyboard
 with `C-c / w` (TAB completion works.)
 
 As already stated, you may wish to use different output formats for a single
-input file. Most likely, the options that you want to pass to pandoc will be
+input file. Most likely, the options that you want to pass to Pandoc will be
 different for each output format. To make this easier, `pandoc-mode` has the
 ability to save the settings for a specific output format. If you choose "Save
 File Settings" from the menu (`C-c / s`), Emacs saves the current settings to a
@@ -87,7 +87,7 @@ file is derived from the input file, appended with the name of the output format
 and the string `.pandoc`. (See the section ['Settings Files'](#settings-files)
 for details.)
 
-A single document can have a settings file for each output format that pandoc
+A single document can have a settings file for each output format that Pandoc
 supports. For example, for this manual, which is written in markdown, I have
 three settings files, one for HTML output, one for LaTeX output and one for
 Texinfo output. These can simply be created by setting all options the way you
@@ -117,7 +117,7 @@ where `<format>` is the current output format.
 ## Auxiliary files and options ##
 
 The settings part of the menu contains two more submenus: "Files" and "Options".
-Under "Files", you can set various files that may be used by pandoc, such as a
+Under "Files", you can set various files that may be used by Pandoc, such as a
 template file, the reference ODT file, the CSS style sheet, files to be included
 in the header or before/after the body, etc. Most of these submenus have two
 options: no file, or specify a file. The "Files" submenu also contains options
@@ -169,30 +169,30 @@ Template variables are saved in the settings file and can also be viewed with
     variable::<name>:<value>
 
 
-## Running pandoc ##
+## Running Pandoc ##
 
 The first item in the menu is "Run Pandoc" (also accessible with `C-c / r`),
-which, as the name suggests, runs pandoc on the document, passing all options
-you have set. By default, pandoc sends the output to stdout, which is redirected
+which, as the name suggests, runs Pandoc on the document, passing all options
+you have set. By default, Pandoc sends the output to stdout, which is redirected
 to the buffer `*Pandoc output*`. (Except when the output format is "odt" or
 "epub", in which case output is always sent to a file.) The output buffer is not
 normally shown, but you can make it visible through the menu or by typing `C-c /
-V`. Error messages from pandoc are also displayed in this buffer.
+V`. Error messages from Pandoc are also displayed in this buffer.
 
-Note that when you run pandoc, pandoc doesn't read the file on disk, rather,
+Note that when you run Pandoc, Pandoc doesn't read the file on disk, rather,
 Emacs feeds it the contents of the buffer through stdin. This means that you
-don't actually have to save your file before running pandoc. Whatever is in your
-buffer, saved or not, is passed to pandoc.
+don't actually have to save your file before running Pandoc. Whatever is in your
+buffer, saved or not, is passed to Pandoc.
 
 If you call this command with a prefix argument (`C-u C-c / r`), Emacs asks you
 for an output format to use. If there is a settings file for the format you
-specify, the settings in it will be passed to pandoc instead of the settings in
-the current buffer. If there is no settings file, pandoc will be called with
+specify, the settings in it will be passed to Pandoc instead of the settings in
+the current buffer. If there is no settings file, Pandoc will be called with
 just the output format and no other options.
 
 Note that specifying an output format this way does not change the output format
 or any of the settings in the buffer, it just changes the output profile used
-for calling pandoc. This can be useful if you use different output formats but
+for calling Pandoc. This can be useful if you use different output formats but
 don't want to keep switching between profiles when creating the different output
 files.
 
@@ -211,14 +211,14 @@ the output file will have the same base name as the input file but with the
 proper suffix for the output format. Lastly, you can also specify an output file
 yourself.
 
-Note that pandoc does not allow output to be sent to stdout if the output format
+Note that Pandoc does not allow output to be sent to stdout if the output format
 is an OpenOffice.org Document (ODT). Therefore, Emacs will always create an
 output filename in this case, unless of course you've explicitly set an output
 file yourself.
 
 The output file you set is always just the base filename, it does not specify a
 directory. Which directory the output file is written to depends on the setting
-"Output Directory" (which is not actually a pandoc option). Emacs creates an
+"Output Directory" (which is not actually a Pandoc option). Emacs creates an
 output destination out of the settings for the output directory and output file.
 If you don't specify any output directory, the output file will be written to
 the same directory that the input file is in.
@@ -252,7 +252,7 @@ redirected to the buffer `*Pandoc output*`).
 # Projects #
 
 If you have more than one file in a single directory for which you want to apply
-the same pandoc settings, it is rather cumbersome to create a settings file for
+the same Pandoc settings, it is rather cumbersome to create a settings file for
 each of them, and even more cumbersome if you want to change something in those
 settings. To deal with such cases, `pandoc-mode` allows you to create a project
 file. A project file is called `Project.<format>.pandoc` and is essentially a
@@ -276,7 +276,7 @@ default will not be created. (This differs from local settings files: if you set
 a default output format, Emacs will create a local settings file if none
 exists).
 
-When Emacs loads pandoc settings for a file, it first looks for and loads the
+When Emacs loads Pandoc settings for a file, it first looks for and loads the
 project file for the selected output format, and then reads the file's local
 settings file, if one exists. This means that the local settings may actually
 override the project settings: if both files contain a value for a specific
@@ -318,10 +318,10 @@ without inserting anything into your document.
 # Using @@-directives #
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the
-text before sending it to pandoc. This is done with so-called `@@`-directives
+text before sending it to Pandoc. This is done with so-called `@@`-directives
 ("double-at directives"), which trigger an Elisp function and are then replaced
 with the output of that function. A `@@`-directive takes the form `@@directive`,
-where `directive` can be any user-defined string. Before pandoc is called, Emacs
+where `directive` can be any user-defined string. Before Pandoc is called, Emacs
 searches the text for these directives and replaces them with the output of the
 functions they call.
 
@@ -378,7 +378,7 @@ Processing `@@`-directives works everywhere in the document, including in code
 and code blocks, and also in the %-header block. So by putting the above
 `\@@lisp` directive in the third line of the %-header block, the meta data for
 your documents will always show the date on which the file was created by
-pandoc.
+Pandoc.
 
 If it should ever happen that you need to write a literal "`\@@lisp`" in your
 document, you can simply put a backslash \\ before the first `@`: `\\@@lisp`.
@@ -434,30 +434,50 @@ the directives are processed. These functions are not supposed to change
 anything in the buffer, they are intended for setting up things that the
 directive functions might need.
 
-As an example, for my own work, I have defined a directive `\@@ex` which
-increments a counter and then inserts it in the text, surrounded by parentheses.
-This counter needs to be set to 0 every time the document is processed, which is
-done in a function that is called through `pandoc-directives-hook`.
-
 
 # Using The Keyboard #
 
 Although `pandoc-mode` can be controlled through the menu, it is possible to
-bind all functions to keyboard sequences. `Pandoc-mode` uses the prefix `C-c /`,
+bind all functions to keyboard sequences. `pandoc-mode` uses the prefix `C-c /`,
 if you bind any functions to keys, it would be best to use this prefix as well.
 In order to make your life a little easier if you do decide to bind certain
 option setting functions to key sequences, all of these have been set up so that
-they can be used with the prefix key `C-u -` (or `M--`) to unsert the relevant
+they can be used with the prefix key `C-u -` (or `M--`) to unset the relevant
 option, and with any other prefix key to set the default value (if the option
 has one, of course).
 
 The option setting functions are all called `pandoc-set-<option>` (with the
 exception of the option `--read`, i.e., the input format, which is determined
 automatically and rarely needs to be set by the user). `<option>` corresponds to
-the long name of the relevant pandoc switch. Functions can be bound in the
+the long name of the relevant Pandoc switch. Functions can be bound in the
 following manner:
 
     (define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
+
+The following table lists the keys defined by default:
+
+`C-c/r`
+  ~  Run `pandoc` on the document
+`C-c/p`
+  ~  Run `markdown2pdf` on the document
+`C-c/s`
+  ~  Save the settings file
+`C-c/Ps`
+  ~  Save the project file
+`C-c/Pu`
+  ~  Remove file-specific settings
+`C-c/w`
+  ~  Set the output format
+`C-c/v`
+  ~  Set a template variable
+`C-c/V`
+  ~  View the output buffer
+`C-c/S`
+  ~  View the current settings
+`C-c/c`
+  ~  Insert a new `(@)`-item
+`C-c/C`
+  ~  Select and insert a `(@)`-label
 
 
 # Settings Files #
@@ -476,7 +496,7 @@ form:
 
     <option>::<value>
 
-`<option>` is one of pandoc's long options without the two dashes. (For the
+`<option>` is one of Pandoc's long options without the two dashes. (For the
 input and output formats, the forms `read` and `write` are used, not the
 alternative forms `from` and `to`. Additionally, the option `output-dir` is
 valid.) `<value>` is a string or, for binary switches, either `t` or `nil`,
