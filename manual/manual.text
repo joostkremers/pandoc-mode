@@ -292,6 +292,29 @@ you want to make the change permanent, you need to save the local settings file
 (which will then be empty) or just delete it completely.
 
 
+# Managing numbered examples #
+
+Pandoc provides a method for creating examples that are numbered sequentially
+throughout the document (see
+[Numbered example lists](http://johnmacfarlane.net/pandoc/README.html#numbered-example-lists)
+in the Pandoc documentation). `pandoc-mode` makes it easier to manage such
+lists. First, by going to "Example Lists | Insert New Example" (`C-c / c`), you
+can insert a new example list item with a numeric label: the first example you
+insert will be numbered `(@1)`, the second `(@2)`, and so on. Before inserting
+the first example item, Emacs will search the document for any existing
+definitions and number the new items sequentially, so that the numeric label
+will always be unique.
+
+Pandoc allows you to refer to such labeled example items in the text by writing
+`(@1)` and `pandoc-mode` provides a facility to make this easier. If you select
+the menu item "Example Lists | Select And Insert Example Label" (`C-c / C` : note
+the capital `C`) Emacs displays a list of all the `(@)`-definitions in your
+document. You can select one with the up or down keys (you can also use `j` and
+`k` or `n` and `p`) and then hit `return` to insert the label into your
+document. If you change your mind, you can leave the selection buffer with `q`
+without inserting anything into your document.
+
+
 # Using @@-directives #
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the

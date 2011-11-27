@@ -330,6 +330,18 @@ list, not if it appears higher on the list."
 (defvar pandoc-@-counter 0 "Counter for (@)-lists.")
 (make-variable-buffer-local 'pandoc-@-counter)
 
+(defvar pandoc-window-config nil
+  "Stores the window configuration before calling pandoc-select-@.")
+
+(defvar pandoc-pre-select-buffer nil
+  "Buffer from which pandoc-@-select is called.")
+
+(defvar pandoc-@-buffer nil
+  "Buffer for selecting an (@)-element.")
+
+(defvar pandoc-@-overlay nil
+  "Overlay for pandoc-@-buffer.")
+
 (defun pandoc-@-counter-inc ()
   "Increment pandoc-@-counter and return the new value."
   (when (= pandoc-@-counter 0) ; hasn't been updated in this buffer yet.
@@ -340,6 +352,75 @@ list, not if it appears higher on the list."
           (when (> label pandoc-@-counter)
             (setq pandoc-@-counter label))))))
   (incf pandoc-@-counter))
+
+(defvar pandoc-@-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "q" 'pandoc-quit-@-select)
+    (define-key map "j" 'pandoc-next-@)
+    (define-key map "n" 'pandoc-next-@)
+    (define-key map [down] 'pandoc-next-@)
+    (define-key map "k" 'pandoc-prev-@)
+    (define-key map "p" 'pandoc-prev-@)
+    (define-key map [up] 'pandoc-prev-@)
+    (define-key map [return] 'pandoc-select-current-@)
+    (define-key map [home] 'pandoc-goto-first-@)
+    (define-key map [prior] 'pandoc-goto-first-@)
+    (define-key map [end] 'pandoc-goto-last-@)
+    (define-key map [next] 'pandoc-goto-first-@)
+    map)
+  "Keymap for pandoc-@-mode.")
+
+(defun pandoc-quit-@-select ()
+  "Leave pandoc-@-select-buffer without selecting an (@)-label."
+  (interactive)
+  (remove-overlays)
+  (set-window-configuration pandoc-window-config)
+  (switch-to-buffer pandoc-pre-select-buffer))
+
+(defun pandoc-next-@ ()
+  "Highlight next (@)-definition."
+  (interactive)
+  (if (= (count-lines (point) (point-max)) 2)
+      (beep)
+    (forward-line 2)
+    (move-overlay pandoc-@-overlay (point) (point-at-eol))))
+
+(defun pandoc-prev-@ ()
+  "Highlight previous (@)-definition."
+  (interactive)
+  (if (= (point) (point-min))
+      (beep)
+    (forward-line -2)
+    (move-overlay pandoc-@-overlay (point) (point-at-eol))))
+
+(defun pandoc-goto-first-@ ()
+  "Highlight the first (@)-definition."
+  (interactive)
+  (goto-char (point-min))
+  (move-overlay pandoc-@-overlay (point) (point-at-eol)))
+
+(defun pandoc-goto-last-@ ()
+  "Highlight the last (@)-definition."
+  (interactive)
+  (goto-char (point-max))
+  (forward-line -2)
+  (move-overlay pandoc-@-overlay (point) (point-at-eol)))
+
+(defun pandoc-select-current-@ ()
+  "Leave pandoc-@-select-buffer and insert selected (@)-label at point."
+  (interactive)
+  (looking-at " \\((@.*?)\\)")
+  (let ((label (match-string 1)))
+    (remove-overlays)
+    (set-window-configuration pandoc-window-config)
+    (switch-to-buffer pandoc-pre-select-buffer)
+    (insert label)))
+
+(define-derived-mode pandoc-@-mode
+  fundamental-mode "Pandoc-select"
+  "Major mode for the Pandoc-select buffer."
+  (setq buffer-read-only t)
+  (setq truncate-lines t))
 
 (defvar pandoc-mode-map
   (let ((map (make-sparse-keymap)))
@@ -353,6 +434,7 @@ list, not if it appears higher on the list."
     (define-key map "\C-c/V" 'pandoc-view-output)
     (define-key map "\C-c/S" 'pandoc-view-settings)
     (define-key map "\C-c/c" 'pandoc-insert-@)
+    (define-key map "\C-c/C" 'pandoc-select-@)
     map)
   "Keymap for pandoc-mode.")
 
@@ -792,6 +874,34 @@ Returns an alist with the options and their values."
   (let ((label (pandoc-@-counter-inc)))
     (insert (format "(@%s)" label))))	
 
+(defun pandoc-collect-@-definitions ()
+  "Collect (@)-definitions and return them as a list."
+  (save-excursion
+    (goto-char (point-min))
+    (let (definitions)
+    (while (re-search-forward "^[[:space:]]*\\((@.*?).*\\)$" nil t)
+      (add-to-list 'definitions (match-string-no-properties 1) t))
+    definitions)))
+
+(defun pandoc-select-@ ()
+  "Show a list of (@)-definitions and allow the user to choose one."
+  (interactive)
+  (let ((definitions (pandoc-collect-@-definitions)))
+    (setq pandoc-window-config (current-window-configuration))
+    (setq pandoc-pre-select-buffer (current-buffer))
+    (setq pandoc-@-buffer (get-buffer-create " *Pandoc select*"))
+    (set-buffer pandoc-@-buffer)
+    (pandoc-@-mode)
+    (let ((buffer-read-only nil))
+      (erase-buffer)
+      (mapc #'(lambda (definition)
+		(insert (concat " " definition "\n\n")))
+	    definitions)
+      (goto-char (point-min))
+      (setq pandoc-@-overlay (make-overlay (point-min) (point-at-eol)))
+      (overlay-put pandoc-@-overlay 'face 'highlight))
+    (select-window (display-buffer pandoc-@-buffer))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Functions to set specific options. ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -1160,6 +1270,9 @@ set. Without any prefix argument, the option is toggled."
     ("Project"
      ["Save Project File" pandoc-save-project-file :active t]
      ["Undo File Settings" pandoc-undo-file-settings :active t])
+    ("Example Lists"
+     ["Insert New Example" pandoc-insert-@ :active t]
+     ["Select And Insert Example Label" pandoc-select-@ :active t])
     "--"
     ["View Current Settings" pandoc-view-settings :active t]
     ,(append (cons "Input Format"
