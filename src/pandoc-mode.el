@@ -141,7 +141,7 @@ list, not if it appears higher on the list."
     email-obfuscation
     id-prefix
     indented-code-classes
-    toc
+    table-of-contents
     base-header-level
     template
     variable
