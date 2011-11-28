@@ -128,7 +128,7 @@ from the other files, see the section
 When Emacs calls `pandoc`, it expands filenames, so that they are absolute and
 don't contain any abbreviations (such as ~ for one's home directory). This means
 you can have relative filenames in your settings, or indeed ~, which can be
-practicle if you move settings files to different locations or e.g. between
+practical if you move settings files to different locations or e.g. between
 computers with different OSes. (For example, Linux expands ~ to `/home/<user>`,
 while on OS X it becomes `/Users/<user>`.)
 
