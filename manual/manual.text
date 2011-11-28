@@ -287,9 +287,9 @@ you can make changes to the options and save those to a local settings file
 (with the menu option "Save File Settings" or the key sequence `C-c / s`). If
 you want to undo all file-specific settings and return to the settings defined
 in the project file, you can select the menu item "Project | Undo File Settings"
-(`C-c / P u`). This erases the local options, but only *the current session*. If
-you want to make the change permanent, you need to save the local settings file
-(which will then be empty) or just delete it completely.
+(`C-c / P u`). This erases the local options, but only for *the current
+session*. If you want to make the change permanent, you need to save the local
+settings file (which will then be empty) or just delete it completely.
 
 
 # Managing numbered examples #
