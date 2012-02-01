@@ -3,6 +3,8 @@
 ;; Copyright (c) 2009-2011 Joost Kremers
 ;; All rights reserved.
 ;;
+;; Author: Joost Kremers <joostkremers@yahoo.com>
+;;
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
 ;; are met:
@@ -28,7 +30,10 @@
 
 ;;; Commentary:
 
-;; Provide a mode for interacting with Pandoc.
+;; Pandoc-mode is a minor mode for interacting with Pandoc, a 'universal
+;; document converter': <http://johnmacfarlane.net/pandoc/>.
+;;
+;; See the pandoc-mode manual for usage and installation instructions.
 
 ;;; Code:
 
