@@ -1,4 +1,4 @@
-;; pandoc-mode.el
+;;; pandoc-mode.el --- Interact with Pandoc
 ;;
 ;; Copyright (c) 2009-2011 Joost Kremers
 ;; All rights reserved.
@@ -25,7 +25,12 @@
 ;; THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 ;; (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 ;; THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-;;
+
+;;; Commentary:
+
+;; Provide a mode for interacting with Pandoc.
+
+;;; Code:
 
 (require 'easymenu)
 
