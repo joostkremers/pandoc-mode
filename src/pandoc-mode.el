@@ -141,7 +141,6 @@ list, not if it appears higher on the list."
     gladtex
     incremental
     offline
-    xetex
     chapters
     number-sections
     listings
