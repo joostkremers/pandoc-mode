@@ -336,6 +336,13 @@ list, not if it appears higher on the list."
 
 (defvar pandoc-output-buffer (get-buffer-create " *Pandoc output*"))
 
+(defun pandoc-define-binary-option (option description)
+  "Create a binary option."
+  (declare (indent 2))
+  (add-to-list 'pandoc-switches option)
+  (add-to-list 'pandoc-binary-switches (list description option))
+  (add-to-list 'pandoc-options (list option)))
+
 (defvar pandoc-@-counter 0 "Counter for (@)-lists.")
 (make-variable-buffer-local 'pandoc-@-counter)
 
@@ -881,7 +888,7 @@ Returns an alist with the options and their values."
   "Insert a new labeled (@) list marker at point."
   (interactive)
   (let ((label (pandoc-@-counter-inc)))
-    (insert (format "(@%s)" label))))	
+    (insert (format "(@%s)" label))))
 
 (defun pandoc-collect-@-definitions ()
   "Collect (@)-definitions and return them as a list."
