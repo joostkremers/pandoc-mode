@@ -343,6 +343,32 @@ list, not if it appears higher on the list."
   (add-to-list 'pandoc-binary-switches (list description option))
   (add-to-list 'pandoc-options (list option)))
 
+(defmacro pandoc-define-filepath-option (docstring option prompt)
+  "Create an option to set a file path.
+The option is added to PANDOC-SWITCHES, PANDOC-FILEPATH-SWITCHES
+and PANDOC-OPTIONS. Furthermore, a menu entry is created and a
+function to set the option."
+  (add-to-list 'pandoc-switches option)
+  (add-to-list 'pandoc-filepath-switches option)
+  (add-to-list 'pandoc-options (list option))
+  (add-to-list 'pandoc-files-menu (list prompt
+					(vector (concat "No " prompt) `(pandoc-set (quote ,option nil))
+						:active t
+						:style radio
+						:selected `(null (pandoc-get (quote ,option))))
+					(vector (concat "Set " prompt "...") (concat "pandoc-set-" option)
+						:active t
+						:style radio
+						:selected `(stringp (pandoc-get ,option)))))
+  `(defun ,(concat "pandoc-set-" (symbol-name option)) (prefix)
+     ,docstring
+     (interactive "P")
+     (pandoc-set (quote ,option)
+		 (cond
+		  ((eq prefix '-) nil)
+		  ((null prefix) (read-file-name ,prompt))
+		  (t t)))))
+
 (defvar pandoc-@-counter 0 "Counter for (@)-lists.")
 (make-variable-buffer-local 'pandoc-@-counter)
 
