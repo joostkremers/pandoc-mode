@@ -8,12 +8,12 @@
 
 `pandoc-mode` is an Emacs mode for interacting with
 [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus
-libraries) that can convert a text written in one markup language into another
-markup language. Supported input formats are markdown and (subsets of)
-reStructuredText, HTML, and LaTeX. Supported output formats are markdown,
-reStructuredText, HTML, LaTeX, ConTeXt, PDF, RTF, DocBook XML, OpenDocument XML,
-OpenOffice.org text document (odt), GNU Texinfo, MediaWiki markup, groff man
-pages, and several HTML-based slide show formats.
+libraries) created by John MacFarlane that can convert a text written in one
+markup language into another markup language. Supported input formats are
+markdown and (subsets of) reStructuredText, HTML, and LaTeX. Supported output
+formats are, among others, markdown, HTML(5), LaTeX, PDF, OpenOffice.org text
+document (odt), MS Word (docx), GNU Texinfo, MediaWiki markup, groff man pages,
+and several slide show formats.
 
 `pandoc-mode` is implemented as a minor mode that can be activated alongside the
 major mode for any of the supported input formats. It provides facilities to set
@@ -21,6 +21,9 @@ the various options that Pandoc accepts and to run Pandoc on the input file. It
 is possible to create different output profiles for a single input file, so that
 you can, for example, write your text in markdown and then translate it to HTML
 for online reading, PDF for offline reading and Texinfo for reading in Emacs.
+
+The current version of `pandoc-mode` is 2.0 and is compatible with Pandoc
+version 1.9.
 
 
 # Installation #
