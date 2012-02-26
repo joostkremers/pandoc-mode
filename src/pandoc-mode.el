@@ -1183,11 +1183,11 @@ set. Without any prefix argument, the option is toggled."
       ["Set/Change Template Variable" pandoc-set-template-variable :active t]
       ["Unset Template Variable" (pandoc-set-template-variable '-) :active t])
      ("LaTeX Engine"
-      ["PdfLaTeX" (pandoc-set 'latex-engine "pdflatex") :active t
+      ["PdfLaTeX" (pandoc-set 'latex-engine "pdflatex") :active (string= (pandoc-get 'write) "latex")
        :style radio :selected (null (pandoc-get 'latex-engine))]
-      ["XeLaTeX" (pandoc-set 'latex-engine "xelatex") :active t
+      ["XeLaTeX" (pandoc-set 'latex-engine "xelatex") :active (string= (pandoc-get 'write) "latex")
        :style radio :selected (string= (pandoc-get 'latex-engine) "xelatex")]
-      ["LuaLaTeX" (pandoc-set 'latex-engine "lualatex") :active t
+      ["LuaLaTeX" (pandoc-set 'latex-engine "lualatex") :active (string= (pandoc-get 'write) "latex")
        :style radio :selected (string= (pandoc-get 'latex-engine) "lualatex")])
      ("Email Obfuscation"
       ["None" (pandoc-set 'email-obfuscation "none") :active t
