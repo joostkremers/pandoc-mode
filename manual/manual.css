@@ -22,12 +22,12 @@ h1.title {
     font-size: 2em;
 }
 
-h3.author {
+h2.author {
     text-align: center;
     font-size: 1.3em;
 }
 
-h4.date {
+h3.date {
     text-align: center;
     font-size: 100%
 }
@@ -52,6 +52,11 @@ img {
 }
 
 #TOC {
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+    -moz-box-shadow:    3px 3px 5px 6px #333333;
+    -webkit-box-shadow: 3px 3px 5px 6px #333333;
+    box-shadow:         3px 3px 5px 6px #333333;
     position: fixed;
     margin-left: 75%; */
     width: 25%;
