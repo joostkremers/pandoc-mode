@@ -589,8 +589,8 @@ absolute filename as well."
 INPUT-FILE is the name of the input file. If PDF is non-nil, an
 output file is always set, derived either from the input file or
 from the output file set for the \"latex\" output profile, and
-gets the suffix `.pdf'. If the output format is \"odt\" or
-\"epub\" but no output file is specified, one will be created,
+gets the suffix `.pdf'. If the output format is \"odt\", \"epub\"
+or \"docx\" but no output file is specified, one will be created,
 since pandoc does not support output to stdout for those two
 formats."
   (let ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
@@ -601,8 +601,8 @@ formats."
 		 ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
 		      (and (null (pandoc-get 'output))                ; or if the user set no output file but either
 			   (or pdf                                    ; (i) we're running markdown2pdf, or
-			       (string= (pandoc-get 'write) "odt")    ; (ii) the output format is odt or epub
-			       (string= (pandoc-get 'write) "epub"))))
+			       (member (string= (pandoc-get 'write))  ; (ii) the output format is odt, epub or docx
+				       '("odt" "epub" "docx")))))
 		  (format "--output=%s/%s%s"                          ; we create an output file name.
 			  (expand-file-name (or (pandoc-get 'output-dir)
 						(file-name-directory input-file)))

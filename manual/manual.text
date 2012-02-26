@@ -177,10 +177,10 @@ Template variables are saved in the settings file and can also be viewed with
 The first item in the menu is "Run Pandoc" (also accessible with `C-c / r`),
 which, as the name suggests, runs Pandoc on the document, passing all options
 you have set. By default, Pandoc sends the output to stdout, which is redirected
-to the buffer `*Pandoc output*`. (Except when the output format is "odt" or
-"epub", in which case output is always sent to a file.) The output buffer is not
-normally shown, but you can make it visible through the menu or by typing `C-c /
-V`. Error messages from Pandoc are also displayed in this buffer.
+to the buffer `*Pandoc output*`. (Except when the output format is "odt", "epub"
+or "docx", in which case output is always sent to a file.) The output buffer is
+not normally shown, but you can make it visible through the menu or by typing
+`C-c / V`. Error messages from Pandoc are also displayed in this buffer.
 
 Note that when you run Pandoc, Pandoc doesn't read the file on disk, rather,
 Emacs feeds it the contents of the buffer through stdin. This means that you
@@ -215,9 +215,9 @@ proper suffix for the output format. Lastly, you can also specify an output file
 yourself.
 
 Note that Pandoc does not allow output to be sent to stdout if the output format
-is an OpenOffice.org Document (ODT). Therefore, Emacs will always create an
-output filename in this case, unless of course you've explicitly set an output
-file yourself.
+is an OpenOffice.org Document (ODT), Epub or MS Word (docx) file. Therefore,
+Emacs will always create an output filename in those cases, unless of course
+you've explicitly set an output file yourself.
 
 The output file you set is always just the base filename, it does not specify a
 directory. Which directory the output file is written to depends on the setting
