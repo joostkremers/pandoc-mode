@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@yahoo.com>
 ;; Maintainer: Joost Kremers <joostkremers@yahoo.com>
 ;; Created: 31 Oct 2009
-;; Version: 2.0
+;; Version: 2.1
 ;; Keywords: text, pandoc
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -55,11 +55,6 @@
 
 (defcustom pandoc-binary "/usr/bin/pandoc"
   "*The full path of the pandoc binary."
-  :group 'pandoc
-  :type 'file)
-
-(defcustom pandoc-markdown2pdf-script "/usr/bin/markdown2pdf"
-  "*The full path of the markdown2pdf script."
   :group 'pandoc
   :type 'file)
 
@@ -141,14 +136,6 @@ PANDOC-DEFINE-*-OPTION functions. The switches --read, --write
 and -output are not in this list, because they need special
 treatment.")
 
-(defvar pandoc-markdown2pdf-switches
-  '(variable
-    data-dir)
-  "List of switches accepted by the markdown2pdf binary.
-A few switches are preset, other switches are added by the
-PANDOC-DEFINE-*-OPTION functions. The switches --read and --write
-are not in this list, because they need special treatment.")
-
 (defvar pandoc-filepath-switches
   '(data-dir)
   "List of switches that have a file path as value.
@@ -208,36 +195,22 @@ list with the default value NIL.")
 (defvar pandoc-files-menu nil
   "Auxiliary variable for creating the file menu.")
 
-(defmacro pandoc-define-binary-option (option description &optional markdown2pdf)
+(defmacro pandoc-define-binary-option (option description)
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of
 the pandoc switch (without dashes). DESCRIPTION is the
-description of the option as it will appear in the menu.
-
-MARKDOWN2PDF is either NIL or T and indicates whether this option
-can be passed to markdown2pdf as well. Its value can also be the
-symbol 'exclusive, in which case it is ONLY a markdown2pdf
-switch."
+description of the option as it will appear in the menu."
   (declare (indent defun))
   `(progn
-     ,(unless (eq markdown2pdf 'exclusive)
-	`(add-to-list 'pandoc-switches (quote ,option) t))
-     ,(when markdown2pdf
-	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option) t))
+     (add-to-list 'pandoc-switches (quote ,option) t)
      (add-to-list 'pandoc-binary-switches (cons ,description (quote ,option)) t)
      (add-to-list 'pandoc-options (list (quote ,option))) t))
 
-;; currently, --xetex and --luatex are the only options that are only accepted
-;; by markdown2pdf and not by pandoc itself. therefore, the other
-;; option-defining macros do not accept 'exclusive.
-
-(defmacro pandoc-define-file-option (option prompt &optional full-path default markdown2pdf)
+(defmacro pandoc-define-file-option (option prompt &optional full-path default)
   "Define a file option.
 The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
-PANDOC-FILEPATH-SWITCHES (unless FULL-PATH is NIL) and
-PANDOC-MARKDOWN2PDF-SWITCHES (unless MARKDOWN2PDF is NIL).
-Furthermore, a menu entry is created and a function to set/unset
-the option.
+PANDOC-FILEPATH-SWITCHES (unless FULL-PATH is NIL). Furthermore,
+a menu entry is created and a function to set/unset the option.
 
 The function to set the option can be called with the prefix
 argument C-u - (or M--) to unset the option. A default value (if
@@ -252,16 +225,12 @@ formulated in such a way that the strings \"No \", \"Set \" and
 \"Default \" can be added before it. If FULL-PATH is T, the full
 path to the file is stored, otherwise just the file name without
 directory. DEFAULT must be either NIL or T and indicates whether
-the option can have a default value. MARKDOWN2PDF is either NIL
-or T and indicates whether this option can be passed to
-markdown2pdf as well."
+the option can have a default value."
   (declare (indent defun))
   `(progn
      (add-to-list 'pandoc-switches (quote ,option) t)
      ,(when full-path
 	`(add-to-list 'pandoc-filepath-switches (quote ,option) t))
-     ,(when markdown2pdf
-	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option) t))
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-files-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
 						   (list prompt
@@ -290,11 +259,11 @@ markdown2pdf as well."
 					      `(file-name-nondirectory (read-file-name ,(concat prompt ": ")))))
 			    (t ,default)))))))
 
-(defmacro pandoc-define-numeric-option (option prompt &optional markdown2pdf)
+(defmacro pandoc-define-numeric-option (option prompt)
   "Define a numeric option.
-The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
-PANDOC-MARKDOWN2PDF-SWITCHES if MARKDOWN2PDF is T. Furthermore, a
-menu entry is created and a function to set/unset the option.
+The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS.
+Furthermore, a menu entry is created and a function to set/unset
+the option.
 
 The function to set the option can be called with the prefix
 argument C-u - (or M--) to unset the option. If no prefix
@@ -304,14 +273,10 @@ OPTION must be a symbol and must be identical to the long form of
 the pandoc switch (without dashes). PROMPT is a string that is
 used to prompt for setting and unsetting the option. It must be
 formulated in such a way that the strings \"Default \" and \"Set
-\" can be added before it. MARKDOWN2PDF is either NIL or T and
-indicates whether this option can be passed to markdown2pdf as
-well."
+\" can be added before it."
   (declare (indent defun))
   `(progn
      (add-to-list 'pandoc-switches (quote ,option) t)
-     ,(when markdown2pdf
-	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option) t))
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,prompt
 					     ,(vector (concat "Default " prompt) (quote (pandoc-set (quote option) nil))
@@ -331,11 +296,11 @@ well."
 			       nil
 			     (string-to-number (read-string ,(concat prompt ": ")))))))))
 
-(defmacro pandoc-define-string-option (option prompt &optional default markdown2pdf)
+(defmacro pandoc-define-string-option (option prompt &optional default)
   "Define a option whose value is a string.
-The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
-PANDOC-MARKDOWN2PDF-SWITCHES if MARKDOWN2PDF is T. Furthermore, a
-menu entry is created and a function to set the option.
+The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS.
+Furthermore, a menu entry is created and a function to set the
+option.
 
 The function to set the option can be called with the prefix
 argument C-u - (or M--) to unset the option. A default value (if
@@ -348,13 +313,9 @@ the pandoc switch (without dashes). PROMPT is a string that is
 used to prompt for setting and unsetting the option. It must be
 formulated in such a way that the strings \"No \", \"Set \" and
 \"Default \" can be added before it. DEFAULT must be either NIL
-or T and indicates whether the option can have a default value.
-MARKDOWN2PDF is either NIL or T and indicates whether this option
-can be passed to markdown2pdf as well."
+or T and indicates whether the option can have a default value."
   `(progn
      (add-to-list 'pandoc-switches (quote ,option) t)
-     ,(when markdown2pdf
-	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option) t))
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
 						   (list prompt
@@ -479,7 +440,7 @@ can be passed to markdown2pdf as well."
 (defvar pandoc-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/r" 'pandoc-run-pandoc)
-    (define-key map "\C-c/p" 'pandoc-run-markdown2pdf)
+    (define-key map "\C-c/p" 'pandoc-convert-to-pdf)
     (define-key map "\C-c/s" 'pandoc-save-settings-file)
     (define-key map "\C-c/Ps" 'pandoc-save-project-file)
     (define-key map "\C-c/Pu" 'pandoc-undo-file-settings)
@@ -600,8 +561,8 @@ formats."
 	(output (cond
 		 ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
 		      (and (null (pandoc-get 'output))                ; or if the user set no output file but either
-			   (or pdf                                    ; (i) we're running markdown2pdf, or
-			       (member (string= (pandoc-get 'write))  ; (ii) the output format is odt, epub or docx
+			   (or pdf                                    ; (i) we're converting to pdf, or
+			       (member (pandoc-get 'write)            ; (ii) the output format is odt, epub or docx
 				       '("odt" "epub" "docx")))))
 		  (format "--output=%s/%s%s"                          ; we create an output file name.
 			  (expand-file-name (or (pandoc-get 'output-dir)
@@ -614,7 +575,7 @@ formats."
 		  (format "--output=%s/%s"                            ; we combine it with the output directory
 			  (expand-file-name (or (pandoc-get 'output-dir)
 						(file-name-directory input-file)))
-			  (if pdf                                     ; and check if we're running markdown2pdf
+			  (if pdf                                     ; and check if we're converting to pdf
 			      (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
 			    (pandoc-get 'output))))
 		 (t nil)))
@@ -629,9 +590,7 @@ formats."
 				      ((eq value t) (format "--%s" switch))
 				      ((stringp value) (format "--%s=%s" switch value))
 				      (t nil))))
-			       (if pdf
-				   pandoc-markdown2pdf-switches
-				 pandoc-switches))))
+			       pandoc-switches)))
     (delq nil (append (list read write output) variables other-options))))
 
 (defun pandoc-process-directives (output-format)
@@ -688,11 +647,8 @@ to pandoc. Its contents is copied into the temporary buffer, the
 @@-directives are processed, after which pandoc is called.
 
 OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
-format is used.
-
-If PDF is non-nil, markdown2pdf is called instead of pandoc."
-  (let ((filename (buffer-file-name buffer))
-	(command (if pdf pandoc-markdown2pdf-script pandoc-binary)))
+format is used."
+  (let ((filename (buffer-file-name buffer)))
     (with-temp-buffer ; we do this in a temp buffer so we can process
 		      ; @@-directives without having to undo them and set the
 		      ; options independently of the original buffer.
@@ -710,14 +666,14 @@ If PDF is non-nil, markdown2pdf is called instead of pandoc."
 	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
       (let ((option-list (pandoc-create-command-option-list filename pdf)))
 	(insert-buffer-substring-no-properties buffer)
-	(message "Running %s..." (file-name-nondirectory command))
+	(message "Running pandoc...")
 	(pandoc-process-directives (pandoc-get 'write))
 	(with-current-buffer pandoc-output-buffer
 	  (erase-buffer)
-	  (insert (format "Running `%s %s'\n\n" (file-name-nondirectory command) (mapconcat #'identity option-list " "))))
-	(if (= 0 (apply 'call-process-region (point-min) (point-max) command nil pandoc-output-buffer t option-list))
-	    (message "Running %s... Finished." (file-name-nondirectory command))
-	  (message "Error in %s process." (file-name-nondirectory command))
+	  (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
+	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
+	    (message "Running pandoc... Finished.")
+	  (message "Error in pandoc process.")
 	  (display-buffer pandoc-output-buffer))))))
 
 (defun pandoc-run-pandoc (prefix)
@@ -731,8 +687,8 @@ is used."
 			    (completing-read "Output format to use: " pandoc-output-formats nil t)
 			  nil)))
 
-(defun pandoc-run-markdown2pdf (prefix)
-  "Run markdown2pdf on the current document.
+(defun pandoc-convert-to-pdf (prefix)
+  "Convert the current document to pdf.
 If the output format of the current buffer is set to \"latex\",
 the buffer's options are used. If called with a prefix argument,
 or if the current buffer's output format is not \"latex\", a
@@ -1049,13 +1005,13 @@ is unset."
 	      (if (eq prefix '-)
 		  nil
 		(let ((value (completing-read "Set LaTeX Engine: " '("pdflatex" "xelatex" "lualatex") nil t)))
-		  (if (string= value "")
+		  (if (member value '("" "pdflatex"))
 		      nil
 		    value))))
   (message "LaTeX Engine: %s." (or (pandoc-get 'latex-engine)
-				   "unset")))
+				   "default")))
 
-(pandoc-define-file-option template "Template File" t nil t)
+(pandoc-define-file-option template "Template File" t)
 (pandoc-define-file-option css "CSS Style Sheet")
 (pandoc-define-file-option reference-odt "Reference ODT File" t)
 (pandoc-define-file-option reference-docx "Reference docx File" t)
@@ -1063,16 +1019,16 @@ is unset."
 (pandoc-define-file-option epub-stylesheet "EPUB Style Sheet" t t)
 (pandoc-define-file-option epub-cover-image "EPUB Cover Image" t)
 (pandoc-define-file-option epub-embed-font "EPUB Embedded Font" t) ; this option can be repeated, so it should be handled differently.
-(pandoc-define-file-option bibliography "Bibliography File" t nil t)
-(pandoc-define-file-option csl "CSL File" t nil t)
-(pandoc-define-file-option citation-abbreviations "Citation Abbreviations File" t nil)
+(pandoc-define-file-option bibliography "Bibliography File" t)
+(pandoc-define-file-option csl "CSL File" t)
+(pandoc-define-file-option citation-abbreviations "Citation Abbreviations File" t)
 (pandoc-define-file-option custom-header "Custom Header" t)
-(pandoc-define-file-option include-in-header "Include Header" t nil t)
-(pandoc-define-file-option include-before-body "Include Before Body" t nil t)
-(pandoc-define-file-option include-after-body "Include After Body" t nil t)
+(pandoc-define-file-option include-in-header "Include Header" t)
+(pandoc-define-file-option include-before-body "Include Before Body" t)
+(pandoc-define-file-option include-after-body "Include After Body" t)
 
 (pandoc-define-numeric-option columns "Column Width")
-(pandoc-define-numeric-option tab-stop "Tab Stop Width" t)
+(pandoc-define-numeric-option tab-stop "Tab Stop Width")
 (pandoc-define-numeric-option base-header-level "Base Header Level")
 (pandoc-define-numeric-option slide-level "Slide Level Header")
 
@@ -1088,24 +1044,22 @@ is unset."
 (pandoc-define-string-option highlight-style "Highlighting Style")
 
 (pandoc-define-binary-option standalone "Standalone")
-(pandoc-define-binary-option preserve-tabs "Preserve Tabs" t)
-(pandoc-define-binary-option strict "Strict" t)
+(pandoc-define-binary-option preserve-tabs "Preserve Tabs")
+(pandoc-define-binary-option strict "Strict")
 (pandoc-define-binary-option normalize "Normalize Document")
 (pandoc-define-binary-option reference-links "Reference Links")
-(pandoc-define-binary-option parse-raw "Parse Raw" t)
+(pandoc-define-binary-option parse-raw "Parse Raw")
 (pandoc-define-binary-option smart "Smart")
 (pandoc-define-binary-option gladtex "gladTeX")
 (pandoc-define-binary-option incremental "Incremental")
 (pandoc-define-binary-option self-contained "Self-contained Document")
-(pandoc-define-binary-option xetex "XeTeX" 'exclusive)
-(pandoc-define-binary-option luatex "LuaTeX" 'exclusive)
 (pandoc-define-binary-option chapters "Top-level Headers Are Chapters")
-(pandoc-define-binary-option number-sections "Number Sections" t)
-(pandoc-define-binary-option listings "Use LaTeX listings Package" t)
+(pandoc-define-binary-option number-sections "Number Sections")
+(pandoc-define-binary-option listings "Use LaTeX listings Package")
 (pandoc-define-binary-option section-divs "Wrap Sections in <div> Tags")
 (pandoc-define-binary-option no-wrap "No Wrap")
 (pandoc-define-binary-option no-highlight "No Highlighting")
-(pandoc-define-binary-option table-of-contents "Table of Contents" t)
+(pandoc-define-binary-option table-of-contents "Table of Contents")
 (pandoc-define-binary-option natbib "Use NatBib")
 (pandoc-define-binary-option biblatex "Use BibLaTeX")
 (pandoc-define-binary-option ascii "Use Only ASCII in HTML")
@@ -1134,8 +1088,8 @@ set. Without any prefix argument, the option is toggled."
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
-    ["Create PDF" pandoc-run-markdown2pdf
-     :active (string= (pandoc-get 'read) "markdown")]
+    ["Create PDF" pandoc-convert-to-pdf
+     :active t]
     ["View Output Buffer" pandoc-view-output :active t]
     ["Save File Settings" pandoc-save-settings-file :active t]
     ["Set As Default Format" pandoc-set-default-format :active t]
@@ -1228,6 +1182,13 @@ set. Without any prefix argument, the option is toggled."
      ("Template Variables"
       ["Set/Change Template Variable" pandoc-set-template-variable :active t]
       ["Unset Template Variable" (pandoc-set-template-variable '-) :active t])
+     ("LaTeX Engine"
+      ["PdfLaTeX" (pandoc-set 'latex-engine "pdflatex") :active t
+       :style radio :selected (null (pandoc-get 'latex-engine))]
+      ["XeLaTeX" (pandoc-set 'latex-engine "xelatex") :active t
+       :style radio :selected (string= (pandoc-get 'latex-engine) "xelatex")]
+      ["LuaLaTeX" (pandoc-set 'latex-engine "lualatex") :active t
+       :style radio :selected (string= (pandoc-get 'latex-engine) "lualatex")])
      ("Email Obfuscation"
       ["None" (pandoc-set 'email-obfuscation "none") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "none")]

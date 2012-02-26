@@ -227,29 +227,22 @@ If you don't specify any output directory, the output file will be written to
 the same directory that the input file is in.
 
 
-## Running markdown2pdf ##
+## Creating a pdf ##
 
-The second item in the menu is "Create PDF" (`C-c / p`). This option is only
-available for markdown files and runs the command `markdown2pdf` on the buffer.
-`markdown2pdf` is essentially a frontend for `pandoc`: it creates a LaTeX file
-first and then runs it through `pdflatex`.
+The second item in the menu is "Create PDF" (`C-c / p`). This option calls
+Pandoc with an output file with the extention `.pdf`, causing Pandoc to create a
+pdf file by first converting to `.tex` and then calling LaTeX on it.
 
 If you choose this option, Emacs checks if your current output format is
-`latex`. If it is, Emacs calls `markdown2pdf` with the buffer's settings. If the
-output format is something other than "latex", Emacs checks if you have a
+`latex`. If it is, Emacs calls Pandoc with the buffer's settings. If the
+output format is something other than `latex`, Emacs checks if you have a
 settings file for LaTeX output and uses those settings. This allows you to
 create a pdf without having to switch the output format to LaTeX.
 
 If your current output format is not LaTeX and no LaTeX settings file is found,
-Emacs calls `markdown2pdf` with only the input and output formats. All other
-options are unset. (Note that you can force Emacs to check for a LaTeX settings
-file by calling `C-c / p` with a prefix argument.)
-
-If the settings Emacs uses specify an output file, this name will also be used
-as the output file for `markdown2pdf`, but with the `.tex` suffix replaced with
-`.pdf`. Otherwise, the output filename is created based on the input filename.
-(Note that `markdown2pdf` always writes its output to a file, it is never
-redirected to the buffer `*Pandoc output*`).
+Emacs calls Pandoc with only the input and output formats. All other options are
+unset. (Note that you can force Emacs to check for a LaTeX settings file by
+calling `C-c / p` with a prefix argument.)
 
 
 # Projects #
