@@ -123,202 +123,56 @@ list, not if it appears higher on the list."
   "List of pandoc output formats plus file extensions.")
 
 (defvar pandoc-switches
-  '(standalone
-    preserve-tabs
-    tab-stop
-    strict
-    normalize
-    reference-links
-    parse-raw
-    smart
-    html5
-    latexmathml
-    mathml
-    mimetex
-    webtex
-    jsmath
-    mathjax
-    gladtex
-    incremental
-    offline
-    chapters
-    number-sections
-    listings
-    section-divs
-    no-wrap
-    columns
-    email-obfuscation
-    id-prefix
-    indented-code-classes
-    table-of-contents
-    base-header-level
-    template
-    variable
-    css
-    include-in-header
-    include-before-body
-    include-after-body
-    title-prefix
-    reference-odt
-    epub-stylesheet
-    epub-cover-image
-    epub-metadata
-    print-default-template
-    bibliography
-    csl
-    natbib
-    biblatex
+  '(variable
     data-dir)
-  "List of switches accepted by the pandoc binary. Switches that
-  need special treatment (--read, --write and --output) are not in this list.")
+  "List of switches accepted by the pandoc binary.
+A few switches are preset, other switches are added by the
+PANDOC-DEFINE-*-OPTION functions. The switches --read, --write
+and -output are not in this list, because they need special
+treatment.")
 
 (defvar pandoc-markdown2pdf-switches
-  '(preserve-tabs
-    tab-stop
-    strict
-    parse-raw
-    xetex
-    number-sections
-    listings
-    table-of-contents
-    template
-    variable
-    include-in-header
-    include-before-body
-    include-after-body
-    bibliography
-    csl
+  '(variable
     data-dir)
-  "List of switches accepted by the markdown2pdf binary. Switches
-  that need special treatment (--read and --write) are not in
-  this list.")
+  "List of switches accepted by the markdown2pdf binary.
+A few switches are preset, other switches are added by the
+PANDOC-DEFINE-*-OPTION functions. The switches --read and --write
+are not in this list, because they need special treatment.")
 
 (defvar pandoc-filepath-switches
-  '(data-dir
-    include-in-header
-    include-before-body
-    include-after-body
-    custom-header
-    template
-    epub-stylesheet
-    epub-cover-image
-    epub-metadata
-    reference-odt
-    bibliography ; TODO
-    csl) ; TODO
-  "List of switches that have a file path as value, which are
-  expanded before they are sent to pandoc. For relative paths,
-  the file's working directory is used as base directory.")
+  '(data-dir)
+  "List of switches that have a file path as value.
+These file paths are expanded before they are sent to pandoc. For
+relative paths, the file's working directory is used as base
+directory.
 
-(defvar pandoc-binary-switches
-  '(("Standalone" . standalone)
-    ("Preserve Tabs" . preserve-tabs)
-    ("Strict" . strict)
-    ("Normalize Document" . normalize)
-    ("Reference Links" . reference-links)
-    ("Parse Raw" . parse-raw)
-    ("Smart" . smart)
-    ("HTML5" . html5)
-    ("gladTeX" . gladtex)
-    ("Incremental" . incremental)
-    ("Offline" . offline)
-    ("XeTeX" . xetex)
-    ("Top-level headers are chapters" . chapters)
-    ("Number Sections" . number-sections)
-    ("Use LaTeX listings Package" . listings)
-    ("Wrap Sections in <div> Tags" . section-divs)
-    ("No Wrap" . no-wrap)
-    ("Table of Contents" . table-of-contents)
-    ("Use NatBib" . natbib)
-    ("Use BibLaTeX" . biblatex)
-    ("Use only ASCII in HTML" . ascii)
-    ;; ("Sanitize HTML" . sanitize-html) ; removed?
-    ))
+One switch is preset, others are added by PANDOC-DEFINE-FILE-OPTION.")
+
+(defvar pandoc-binary-switches nil
+  "List of binary switches.
+These are set by PANDOC-DEFINE-BINARY-OPTION.")
 
 (defvar pandoc-options
-  '((read)                         ; see pandoc-input-formats
-    (read-lhs)                     ; input is literal Haskell
-    (write . "native")             ; see pandoc-output-formats
-    (write-lhs)                    ; output is literal Haskell
-
-    ;; if the value of an option is NIL, it is *not* passed to pandoc. filepaths
-    ;; are expanded before beiing passed to pandoc, filenames are not. TODO
-
-    ;; possible value: a filename, NIL or T
+  '((read)
+    (read-lhs)
+    (write . "native")
+    (write-lhs)
     (output)
-    (epub-stylesheet)
-
-    ;; possible value: a directory path or NIL
     (data-dir)
     (output-dir) ; this is not actually a pandoc option
+    (variable))
+  "Pandoc option alist.
+List of options and their default values. For each buffer in
+which pandoc-mode is activated, a buffer-local copy of this list
+is made that stores the local values of the options. (In fact,
+two copies are made, one for the local options and one for the
+project options.
 
-    ;; possible value: a filename or NIL
-    (css)
-
-    ;; possible value: filepath or NIL
-    (include-in-header)
-    (include-before-body)
-    (include-after-body)
-    (custom-header)
-    (template)
-    (reference-odt)
-    (epub-cover-image)
-    (epub-metadata)
-    (bibliography)
-    (csl)
-
-    ;; possibe values: an integer or NIL
-    (columns)
-    (tab-stop)
-    (base-header-level)
-
-    ;; possible values: a string, NIL or T
-    (latexmathml)
-    (mathml)
-    (mimetex)
-    (webtex)
-    (jsmath)
-
-    ;; possible values: a string or NIL
-    (mathjax)
-    (title-prefix)
-    (id-prefix)
-    (indented-code-classes)
-
-    ;; possible values: an alist or NIL
-    (variable)
-
-    ;; possible values: "none", "javascript" or "references"
-    (email-obfuscation . "none")
-
-    ;; possible values: NIL or T (binary switches)
-    (standalone)
-    (preserve-tabs)
-    (strict)
-    (normalize)
-    (reference-links)
-    (parse-raw)
-    (smart)
-    (html5)
-    (gladtex)
-    (incremental)
-    (offline)
-    (xetex)
-    (chapters)
-    (number-sections)
-    (listings)
-    (section-divs)
-    (no-wrap)
-    (table-of-contents)
-    (natbib)
-    (biblatex)
-    (ascii)
-    ;; (sanitize-html) ; removed?
-    )
-  "Pandoc option alist.")
+The PANDOC-DEFINE-*-OPTION functions add their options to this
+list with the default value NIL.")
 
 ;; Regarding storing of options: both per-file options and project are stored in
-;; buffer-local variables. Note that pandoc-local-options stores *all* options,
+;; buffer-local variables. Note that PANDOC-LOCAL-OPTIONS stores *all* options,
 ;; the per-file ones and the project ones. The reason for this is that the
 ;; per-file (a.k.a. local) options should be able to override the project
 ;; options. We cannot say that if a local option has the value NIL, we check the
@@ -336,38 +190,175 @@ list, not if it appears higher on the list."
 
 (defvar pandoc-output-buffer (get-buffer-create " *Pandoc output*"))
 
-(defun pandoc-define-binary-option (option description)
-  "Create a binary option."
-  (declare (indent 2))
-  (add-to-list 'pandoc-switches option)
-  (add-to-list 'pandoc-binary-switches (list description option))
-  (add-to-list 'pandoc-options (list option)))
+(defmacro pandoc-define-binary-option (option description &optional markdown2pdf)
+  "Create a binary option.
+OPTION must be a symbol and must be identical to the long form of
+the pandoc switch (without dashes). DESCRIPTION is the
+description of the option as it will appear in the menu.
 
-(defmacro pandoc-define-filepath-option (docstring option prompt)
-  "Create an option to set a file path.
-The option is added to PANDOC-SWITCHES, PANDOC-FILEPATH-SWITCHES
-and PANDOC-OPTIONS. Furthermore, a menu entry is created and a
-function to set the option."
-  (add-to-list 'pandoc-switches option)
-  (add-to-list 'pandoc-filepath-switches option)
-  (add-to-list 'pandoc-options (list option))
-  (add-to-list 'pandoc-files-menu (list prompt
-					(vector (concat "No " prompt) `(pandoc-set (quote ,option nil))
-						:active t
-						:style radio
-						:selected `(null (pandoc-get (quote ,option))))
-					(vector (concat "Set " prompt "...") (concat "pandoc-set-" option)
-						:active t
-						:style radio
-						:selected `(stringp (pandoc-get ,option)))))
-  `(defun ,(concat "pandoc-set-" (symbol-name option)) (prefix)
-     ,docstring
-     (interactive "P")
-     (pandoc-set (quote ,option)
-		 (cond
-		  ((eq prefix '-) nil)
-		  ((null prefix) (read-file-name ,prompt))
-		  (t t)))))
+MARKDOWN2PDF is either NIL or T and indicates whether this option
+can be passed to markdown2pdf as well. Its value can also be the
+symbol 'exclusive, in which case it is ONLY a markdown2pdf
+switch."
+  (declare (indent defun))
+  `(progn
+     ,(unless (eq markdown2pdf 'exclusive)
+	`(add-to-list 'pandoc-switches (quote ,option)))
+     ,(when markdown2pdf
+	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option)))
+     (add-to-list 'pandoc-binary-switches (cons ,description (quote ,option)))
+     (add-to-list 'pandoc-options (list (quote ,option)))))
+
+;; currently, --xetex is the only option that is only accepted by markdown2pdf
+;; and not by pandoc itself. therefore, the other option-defining macros do not
+;; accept 'exclusive.
+
+(defmacro pandoc-define-file-option (option prompt &optional full-path default markdown2pdf)
+  "Define a file option.
+The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
+PANDOC-FILEPATH-SWITCHES (unless FULL-PATH is NIL) and
+PANDOC-MARKDOWN2PDF-SWITCHES (unless MARKDOWN2PDF is NIL).
+Furthermore, a menu entry is created and a function to set/unset
+the option.
+
+The function to set the option can be called with the prefix
+argument C-u - (or M--) to unset the option. A default value (if
+any) can be set by calling the function with any other prefix
+argument. If no prefix argument is given, the user is prompted
+for a value.
+
+OPTION must be a symbol and must be identical to the long form of
+the pandoc switch (without dashes). PROMPT is a string that is
+used to prompt for setting and unsetting the option. It must be
+formulated in such a way that the strings \"No \", \"Set \" and
+\"Default \" can be added before it. If FULL-PATH is T, the full
+path to the file is stored, otherwise just the file name without
+directory. DEFAULT must be either NIL or T and indicates whether
+the option can have a default value. MARKDOWN2PDF is either NIL
+or T and indicates whether this option can be passed to
+markdown2pdf as well."
+  (declare (indent defun))
+  `(progn
+     (add-to-list 'pandoc-switches (quote ,option))
+     ,(when full-path
+	(add-to-list 'pandoc-filepath-switches (quote ,option)))
+     ,(when markdown2pdf
+	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option)))
+     (add-to-list 'pandoc-options (list (quote ,option)))
+     (add-to-list 'pandoc-files-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
+						   (list prompt
+							 (vector (concat "No " prompt) (quote (pandoc-set (quote option) nil))
+								 :active t
+								 :style 'radio
+								 :selected (quote (null (pandoc-get (quote option)))))
+							 (when default
+							   (vector (concat "Default " prompt) (quote (pandoc-set (quote option) t))
+								   :active t
+								   :style 'radio
+								   :selected (quote (eq (pandoc-get (quote option)) t))))
+							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+								 :active t
+								 :style 'radio
+								 :selected (quote (stringp (pandoc-get (quote option)))))))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
+	   #'(lambda (prefix)
+	       (interactive "P")
+	       (pandoc-set (quote ,option)
+			   (cond
+			    ((eq prefix '-) nil)
+			    ((null prefix) ,(if full-path
+						`(read-file-name ,prompt)
+					      `(file-name-nondirectory (read-file-name ,(concat prompt ": ")))))
+			    (t ,default)))))))
+
+(defmacro pandoc-define-numeric-option (option prompt &optional markdown2pdf)
+  "Define a numeric option.
+The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
+PANDOC-MARKDOWN2PDF-SWITCHES if MARKDOWN2PDF is T. Furthermore, a
+menu entry is created and a function to set/unset the option.
+
+The function to set the option can be called with the prefix
+argument C-u - (or M--) to unset the option. If no prefix
+argument is given, the user is prompted for a value.
+
+OPTION must be a symbol and must be identical to the long form of
+the pandoc switch (without dashes). PROMPT is a string that is
+used to prompt for setting and unsetting the option. It must be
+formulated in such a way that the strings \"Default \" and \"Set
+\" can be added before it. MARKDOWN2PDF is either NIL or T and
+indicates whether this option can be passed to markdown2pdf as
+well."
+  (declare (indent defun))
+  `(progn
+     (add-to-list 'pandoc-switches (quote ,option))
+     ,(when markdown2pdf
+	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option)))
+     (add-to-list 'pandoc-options (list (quote ,option)))
+     (add-to-list 'pandoc-options-menu (list ,prompt
+					     ,(vector (concat "Default " prompt) (quote (pandoc-set (quote option) nil))
+						      :active t
+						      :style 'radio
+						      :selected (quote (null (pandoc-get (quote option)))))
+					     ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+						      :active t
+						      :style 'radio
+						      :selected (quote (pandoc-get (quote option))))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
+	   #'(lambda (prefix)
+	       (interactive "P")
+	       (pandoc-set (quote ,option)
+			   (if (eq prefix '-)
+			       nil
+			     (string-to-number (read-string ,(concat prompt ": ")))))))))
+
+(defmacro pandoc-define-string-option (option prompt &optional default markdown2pdf)
+  "Define a option whose value is a string.
+The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
+PANDOC-MARKDOWN2PDF-SWITCHES if MARKDOWN2PDF is T. Furthermore, a
+menu entry is created and a function to set the option.
+
+The function to set the option can be called with the prefix
+argument C-u - (or M--) to unset the option. A default value (if
+any) can be set by calling the function with any other prefix
+argument. If no prefix argument is given, the user is prompted
+for a value.
+
+OPTION must be a symbol and must be identical to the long form of
+the pandoc switch (without dashes). PROMPT is a string that is
+used to prompt for setting and unsetting the option. It must be
+formulated in such a way that the strings \"No \", \"Set \" and
+\"Default \" can be added before it. DEFAULT must be either NIL
+or T and indicates whether the option can have a default value.
+MARKDOWN2PDF is either NIL or T and indicates whether this option
+can be passed to markdown2pdf as well."
+  `(progn
+     (add-to-list 'pandoc-switches (quote ,option))
+     ,(when markdown2pdf
+	`(add-to-list 'pandoc-markdown2pdf-switches (quote ,option)))
+     (add-to-list 'pandoc-options (list (quote ,option)))
+     (add-to-list 'pandoc-options-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
+						   (list prompt
+							 (vector (concat "No " prompt) (quote (pandoc-set (quote option) nil))
+								 :active t
+								 :style 'radio
+								 :selected (quote (null (pandoc-get (quote option)))))
+							 (when default
+							   (vector (concat "Default " prompt) (quote (pandoc-set (quote option) t))
+								   :active t
+								   :style 'radio
+								   :selected (quote (eq (pandoc-get (quote option)) t))))
+							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+								 :active t
+								 :style 'radio
+								 :selected (quote (stringp (pandoc-get (quote option)))))))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
+	   #'(lambda (prefix)
+	       (interactive "P")
+	       (pandoc-set (quote ,option)
+			   (cond
+			    ((eq prefix '-) nil)
+			    ((null prefix) (read-string ,(concat prompt ": ")))
+			    (t ,default)))))))
 
 (defvar pandoc-@-counter 0 "Counter for (@)-lists.")
 (make-variable-buffer-local 'pandoc-@-counter)
@@ -975,18 +966,6 @@ output format."
 	       ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
 	       (t t))))
 
-(defun pandoc-set-epub-stylesheet (prefix)
-  "Set the EPUB style sheet.
-If called with the prefix argument C-u - (or M--), the EPUB style
-sheet is unset. If called with any other prefix argument,
-Pandoc looks for the file epub.css in the user data directory."
-  (interactive "P")
-  (pandoc-set 'epub-stylesheet
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-file-name "EPUB style sheet: "))
-	       (t t))))
-
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
 If called with the prefix argument C-u - (or M--), the data
@@ -1008,246 +987,54 @@ input file."
 		  nil
 		(read-directory-name "Output directory: " nil nil t))))
 
-(defun pandoc-set-css (prefix)
-  "Set the CSS style sheet.
-If called with the prefix argument C-u - (or M--), the CSS style
-sheet file is unset."
-  (interactive "P")
-  (pandoc-set 'css
-	      (if (eq prefix '-)
-		  nil
-		(file-name-nondirectory (read-file-name "Select CSS style sheet: ")))))
+(pandoc-define-file-option 'template "Template File" t nil t)
+(pandoc-define-file-option 'css "CSS Style Sheet")
+(pandoc-define-file-option 'reference-odt "Reference ODT File" t)
+(pandoc-define-file-option 'epub-metadata "EPUB Metadata File" t)
+(pandoc-define-file-option 'epub-stylesheet "EPUB Style Sheet" t t)
+(pandoc-define-file-option 'epub-cover-image "EPUB Cover Image" t)
+(pandoc-define-file-option 'bibliography "Bibliography File" t nil t)
+(pandoc-define-file-option 'csl "CSL File" t nil t)
+(pandoc-define-file-option 'custom-header "Custom Header" t)
+(pandoc-define-file-option 'include-in-header "Include Header" t nil t)
+(pandoc-define-file-option 'include-before-body "Include Before Body" t nil t)
+(pandoc-define-file-option 'include-after-body "Include After Body" t nil t)
 
-(defun pandoc-set-include-in-header (prefix)
-  "Set the file to be included in the header.
-If called with the prefix argument C-u - (or M--), the include
-header file is unset."
-  (interactive "P")
-  (pandoc-set 'include-in-header
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "File to include in the header: "))))
+(pandoc-define-numeric-option 'columns "Column Width")
+(pandoc-define-numeric-option 'tab-stop "Tab Stop Width" t)
+(pandoc-define-numeric-option 'base-header-level "Base Header Level")
 
-(defun pandoc-set-include-before-body (prefix)
-  "Set the file to be included before the body.
-If called with the prefix argument C-u - (or M--), the include
-before body file is unset."
-  (interactive "P")
-  (pandoc-set 'include-before-body
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "File to include before the body: "))))
+(pandoc-define-string-option 'latexmathml "LaTeXMathML URL" t)
+(pandoc-define-string-option 'mathml "MathML URL" t)
+(pandoc-define-string-option 'mimetex "MimeTeX CGI Script" t)
+(pandoc-define-string-option 'webtex "WebTeX URL" t)
+(pandoc-define-string-option 'jsmath "jsMath URL" t)
+(pandoc-define-string-option 'mathjax "MathJax URL")
+(pandoc-define-string-option 'title-prefix "Title prefix")
+(pandoc-define-string-option 'id-prefix "ID prefix")
+(pandoc-define-string-option 'indented-code-classes "Indented Code Classes")
 
-(defun pandoc-set-include-after-body (prefix)
-  "Set the file to be included after the body.
-If called with the prefix argument C-u - (or M--), the include
-after body file is unset."
-  (interactive "P")
-  (pandoc-set 'include-after-body
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "File to include after the body: "))))
-
-(defun pandoc-set-custom-header (prefix)
-  "Select the custom header file.
-If called with the prefix argument C-u - (or M--), the custom
-header file is unset."
-  (interactive "P")
-  (pandoc-set 'custom-header
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "Select the custom header file: "))))
-
-(defun pandoc-set-template (prefix)
-  "Set the template file.
-If called with the prefix argument C-u - (or M--), the template
-file is unset."
-  (interactive "P")
-  (pandoc-set 'template
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "Template file: "))))
-
-(defun pandoc-set-reference-odt (prefix)
-  "Set the reference ODT file.
-If called with the prefix argument C-u - (or M--), the reference
-ODT file is unset."
-  (interactive "P")
-  (pandoc-set 'reference-odt
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "Reference ODT file: "))))
-
-(defun pandoc-set-epub-metadata (prefix)
-  "Set the EPUB metadata file.
-If called with the prefix argument C-u - (or M--), the EPUB
-metadata file is unset."
-  (interactive "P")
-  (pandoc-set 'epub-metadata
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "EPUB metadata file: "))))
-
-(defun pandoc-set-epub-cover-image (prefix)
-  "Set the EPUB cover image file.
-If called with the prefix argument C-u - (or M--), the EPUB
-cover image file is unset."
-  (interactive "P")
-  (pandoc-set 'epub-cover-image
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "EPUB cover image: "))))
-
-(defun pandoc-set-bibliography (prefix)
-  "Set the bibliography file.
-If called with the prefix argument C-u - (or M--), the
-bibliography file is unset."
-  (interactive "P")
-  (pandoc-set 'bibliography
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "Bibliography file: "))))
-
-(defun pandoc-set-csl (prefix)
-  "Set the CSL file for the bibliography.
-If called with the prefix argument C-u - (or M--), the CSL file
-is unset."
-  (interactive "P")
-  (pandoc-set 'csl
-	      (if (eq prefix '-)
-		  nil
-		(read-file-name "CSL file: "))))
-
-(defun pandoc-set-columns (prefix)
-  "Set the column width.
-If called with the prefix argument C-u - (or M--), the column
-width is unset."
-  (interactive "P")
-  (pandoc-set 'columns
-	      (if (eq prefix '-)
-		  nil
-		(string-to-number (read-string "Column width: ")))))
-
-(defun pandoc-set-tab-stop (prefix)
-  "Set the tab stop size.
-If called with the prefix argument C-u - (or M--), the tab stop
-width is unset (so that its default value of 4 is used by pandoc)."
-  (interactive "P")
-  (pandoc-set 'tab-stop
-	      (if (eq prefix '-)
-		  nil
-		(string-to-number (read-string "Tab stop: ")))))
-
-(defun pandoc-set-base-header-level (prefix)
-  "Set the base header level.
-If called with the prefix argument C-u - (or M--), the base
-header level is unset (so that its default value of 1 is used by
-pandoc)."
-  (interactive "P")
-  (pandoc-set 'base-header-level
-	      (if (eq prefix '-)
-		  nil
-		(string-to-number (read-string "Base header level: ")))))
-
-(defun pandoc-set-latexmathml (prefix)
-  "Use LaTeXMathML to display embedded TeX in HTML output.
-If called with the prefix argument C-u - (or M--), LaTeXMathML is
-not used. If called with any other prefix argument, the
-LaTeXMathML script will be added to the HTML header."
-  (interactive "P")
-  (pandoc-set 'latexmathml
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-string "LaTeXMathML URL: "))
-	       (t t))))
-
-(defun pandoc-set-mathml (prefix)
-  "Use MathML to display embedded TeX in HTML output.
-If called with the prefix argument C-u - (or M--), MathML is not
-used. If called with any other prefix argument, the MathML script
-will be added to the HTML header."
-  (interactive "P")
-  (pandoc-set 'mathml
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-string "MathML URL: "))
-	       (t t))))
-
-(defun pandoc-set-mimetex (prefix)
-  "Render TeX math using the MimeTeX CGI script.
-If called with the prefix argument C-u - (or M--), MimeTeX is not
-used. If called with any other prefix argument, the MimeTeX CGI
-script will assumed to be in /cgi-bin/mimetex.cgi."
-  (interactive "P")
-  (pandoc-set 'mimetex
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-string "MimeTeX CGI script: "))
-	       (t t))))
-
-(defun pandoc-set-webtex (prefix)
-  "Render TeX math using an external script.
-If called with the prefix argument C-u - (or M--), WebTeX is not
-used. If called with any other prefix argument, the Google Chart
-API will be used."
-  (interactive "P")
-  (pandoc-set 'webtex
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-string "WebTeX URL: "))
-	       (t t))))
-
-(defun pandoc-set-jsmath (prefix)
-  "Use jsMath to render TeX math in HTML.
-If called with the prefix argument C-u - (or M--), jsMath is not
-used. If called with any other prefix argument, the user must
-provide a URL in the HTML template."
-  (interactive "P")
-  (pandoc-set 'webtex
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (read-string "jsMath URL: "))
-	       (t t))))
-
-(defun pandoc-set-mathjax (prefix)
-  "Use MathJax to display embedded TeX math in HTML.
-If called with the prefix argument C-u - (or M--), MathJax is not
-used."
-  (interactive "P")
-  (pandoc-set 'mathjax
-	      (if (eq prefix '-)
-		  nil
-		(read-string "MathJax URL: "))))
-
-(defun pandoc-set-title-prefix (prefix)
-  "Set title prefix.
-If called with the prefix argument C-u - (or M--), the title
-prefix is unset."
-  (interactive "P")
-  (pandoc-set 'title-prefix
-	      (if (eq prefix '-)
-		  nil
-		(read-string "Title prefix: "))))
-
-(defun pandoc-set-id-prefix (prefix)
-  "Set the id prefix.
-If called with the prefix argument C-u - (or M--), the id
-prefix is unset."
-  (interactive "P")
-  (pandoc-set 'id-prefix
-	      (if (eq prefix '-)
-		  nil
-		(read-string "ID prefix: "))))
-
-(defun pandoc-set-indented-code-classes (prefix)
-  "Set the option `Indented Code Classes'.
-If called with the prefix argument C-u - (or M--), the indented
-code classes option is unset."
-  (interactive "P")
-  (pandoc-set 'indented-code-classes
-	      (if (eq prefix '-)
-		  nil
-		(read-string "Indented Code Classes: "))))
+(pandoc-define-binary-option standalone "Standalone")
+(pandoc-define-binary-option preserve-tabs "Preserve Tabs" t)
+(pandoc-define-binary-option strict "Strict" t)
+(pandoc-define-binary-option normalize "Normalize Document")
+(pandoc-define-binary-option reference-links "Reference Links")
+(pandoc-define-binary-option parse-raw "Parse Raw" t)
+(pandoc-define-binary-option smart "Smart")
+(pandoc-define-binary-option html5 "HTML5")
+(pandoc-define-binary-option gladtex "gladTeX")
+(pandoc-define-binary-option incremental "Incremental")
+(pandoc-define-binary-option offline "Offline")
+(pandoc-define-binary-option xetex "XeTeX" 'exclusive)
+(pandoc-define-binary-option chapters "Top-level Headers Are Chapters")
+(pandoc-define-binary-option number-sections "Number Sections" t)
+(pandoc-define-binary-option listings "Use LaTeX listings Package" t)
+(pandoc-define-binary-option section-divs "Wrap Sections in <div> Tags")
+(pandoc-define-binary-option no-wrap "No Wrap")
+(pandoc-define-binary-option table-of-contents "Table of Contents" t)
+(pandoc-define-binary-option natbib "Use NatBib")
+(pandoc-define-binary-option biblatex "Use BibLaTeX")
+(pandoc-define-binary-option ascii "Use Only ASCII in HTML")
 
 (defun pandoc-set-template-variable (prefix)
   "Add/change/remove a template variable.
@@ -1265,21 +1052,6 @@ variables, otherwise the user is asked for a value."
 	(message "Template variable %s %s." var (if value
 						    (format "added with value `%s'" value)
 						  "removed"))))))
-
-(defun pandoc-set-email-obfuscation (prefix)
-  "Set the option `Email Obfuscation'.
-If called with prefix argument C-u - (or M--), Email Obfuscation
-is unset."
-  (interactive "P")
-  (pandoc-set 'email-obfuscation
-	      (if (eq prefix '-)
-		  "none"
-		(let ((value (completing-read "Set email obfuscation: " '("none" "javascript" "references") nil t)))
-		  (if (member value '("" "none"))
-		      "none"
-		    value))))
-  (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
-					"unset")))
 
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
@@ -1377,149 +1149,22 @@ set. Without any prefix argument, the option is toggled."
       ["Set Output File..." pandoc-set-output :active t
       :style radio :selected (stringp (pandoc-get 'output))])
      ("Output Directory"
-      ["Use Input Directory" (pandoc-set 'output-dir nil) :actine t
+      ["Use Input Directory" (pandoc-set 'output-dir nil) :active t
        :style radio :selected (null (pandoc-get 'output-dir))]
       ["Set Output Directory" pandoc-set-output-dir :active t
        :style radio :selected (pandoc-get 'output-dir)])
      ("Data Directory"
-      ["Use Default Data Directory" (pandoc-set 'data-dir nil) :actine t
+      ["Use Default Data Directory" (pandoc-set 'data-dir nil) :active t
        :style radio :selected (null (pandoc-get 'data-dir))]
       ["Set Data Directory" pandoc-set-data-dir :active t
        :style radio :selected (pandoc-get 'data-dir)])
-     ("Template File"
-      ["No Template File" (pandoc-set 'template nil) :active t
-       :style radio :selected (null (pandoc-get 'template))]
-      ["Set Template File..." pandoc-set-template :active t
-      :style radio :selected (pandoc-get 'template)])
-     ("Reference ODT File"
-      ["No Reference ODT File" (pandoc-set 'reference-odt nil) :active t
-       :style radio :selected (null (pandoc-get 'reference-odt))]
-      ["Set Reference ODT File..." pandoc-set-reference-odt :active t
-      :style radio :selected (pandoc-get 'reference-odt)])
-     ("CSS Style Sheet"
-      ["No CSS Style Sheet" (pandoc-set 'css nil) :active t
-       :style radio :selected (null (pandoc-get 'css))]
-      ["Set CSS Style Sheet..." pandoc-set-css :active t
-      :style radio :selected (pandoc-get 'css)])
-     ("EPUB Style Sheet"
-      ["No EPUB Style Sheet" (pandoc-set 'epub-stylesheet nil) :active t
-       :style radio :selected (null (pandoc-get 'epub-stylesheet))]
-      ["Include standard EPUB Style Sheet" (pandoc-set 'epub-stylesheet t) :active t
-       :style radio :selected (eq (pandoc-get 'epub-stylesheet) t)]
-      ["Set EPUB Style Sheet..." pandoc-set-epub-stylesheet :active t
-      :style radio :selected (stringp (pandoc-get 'epub-stylesheet))])
-     ("EPUB Cover Image"
-      ["No EPUB Cover Image" (pandoc-set 'epub-cover-image nil) :active t
-       :style radio :selected (null (pandoc-get 'epub-cover-image))]
-      ["Set EPUB Cover Image..." pandoc-set-epub-cover-image :active t
-      :style radio :selected (pandoc-get 'epub-cover-image)])
-     ("EPUB Metadata File"
-      ["No EPUB Metadata" (pandoc-set 'epub-metadata nil) :active t
-       :style radio :selected (null (pandoc-get 'epub-metadata))]
-      ["Set EPUB Metadata File..." pandoc-set-epub-metadata :active t
-      :style radio :selected (pandoc-get 'epub-metadata)])
-     ("Bibliography File"
-      ["No Bibliography" (pandoc-set 'bibliography nil) :active t
-       :style radio :selected (null (pandoc-get 'bibliography))]
-      ["Set Bibliography File..." pandoc-set-bibliography :active t
-      :style radio :selected (pandoc-get 'bibliography)])
-     ("CSL File"
-      ["No CSL" (pandoc-set 'csl nil) :active t
-       :style radio :selected (null (pandoc-get 'csl))]
-      ["Set CSL File..." pandoc-set-csl :active t
-      :style radio :selected (pandoc-get 'csl)])
-     ("Include In Header"
-      ["Nothing Included In Header" (pandoc-set 'include-in-header nil) :active t
-       :style radio :selected (null (pandoc-get 'include-in-header))]
-      ["Include In Header..." pandoc-set-include-in-header :active t
-      :style radio :selected (pandoc-get 'include-in-header)])
-     ("Include Before Body"
-      ["Nothing Included Before Body" (pandoc-set 'include-before-body nil) :active t
-       :style radio :selected (null (pandoc-get 'include-before-body))]
-      ["Include Before Body..." pandoc-set-include-before-body :active t
-      :style radio :selected (pandoc-get 'include-before-body)])
-     ("Include After Body"
-      ["Nothing Included After Body" (pandoc-set 'include-after-body nil) :active t
-       :style radio :selected (null (pandoc-get 'include-after-body))]
-      ["Include After Body..." pandoc-set-include-after-body :active t
-      :style radio :selected (pandoc-get 'include-after-body)])
-     ("Custom Header"
-      ["No Custom Header" (pandoc-set 'custom-header nil) :active t
-       :style radio :selected (null (pandoc-get 'custom-header))]
-      ["Set Custom Header File..." pandoc-set-custom-header :active t
-      :style radio :selected (pandoc-get 'custom-header)]))
-
+     ,@pandoc-file-menu)
+    
     ("Options"
-     ("Title Prefix"
-      ["No Title Prefix" (pandoc-set 'title-prefix nil) :active t
-       :style radio :selected (null (pandoc-get 'title-prefix))]
-      ["Set Title Prefix..." pandoc-set-title-prefix :active t
-      :style radio :selected (pandoc-get 'title-prefix)])
-     ("ID Prefix"
-      ["No ID Prefix" (pandoc-set 'id-prefix nil) :active t
-       :style radio :selected (null (pandoc-get 'id-prefix))]
-      ["Set ID Prefix..." pandoc-set-id-prefix :active t
-      :style radio :selected (pandoc-get 'id-prefix)])
-     ("Indented Code Classes"
-      ["No Indented Code Classes" (pandoc-set 'indented-code-classes nil) :active t
-       :style radio :selected (null (pandoc-get 'indented-code-classes))]
-      ["Set Indented Code Classes..." pandoc-set-indented-code-classes :active t
-      :style radio :selected (pandoc-get 'indented-code-classes)])
-     ("Tab Stops"
-      ["Default Tab Stops" (pandoc-set 'tab-stop nil) :active t
-       :style radio :selected (null (pandoc-get 'tab-stop))]
-      ["Set Tab Stop Width..." pandoc-set-tab-stop :active t
-      :style radio :selected (pandoc-get 'tab-stop)])
-     ("Line Width"
-      ["Default Line Width" (pandoc-set 'columns nil) :active t
-       :style radio :selected (null (pandoc-get 'columns))]
-      ["Set Line Width..." pandoc-set-columns :active t
-      :style radio :selected (pandoc-get 'columns)])
-     ("Base Header Level"
-      ["Default Base Header Level" (pandoc-set 'base-header-level nil) :active t
-       :style radio :selected (null (pandoc-get 'base-header-level))]
-      ["Set Base Header Level..." pandoc-set-base-header-level :active t
-      :style radio :selected (pandoc-get 'base-header-level)])
-     ("LaTeXMathML"
-      ["No LaTeXMathML" (pandoc-set 'latexmathml nil) :active t
-       :style radio :selected (null (pandoc-get 'latexmathml))]
-      ["Add Script To HTML Header" (pandoc-set 'latexmathml t) :active t
-       :style radio :selected (eq (pandoc-get 'latexmathml) t)]
-      ["Set LaTeXMathML URL..." pandoc-set-latexmathml :active t
-      :style radio :selected (stringp (pandoc-get 'latexmathml))])
-     ("MathML"
-      ["No MathML" (pandoc-set 'mathml nil) :active t
-       :style radio :selected (null (pandoc-get 'mathml))]
-      ["Add Script To HTML Header" (pandoc-set 'mathml t) :active t
-       :style radio :selected (eq (pandoc-get 'mathml) t)]
-      ["Set MathML URL..." pandoc-set-mathml :active t
-      :style radio :selected (stringp (pandoc-get 'mathml))])
-     ("jsMath"
-      ["No jsMath" (pandoc-set 'jsmath) :active t
-       :style radio :selected (null (pandoc-get 'jsmath))]
-      ["Provide Link In HTML Template" (pandoc-set 'jsmath t) :active t
-       :style radio :selected (eq (pandoc-get 'jsmath) t)]
-      ["Set jsMath URL..." pandoc-set-jsmath :active t
-      :style radio :selected (pandoc-get 'jsmath)])
-     ("MathJax"
-      ["No MathJax" (pandoc-set 'mathjax) :active t
-       :style radio :selected (null (pandoc-get 'mathjax))]
-      ["Set MathJax URL..." pandoc-set-mathjax :active t
-      :style radio :selected (pandoc-get 'mathjax)])
-     ("MimeTeX"
-      ["No MimeTeX" (pandoc-set 'mimetex nil) :active t
-       :style radio :selected (null (pandoc-get 'mimetex))]
-      ["Default Script Location" (pandoc-set 'mimetex t) :active t
-       :style radio :selected (eq (pandoc-get 'mimetex) t)]
-      ["Set MimeTeX GCI Script..." pandoc-set-mimetex :active t
-      :style radio :selected (stringp (pandoc-get 'mimetex))])
-     ("WebTeX"
-      ["No WebTeX" (pandoc-set 'webtex nil) :active t
-       :style radio :selected (null (pandoc-get 'webtex))]
-      ["Use Google Chart API" (pandoc-set 'webtex t) :active t
-       :style radio :selected (eq (pandoc-get 'webtex) t)]
-      ["Set WebTeX URL..." pandoc-set-webtex :active t
-      :style radio :selected (stringp (pandoc-get 'webtex))])
+     ,@pandoc-options-menu
+     ("Template Variables"
+      ["Set/Change Template Variable" pandoc-set-template-variable :active t]
+      ["Unset Template Variable" (pandoc-set-template-variable '-) :active t])
      ("Email Obfuscation"
       ["None" (pandoc-set 'email-obfuscation "none") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "none")]
@@ -1527,9 +1172,6 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "javascript")]
       ["References" (pandoc-set 'email-obfuscation "references") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "references")])
-     ("Template Variables"
-      ["Set/Change Template Variable" pandoc-set-template-variable :active t]
-      ["Unset Template Variable" (pandoc-set-template-variable '-) :active t])
      ;; put the binary options into the menu
      ,@(mapcar #'(lambda (option)
 		   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
