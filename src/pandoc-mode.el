@@ -1,6 +1,6 @@
 ;;; pandoc-mode.el --- Interact with Pandoc
 
-;; Copyright (c) 2009-2011 Joost Kremers
+;; Copyright (c) 2009-2012 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@yahoo.com>
 ;; Maintainer: Joost Kremers <joostkremers@yahoo.com>
