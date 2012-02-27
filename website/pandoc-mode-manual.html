@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Joost Kremers" />
-  <meta name="date" content="2012-02-26" />
+  <meta name="date" content="2012-02-27" />
   <title>Emacs pandoc-mode</title>
   <link rel="stylesheet" href="manual.css" type="text/css" />
 </head>
@@ -13,7 +13,7 @@
 <div id="header">
 <h1 class="title">Emacs pandoc-mode</h1>
 <h2 class="author">Joost Kremers</h2>
-<h3 class="date">26 Feb 2012</h3>
+<h3 class="date">27 Feb 2012</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -53,7 +53,7 @@
 <pre><code>(add-hook &#39;pandoc-mode-hook &#39;pandoc-load-default-settings)</code></pre>
 <p>The function <code>pandoc-load-default-settings</code> checks if a default settings file exists for the file being loaded and reads its settings if it finds one.</p>
 <h1 id="usage"><a href="#TOC">Usage</a></h1>
-<p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document, or load or save settings files. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard (see the section <a href="#using-the-keyboard">'Using The Keyboard'</a>), but setting options can only be done through the keyboard (although it is possible to bind your own keys to the functions to set options).</p>
+<p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document, or load or save settings files. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard, but setting options can only be done through the menu (although it is possible to bind your own keys to the functions to set options; see the section <a href="#using-the-keyboard">'Using The Keyboard'</a>).</p>
 <p>The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.</p>
 <h2 id="input-and-output-formats"><a href="#TOC">Input and output formats</a></h2>
 <p>The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to &quot;Native Haskell&quot;, so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with <code>C-c / w</code> (TAB completion works.)</p>
@@ -108,7 +108,7 @@
 <pre><code>(defun pandoc-current-date (output-format &amp;optional text)
   (format &quot;%s%s&quot; (if text (concat text &quot;, &quot;) &quot;&quot;)
                  (format-time-string &quot;%d %b %Y&quot;)))</code></pre>
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 26 Feb 2012&quot;.</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 27 Feb 2012&quot;.</p>
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 <pre><code>@@lisp{(format-time-string &quot;%d %b %Y&quot;)}</code></pre>
 <p>Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.</p>

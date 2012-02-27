@@ -61,10 +61,10 @@ exists for the file being loaded and reads its settings if it finds one.
 When you start `pandoc-mode`, a menu appears through which all of Pandoc's
 options can be set and through which you can run Pandoc on your current
 document, or load or save settings files. The most important functions provided
-by `pandoc-mode` can also be accessed through the keyboard (see the section
-['Using The Keyboard'](#using-the-keyboard)), but setting options can only be
-done through the keyboard (although it is possible to bind your own keys to the
-functions to set options).
+by `pandoc-mode` can also be accessed through the keyboard, but setting options
+can only be done through the menu (although it is possible to bind your own keys
+to the functions to set options; see the section
+['Using The Keyboard'](#using-the-keyboard)).
 
 The menu is divided into two parts. The upper half contains items related to
 running Pandoc, the lower half is the part where the various settings can be set
