@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@yahoo.com>
 ;; Maintainer: Joost Kremers <joostkremers@yahoo.com>
 ;; Created: 31 Oct 2009
-;; Version: 2.1
+;; Version: 2.1.1
 ;; Keywords: text, pandoc
 
 ;; Redistribution and use in source and binary forms, with or without
