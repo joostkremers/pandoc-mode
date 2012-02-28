@@ -234,19 +234,19 @@ the option can have a default value."
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-files-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
 						   (list prompt
-							 (vector (concat "No " prompt) (quote (pandoc-set (quote option) nil))
+							 (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
 								 :active t
 								 :style 'radio
-								 :selected (quote (null (pandoc-get (quote option)))))
+								 :selected `(null (pandoc-get (quote ,option))))
 							 (when default
-							   (vector (concat "Default " prompt) (quote (pandoc-set (quote option) t))
+							   (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
 								   :active t
 								   :style 'radio
-								   :selected (quote (eq (pandoc-get (quote option)) t))))
+								   :selected `(eq (pandoc-get (quote ,option)) t)))
 							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
 								 :active t
 								 :style 'radio
-								 :selected (quote (stringp (pandoc-get (quote option))))))))
+								 :selected `(stringp (pandoc-get (quote ,option)))))))
 		  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
 	   #'(lambda (prefix)
@@ -279,14 +279,14 @@ formulated in such a way that the strings \"Default \" and \"Set
      (add-to-list 'pandoc-switches (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,prompt
-					     ,(vector (concat "Default " prompt) (quote (pandoc-set (quote option) nil))
+					     ,(vector (concat "Default " prompt) `(pandoc-set (quote ,option) nil)
 						      :active t
 						      :style 'radio
-						      :selected (quote (null (pandoc-get (quote option)))))
+						      :selected `(null (pandoc-get (quote ,option))))
 					     ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
 						      :active t
 						      :style 'radio
-						      :selected (quote (pandoc-get (quote option)))))
+						      :selected `(pandoc-get (quote ,option))))
 		  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
 	   #'(lambda (prefix)
@@ -319,19 +319,19 @@ or T and indicates whether the option can have a default value."
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
 						   (list prompt
-							 (vector (concat "No " prompt) (quote (pandoc-set (quote option) nil))
+							 (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
 								 :active t
 								 :style 'radio
-								 :selected (quote (null (pandoc-get (quote option)))))
+								 :selected `(null (pandoc-get (quote ,option))))
 							 (when default
-							   (vector (concat "Default " prompt) (quote (pandoc-set (quote option) t))
+							   (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
 								   :active t
 								   :style 'radio
-								   :selected (quote (eq (pandoc-get (quote option)) t))))
+								   :selected `(eq (pandoc-get (quote ,option)) t)))
 							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
 								 :active t
 								 :style 'radio
-								 :selected (quote (stringp (pandoc-get (quote option))))))))
+								 :selected `(stringp (pandoc-get (quote ,option)))))))
 		  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
 	   #'(lambda (prefix)
