@@ -1,5 +1,4 @@
-% `pandoc-mode`
-% (C) Joost Kremers
+# pandoc-mode
 
 `pandoc-mode` is an Emacs mode for interacting with Pandoc. `pandoc-mode` is
 implemented as a minor mode that can be activated alongside the major mode for
