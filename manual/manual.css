@@ -58,11 +58,12 @@ img {
     -webkit-box-shadow: 3px 3px 5px 6px #333333;
     box-shadow:         3px 3px 5px 6px #333333;
     position: fixed;
-    margin-left: 75%; */
-    width: 25%;
+    /* margin-left: 75%; */
+    width: 20%;
     padding-right: 1%;
     background-color: #6b1d1d;
     color: #c9c9c9;
+    font-size: 75%;
 }
 
 #TOC a {
