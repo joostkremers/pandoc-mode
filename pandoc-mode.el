@@ -1,4 +1,4 @@
-;;; pandoc-mode.el --- Interact with Pandoc
+;;; pandoc-mode.el --- Minor mode for interacting with Pandoc
 
 ;; Copyright (c) 2009-2012 Joost Kremers
 
