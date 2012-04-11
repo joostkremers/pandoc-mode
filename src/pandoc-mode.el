@@ -2,8 +2,8 @@
 
 ;; Copyright (c) 2009-2012 Joost Kremers
 
-;; Author: Joost Kremers <joostkremers@yahoo.com>
-;; Maintainer: Joost Kremers <joostkremers@yahoo.com>
+;; Author: Joost Kremers <joostkremers@fastmail.fm>
+;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
 ;; Version: 2.1.1
 ;; Keywords: text, pandoc
