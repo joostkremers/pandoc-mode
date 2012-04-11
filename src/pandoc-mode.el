@@ -2,8 +2,8 @@
 
 ;; Copyright (c) 2009-2012 Joost Kremers
 
-;; Author: Joost Kremers <joostkremers@yahoo.com>
-;; Maintainer: Joost Kremers <joostkremers@yahoo.com>
+;; Author: Joost Kremers <joostkremers@fastmail.fm>
+;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
 ;; Version: 2.1.1
 ;; Keywords: text, pandoc
@@ -1149,7 +1149,7 @@ set. Without any prefix argument, the option is toggled."
 			     ("S5 HTML/JS Slide Show" . "s5")
 			     ("Slidy Slide Show" . "slidy")
 			     ("DZSlides Slide Show" . "dzslides")
-			     ("Beamer Slide Show" . ".tex")
+			     ("Beamer Slide Show" . "beamer")
 			     ("Rich Text Format" . "rtf")
 			     ("Textile" . "textile")
 			     ("Org-mode" . "org")
