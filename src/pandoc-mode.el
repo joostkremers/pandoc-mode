@@ -1146,7 +1146,7 @@ set. Without any prefix argument, the option is toggled."
 			     ("S5 HTML/JS Slide Show" . "s5")
 			     ("Slidy Slide Show" . "slidy")
 			     ("DZSlides Slide Show" . "dzslides")
-			     ("Beamer Slide Show" . ".tex")
+			     ("Beamer Slide Show" . "beamer")
 			     ("Rich Text Format" . "rtf")
 			     ("Textile" . "textile")
 			     ("Org-mode" . "org")
