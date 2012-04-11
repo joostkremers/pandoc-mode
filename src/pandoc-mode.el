@@ -453,6 +453,7 @@ or T and indicates whether the option can have a default value."
     map)
   "Keymap for pandoc-mode.")
 
+;;;###autoload
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
   :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc-get 'write))) :global nil
@@ -460,6 +461,7 @@ or T and indicates whether the option can have a default value."
   (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))
   (setq pandoc-settings-modified-flag nil))
 
+;;;###autoload
 (defun turn-on-pandoc ()
   "Unconditionally turn on pandoc-mode."
   (interactive)
@@ -470,6 +472,7 @@ or T and indicates whether the option can have a default value."
   (interactive)
   (pandoc-mode -1))
 
+;;;###autoload
 (defun conditionally-turn-on-pandoc ()
   "Turn on pandoc-mode if a pandoc settings file exists.
 This is for use in major mode hooks."
