@@ -22,7 +22,7 @@ is possible to create different output profiles for a single input file, so that
 you can, for example, write your text in markdown and then translate it to HTML
 for online reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode` is 2.1.1 and is compatible with Pandoc
+The current version of `pandoc-mode` is 2.1.2 and is compatible with Pandoc
 version 1.9.
 
 
