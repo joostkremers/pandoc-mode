@@ -51,7 +51,7 @@
   (when (not (string= string ""))
     string))
 
-(defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'Wp)
+(defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'wp)
 
 (defcustom pandoc-binary "/usr/bin/pandoc"
   "*The full path of the pandoc binary."
