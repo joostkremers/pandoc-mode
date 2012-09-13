@@ -467,9 +467,16 @@ or T and indicates whether the option can have a default value."
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
   :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc-get 'write))) :global nil
-  (setq pandoc-local-options (copy-alist pandoc-options))
-  (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))
-  (setq pandoc-settings-modified-flag nil))
+  (cond
+   (pandoc-mode    ; pandoc-mode is turned on
+    (setq pandoc-local-options (copy-alist pandoc-options))
+    (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))
+    (setq pandoc-settings-modified-flag nil)
+    (or (buffer-live-p pandoc-output-buffer)
+        (setq pandoc-output-buffer (get-buffer-create " *Pandoc output*"))))
+   ((not pandoc-mode)    ; pandoc-mode is turned off
+    (setq pandoc-local-options nil
+          pandoc-settings-modified-flag nil))))
 
 ;;;###autoload
 (defun turn-on-pandoc ()
