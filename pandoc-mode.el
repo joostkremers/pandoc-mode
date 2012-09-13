@@ -195,6 +195,16 @@ list with the default value NIL.")
 (defvar pandoc-files-menu nil
   "Auxiliary variable for creating the file menu.")
 
+(defmacro with-pandoc-output-buffer (&rest body)
+  "Execute BODY with PANDOC-OUTPUT-BUFFER temporarily current.
+Make sure that PANDOC-OUTPUT-BUFFER really exists."
+  (declare (indent defun))
+  `(progn
+     (or (buffer-live-p pandoc-output-buffer)
+         (setq pandoc-output-buffer (get-buffer-create " *Pandoc output*")))
+     (with-current-buffer pandoc-output-buffer
+       ,@body)))
+
 (defmacro pandoc-define-binary-option (option description)
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of
@@ -671,7 +681,7 @@ format is used."
 	(insert-buffer-substring-no-properties buffer)
 	(message "Running pandoc...")
 	(pandoc-process-directives (pandoc-get 'write))
-	(with-current-buffer pandoc-output-buffer
+	(with-pandoc-output-buffer
 	  (erase-buffer)
 	  (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
 	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
