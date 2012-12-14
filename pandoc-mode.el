@@ -94,6 +94,7 @@ list, not if it appears higher on the list."
     "html"
     "latex"
     "textile"
+    "docbook"
     "json")
   "List of pandoc input formats.")
 
@@ -122,6 +123,7 @@ list, not if it appears higher on the list."
     ("textile" . ".textile")
     ("org" . ".org")
     ("json" . ".json")
+    ("slideous" . "html")
     ("asciidoc" . "txt"))
   "List of pandoc output formats plus file extensions.")
 
@@ -1042,7 +1044,6 @@ is unset."
 (pandoc-define-file-option bibliography "Bibliography File" t)
 (pandoc-define-file-option csl "CSL File" t)
 (pandoc-define-file-option citation-abbreviations "Citation Abbreviations File" t)
-(pandoc-define-file-option custom-header "Custom Header" t)
 (pandoc-define-file-option include-in-header "Include Header" t)
 (pandoc-define-file-option include-before-body "Include Before Body" t)
 (pandoc-define-file-option include-after-body "Include After Body" t)
@@ -1084,6 +1085,8 @@ is unset."
 (pandoc-define-binary-option biblatex "Use BibLaTeX")
 (pandoc-define-binary-option ascii "Use Only ASCII in HTML")
 (pandoc-define-binary-option atx-headers "Use ATX-style Headers")
+(pandoc-define-binary-option old-dashes "Use old-style dashes")
+(pandoc-define-binary-option no-tex-ligatures "Do not use TeX ligatures")
 
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
@@ -1174,7 +1177,7 @@ set. Without any prefix argument, the option is toggled."
 			     ("AsciiDoc" . "asciidoc"))))
 	     (list ["Literal Haskell" (pandoc-toggle 'write-lhs)
 		    :active (member (pandoc-get 'write)
-				    '("markdown" "rst" "latex" "html" "html5"))
+				    '("markdown" "rst" "latex" "beamer" "html" "html5"))
 		    :style toggle :selected (pandoc-get 'write-lhs)]))
 
     ("Files"
