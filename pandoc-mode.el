@@ -123,8 +123,8 @@ list, not if it appears higher on the list."
     ("textile" . ".textile")
     ("org" . ".org")
     ("json" . ".json")
-    ("slideous" . "html")
-    ("asciidoc" . "txt"))
+    ("slideous" . ".html")
+    ("asciidoc" . ".txt"))
   "List of pandoc output formats plus file extensions.")
 
 (defvar pandoc-switches
