@@ -79,53 +79,74 @@ list, not if it appears higher on the list."
   :group 'pandoc
   :type '(repeat function))
 
-(defvar pandoc-major-modes
+(defcustom pandoc-major-modes
   '((haskell-mode . "native")
     (text-mode . "markdown")
     (markdown-mode . "markdown")
+    (mediawiki-mode . "mediawiki")
+    (textile-mode . "textile")
     (rst-mode . "rst")
     (html-mode . "html")
-    (latex-mode . "latex")))
+    (latex-mode . "latex")
+    (json-mode . "json"))
+  "*List of major modes and their default pandoc output formats."
+  :group 'pandoc
+  :type '(repeat (cons (symbol :tag "Major mode" (string :tag "Output format")))))
 
-(defvar pandoc-input-formats
+(defcustom pandoc-input-formats
   '("native"
     "markdown"
+    "markdown_strict"
+    "markdown_phpextra"
+    "markdown_mmd"
     "rst"
+    "mediawiki"
     "html"
     "latex"
     "textile"
     "docbook"
     "json")
-  "List of pandoc input formats.")
+  "List of pandoc input formats."
+  :group 'pandoc
+  :type (repeat (string :tag "Input format")))
 
-(defvar pandoc-output-formats
+(defcustom pandoc-output-formats
   '(("native" . ".hs")
     ("plain" . ".txt")
-    ("markdown" . ".text")
+    ("markdown" . ".md")
+    ("markdown_strict" . ".md")
+    ("markdown_phpextra" . ".md")
+    ("markdown_github" ".md")
+    ("markdown_mmd" ".md")
     ("rst" . ".rst")
     ("html" . ".html")
     ("html5" . ".html")
     ("latex" . ".tex")
+    ("beamer" . ".tex")
     ("context" . ".tex")
     ("man" . "")
     ("mediawiki" . ".mw")
     ("texinfo" . ".texi")
     ("docbook" . ".xml")
     ("epub" . ".epub")
+    ("epub." . ".epub")
+    ("fb2" . ".fb2")
     ("opendocument" . ".odf")
     ("odt" . ".odt")
     ("docx" . ".docx")
     ("s5" . ".html")
     ("slidy" . ".html")
+    ("slideous" . ".html")
     ("dzslides" . ".html")
-    ("beamer" . ".tex")
     ("rtf" . ".rtf")
     ("textile" . ".textile")
     ("org" . ".org")
     ("json" . ".json")
-    ("slideous" . ".html")
     ("asciidoc" . ".txt"))
-  "List of pandoc output formats plus file extensions.")
+  "*List of pandoc output formats and their extensions.
+The file extension should include a dot."
+  :group 'pandoc
+  :type '(repeat (cons (string :tag "Output format") (string :tag "Extension"))))
 
 (defvar pandoc-switches
   '(variable
