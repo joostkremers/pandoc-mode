@@ -10,24 +10,30 @@
 
 `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of the supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode` is 2.1.2 and is compatible with Pandoc version 1.9.
+The current version of `pandoc-mode` is 2.2.0 and is compatible with Pandoc version 1.10.
 
 
 # Installation #
 
 Installing `pandoc-mode` is easy: just put `pandoc-mode.el` into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
 
-    (load "pandoc-mode")
+```Commonlisp
+(load "pandoc-mode")
+```
 
 This command simply loads `pandoc-mode`, it obviously does not activate it. In order to activate it in a buffer, you need to type `M-x pandoc-mode`. If you want to start `pandoc-mode` automatically when you load e.g., a markdown file, you can add a hook to your `~/.emacs`:
 
-    (add-hook 'markdown-mode-hook 'turn-on-pandoc)
+```Commonlisp
+(add-hook 'markdown-mode-hook 'turn-on-pandoc)
+```
 
 However, if you do not want to start `pandoc-mode` every time you work on a markdown document, you can use a different function in `markdown-mode-hook`: instead of using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`. This function checks if a default settings file exists for the file you're opening and only turns on `pandoc-mode` if it finds one. (For more info on the settings file, see the section ['Settings Files'](#settings-files).)
 
 Additionally, if you want to automatically load a pandoc-mode settings file for the file you're opening, you can add the following to your `~/.emacs`:
 
-    (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+```Commonlisp
+(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+```
 
 The function `pandoc-load-default-settings` checks if a default settings file exists for the file being loaded and reads its settings if it finds one.
 
@@ -64,7 +70,9 @@ The CSS style sheet is an exception to this: Emacs always cuts off the directory
 
 Under "Options", you can set various other options. Some of these require user input, others can only be toggled on or off. Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing `C-c / S`). This displays all settings in the `*Pandoc output*` buffer in the same manner in which they appear in a settings file, i.e., with the following format:
 
-    <option>::<value>
+```
+<option>::<value>
+```
 
 
 ## Template variables ##
@@ -75,7 +83,9 @@ Deleting a template variable is done with the corresponding menu item or by call
 
 Template variables are saved in the settings file and can also be viewed with `C-c / S`. They appear in the following format:
 
-    variable::<name>:<value>
+```
+variable::<name>:<value>
+```
 
 
 ## Running Pandoc ##
@@ -135,8 +145,10 @@ Pandoc allows you to refer to such labeled example items in the text by writing 
 
 So suppose you define (e.g., in `~/.emacs`) a function `pandoc-current-date`:
 
-    (defun pandoc-current-date (output-format)
-      (format-time-string "%d %b %Y"))
+```Commonlisp
+(defun pandoc-current-date (output-format)
+  (format-time-string "%d %b %Y"))
+```
 
 Now you can define a directive `\@@date` that calls this function. The effect is that every time you write `\@@date` in your document, it is replaced with the current date.
 
@@ -146,21 +158,27 @@ Note that the function that the directive calls must have one argument. which is
 
 It is possible to define a directive that can take an optional argument. This is simply done by defining the argument that the directive's function takes as optional. Suppose you define `pandoc-current-date` as follows:
 
-    (defun pandoc-current-date (output-format &optional text)
-      (format "%s%s" (if text (concat text ", ") "")
-                     (format-time-string "%d %b %Y")))
+```Commonlisp
+(defun pandoc-current-date (output-format &optional text)
+  (format "%s%s" (if text (concat text ", ") "")
+                 (format-time-string "%d %b %Y")))
+```
 
 This way, you could write `\@@date` to get just the date, and `\@@date{Cologne}` to get "Cologne, @@date".
 
 Two directives have been predefined: `\@@lisp` and `\@@include`. Both of these take an argument. `\@@lisp` can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:
 
-    \@@lisp{(format-time-string "%d %b %Y")}
+```
+\@@lisp{(format-time-string "%d %b %Y")}
+```
 
 Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.
 
 `\@@include` can be used to include another file into the current document (which must of course have the same input format):
 
-    \@@include{copyright.text}
+```
+\@@include{copyright.text}
+```
 
 This directive reads the file `copyright.text` and replaces the `\@@include` directive with its contents.
 
@@ -227,7 +245,9 @@ As explained above, there are two types of settings files: project files, which 
 
 The format of a settings file is very straightforward. It contains lines of the form:
 
-    <option>::<value>
+```
+<option>::<value>
+```
 
 `<option>` is one of Pandoc's long options without the two dashes. (For the input and output formats, the forms `read` and `write` are used, not the alternative forms `from` and `to`. Additionally, the option `output-dir` is valid.) `<value>` is a string or, for binary switches, either `t` or `nil`, which correspond to 'on' or 'off', respectively.
 
