@@ -18,7 +18,7 @@ Emacs pandoc-mode
 * Usage::
 * Projects::
 * Managing numbered examples::
-* Using @-directives::
+* Using @@-directives::
 * Using The Keyboard::
 * Settings Files::
 
@@ -46,8 +46,8 @@ output profiles for a single input file, so that you can, for example,
 write your text in markdown and then translate it to HTML for online
 reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode' is 2.1.1 and is compatible with
-Pandoc version 1.9.
+The current version of `pandoc-mode' is 2.2.0 and is compatible with
+Pandoc version 1.10.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -55,15 +55,20 @@ File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction, 
 2 Installation
 **************
 
-Installing `pandoc-mode' is easy: just put `pandoc-mode.el' into Emacs'
+The easiest way to install `pandoc-mode' is to use the Melpa
+(http://melpa.milkbox.net/) package repository. Alternatively, you can
+install it manually: download `pandoc-mode.el', put it into Emacs'
 loadpath (you can byte-compile it if you wish) and add the following
 line to `~/.emacs':
+
 (load "pandoc-mode")
 
-This command simply loads `pandoc-mode', it obviously does not activate
-it. In order to activate it in a buffer, you need to type `M-x
-pandoc-mode'. If you want to start `pandoc-mode' automatically when you
-load e.g., a markdown file, you can add a hook to your `~/.emacs':
+Either installation method allows Emacs to load `pandoc-mode', but they
+do not activate it. In order to activate `pandoc-mode' in a buffer, you
+need to type `M-x pandoc-mode'. To start `pandoc-mode' automatically
+when you load e.g., a markdown file, you can add a hook to your
+`~/.emacs':
+
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 
 However, if you do not want to start `pandoc-mode' every time you work
@@ -72,11 +77,12 @@ on a markdown document, you can use a different function in
 `conditionally-turn-on-pandoc'. This function checks if a default
 settings file exists for the file you're opening and only turns on
 `pandoc-mode' if it finds one. (For more info on the settings file, see
-the section 'Settings Files' (#settings-files).)
+the section *note 'Settings Files': #settings-files.)
 
 Additionally, if you want to automatically load a pandoc-mode settings
 file for the file you're opening, you can add the following to your
 `~/.emacs':
+
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 
 The function `pandoc-load-default-settings' checks if a default
@@ -95,8 +101,8 @@ your current document, or load or save settings files. The most
 important functions provided by `pandoc-mode' can also be accessed
 through the keyboard, but setting options can only be done through the
 menu (although it is possible to bind your own keys to the functions to
-set options; see the section 'Using The Keyboard'
-(#using-the-keyboard)).
+set options; see the section *note 'Using The Keyboard':
+#using-the-keyboard.).
 
 The menu is divided into two parts. The upper half contains items
 related to running Pandoc, the lower half is the part where the various
@@ -133,8 +139,8 @@ output format. If you choose "Save File Settings" from the menu (`C-c /
 s'), Emacs saves the current settings to a hidden file in the same
 directory as the file you're editing. The name of this file is derived
 from the input file, appended with the name of the output format and
-the string `.pandoc'. (See the section 'Settings Files'
-(#settings-files) for details.)
+the string `.pandoc'. (See the section *note 'Settings Files':
+#settings-files. for details.)
 
 A single document can have a settings file for each output format that
 Pandoc supports. For example, for this manual, which is written in
@@ -164,6 +170,11 @@ Note that the current output format is always visible in the mode line:
 the "lighter" for `pandoc-mode' in the mode line has the form
 `Pandoc/<format>', where `<format>' is the current output format.
 
+The major modes for which `pandoc-mode' selects an output format
+automatically can be customized. You can add major modes or remove
+those that you don't use. Similarly, you can customize the output
+formats and (especially) the file extensions for each output format.
+
 
 File: pandoc-mode.info,  Node: Auxiliary files and options,  Next: Template variables,  Prev: Input and output formats,  Up: Usage
 
@@ -177,8 +188,8 @@ sheet, files to be included in the header or before/after the body,
 etc. Most of these submenus have two options: no file, or specify a
 file. The "Files" submenu also contains options for the output file and
 output directory. These are treated somewhat differently from the other
-files, see the section 'Setting an output file'
-(#setting-an-output-file) for details.
+files, see the section *note 'Setting an output file':
+#setting-an-output-file. for details.
 
 When Emacs calls `pandoc', it expands filenames, so that they are
 absolute and don't contain any abbreviations (such as ~ for one's home
@@ -202,7 +213,8 @@ have defined (this function is also available by typing `C-c / S').
 This displays all settings in the `*Pandoc output*' buffer in the same
 manner in which they appear in a settings file, i.e., with the
 following format:
-<option>::<value>
+
+`<option>::<value>'
 
 
 File: pandoc-mode.info,  Node: Template variables,  Next: Running Pandoc,  Prev: Auxiliary files and options,  Up: Usage
@@ -226,7 +238,8 @@ too) and removes it from the list.
 
 Template variables are saved in the settings file and can also be
 viewed with `C-c / S'. They appear in the following format:
-variable::<name>:<value>
+
+`variable::<name>:<value>'
 
 
 File: pandoc-mode.info,  Node: Running Pandoc,  Next: Setting an output file,  Prev: Template variables,  Up: Usage
@@ -368,7 +381,7 @@ make the change permanent, you need to save the local settings file
 (which will then be empty) or just delete it completely.
 
 
-File: pandoc-mode.info,  Node: Managing numbered examples,  Next: Using @-directives,  Prev: Projects,  Up: Top
+File: pandoc-mode.info,  Node: Managing numbered examples,  Next: Using @@-directives,  Prev: Projects,  Up: Top
 
 5 Managing numbered examples
 ****************************
@@ -395,7 +408,7 @@ your mind, you can leave the selection buffer with `q' without
 inserting anything into your document.
 
 
-File: pandoc-mode.info,  Node: Using @-directives,  Next: Using The Keyboard,  Prev: Managing numbered examples,  Up: Top
+File: pandoc-mode.info,  Node: Using @@-directives,  Next: Using The Keyboard,  Prev: Managing numbered examples,  Up: Top
 
 6 Using @@-directives
 *********************
@@ -411,6 +424,7 @@ functions they call.
 
 So suppose you define (e.g., in `~/.emacs') a function
 `pandoc-current-date':
+
 (defun pandoc-current-date (output-format)
   (format-time-string "%d %b %Y"))
 
@@ -433,12 +447,13 @@ It is possible to define a directive that can take an optional
 argument. This is simply done by defining the argument that the
 directive's function takes as optional. Suppose you define
 `pandoc-current-date' as follows:
+
 (defun pandoc-current-date (output-format &optional text)
   (format "%s%s" (if text (concat text ", ") "")
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 11 Apr 2012".
+`@@date{Cologne}' to get "Cologne, 23 Jan 2013".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -446,14 +461,16 @@ the document which is then executed and replaced by the result (which
 should be a string). For example, another way to put the current date
 in your document, without defining a special function for it, is to
 write the following:
-@@lisp{(format-time-string "%d %b %Y")}
+
+`@@lisp{(format-time-string "%d %b %Y")}'
 
 Emacs takes the Elisp code between the curly braces, executes it, and
 replaces the directive with the result of the code.
 
 `@@include' can be used to include another file into the current
 document (which must of course have the same input format):
-@@include{copyright.text}
+
+`@@include{copyright.text}'
 
 This directive reads the file `copyright.text' and replaces the
 `@@include' directive with its contents.
@@ -487,11 +504,11 @@ gets processed as well.
 
 * Menu:
 
-* Defining @-directives::
+* Defining @@-directives::
 * Directive hooks::
 
 
-File: pandoc-mode.info,  Node: Defining @-directives,  Next: Directive hooks,  Up: Using @-directives
+File: pandoc-mode.info,  Node: Defining @@-directives,  Next: Directive hooks,  Up: Using @@-directives
 
 6.1 Defining @@-directives
 ==========================
@@ -523,7 +540,7 @@ pandoc. The changes can of course be undone with `M-x undo' (usually
 bound to `C-/'), or do your test in the `*scratch*' buffer.
 
 
-File: pandoc-mode.info,  Node: Directive hooks,  Prev: Defining @-directives,  Up: Using @-directives
+File: pandoc-mode.info,  Node: Directive hooks,  Prev: Defining @@-directives,  Up: Using @@-directives
 
 6.2 Directive hooks
 ===================
@@ -535,7 +552,7 @@ to change anything in the buffer, they are intended for setting up
 things that the directive functions might need.
 
 
-File: pandoc-mode.info,  Node: Using The Keyboard,  Next: Settings Files,  Prev: Using @-directives,  Up: Top
+File: pandoc-mode.info,  Node: Using The Keyboard,  Next: Settings Files,  Prev: Using @@-directives,  Up: Top
 
 7 Using The Keyboard
 ********************
@@ -555,6 +572,7 @@ the exception of the option `--read', i.e., the input format, which is
 determined automatically and rarely needs to be set by the user).
 `<option>' corresponds to the long name of the relevant Pandoc switch.
 Functions can be bound in the following manner:
+
 (define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
 
 The following table lists the keys defined by default:
@@ -610,7 +628,8 @@ output format and the suffix `.pandoc'.
 
 The format of a settings file is very straightforward. It contains
 lines of the form:
-<option>::<value>
+
+`<option>::<value>'
 
 `<option>' is one of Pandoc's long options without the two dashes. (For
 the input and output formats, the forms `read' and `write' are used,
@@ -627,22 +646,38 @@ that is, that they contain _no_ spaces and a _double_ colon.
 
 Tag Table:
 Node: Top225
-Node: Introduction496
-Node: Installation1731
-Node: Usage3177
-Node: Input and output formats4096
-Node: Auxiliary files and options6904
-Node: Template variables8958
-Node: Running Pandoc10057
-Node: Setting an output file11729
-Node: Creating a pdf13325
-Node: Projects14325
-Node: Managing numbered examples17071
-Node: Using @-directives18528
-Node: Defining @-directives22908
-Node: Directive hooks24598
-Node: Using The Keyboard25071
-Node: Settings Files26689
+Node: Introduction497
+Ref: #introduction618
+Node: Installation1733
+Ref: #installation1856
+Node: Usage3329
+Ref: #usage3434
+Node: Input and output formats4254
+Ref: #input-and-output-formats4420
+Node: Auxiliary files and options7336
+Ref: #auxiliary-files-and-options7535
+Node: Template variables9399
+Ref: #template-variables9570
+Node: Running Pandoc10501
+Ref: #running-pandoc10659
+Node: Setting an output file12173
+Ref: #setting-an-output-file12343
+Node: Creating a pdf13769
+Ref: #creating-a-pdf13900
+Node: Projects14769
+Ref: #projects14894
+Node: Managing numbered examples17515
+Ref: #managing-numbered-examples17690
+Node: Using @@-directives18973
+Ref: #using--directives19144
+Node: Defining @@-directives23363
+Ref: #defining--directives23525
+Node: Directive hooks25055
+Ref: #directive-hooks25203
+Node: Using The Keyboard25530
+Ref: #using-the-keyboard25687
+Node: Settings Files27150
+Ref: #settings-files27271
 
 End Tag Table
 
