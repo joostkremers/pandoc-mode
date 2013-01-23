@@ -1,11 +1,11 @@
 ;;; pandoc-mode.el --- Minor mode for interacting with Pandoc
 
-;; Copyright (c) 2009-2012 Joost Kremers
+;; Copyright (c) 2009-2013 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.1.2
+;; Version: 2.2.0
 ;; Keywords: text, pandoc
 
 ;; Redistribution and use in source and binary forms, with or without
