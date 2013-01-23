@@ -93,7 +93,7 @@ list, not if it appears higher on the list."
   :group 'pandoc
   :type '(repeat (cons (symbol :tag "Major mode" (string :tag "Output format")))))
 
-(defcustom pandoc-input-formats
+(defvar pandoc-input-formats
   '("native"
     "markdown"
     "markdown_strict"
@@ -106,9 +106,7 @@ list, not if it appears higher on the list."
     "textile"
     "docbook"
     "json")
-  "List of pandoc input formats."
-  :group 'pandoc
-  :type (repeat (string :tag "Input format")))
+  "List of pandoc input formats.")
 
 (defcustom pandoc-output-formats
   '(("native" . ".hs")
