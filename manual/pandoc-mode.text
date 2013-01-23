@@ -15,13 +15,13 @@ The current version of `pandoc-mode` is 2.2.0 and is compatible with Pandoc vers
 
 # Installation #
 
-Installing `pandoc-mode` is easy: just put `pandoc-mode.el` into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
+The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.milkbox.net/) package repository. Alternatively, you can install it manually: download `pandoc-mode.el`, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
 
 ```Commonlisp
 (load "pandoc-mode")
 ```
 
-This command simply loads `pandoc-mode`, it obviously does not activate it. In order to activate it in a buffer, you need to type `M-x pandoc-mode`. If you want to start `pandoc-mode` automatically when you load e.g., a markdown file, you can add a hook to your `~/.emacs`:
+Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a markdown file, you can add a hook to your `~/.emacs`:
 
 ```Commonlisp
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
@@ -58,6 +58,8 @@ On systems that have symbolic links, it is also possible to specify a default ou
 When you switch output formats, either through the menu or with the keyboard (with `C-c / w`), Emacs checks if a corresponding settings file exists and loads it if one is found. That is, you can load a different settings file by simply switching output formats.
 
 Note that the current output format is always visible in the mode line: the "lighter" for `pandoc-mode` in the mode line has the form `Pandoc/<format>`, where `<format>` is the current output format.
+
+The major modes for which `pandoc-mode` selects an output format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.
 
 
 ## Auxiliary files and options ##
