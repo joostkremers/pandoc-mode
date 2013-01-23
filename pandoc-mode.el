@@ -59,7 +59,7 @@
   :type 'file)
 
 (defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
-			       ("lisp" . pandoc-process-lisp-directive))
+                               ("lisp" . pandoc-process-lisp-directive))
   "*List of directives to be processed before pandoc is called.
 The directive must be given without `@@'; the function should
 return a string that will replace the directive and its
@@ -263,34 +263,34 @@ the option can have a default value."
   `(progn
      (add-to-list 'pandoc-switches (quote ,option) t)
      ,(when full-path
-	`(add-to-list 'pandoc-filepath-switches (quote ,option) t))
+        `(add-to-list 'pandoc-filepath-switches (quote ,option) t))
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-files-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
-						   (list prompt
-							 (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
-								 :active t
-								 :style 'radio
-								 :selected `(null (pandoc-get (quote ,option))))
-							 (when default
-							   (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
-								   :active t
-								   :style 'radio
-								   :selected `(eq (pandoc-get (quote ,option)) t)))
-							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
-								 :active t
-								 :style 'radio
-								 :selected `(stringp (pandoc-get (quote ,option)))))))
-		  t)
+                                                   (list prompt
+                                                         (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
+                                                                 :active t
+                                                                 :style 'radio
+                                                                 :selected `(null (pandoc-get (quote ,option))))
+                                                         (when default
+                                                           (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
+                                                                   :active t
+                                                                   :style 'radio
+                                                                   :selected `(eq (pandoc-get (quote ,option)) t)))
+                                                         (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+                                                                 :active t
+                                                                 :style 'radio
+                                                                 :selected `(stringp (pandoc-get (quote ,option)))))))
+                  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-	   #'(lambda (prefix)
-	       (interactive "P")
-	       (pandoc-set (quote ,option)
-			   (cond
-			    ((eq prefix '-) nil)
-			    ((null prefix) ,(if full-path
-						`(read-file-name ,(concat prompt ": "))
-					      `(file-name-nondirectory (read-file-name ,(concat prompt ": ")))))
-			    (t ,default)))))))
+           #'(lambda (prefix)
+               (interactive "P")
+               (pandoc-set (quote ,option)
+                           (cond
+                            ((eq prefix '-) nil)
+                            ((null prefix) ,(if full-path
+                                                `(read-file-name ,(concat prompt ": "))
+                                              `(file-name-nondirectory (read-file-name ,(concat prompt ": ")))))
+                            (t ,default)))))))
 
 (defmacro pandoc-define-numeric-option (option prompt)
   "Define a numeric option.
@@ -312,22 +312,22 @@ formulated in such a way that the strings \"Default \" and \"Set
      (add-to-list 'pandoc-switches (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,prompt
-					     ,(vector (concat "Default " prompt) `(pandoc-set (quote ,option) nil)
-						      :active t
-						      :style 'radio
-						      :selected `(null (pandoc-get (quote ,option))))
-					     ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
-						      :active t
-						      :style 'radio
-						      :selected `(pandoc-get (quote ,option))))
-		  t)
+                                             ,(vector (concat "Default " prompt) `(pandoc-set (quote ,option) nil)
+                                                      :active t
+                                                      :style 'radio
+                                                      :selected `(null (pandoc-get (quote ,option))))
+                                             ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+                                                      :active t
+                                                      :style 'radio
+                                                      :selected `(pandoc-get (quote ,option))))
+                  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-	   #'(lambda (prefix)
-	       (interactive "P")
-	       (pandoc-set (quote ,option)
-			   (if (eq prefix '-)
-			       nil
-			     (string-to-number (read-string ,(concat prompt ": ")))))))))
+           #'(lambda (prefix)
+               (interactive "P")
+               (pandoc-set (quote ,option)
+                           (if (eq prefix '-)
+                               nil
+                             (string-to-number (read-string ,(concat prompt ": ")))))))))
 
 (defmacro pandoc-define-string-option (option prompt &optional default)
   "Define a option whose value is a string.
@@ -351,29 +351,29 @@ or T and indicates whether the option can have a default value."
      (add-to-list 'pandoc-switches (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
-						   (list prompt
-							 (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
-								 :active t
-								 :style 'radio
-								 :selected `(null (pandoc-get (quote ,option))))
-							 (when default
-							   (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
-								   :active t
-								   :style 'radio
-								   :selected `(eq (pandoc-get (quote ,option)) t)))
-							 (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
-								 :active t
-								 :style 'radio
-								 :selected `(stringp (pandoc-get (quote ,option)))))))
-		  t)
+                                                   (list prompt
+                                                         (vector (concat "No " prompt) `(pandoc-set (quote ,option) nil)
+                                                                 :active t
+                                                                 :style 'radio
+                                                                 :selected `(null (pandoc-get (quote ,option))))
+                                                         (when default
+                                                           (vector (concat "Default " prompt) `(pandoc-set (quote ,option) t)
+                                                                   :active t
+                                                                   :style 'radio
+                                                                   :selected `(eq (pandoc-get (quote ,option)) t)))
+                                                         (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+                                                                 :active t
+                                                                 :style 'radio
+                                                                 :selected `(stringp (pandoc-get (quote ,option)))))))
+                  t)
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-	   #'(lambda (prefix)
-	       (interactive "P")
-	       (pandoc-set (quote ,option)
-			   (cond
-			    ((eq prefix '-) nil)
-			    ((null prefix) (read-string ,(concat prompt ": ")))
-			    (t ,default)))))))
+           #'(lambda (prefix)
+               (interactive "P")
+               (pandoc-set (quote ,option)
+                           (cond
+                            ((eq prefix '-) nil)
+                            ((null prefix) (read-string ,(concat prompt ": ")))
+                            (t ,default)))))))
 
 (defvar pandoc-@-counter 0 "Counter for (@)-lists.")
 (make-variable-buffer-local 'pandoc-@-counter)
@@ -527,15 +527,15 @@ variables already stored, or just (variable-name), in which case
 the named variable is deleted from the list."
   (when (assq option pandoc-local-options) ; check if the option is licit
     (let ((new-value
-	   (if (eq option 'variable)
-	       ;; new variables are added to the list; existing variables are
-	       ;; overwritten or deleted.
-	       (append (assq-delete-all (car value) (pandoc-get 'variable))
-		       (if (cdr value)
-			   (list value)
-			 nil))
-	     ;; all other options simply override the existing value.
-	     value)))
+           (if (eq option 'variable)
+               ;; new variables are added to the list; existing variables are
+               ;; overwritten or deleted.
+               (append (assq-delete-all (car value) (pandoc-get 'variable))
+                       (if (cdr value)
+                           (list value)
+                         nil))
+             ;; all other options simply override the existing value.
+             value)))
       (setcdr (assq option pandoc-local-options) new-value))
     (setq pandoc-settings-modified-flag t)))
 
@@ -547,23 +547,23 @@ variables already stored, or just (variable-name), in which case
 the named variable is deleted from the list."
   (when (assq option pandoc-project-options) ; check if the option is licit
     (let ((new-value
-	   (if (eq option 'variable)
-	       ;; new variables are added to the list; existing variables are
-	       ;; overwritten or deleted.
-	       (append (assq-delete-all (car value) (pandoc-get* 'variable))
-		       (if (cdr value)
-			   (list value)
-			 nil))
-	     ;; all other options simply override the existing value.
-	     value)))
+           (if (eq option 'variable)
+               ;; new variables are added to the list; existing variables are
+               ;; overwritten or deleted.
+               (append (assq-delete-all (car value) (pandoc-get* 'variable))
+                       (if (cdr value)
+                           (list value)
+                         nil))
+             ;; all other options simply override the existing value.
+             value)))
       (setcdr (assq option pandoc-project-options) new-value))
     (setq pandoc-settings-modified-flag t)))
 
 (defun pandoc-get (option &optional buffer)
   "Returns the local value of OPTION."
   (cdr (assq option (if buffer
-			(buffer-local-value 'pandoc-local-options buffer)
-		      pandoc-local-options))))
+                        (buffer-local-value 'pandoc-local-options buffer)
+                      pandoc-local-options))))
 
 (defun pandoc-get* (option)
   "Returns the project value of OPTION."
@@ -598,42 +598,42 @@ or \"docx\" but no output file is specified, one will be created,
 since pandoc does not support output to stdout for those two
 formats."
   (let ((read (format "--read=%s%s" (pandoc-get 'read) (if (pandoc-get 'read-lhs) "+lhs" "")))
-	(write (if pdf
-		   nil
-		 (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
-	(output (cond
-		 ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
-		      (and (null (pandoc-get 'output))                ; or if the user set no output file but either
-			   (or pdf                                    ; (i) we're converting to pdf, or
-			       (member (pandoc-get 'write)            ; (ii) the output format is odt, epub or docx
-				       '("odt" "epub" "docx")))))
-		  (format "--output=%s/%s%s"                          ; we create an output file name.
-			  (expand-file-name (or (pandoc-get 'output-dir)
-						(file-name-directory input-file)))
-			  (file-name-sans-extension (file-name-nondirectory input-file))
-			  (if pdf
-			      ".pdf"
-			    (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
-		 ((stringp (pandoc-get 'output))                      ; if the user set an output file,
-		  (format "--output=%s/%s"                            ; we combine it with the output directory
-			  (expand-file-name (or (pandoc-get 'output-dir)
-						(file-name-directory input-file)))
-			  (if pdf                                     ; and check if we're converting to pdf
-			      (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
-			    (pandoc-get 'output))))
-		 (t nil)))
-	(variables (mapcar #'(lambda (variable)
-			       (format "--variable=%s:%s" (car variable) (cdr variable)))
-			   (pandoc-get 'variable)))
-	(other-options (mapcar #'(lambda (switch)
-				   (let ((value (pandoc-get switch)))
-				     (when (and value (memq switch pandoc-filepath-switches))
-				       (setq value (expand-file-name value)))
-				     (cond
-				      ((eq value t) (format "--%s" switch))
-				      ((stringp value) (format "--%s=%s" switch value))
-				      (t nil))))
-			       pandoc-switches)))
+        (write (if pdf
+                   nil
+                 (format "--write=%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" ""))))
+        (output (cond
+                 ((or (eq (pandoc-get 'output) t)                     ; if the user set the output file to T
+                      (and (null (pandoc-get 'output))                ; or if the user set no output file but either
+                           (or pdf                                    ; (i) we're converting to pdf, or
+                               (member (pandoc-get 'write)            ; (ii) the output format is odt, epub or docx
+                                       '("odt" "epub" "docx")))))
+                  (format "--output=%s/%s%s"                          ; we create an output file name.
+                          (expand-file-name (or (pandoc-get 'output-dir)
+                                                (file-name-directory input-file)))
+                          (file-name-sans-extension (file-name-nondirectory input-file))
+                          (if pdf
+                              ".pdf"
+                            (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
+                 ((stringp (pandoc-get 'output))                      ; if the user set an output file,
+                  (format "--output=%s/%s"                            ; we combine it with the output directory
+                          (expand-file-name (or (pandoc-get 'output-dir)
+                                                (file-name-directory input-file)))
+                          (if pdf                                     ; and check if we're converting to pdf
+                              (concat (file-name-sans-extension (pandoc-get 'output)) ".pdf")
+                            (pandoc-get 'output))))
+                 (t nil)))
+        (variables (mapcar #'(lambda (variable)
+                               (format "--variable=%s:%s" (car variable) (cdr variable)))
+                           (pandoc-get 'variable)))
+        (other-options (mapcar #'(lambda (switch)
+                                   (let ((value (pandoc-get switch)))
+                                     (when (and value (memq switch pandoc-filepath-switches))
+                                       (setq value (expand-file-name value)))
+                                     (cond
+                                      ((eq value t) (format "--%s" switch))
+                                      ((stringp value) (format "--%s=%s" switch value))
+                                      (t nil))))
+                               pandoc-switches)))
     (delq nil (append (list read write output) variables other-options))))
 
 (defun pandoc-process-directives (output-format)
@@ -644,33 +644,33 @@ with the @@-directives."
   (mapc #'funcall pandoc-directives-hook)
   (let ((case-fold-search nil))
     (mapc #'(lambda (directive)
-	      (goto-char (point-min))
-	      (while (re-search-forward (concat "\\([\\]?\\)@@" (car directive)) nil t)
-		(if (string= (match-string 1) "\\")
-		    (delete-region (match-beginning 1) (match-end 1))
-		  (let ((@@-beg (match-beginning 0))
-			(@@-end (match-end 0)))
-		    (cond
-		     ((eq (char-after) ?{) ; if there is an argument.
-		      ;; note: point is on the left brace, and scan-lists
-		      ;; returns the position *after* the right brace. we need
-		      ;; to adjust both values to get the actual argument.
-		      (let* ((arg-beg (1+ (point)))
-			     (arg-end (1- (scan-lists (point) 1 0)))
-			     (text (buffer-substring-no-properties arg-beg arg-end)))
-			(goto-char @@-beg)
-			(delete-region @@-beg (1+ arg-end))
-			(insert (funcall (cdr directive) output-format text)))
-		      (goto-char @@-beg))
-		     ;; check if the next character is not a letter or number.
-		     ;; if it is, we're actually on a different directive.
-		     ((looking-at "[a-zA-Z0-9]") t)
-		     ;; otherwise there is no argument.
-		     (t (goto-char @@-beg)
-			(delete-region @@-beg @@-end) ; else there is no argument
-			(insert (funcall (cdr directive) output-format))
-			(goto-char @@-beg)))))))
-	  pandoc-directives)))
+              (goto-char (point-min))
+              (while (re-search-forward (concat "\\([\\]?\\)@@" (car directive)) nil t)
+                (if (string= (match-string 1) "\\")
+                    (delete-region (match-beginning 1) (match-end 1))
+                  (let ((@@-beg (match-beginning 0))
+                        (@@-end (match-end 0)))
+                    (cond
+                     ((eq (char-after) ?{) ; if there is an argument.
+                      ;; note: point is on the left brace, and scan-lists
+                      ;; returns the position *after* the right brace. we need
+                      ;; to adjust both values to get the actual argument.
+                      (let* ((arg-beg (1+ (point)))
+                             (arg-end (1- (scan-lists (point) 1 0)))
+                             (text (buffer-substring-no-properties arg-beg arg-end)))
+                        (goto-char @@-beg)
+                        (delete-region @@-beg (1+ arg-end))
+                        (insert (funcall (cdr directive) output-format text)))
+                      (goto-char @@-beg))
+                     ;; check if the next character is not a letter or number.
+                     ;; if it is, we're actually on a different directive.
+                     ((looking-at "[a-zA-Z0-9]") t)
+                     ;; otherwise there is no argument.
+                     (t (goto-char @@-beg)
+                        (delete-region @@-beg @@-end) ; else there is no argument
+                        (insert (funcall (cdr directive) output-format))
+                        (goto-char @@-beg)))))))
+          pandoc-directives)))
 
 (defun pandoc-process-lisp-directive (output-format lisp)
   "Process @@lisp directives."
@@ -693,31 +693,31 @@ OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
 format is used."
   (let ((filename (buffer-file-name buffer)))
     (with-temp-buffer ; we do this in a temp buffer so we can process
-		      ; @@-directives without having to undo them and set the
-		      ; options independently of the original buffer.
+                      ; @@-directives without having to undo them and set the
+                      ; options independently of the original buffer.
       (if (and output-format ; if an output format was provided (and the buffer is visiting a file)
-	       filename)     ; we want to use settings for that format or no settings at all.
-	  (unless (pandoc-load-settings-for-file (expand-file-name filename) output-format t)
-	    ;; if we do not find a settings file, we unset all options:
-	    (setq pandoc-local-options (copy-alist pandoc-options)
-		  pandoc-project-options (copy-alist pandoc-options))
-	    ;; and specify only the input and output formats:
-	    (pandoc-set 'write output-format)
-	    (pandoc-set 'read (pandoc-get 'read buffer)))
-	;; if no output format was provided, we use the buffer's options:
-	(setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
-	(setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
+               filename)     ; we want to use settings for that format or no settings at all.
+          (unless (pandoc-load-settings-for-file (expand-file-name filename) output-format t)
+            ;; if we do not find a settings file, we unset all options:
+            (setq pandoc-local-options (copy-alist pandoc-options)
+                  pandoc-project-options (copy-alist pandoc-options))
+            ;; and specify only the input and output formats:
+            (pandoc-set 'write output-format)
+            (pandoc-set 'read (pandoc-get 'read buffer)))
+        ;; if no output format was provided, we use the buffer's options:
+        (setq pandoc-local-options (buffer-local-value 'pandoc-local-options buffer))
+        (setq pandoc-project-options (buffer-local-value 'pandoc-project-options buffer)))
       (let ((option-list (pandoc-create-command-option-list filename pdf)))
-	(insert-buffer-substring-no-properties buffer)
-	(message "Running pandoc...")
-	(pandoc-process-directives (pandoc-get 'write))
-	(with-pandoc-output-buffer
-	  (erase-buffer)
-	  (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
-	(if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
-	    (message "Running pandoc... Finished.")
-	  (message "Error in pandoc process.")
-	  (display-buffer pandoc-output-buffer))))))
+        (insert-buffer-substring-no-properties buffer)
+        (message "Running pandoc...")
+        (pandoc-process-directives (pandoc-get 'write))
+        (with-pandoc-output-buffer
+          (erase-buffer)
+          (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
+        (if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc-output-buffer t option-list))
+            (message "Running pandoc... Finished.")
+          (message "Error in pandoc process.")
+          (display-buffer pandoc-output-buffer))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
@@ -726,9 +726,9 @@ format. Otherwise, the output format currently set in the buffer
 is used."
   (interactive "P")
   (pandoc-call-external (current-buffer)
-			(if prefix
-			    (completing-read "Output format to use: " pandoc-output-formats nil t)
-			  nil)))
+                        (if prefix
+                            (completing-read "Output format to use: " pandoc-output-formats nil t)
+                          nil)))
 
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
@@ -740,11 +740,11 @@ such settings file is found, all options are unset except for the
 input and output formats."
   (interactive "P")
   (pandoc-call-external (current-buffer)
-			(if (or prefix
-				(not (string= (pandoc-get 'write) "latex")))
-			    "latex"
-			  nil)
-			t))
+                        (if (or prefix
+                                (not (string= (pandoc-get 'write) "latex")))
+                            "latex"
+                          nil)
+                        t))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
@@ -754,12 +754,12 @@ files. (Therefore, this function is not available on Windows.)"
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
     (let ((current-settings-file (file-name-nondirectory (pandoc-create-settings-filename 'settings (buffer-file-name) (pandoc-get 'write))))
-	  (current-project-file (file-name-nondirectory (pandoc-create-settings-filename 'project (buffer-file-name) (pandoc-get 'write)))))
+          (current-project-file (file-name-nondirectory (pandoc-create-settings-filename 'project (buffer-file-name) (pandoc-get 'write)))))
       (when (not (file-exists-p current-settings-file))
-	(pandoc-save-settings 'settings (pandoc-get 'write)))
+        (pandoc-save-settings 'settings (pandoc-get 'write)))
       (make-symbolic-link current-settings-file (pandoc-create-settings-filename 'settings (buffer-file-name) "default") t)
       (when (file-exists-p current-project-file)
-	  (make-symbolic-link current-project-file (pandoc-create-settings-filename 'project (buffer-file-name) "default") t))
+          (make-symbolic-link current-project-file (pandoc-create-settings-filename 'project (buffer-file-name) "default") t))
       (message "`%s' set as default output format." (pandoc-get 'write)))))
 
 (defun pandoc-save-settings-file ()
@@ -786,50 +786,50 @@ project settings file is written. If optional argument NO-CONFIRM
 is non-nil, any existing settings file is overwritten without
 asking."
   (let ((settings-file (pandoc-create-settings-filename type (buffer-file-name) format))
-	(filename (buffer-file-name))
-	;; If TYPE is 'settings, we only need the options in
-	;; pandoc-local-options that differ from pandoc-project-options. Note
-	;; that we convert all values to strings, so that options that are nil
-	;; in pandoc-local-options but non-nil in pandoc-project-options are
-	;; also saved below.
-	(options (cond ((eq type 'settings) (delq nil (mapcar #'(lambda (option)
-								  (when (not (equal (pandoc-get option)
-										    (pandoc-get* option)))
-								    (if (eq option 'variable)
-									(cons option (or (pandoc-get option)
-											 "nil"))
-								      (cons option (format "%s" (pandoc-get option))))))
-							      (mapcar #'car pandoc-options))))
-		       ((eq type 'project) pandoc-project-options))))
+        (filename (buffer-file-name))
+        ;; If TYPE is 'settings, we only need the options in
+        ;; pandoc-local-options that differ from pandoc-project-options. Note
+        ;; that we convert all values to strings, so that options that are nil
+        ;; in pandoc-local-options but non-nil in pandoc-project-options are
+        ;; also saved below.
+        (options (cond ((eq type 'settings) (delq nil (mapcar #'(lambda (option)
+                                                                  (when (not (equal (pandoc-get option)
+                                                                                    (pandoc-get* option)))
+                                                                    (if (eq option 'variable)
+                                                                        (cons option (or (pandoc-get option)
+                                                                                         "nil"))
+                                                                      (cons option (format "%s" (pandoc-get option))))))
+                                                              (mapcar #'car pandoc-options))))
+                       ((eq type 'project) pandoc-project-options))))
     (if (and (not no-confirm)
-	     (file-exists-p settings-file)
-	     (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
-				    (capitalize (symbol-name type))
-				    (file-name-nondirectory settings-file)))))
-	(message "%s file not written." (capitalize (symbol-name type)))
+             (file-exists-p settings-file)
+             (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
+                                    (capitalize (symbol-name type))
+                                    (file-name-nondirectory settings-file)))))
+        (message "%s file not written." (capitalize (symbol-name type)))
       (with-temp-buffer
-	(insert (format "# pandoc-mode %s file for %s #\n"
-			type
-			(file-name-nondirectory filename))
-		(format "# saved on %s #\n\n" (format-time-string "%Y.%m.%d %H:%M")))
-	(pandoc-insert-options options)
-	(let ((make-backup-files nil))
-	  (write-region (point-min) (point-max) settings-file))
-	(message "%s file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
+        (insert (format "# pandoc-mode %s file for %s #\n"
+                        type
+                        (file-name-nondirectory filename))
+                (format "# saved on %s #\n\n" (format-time-string "%Y.%m.%d %H:%M")))
+        (pandoc-insert-options options)
+        (let ((make-backup-files nil))
+          (write-region (point-min) (point-max) settings-file))
+        (message "%s file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
       (setq pandoc-settings-modified-flag nil))))
 
 (defun pandoc-insert-options (options)
   "Insert OPTIONS in the current buffer.
 Options are written out in the format <option>::<value>."
   (mapc #'(lambda (option)
-	    (when (cdr option)
-	      (cond
-	       ((eq (car option) 'variable)
-		(mapc #'(lambda (variable)
-			  (insert (format "variable::%s:%s\n" (car variable) (cdr variable))))
-		      (cdr option)))
-	       (t (insert (format "%s::%s\n" (car option) (cdr option)))))))
-	options))
+            (when (cdr option)
+              (cond
+               ((eq (car option) 'variable)
+                (mapc #'(lambda (variable)
+                          (insert (format "variable::%s:%s\n" (car variable) (cdr variable))))
+                      (cdr option)))
+               (t (insert (format "%s::%s\n" (car option) (cdr option)))))))
+        options))
 
 (defun pandoc-undo-file-settings ()
   "Undo all settings specific to the current file.
@@ -858,27 +858,27 @@ is asked if the current settings have not been saved. FILE must
 be an absolute path name. Returns NIL if no settings or project
 file is found for FILE, otherwise non-NIL."
   (when (and (not no-confirm)
-	     pandoc-settings-modified-flag
-	     (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
+             pandoc-settings-modified-flag
+             (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
   ;; We read the options from the settings files but do not store them in the
   ;; pandoc-{local|project}-options variables. Rather, we set them one by one
   ;; with pandoc-set(*), so we can make sure per-file settings override the
   ;; project settings.
   (let ((project-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format)))
-	(local-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))))
+        (local-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))))
     (unless (nor project-settings local-settings)
       (setq pandoc-project-options (copy-alist pandoc-options)
-	    pandoc-local-options (copy-alist pandoc-options))
+            pandoc-local-options (copy-alist pandoc-options))
       (mapc #'(lambda (option)
-		(pandoc-set (car option) (cdr option))
-		(pandoc-set* (car option) (cdr option)))
-	    project-settings)
+                (pandoc-set (car option) (cdr option))
+                (pandoc-set* (car option) (cdr option)))
+            project-settings)
       ;; the local settings are processed second, so that they can override the
       ;; project settings.
       (mapc #'(lambda (option)
-		(pandoc-set (car option) (cdr option)))
-	    local-settings)
+                (pandoc-set (car option) (cdr option)))
+            local-settings)
       (setq pandoc-settings-modified-flag nil)
       (message "Settings loaded for format \"%s\"." format))))
 
@@ -890,22 +890,22 @@ Returns an alist with the options and their values."
       (insert-file-contents settings-file)
       (goto-char (point-min))
       (let (options) ; alist holding the options we read
-	(while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
-	  (let ((option (intern (match-string 1)))
-		(value (match-string 2)))
-	    ;; If the option is a variable, we read its name and value and add
-	    ;; them to the alist as a dotted list. note that there may be more
-	    ;; than one variable-value pair in OPTIONS.
-	    (add-to-list 'options (if (eq option 'variable)
-				      (progn
-					(string-match "^\\(.*?\\):\\(.*?\\)$" value)
-					(cons 'variable (cons (intern (match-string 1 value)) (match-string 2 value))))
-				    (cons option (cond
-						  ((string-match "^[0-9]$" value) (string-to-number value))
-						  ((string= "t" value) t)
-						  ((string= "nil" value) nil)
-						  (t value)))))))
-	options))))
+        (while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
+          (let ((option (intern (match-string 1)))
+                (value (match-string 2)))
+            ;; If the option is a variable, we read its name and value and add
+            ;; them to the alist as a dotted list. note that there may be more
+            ;; than one variable-value pair in OPTIONS.
+            (add-to-list 'options (if (eq option 'variable)
+                                      (progn
+                                        (string-match "^\\(.*?\\):\\(.*?\\)$" value)
+                                        (cons 'variable (cons (intern (match-string 1 value)) (match-string 2 value))))
+                                    (cons option (cond
+                                                  ((string-match "^[0-9]$" value) (string-to-number value))
+                                                  ((string= "t" value) t)
+                                                  ((string= "nil" value) nil)
+                                                  (t value)))))))
+        options))))
 
 (defun pandoc-view-output ()
   "Displays the *Pandoc output* buffer."
@@ -948,8 +948,8 @@ Returns an alist with the options and their values."
     (let ((buffer-read-only nil))
       (erase-buffer)
       (mapc #'(lambda (definition)
-		(insert (concat " " definition "\n\n")))
-	    definitions)
+                (insert (concat " " definition "\n\n")))
+            definitions)
       (goto-char (point-min))
       (setq pandoc-@-overlay (make-overlay (point-min) (point-at-eol)))
       (overlay-put pandoc-@-overlay 'face 'highlight))
@@ -966,7 +966,7 @@ loaded. If none exists, all options are unset (except the input
 format)."
   (interactive (list (completing-read "Set output format to: " pandoc-output-formats nil t)))
   (when (and pandoc-settings-modified-flag
-	     (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'write))))
+             (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
   (unless (pandoc-load-settings-profile format t)
     (setq pandoc-local-options (copy-alist pandoc-options))
@@ -981,10 +981,10 @@ output file is created on the basis of the input file and the
 output format."
   (interactive "P")
   (pandoc-set 'output
-	      (cond
-	       ((eq prefix '-) nil)
-	       ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
-	       (t t))))
+              (cond
+               ((eq prefix '-) nil)
+               ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
+               (t t))))
 
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
@@ -992,9 +992,9 @@ If called with the prefix argument C-u - (or M--), the data
 directory is set to NIL, which means use $HOME/.pandoc."
   (interactive "P")
   (pandoc-set 'data-dir
-	      (if (eq prefix '-)
-		  nil
-		(read-directory-name "Data directory: " nil nil t))))
+              (if (eq prefix '-)
+                  nil
+                (read-directory-name "Data directory: " nil nil t))))
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
@@ -1003,9 +1003,9 @@ directory is set to NIL, which means use the directory of the
 input file."
   (interactive "P")
   (pandoc-set 'output-dir
-	      (if (eq prefix '-)
-		  nil
-		(read-directory-name "Output directory: " nil nil t))))
+              (if (eq prefix '-)
+                  nil
+                (read-directory-name "Output directory: " nil nil t))))
 
 (defun pandoc-set-template-variable (prefix)
   "Add/change/remove a template variable.
@@ -1017,12 +1017,12 @@ variables, otherwise the user is asked for a value."
     (when var
       (setq var (intern var))
       (let ((value (if (eq prefix '-)
-		       nil
-		     (read-string "Value: " nil nil (cdr (assq var (pandoc-get 'variable)))))))
-	(pandoc-set 'variable (cons var value))
-	(message "Template variable %s %s." var (if value
-						    (format "added with value `%s'" value)
-						  "removed"))))))
+                       nil
+                     (read-string "Value: " nil nil (cdr (assq var (pandoc-get 'variable)))))))
+        (pandoc-set 'variable (cons var value))
+        (message "Template variable %s %s." var (if value
+                                                    (format "added with value `%s'" value)
+                                                  "removed"))))))
 
 (defun pandoc-set-email-obfuscation (prefix)
   "Set the option `Email Obfuscation'.
@@ -1030,14 +1030,14 @@ If called with prefix argument C-u - (or M--), Email Obfuscation
 is unset."
   (interactive "P")
   (pandoc-set 'email-obfuscation
-	      (if (eq prefix '-)
-		  "none"
-		(let ((value (completing-read "Set email obfuscation: " '("none" "javascript" "references") nil t)))
-		  (if (member value '("" "none"))
-		      "none"
-		    value))))
+              (if (eq prefix '-)
+                  "none"
+                (let ((value (completing-read "Set email obfuscation: " '("none" "javascript" "references") nil t)))
+                  (if (member value '("" "none"))
+                      "none"
+                    value))))
   (message "Email obfuscation: %s." (or (pandoc-get 'email-obfuscation)
-					"unset")))
+                                        "unset")))
 
 (defun pandoc-set-latex-engine (prefix)
   "Set the option `LaTeX Engine'.
@@ -1045,14 +1045,14 @@ If called with prefix argument C-u - (or M--), LaTeX Engine
 is unset."
   (interactive "P")
   (pandoc-set 'latex-engine
-	      (if (eq prefix '-)
-		  nil
-		(let ((value (completing-read "Set LaTeX Engine: " '("pdflatex" "xelatex" "lualatex") nil t)))
-		  (if (member value '("" "pdflatex"))
-		      nil
-		    value))))
+              (if (eq prefix '-)
+                  nil
+                (let ((value (completing-read "Set LaTeX Engine: " '("pdflatex" "xelatex" "lualatex") nil t)))
+                  (if (member value '("" "pdflatex"))
+                      nil
+                    value))))
   (message "LaTeX Engine: %s." (or (pandoc-get 'latex-engine)
-				   "default")))
+                                   "default")))
 
 (pandoc-define-file-option template "Template File" t)
 (pandoc-define-file-option css "CSS Style Sheet")
@@ -1120,17 +1120,17 @@ set. Without any prefix argument, the option is toggled."
   (interactive "P")
   (let ((completion-ignore-case t))
     (let ((option (cdr (assoc (completing-read (format "%s option: " (cond
-								      ((eq prefix '-) "Unset")
-								      ((null prefix) "Toggle")
-								      (t "Set")))
-					       pandoc-binary-switches nil t) pandoc-binary-switches))))
+                                                                      ((eq prefix '-) "Unset")
+                                                                      ((null prefix) "Toggle")
+                                                                      (t "Set")))
+                                               pandoc-binary-switches nil t) pandoc-binary-switches))))
       (pandoc-set option (cond
-			  ((eq prefix '-) nil)
-			  ((null prefix) (not (pandoc-get option)))
-			  (t t)))
+                          ((eq prefix '-) nil)
+                          ((null prefix) (not (pandoc-get option)))
+                          (t t)))
       (message "Option `%s' %s." (car (rassq option pandoc-binary-switches)) (if (pandoc-get option)
-										 "set"
-									       "unset")))))
+                                                                                 "set"
+                                                                               "unset")))))
 
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
   `("Pandoc"
@@ -1148,60 +1148,60 @@ set. Without any prefix argument, the option is toggled."
     "--"
     ["View Current Settings" pandoc-view-settings :active t]
     ,(append (cons "Input Format"
-		   (mapcar #'(lambda (option)
-			       (vector (car option)
-				       `(pandoc-set 'read ,(cdr option))
-				       :active t
-				       :style 'radio
-				       :selected `(string= (pandoc-get 'read)
-							   ,(cdr option))))
-			   '(("Native Haskell" . "native")
-			     ("Markdown" . "markdown")
-			     ("reStructuredText" . "rst")
-			     ("HTML" . "html")
-			     ("LaTeX" . "latex")
-			     ("Textile" . "textile")
-			     ("JSON" . "json"))))
-	     (list ["Literal Haskell" (pandoc-toggle 'read-lhs)
-		    :active (member (pandoc-get 'read) '("markdown" "rst" "latex"))
-		    :style toggle :selected (pandoc-get 'read-lhs)]))
+                   (mapcar #'(lambda (option)
+                               (vector (car option)
+                                       `(pandoc-set 'read ,(cdr option))
+                                       :active t
+                                       :style 'radio
+                                       :selected `(string= (pandoc-get 'read)
+                                                           ,(cdr option))))
+                           '(("Native Haskell" . "native")
+                             ("Markdown" . "markdown")
+                             ("reStructuredText" . "rst")
+                             ("HTML" . "html")
+                             ("LaTeX" . "latex")
+                             ("Textile" . "textile")
+                             ("JSON" . "json"))))
+             (list ["Literal Haskell" (pandoc-toggle 'read-lhs)
+                    :active (member (pandoc-get 'read) '("markdown" "rst" "latex"))
+                    :style toggle :selected (pandoc-get 'read-lhs)]))
 
     ,(append (cons "Output Format"
-		   (mapcar #'(lambda (option)
-			       (vector (car option)
-				       `(pandoc-set-write ,(cdr option))
-				       :active t
-				       :style 'radio
-				       :selected `(string= (pandoc-get 'write)
-							   ,(cdr option))))
-			   '(("Native Haskell" . "native")
-			     ("Markdown" . "markdown")
-			     ("reStructuredText" . "rst")
-			     ("HTML" . "html")
-			     ("HTML5" . "html5")
-			     ("LaTeX" . "latex")
-			     ("ConTeXt" . "context")
-			     ("Man Page" . "man")
-			     ("MediaWiki" . "mediawiki")
-			     ("TeXinfo" . "texinfo")
-			     ("DocBook XML" . "docbook")
-			     ("EPUB E-Book" . "epub")
-			     ("OpenDocument XML" . "opendocument")
-			     ("OpenOffice Text Document" . "odt")
-			     ("MS Word" . "docx")
-			     ("S5 HTML/JS Slide Show" . "s5")
-			     ("Slidy Slide Show" . "slidy")
-			     ("DZSlides Slide Show" . "dzslides")
-			     ("Beamer Slide Show" . "beamer")
-			     ("Rich Text Format" . "rtf")
-			     ("Textile" . "textile")
-			     ("Org-mode" . "org")
-			     ("JSON" . "json")
-			     ("AsciiDoc" . "asciidoc"))))
-	     (list ["Literal Haskell" (pandoc-toggle 'write-lhs)
-		    :active (member (pandoc-get 'write)
-				    '("markdown" "rst" "latex" "beamer" "html" "html5"))
-		    :style toggle :selected (pandoc-get 'write-lhs)]))
+                   (mapcar #'(lambda (option)
+                               (vector (car option)
+                                       `(pandoc-set-write ,(cdr option))
+                                       :active t
+                                       :style 'radio
+                                       :selected `(string= (pandoc-get 'write)
+                                                           ,(cdr option))))
+                           '(("Native Haskell" . "native")
+                             ("Markdown" . "markdown")
+                             ("reStructuredText" . "rst")
+                             ("HTML" . "html")
+                             ("HTML5" . "html5")
+                             ("LaTeX" . "latex")
+                             ("ConTeXt" . "context")
+                             ("Man Page" . "man")
+                             ("MediaWiki" . "mediawiki")
+                             ("TeXinfo" . "texinfo")
+                             ("DocBook XML" . "docbook")
+                             ("EPUB E-Book" . "epub")
+                             ("OpenDocument XML" . "opendocument")
+                             ("OpenOffice Text Document" . "odt")
+                             ("MS Word" . "docx")
+                             ("S5 HTML/JS Slide Show" . "s5")
+                             ("Slidy Slide Show" . "slidy")
+                             ("DZSlides Slide Show" . "dzslides")
+                             ("Beamer Slide Show" . "beamer")
+                             ("Rich Text Format" . "rtf")
+                             ("Textile" . "textile")
+                             ("Org-mode" . "org")
+                             ("JSON" . "json")
+                             ("AsciiDoc" . "asciidoc"))))
+             (list ["Literal Haskell" (pandoc-toggle 'write-lhs)
+                    :active (member (pandoc-get 'write)
+                                    '("markdown" "rst" "latex" "beamer" "html" "html5"))
+                    :style toggle :selected (pandoc-get 'write-lhs)]))
 
     ("Files"
      ("Output File"
@@ -1245,11 +1245,11 @@ set. Without any prefix argument, the option is toggled."
     ("Binary Options"
      ;; put the binary options into the menu
      ,@(mapcar #'(lambda (option)
-		   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
-			   :active t
-			   :style 'toggle
-			   :selected `(pandoc-get (quote ,(cdr option)))))
-	       pandoc-binary-switches))))
+                   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
+                           :active t
+                           :style 'toggle
+                           :selected `(pandoc-get (quote ,(cdr option)))))
+               pandoc-binary-switches))))
 
 (easy-menu-add pandoc-mode-menu pandoc-mode-map)
 
