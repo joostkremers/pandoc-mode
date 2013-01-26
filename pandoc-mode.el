@@ -1052,6 +1052,8 @@ is unset."
 (pandoc-define-numeric-option tab-stop "Tab Stop Width")
 (pandoc-define-numeric-option base-header-level "Base Header Level")
 (pandoc-define-numeric-option slide-level "Slide Level Header")
+(pandoc-define-numeric-option toc-depth "TOC Depth")
+(pandoc-define-numeric-option epub-chapter-level "EPub Chapter Level")
 
 (pandoc-define-string-option latexmathml "LaTeXMathML URL" t)
 (pandoc-define-string-option mathml "MathML URL" t)
@@ -1087,6 +1089,7 @@ is unset."
 (pandoc-define-binary-option atx-headers "Use ATX-style Headers")
 (pandoc-define-binary-option old-dashes "Use old-style dashes")
 (pandoc-define-binary-option no-tex-ligatures "Do not use TeX ligatures")
+(pandoc-define-binary-option html-q-tags "Use <q> Tags for Quotes in HTML")
 
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
