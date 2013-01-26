@@ -1221,7 +1221,8 @@ set. Without any prefix argument, the option is toggled."
       ["Javascript" (pandoc-set 'email-obfuscation "javascript") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "javascript")]
       ["References" (pandoc-set 'email-obfuscation "references") :active t
-       :style radio :selected (string= (pandoc-get 'email-obfuscation) "references")])
+       :style radio :selected (string= (pandoc-get 'email-obfuscation) "references")]))
+    ("Binary Options"
      ;; put the binary options into the menu
      ,@(mapcar #'(lambda (option)
 		   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
