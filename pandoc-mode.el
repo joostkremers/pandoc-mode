@@ -1087,8 +1087,8 @@ is unset."
 (pandoc-define-binary-option biblatex "Use BibLaTeX")
 (pandoc-define-binary-option ascii "Use Only ASCII in HTML")
 (pandoc-define-binary-option atx-headers "Use ATX-style Headers")
-(pandoc-define-binary-option old-dashes "Use old-style dashes")
-(pandoc-define-binary-option no-tex-ligatures "Do not use TeX ligatures")
+(pandoc-define-binary-option old-dashes "Use Old-style Dashes")
+(pandoc-define-binary-option no-tex-ligatures "Do Not Use TeX Ligatures")
 (pandoc-define-binary-option html-q-tags "Use <q> Tags for Quotes in HTML")
 
 (defun pandoc-toggle-interactive (prefix)
