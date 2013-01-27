@@ -1114,8 +1114,7 @@ set. Without any prefix argument, the option is toggled."
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
-    ["Create PDF" pandoc-convert-to-pdf
-     :active t]
+    ["Create PDF" pandoc-convert-to-pdf :active t]
     ["View Output Buffer" pandoc-view-output :active t]
     ["Save File Settings" pandoc-save-settings-file :active t]
     ["Set As Default Format" pandoc-set-default-format :active t]
