@@ -98,7 +98,7 @@ list, not if it appears higher on the list."
     "markdown"
     "markdown_strict"
     "markdown_phpextra"
-    "markdown_mmd"
+    "markdown_github"
     "rst"
     "mediawiki"
     "html"
@@ -115,7 +115,6 @@ list, not if it appears higher on the list."
     ("markdown_strict" . ".md")
     ("markdown_phpextra" . ".md")
     ("markdown_github" ".md")
-    ("markdown_mmd" ".md")
     ("rst" . ".rst")
     ("html" . ".html")
     ("html5" . ".html")
