@@ -91,7 +91,7 @@ list, not if it appears higher on the list."
     (json-mode . "json"))
   "*List of major modes and their default pandoc output formats."
   :group 'pandoc
-  :type '(repeat (cons (symbol :tag "Major mode" (string :tag "Output format")))))
+  :type '(repeat :tag "Major mode" (cons (symbol :tag "Major mode") (string :tag "Output format"))))
 
 (defvar pandoc-input-formats
   '("native"
@@ -114,7 +114,7 @@ list, not if it appears higher on the list."
     ("markdown" . ".md")
     ("markdown_strict" . ".md")
     ("markdown_phpextra" . ".md")
-    ("markdown_github" ".md")
+    ("markdown_github" . ".md")
     ("rst" . ".rst")
     ("html" . ".html")
     ("html5" . ".html")
@@ -143,7 +143,7 @@ list, not if it appears higher on the list."
   "*List of pandoc output formats and their extensions.
 The file extension should include a dot."
   :group 'pandoc
-  :type '(repeat (cons (string :tag "Output format") (string :tag "Extension"))))
+  :type '(repeat :tag "Output Format" (cons (string :tag "Format") (string :tag "Extension"))))
 
 (defvar pandoc-switches
   '(variable
