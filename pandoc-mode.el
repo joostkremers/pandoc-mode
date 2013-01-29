@@ -108,42 +108,66 @@ list, not if it appears higher on the list."
     "json")
   "List of pandoc input formats.")
 
+(defvar pandoc-output-formats-menu nil
+  "List of items in pandoc-mode's output format menu")
+
+(defvar pandoc-output-formats-list nil
+  "List of Pandoc output formats.")
+
+(defun pandoc-set-output-formats (var value)
+  "Set PANDOC-OUTPUT-FORMATS-MENU on the basis of PANDOC-OUTPUT-FORMATS."
+  (let ((output-formats (mapcar #'(lambda (elem)
+                                    (cons (car elem) (cadr elem)))
+                                value))
+        (menu (mapcar #'(lambda (elem)
+                          (cons (caddr elem) (car elem)))
+                      value)))
+    (setq pandoc-output-formats-menu menu)
+    (setq pandoc-output-formats-list output-formats)
+    (set-default var value)))
+
 (defcustom pandoc-output-formats
-  '(("native" . ".hs")
-    ("plain" . ".txt")
-    ("markdown" . ".md")
-    ("markdown_strict" . ".md")
-    ("markdown_phpextra" . ".md")
-    ("markdown_github" . ".md")
-    ("rst" . ".rst")
-    ("html" . ".html")
-    ("html5" . ".html")
-    ("latex" . ".tex")
-    ("beamer" . ".tex")
-    ("context" . ".tex")
-    ("man" . "")
-    ("mediawiki" . ".mw")
-    ("texinfo" . ".texi")
-    ("docbook" . ".xml")
-    ("epub" . ".epub")
-    ("epub3" . ".epub")
-    ("fb2" . ".fb2")
-    ("opendocument" . ".odf")
-    ("odt" . ".odt")
-    ("docx" . ".docx")
-    ("s5" . ".html")
-    ("slidy" . ".html")
-    ("slideous" . ".html")
-    ("dzslides" . ".html")
-    ("rtf" . ".rtf")
-    ("textile" . ".textile")
-    ("org" . ".org")
-    ("json" . ".json")
-    ("asciidoc" . ".txt"))
-  "*List of pandoc output formats and their extensions.
-The file extension should include a dot."
+  '(("native"            ".hs"      "Native Haskell")
+    ("plain"             ".txt"     "Plain Text")
+    ("markdown"          ".md"      "Markdown")
+    ("markdown_strict"   ".md"      "Markdown (Strict)")
+    ("markdown_phpextra" ".md"      "Markdown (PHPExtra)")
+    ("markdown_github"   ".md"      "Markdown (Github)")
+    ("rst"               ".rst"     "reStructuredText")
+    ("html"              ".html"    "HTML")
+    ("html5"             ".html"    "HTML5")
+    ("latex"             ".tex"     "LaTeX")
+    ("beamer"            ".tex"     "Beamer Slide Show")
+    ("context"           ".tex"     "ConTeXt")
+    ("man"               ""         "Man Page")
+    ("mediawiki"         ".mw"      "MediaWiki")
+    ("texinfo"           ".texi"    "TeXinfo")
+    ("docbook"           ".xml"     "DocBook XML")
+    ("epub"              ".epub"    "EPUB E-Book")
+    ("epub3"             ".epub"    "EPUB3 E-Book")
+    ("fb2"               ".fb2"     "FictionBook2")
+    ("opendocument"      ".odf"     "OpenDocument XML")
+    ("odt"               ".odt"     "OpenOffice Text Document")
+    ("docx"              ".docx"    "MS Word")
+    ("s5"                ".html"    "S5 HTML/JS Slide Show")
+    ("slidy"             ".html"    "Slidy Slide Show")
+    ("slideous"          ".html"    "Slideous Slide Show")
+    ("dzslides"          ".html"    "DZSlides Slide Show")
+    ("rtf"               ".rtf"     "Rich Text Format")
+    ("textile"           ".textile" "Textile")
+    ("org"               ".org"     "Org-mode")
+    ("json"              ".json"    "JSON")
+    ("asciidoc"          ".txt"     "AsciiDoc"))
+  "*List of Pandoc output formats and their associated file extensions.
+The file extension should include a dot. The description appears
+in the menu. Note that it does not make sense to change the names
+of the output formats, since Pandoc only recognizes the ones
+listed here. It is possible to customize the extensions and the
+descriptions, though, and you can remove output formats you don't
+use, if you want to unclutter the menu a bit."
   :group 'pandoc
-  :type '(repeat :tag "Output Format" (cons (string :tag "Format") (string :tag "Extension"))))
+  :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension") (string :tag "Description")))
+  :set 'pandoc-set-output-formats)
 
 (defvar pandoc-switches
   '(variable
@@ -610,7 +634,7 @@ formats."
                           (file-name-sans-extension (file-name-nondirectory input-file))
                           (if pdf
                               ".pdf"
-                            (cdr (assoc (pandoc-get 'write) pandoc-output-formats)))))
+                            (cdr (assoc (pandoc-get 'write) pandoc-output-formats-list)))))
                  ((stringp (pandoc-get 'output))                      ; if the user set an output file,
                   (format "--output=%s/%s"                            ; we combine it with the output directory
                           (expand-file-name (or (pandoc-get 'output-dir)
@@ -724,7 +748,7 @@ is used."
   (interactive "P")
   (pandoc-call-external (current-buffer)
                         (if prefix
-                            (completing-read "Output format to use: " pandoc-output-formats nil t)
+                            (completing-read "Output format to use: " pandoc-output-formats-list nil t)
                           nil)))
 
 (defun pandoc-convert-to-pdf (prefix)
@@ -961,7 +985,7 @@ Returns an alist with the options and their values."
 If a settings and/or project file exists for FORMAT, they are
 loaded. If none exists, all options are unset (except the input
 format)."
-  (interactive (list (completing-read "Set output format to: " pandoc-output-formats nil t)))
+  (interactive (list (completing-read "Set output format to: " pandoc-output-formats-list nil t)))
   (when (and pandoc-settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'write))))
     (pandoc-save-settings (pandoc-get 'write) t))
@@ -1174,36 +1198,7 @@ set. Without any prefix argument, the option is toggled."
                                        :style 'radio
                                        :selected `(string= (pandoc-get 'write)
                                                            ,(cdr option))))
-                           '(("Native Haskell" . "native")
-                             ("Plain Text" . "plain")
-                             ("Markdown" . "markdown")
-                             ("Markdown (Strict)" . "markdown_strict")
-                             ("Markdown (PHPExtra)" . "markdown_phpextra")
-                             ("Markdown (Github)" . "markdown_github")
-                             ("reStructuredText" . "rst")
-                             ("HTML" . "html")
-                             ("HTML5" . "html5")
-                             ("LaTeX" . "latex")
-                             ("ConTeXt" . "context")
-                             ("Man Page" . "man")
-                             ("MediaWiki" . "mediawiki")
-                             ("TeXinfo" . "texinfo")
-                             ("DocBook XML" . "docbook")
-                             ("EPUB E-Book" . "epub")
-                             ("EPUB3 E-Book" . "epub3")
-                             ("FictionBook2" . "fb2")
-                             ("OpenDocument XML" . "opendocument")
-                             ("OpenOffice Text Document" . "odt")
-                             ("MS Word" . "docx")
-                             ("S5 HTML/JS Slide Show" . "s5")
-                             ("Slidy Slide Show" . "slidy")
-                             ("DZSlides Slide Show" . "dzslides")
-                             ("Beamer Slide Show" . "beamer")
-                             ("Rich Text Format" . "rtf")
-                             ("Textile" . "textile")
-                             ("Org-mode" . "org")
-                             ("JSON" . "json")
-                             ("AsciiDoc" . "asciidoc"))))
+                           pandoc-output-formats-menu))
              (list ["Literal Haskell" (pandoc-toggle 'write-lhs)
                     :active (member (pandoc-get 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
@@ -1228,7 +1223,7 @@ set. Without any prefix argument, the option is toggled."
       ["Set Data Directory" pandoc-set-data-dir :active t
        :style radio :selected (pandoc-get 'data-dir)])
      ,@pandoc-files-menu)
-    
+
     ("Options"
      ,@pandoc-options-menu
      ("Template Variables"
