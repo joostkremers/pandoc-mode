@@ -171,28 +171,28 @@ use, if you want to unclutter the menu a bit."
   :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension") (string :tag "Description")))
   :set 'pandoc-set-output-formats)
 
-(defvar pandoc-switches
+(defvar pandoc-cli-options
   '(variable
     data-dir
     email-obfuscation
     latex-engine)
-  "List of switches accepted by the pandoc binary.
-A few switches are preset, other switches are added by the
-PANDOC-DEFINE-*-OPTION functions. The switches --read, --write
+  "List of options accepted by the pandoc binary.
+A few options are preset, other options are added by the
+PANDOC-DEFINE-*-OPTION functions. The options --read, --write
 and -output are not in this list, because they need special
 treatment.")
 
-(defvar pandoc-filepath-switches
+(defvar pandoc-filepath-options
   '(data-dir)
-  "List of switches that have a file path as value.
+  "List of options that have a file path as value.
 These file paths are expanded before they are sent to pandoc. For
 relative paths, the file's working directory is used as base
 directory.
 
-One switch is preset, others are added by PANDOC-DEFINE-FILE-OPTION.")
+One option is preset, others are added by PANDOC-DEFINE-FILE-OPTION.")
 
-(defvar pandoc-binary-switches nil
-  "List of binary switches.
+(defvar pandoc-binary-options nil
+  "List of binary options.
 These are set by PANDOC-DEFINE-BINARY-OPTION.")
 
 (defvar pandoc-options
@@ -254,18 +254,18 @@ Make sure that PANDOC-OUTPUT-BUFFER really exists."
 (defmacro pandoc-define-binary-option (option description)
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of
-the pandoc switch (without dashes). DESCRIPTION is the
+the pandoc option (without dashes). DESCRIPTION is the
 description of the option as it will appear in the menu."
   (declare (indent defun))
   `(progn
-     (add-to-list 'pandoc-switches (quote ,option) t)
-     (add-to-list 'pandoc-binary-switches (cons ,description (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
+     (add-to-list 'pandoc-binary-options (cons ,description (quote ,option)) t)
      (add-to-list 'pandoc-options (list (quote ,option))) t))
 
 (defmacro pandoc-define-file-option (option prompt &optional full-path default)
   "Define a file option.
-The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS, and to
-PANDOC-FILEPATH-SWITCHES (unless FULL-PATH is NIL). Furthermore,
+The option is added to PANDOC-CLI-OPTIONS and PANDOC-OPTIONS, and to
+PANDOC-FILEPATH-OPTIONS (unless FULL-PATH is NIL). Furthermore,
 a menu entry is created and a function to set/unset the option.
 
 The function to set the option can be called with the prefix
@@ -275,7 +275,7 @@ argument. If no prefix argument is given, the user is prompted
 for a value.
 
 OPTION must be a symbol and must be identical to the long form of
-the pandoc switch (without dashes). PROMPT is a string that is
+the pandoc option (without dashes). PROMPT is a string that is
 used to prompt for setting and unsetting the option. It must be
 formulated in such a way that the strings \"No \", \"Set \" and
 \"Default \" can be added before it. If FULL-PATH is T, the full
@@ -284,9 +284,9 @@ directory. DEFAULT must be either NIL or T and indicates whether
 the option can have a default value."
   (declare (indent defun))
   `(progn
-     (add-to-list 'pandoc-switches (quote ,option) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      ,(when full-path
-        `(add-to-list 'pandoc-filepath-switches (quote ,option) t))
+        `(add-to-list 'pandoc-filepath-options (quote ,option) t))
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-files-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
                                                    (list prompt
@@ -317,7 +317,7 @@ the option can have a default value."
 
 (defmacro pandoc-define-numeric-option (option prompt)
   "Define a numeric option.
-The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS.
+The option is added to PANDOC-CLI-OPTIONS and PANDOC-OPTIONS.
 Furthermore, a menu entry is created and a function to set/unset
 the option.
 
@@ -326,13 +326,13 @@ argument C-u - (or M--) to unset the option. If no prefix
 argument is given, the user is prompted for a value.
 
 OPTION must be a symbol and must be identical to the long form of
-the pandoc switch (without dashes). PROMPT is a string that is
+the pandoc option (without dashes). PROMPT is a string that is
 used to prompt for setting and unsetting the option. It must be
 formulated in such a way that the strings \"Default \" and \"Set
 \" can be added before it."
   (declare (indent defun))
   `(progn
-     (add-to-list 'pandoc-switches (quote ,option) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,prompt
                                              ,(vector (concat "Default " prompt) `(pandoc-set (quote ,option) nil)
@@ -354,7 +354,7 @@ formulated in such a way that the strings \"Default \" and \"Set
 
 (defmacro pandoc-define-string-option (option prompt &optional default)
   "Define a option whose value is a string.
-The option is added to PANDOC-SWITCHES and PANDOC-OPTIONS.
+The option is added to PANDOC-CLI-OPTIONS and PANDOC-OPTIONS.
 Furthermore, a menu entry is created and a function to set the
 option.
 
@@ -365,13 +365,13 @@ argument. If no prefix argument is given, the user is prompted
 for a value.
 
 OPTION must be a symbol and must be identical to the long form of
-the pandoc switch (without dashes). PROMPT is a string that is
+the pandoc option (without dashes). PROMPT is a string that is
 used to prompt for setting and unsetting the option. It must be
 formulated in such a way that the strings \"No \", \"Set \" and
 \"Default \" can be added before it. DEFAULT must be either NIL
 or T and indicates whether the option can have a default value."
   `(progn
-     (add-to-list 'pandoc-switches (quote ,option) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-options-menu (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
                                                    (list prompt
@@ -612,7 +612,7 @@ absolute filename as well."
     (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
 
 (defun pandoc-create-command-option-list (input-file &optional pdf)
-  "Create a list of strings with pandoc switches for the current buffer.
+  "Create a list of strings with pandoc options for the current buffer.
 INPUT-FILE is the name of the input file. If PDF is non-nil, an
 output file is always set, derived either from the input file or
 from the output file set for the \"latex\" output profile, and
@@ -648,15 +648,15 @@ formats."
         (variables (mapcar #'(lambda (variable)
                                (format "--variable=%s:%s" (car variable) (cdr variable)))
                            (pandoc-get 'variable)))
-        (other-options (mapcar #'(lambda (switch)
-                                   (let ((value (pandoc-get switch)))
-                                     (when (and value (memq switch pandoc-filepath-switches))
+        (other-options (mapcar #'(lambda (option)
+                                   (let ((value (pandoc-get option)))
+                                     (when (and value (memq option pandoc-filepath-options))
                                        (setq value (expand-file-name value)))
                                      (cond
-                                      ((eq value t) (format "--%s" switch))
-                                      ((stringp value) (format "--%s=%s" switch value))
+                                      ((eq value t) (format "--%s" option))
+                                      ((stringp value) (format "--%s=%s" option value))
                                       (t nil))))
-                               pandoc-switches)))
+                               pandoc-cli-options)))
     (delq nil (append (list read write output) variables other-options))))
 
 (defun pandoc-process-directives (output-format)
@@ -1146,12 +1146,12 @@ set. Without any prefix argument, the option is toggled."
                                                                       ((eq prefix '-) "Unset")
                                                                       ((null prefix) "Toggle")
                                                                       (t "Set")))
-                                               pandoc-binary-switches nil t) pandoc-binary-switches))))
+                                               pandoc-binary-options nil t) pandoc-binary-options))))
       (pandoc-set option (cond
                           ((eq prefix '-) nil)
                           ((null prefix) (not (pandoc-get option)))
                           (t t)))
-      (message "Option `%s' %s." (car (rassq option pandoc-binary-switches)) (if (pandoc-get option)
+      (message "Option `%s' %s." (car (rassq option pandoc-binary-options)) (if (pandoc-get option)
                                                                                  "set"
                                                                                "unset")))))
 
@@ -1236,14 +1236,14 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "javascript")]
       ["References" (pandoc-set 'email-obfuscation "references") :active t
        :style radio :selected (string= (pandoc-get 'email-obfuscation) "references")]))
-    ("Binary Options"
+    ("Switches"
      ;; put the binary options into the menu
      ,@(mapcar #'(lambda (option)
                    (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
                            :active t
                            :style 'toggle
                            :selected `(pandoc-get (quote ,(cdr option)))))
-               pandoc-binary-switches))))
+               pandoc-binary-options))))
 
 (easy-menu-add pandoc-mode-menu pandoc-mode-map)
 
