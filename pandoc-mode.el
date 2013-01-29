@@ -89,9 +89,9 @@ list, not if it appears higher on the list."
     (html-mode . "html")
     (latex-mode . "latex")
     (json-mode . "json"))
-  "*List of major modes and their default pandoc output formats."
+  "*List of major modes and their default pandoc input formats."
   :group 'pandoc
-  :type '(repeat :tag "Major mode" (cons (symbol :tag "Major mode") (string :tag "Output format"))))
+  :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
 
 (defvar pandoc-input-formats-menu
   '(("Native Haskell" . "native")
