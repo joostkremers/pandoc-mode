@@ -59,7 +59,7 @@ When you switch output formats, either through the menu or with the keyboard (wi
 
 Note that the current output format is always visible in the mode line: the "lighter" for `pandoc-mode` in the mode line has the form `Pandoc/<format>`, where `<format>` is the current output format.
 
-The major modes for which `pandoc-mode` selects an output format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.
+The major modes for which `pandoc-mode` selects an input format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.
 
 
 ## Auxiliary files and options ##
