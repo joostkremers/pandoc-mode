@@ -93,23 +93,25 @@ list, not if it appears higher on the list."
   :group 'pandoc
   :type '(repeat :tag "Major mode" (cons (symbol :tag "Major mode") (string :tag "Output format"))))
 
+(defvar pandoc-input-formats-menu
+  '(("Native Haskell" . "native")
+    ("Markdown" . "markdown")
+    ("Markdown (Strict)" . "markdown_strict")
+    ("Markdown (PHPExtra)" . "markdown_phpextra")
+    ("Markdown (Github)" . "markdown_github")
+    ("reStructuredText" . "rst")
+    ("HTML" . "html")
+    ("LaTeX" . "latex")
+    ("Textile" . "textile")
+    ("JSON" . "json"))
+  "List of items in pandoc-mode's input format menu.")
+
 (defvar pandoc-input-formats
-  '("native"
-    "markdown"
-    "markdown_strict"
-    "markdown_phpextra"
-    "markdown_github"
-    "rst"
-    "mediawiki"
-    "html"
-    "latex"
-    "textile"
-    "docbook"
-    "json")
+  (mapcar #'cdr pandoc-input-formats-menu)
   "List of pandoc input formats.")
 
 (defvar pandoc-output-formats-menu nil
-  "List of items in pandoc-mode's output format menu")
+  "List of items in pandoc-mode's output format menu.")
 
 (defvar pandoc-output-formats-list nil
   "List of Pandoc output formats.")
@@ -1176,16 +1178,7 @@ set. Without any prefix argument, the option is toggled."
                                        :style 'radio
                                        :selected `(string= (pandoc-get 'read)
                                                            ,(cdr option))))
-                           '(("Native Haskell" . "native")
-                             ("Markdown" . "markdown")
-                             ("Markdown (Strict)" . "markdown_strict")
-                             ("Markdown (PHPExtra)" . "markdown_phpextra")
-                             ("Markdown (Github)" . "markdown_github")
-                             ("reStructuredText" . "rst")
-                             ("HTML" . "html")
-                             ("LaTeX" . "latex")
-                             ("Textile" . "textile")
-                             ("JSON" . "json"))))
+                           pandoc-input-formats-menu))
              (list ["Literal Haskell" (pandoc-toggle 'read-lhs)
                     :active (member (pandoc-get 'read) '("markdown" "rst" "latex"))
                     :style toggle :selected (pandoc-get 'read-lhs)]))
