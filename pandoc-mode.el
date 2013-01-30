@@ -117,16 +117,16 @@ list, not if it appears higher on the list."
   "List of Pandoc output formats.")
 
 (defun pandoc-set-output-formats (var value)
-  "Set PANDOC-OUTPUT-FORMATS-MENU on the basis of PANDOC-OUTPUT-FORMATS."
-  (let ((output-formats (mapcar #'(lambda (elem)
-                                    (cons (car elem) (cadr elem)))
-                                value))
-        (menu (mapcar #'(lambda (elem)
-                          (cons (caddr elem) (car elem)))
-                      value)))
-    (setq pandoc-output-formats-menu menu)
-    (setq pandoc-output-formats-list output-formats)
-    (set-default var value)))
+  "Set PANDOC-OUTPUT-FORMATS.
+The value of this option is the basis for setting
+PANDOC-OUTPUT-FORMATS-MENU and PANDOC-OUTPUT-FORMATS-LIST."
+  (setq pandoc-output-formats-menu (mapcar #'(lambda (elem)
+                                               (cons (caddr elem) (car elem)))
+                                           value))
+  (setq pandoc-output-formats-list (mapcar #'(lambda (elem)
+                                               (cons (car elem) (cadr elem)))
+                                           value))
+  (set-default var value))
 
 (defcustom pandoc-output-formats
   '(("native"            ".hs"      "Native Haskell")
