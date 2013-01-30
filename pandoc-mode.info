@@ -170,7 +170,7 @@ Note that the current output format is always visible in the mode line:
 the "lighter" for `pandoc-mode' in the mode line has the form
 `Pandoc/<format>', where `<format>' is the current output format.
 
-The major modes for which `pandoc-mode' selects an output format
+The major modes for which `pandoc-mode' selects an input format
 automatically can be customized. You can add major modes or remove
 those that you don't use. Similarly, you can customize the output
 formats and (especially) the file extensions for each output format.
@@ -181,23 +181,23 @@ File: pandoc-mode.info,  Node: Auxiliary files and options,  Next: Template vari
 3.2 Auxiliary files and options
 ===============================
 
-The settings part of the menu contains two more submenus: "Files" and
-"Options". Under "Files", you can set various files that may be used by
-Pandoc, such as a template file, the reference ODT file, the CSS style
-sheet, files to be included in the header or before/after the body,
-etc. Most of these submenus have two options: no file, or specify a
-file. The "Files" submenu also contains options for the output file and
-output directory. These are treated somewhat differently from the other
-files, see the section *note 'Setting an output file':
-#setting-an-output-file. for details.
+The settings part of the menu contains three more submenus: "Files",
+"Options", and "Switches". Under "Files", you can set various files
+that may be used by Pandoc, such as a template file, the reference ODT
+file, the CSS style sheet, files to be included in the header or
+before/after the body, etc. Most of these submenus have two options: no
+file, or specify a file. The "Files" submenu also contains options for
+the output file and output directory. These are treated somewhat
+differently from the other files, see the section *note 'Setting an
+output file': #setting-an-output-file. for details.
 
 When Emacs calls `pandoc', it expands filenames, so that they are
-absolute and don't contain any abbreviations (such as ~ for one's home
-directory). This means you can have relative filenames in your
-settings, or indeed ~, which can be practical if you move settings
+absolute and don't contain any abbreviations (such as `~' for one's
+home directory). This means you can have relative filenames in your
+settings, or indeed `~', which can be practical if you move settings
 files to different locations or e.g. between computers with different
-OSes. (For example, Linux expands ~ to `/home/<user>', while on OS X it
-becomes `/Users/<user>'.)
+OSes. (For example, Linux expands `~' to `/home/<user>', while on OS X
+it becomes `/Users/<user>'.)
 
 The CSS style sheet is an exception to this: Emacs always cuts off the
 directory part of the filename you specify as CSS style sheet and
@@ -206,15 +206,16 @@ normally be transferred along with the output file(s) to a server,
 where it will most likely be in a different directory than on the
 computer you're generating your .html-files on.
 
-Under "Options", you can set various other options. Some of these
-require user input, others can only be toggled on or off. Furthermore,
-the menu contains an option to get a list of all the settings that you
-have defined (this function is also available by typing `C-c / S').
-This displays all settings in the `*Pandoc output*' buffer in the same
-manner in which they appear in a settings file, i.e., with the
-following format:
+Under "Options", you can set other options that require a value. The
+submenu "Switches" contains Pandoc's binary options.
 
-`<option>::<value>'
+Furthermore, the menu contains an option to get a list of all the
+settings that you have defined (this function is also available by
+typing `C-c / S'). This displays all settings in the `*Pandoc output*'
+buffer in the same manner in which they appear in a settings file,
+i.e., with the following format:
+
+<option>::<value>
 
 
 File: pandoc-mode.info,  Node: Template variables,  Next: Running Pandoc,  Prev: Auxiliary files and options,  Up: Usage
@@ -222,14 +223,11 @@ File: pandoc-mode.info,  Node: Template variables,  Next: Running Pandoc,  Prev:
 3.3 Template variables
 ======================
 
-As of Pandoc v1.4, the custom header files are deprecated and replaced
-by so-called template files (see the Pandoc documentation for details).
-When you create a custom template file, you may also specify your own
-variables. `pandoc-mode' allows you to set or change template variables
-through the menu (under the Options submenu) or the keyboard, with `C-c
-/ v'. Emacs will ask you for the name of a variable and a value for it.
-If you provide a name that already exists (TAB completion works), the
-new value replaces the old one.
+`pandoc-mode' allows you to set or change template variables through
+the menu (under the Options submenu) or the keyboard, with `C-c / v'.
+Emacs will ask you for the name of a variable and a value for it. If
+you provide a name that already exists (TAB completion works), the new
+value replaces the old one.
 
 Deleting a template variable is done with the corresponding menu item
 or by calling `C-c / v' with the prefix argument `C-u -' (or `M--').
@@ -239,7 +237,7 @@ too) and removes it from the list.
 Template variables are saved in the settings file and can also be
 viewed with `C-c / S'. They appear in the following format:
 
-`variable::<name>:<value>'
+variable::<name>:<value>
 
 
 File: pandoc-mode.info,  Node: Running Pandoc,  Next: Setting an output file,  Prev: Template variables,  Up: Usage
@@ -453,7 +451,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 23 Jan 2013".
+`@@date{Cologne}' to get "Cologne, 30 Jan 2013".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -462,7 +460,7 @@ should be a string). For example, another way to put the current date
 in your document, without defining a special function for it, is to
 write the following:
 
-`@@lisp{(format-time-string "%d %b %Y")}'
+@@lisp{(format-time-string "%d %b %Y")}
 
 Emacs takes the Elisp code between the curly braces, executes it, and
 replaces the directive with the result of the code.
@@ -470,7 +468,7 @@ replaces the directive with the result of the code.
 `@@include' can be used to include another file into the current
 document (which must of course have the same input format):
 
-`@@include{copyright.text}'
+@@include{copyright.text}
 
 This directive reads the file `copyright.text' and replaces the
 `@@include' directive with its contents.
@@ -629,7 +627,7 @@ output format and the suffix `.pandoc'.
 The format of a settings file is very straightforward. It contains
 lines of the form:
 
-`<option>::<value>'
+<option>::<value>
 
 `<option>' is one of Pandoc's long options without the two dashes. (For
 the input and output formats, the forms `read' and `write' are used,
@@ -654,30 +652,30 @@ Node: Usage3329
 Ref: #usage3434
 Node: Input and output formats4254
 Ref: #input-and-output-formats4420
-Node: Auxiliary files and options7336
-Ref: #auxiliary-files-and-options7535
-Node: Template variables9399
-Ref: #template-variables9570
-Node: Running Pandoc10501
-Ref: #running-pandoc10659
-Node: Setting an output file12173
-Ref: #setting-an-output-file12343
-Node: Creating a pdf13769
-Ref: #creating-a-pdf13900
-Node: Projects14769
-Ref: #projects14894
-Node: Managing numbered examples17515
-Ref: #managing-numbered-examples17690
-Node: Using @@-directives18973
-Ref: #using--directives19144
-Node: Defining @@-directives23363
-Ref: #defining--directives23525
-Node: Directive hooks25055
-Ref: #directive-hooks25203
-Node: Using The Keyboard25530
-Ref: #using-the-keyboard25687
-Node: Settings Files27150
-Ref: #settings-files27271
+Node: Auxiliary files and options7335
+Ref: #auxiliary-files-and-options7534
+Node: Template variables9416
+Ref: #template-variables9587
+Node: Running Pandoc10292
+Ref: #running-pandoc10450
+Node: Setting an output file11964
+Ref: #setting-an-output-file12134
+Node: Creating a pdf13560
+Ref: #creating-a-pdf13691
+Node: Projects14560
+Ref: #projects14685
+Node: Managing numbered examples17306
+Ref: #managing-numbered-examples17481
+Node: Using @@-directives18764
+Ref: #using--directives18935
+Node: Defining @@-directives23150
+Ref: #defining--directives23312
+Node: Directive hooks24842
+Ref: #directive-hooks24990
+Node: Using The Keyboard25317
+Ref: #using-the-keyboard25474
+Node: Settings Files26937
+Ref: #settings-files27058
 
 End Tag Table
 

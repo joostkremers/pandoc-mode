@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Joost Kremers" />
-  <meta name="date" content="2013-01-23" />
+  <meta name="date" content="2013-01-30" />
   <title>Emacs pandoc-mode</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -33,7 +33,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Emacs pandoc-mode</h1>
 <h2 class="author">Joost Kremers</h2>
-<h3 class="date">23 Jan 2013</h3>
+<h3 class="date">30 Jan 2013</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -82,18 +82,19 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>On systems that have symbolic links, it is also possible to specify a default output format. By selecting &quot;Set As Default Format&quot; from the Pandoc menu, a symbolic link is created to the settings file of the current output format (a settings file is created if one doesn't exist yet). This symbolic link has &quot;default&quot; as format in its name. The file it points to is read by the function <code>pandoc-load-default-settings</code>, making it possible to automatically load a specific settings file when <code>pandoc-mode</code> is invoked.</p>
 <p>When you switch output formats, either through the menu or with the keyboard (with <code>C-c / w</code>), Emacs checks if a corresponding settings file exists and loads it if one is found. That is, you can load a different settings file by simply switching output formats.</p>
 <p>Note that the current output format is always visible in the mode line: the &quot;lighter&quot; for <code>pandoc-mode</code> in the mode line has the form <code>Pandoc/&lt;format&gt;</code>, where <code>&lt;format&gt;</code> is the current output format.</p>
-<p>The major modes for which <code>pandoc-mode</code> selects an output format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.</p>
+<p>The major modes for which <code>pandoc-mode</code> selects an input format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.</p>
 <h2 id="auxiliary-files-and-options"><a href="#auxiliary-files-and-options">Auxiliary files and options</a></h2>
-<p>The settings part of the menu contains two more submenus: &quot;Files&quot; and &quot;Options&quot;. Under &quot;Files&quot;, you can set various files that may be used by Pandoc, such as a template file, the reference ODT file, the CSS style sheet, files to be included in the header or before/after the body, etc. Most of these submenus have two options: no file, or specify a file. The &quot;Files&quot; submenu also contains options for the output file and output directory. These are treated somewhat differently from the other files, see the section <a href="#setting-an-output-file">'Setting an output file'</a> for details.</p>
-<p>When Emacs calls <code>pandoc</code>, it expands filenames, so that they are absolute and don't contain any abbreviations (such as ~ for one's home directory). This means you can have relative filenames in your settings, or indeed ~, which can be practical if you move settings files to different locations or e.g. between computers with different OSes. (For example, Linux expands ~ to <code>/home/&lt;user&gt;</code>, while on OS X it becomes <code>/Users/&lt;user&gt;</code>.)</p>
+<p>The settings part of the menu contains three more submenus: &quot;Files&quot;, &quot;Options&quot;, and &quot;Switches&quot;. Under &quot;Files&quot;, you can set various files that may be used by Pandoc, such as a template file, the reference ODT file, the CSS style sheet, files to be included in the header or before/after the body, etc. Most of these submenus have two options: no file, or specify a file. The &quot;Files&quot; submenu also contains options for the output file and output directory. These are treated somewhat differently from the other files, see the section <a href="#setting-an-output-file">'Setting an output file'</a> for details.</p>
+<p>When Emacs calls <code>pandoc</code>, it expands filenames, so that they are absolute and don't contain any abbreviations (such as <code>~</code> for one's home directory). This means you can have relative filenames in your settings, or indeed <code>~</code>, which can be practical if you move settings files to different locations or e.g. between computers with different OSes. (For example, Linux expands <code>~</code> to <code>/home/&lt;user&gt;</code>, while on OS X it becomes <code>/Users/&lt;user&gt;</code>.)</p>
 <p>The CSS style sheet is an exception to this: Emacs always cuts off the directory part of the filename you specify as CSS style sheet and doesn't expand it. The reason for this is that the CSS style sheet will normally be transferred along with the output file(s) to a server, where it will most likely be in a different directory than on the computer you're generating your .html-files on.</p>
-<p>Under &quot;Options&quot;, you can set various other options. Some of these require user input, others can only be toggled on or off. Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing <code>C-c / S</code>). This displays all settings in the <code>*Pandoc output*</code> buffer in the same manner in which they appear in a settings file, i.e., with the following format:</p>
-<p><code>&lt;option&gt;::&lt;value&gt;</code></p>
+<p>Under &quot;Options&quot;, you can set other options that require a value. The submenu &quot;Switches&quot; contains Pandoc's binary options.</p>
+<p>Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing <code>C-c / S</code>). This displays all settings in the <code>*Pandoc output*</code> buffer in the same manner in which they appear in a settings file, i.e., with the following format:</p>
+<pre><code>&lt;option&gt;::&lt;value&gt;</code></pre>
 <h2 id="template-variables"><a href="#template-variables">Template variables</a></h2>
-<p>As of Pandoc v1.4, the custom header files are deprecated and replaced by so-called template files (see the Pandoc documentation for details). When you create a custom template file, you may also specify your own variables. <code>pandoc-mode</code> allows you to set or change template variables through the menu (under the Options submenu) or the keyboard, with <code>C-c / v</code>. Emacs will ask you for the name of a variable and a value for it. If you provide a name that already exists (TAB completion works), the new value replaces the old one.</p>
+<p><code>pandoc-mode</code> allows you to set or change template variables through the menu (under the Options submenu) or the keyboard, with <code>C-c / v</code>. Emacs will ask you for the name of a variable and a value for it. If you provide a name that already exists (TAB completion works), the new value replaces the old one.</p>
 <p>Deleting a template variable is done with the corresponding menu item or by calling <code>C-c / v</code> with the prefix argument <code>C-u -</code> (or <code>M--</code>). Emacs will ask you for the variable name (TAB completion works here, too) and removes it from the list.</p>
 <p>Template variables are saved in the settings file and can also be viewed with <code>C-c / S</code>. They appear in the following format:</p>
-<p><code>variable::&lt;name&gt;:&lt;value&gt;</code></p>
+<pre><code>variable::&lt;name&gt;:&lt;value&gt;</code></pre>
 <h2 id="running-pandoc"><a href="#running-pandoc">Running Pandoc</a></h2>
 <p>The first item in the menu is &quot;Run Pandoc&quot; (also accessible with <code>C-c / r</code>), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer <code>*Pandoc output*</code>. (Except when the output format is &quot;odt&quot;, &quot;epub&quot; or &quot;docx&quot;, in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing <code>C-c / V</code>. Error messages from Pandoc are also displayed in this buffer.</p>
 <p>Note that when you run Pandoc, Pandoc doesn't read the file on disk, rather, Emacs feeds it the contents of the buffer through stdin. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.</p>
@@ -129,12 +130,12 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode Commonlisp"><code class="sourceCode commonlisp">(<span class="kw">defun</span><span class="fu"> pandoc-current-date </span>(output-format &amp;optional text)
   (<span class="kw">format</span> <span class="st">&quot;%s%s&quot;</span> (<span class="kw">if</span> text (concat text <span class="st">&quot;, &quot;</span>) <span class="st">&quot;&quot;</span>)
                  (format-time-string <span class="st">&quot;%d %b %Y&quot;</span>)))</code></pre>
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 23 Jan 2013&quot;.</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 30 Jan 2013&quot;.</p>
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
-<p><code>@@lisp{(format-time-string &quot;%d %b %Y&quot;)}</code></p>
+<pre><code>@@lisp{(format-time-string &quot;%d %b %Y&quot;)}</code></pre>
 <p>Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.</p>
 <p><code>@@include</code> can be used to include another file into the current document (which must of course have the same input format):</p>
-<p><code>@@include{copyright.text}</code></p>
+<pre><code>@@include{copyright.text}</code></pre>
 <p>This directive reads the file <code>copyright.text</code> and replaces the <code>@@include</code> directive with its contents.</p>
 <p>Processing <code>@@</code>-directives works everywhere in the document, including in code and code blocks, and also in the %-header block. So by putting the above <code>@@lisp</code> directive in the third line of the %-header block, the meta data for your documents will always show the date on which the file was created by Pandoc.</p>
 <p>If it should ever happen that you need to write a literal &quot;<code>@@lisp</code>&quot; in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
@@ -189,7 +190,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 id="settings-files"><a href="#settings-files">Settings Files</a></h1>
 <p>As explained above, there are two types of settings files: project files, which apply to all input files in a single directory, and local settings files, which apply only to single input files. Both types of settings files are specific to a single output format, which is specified in the name. Local settings files are hidden (on Unix-like OSes, anyway) and consist of the name of the input file, plus a string indicating the output format and the suffix <code>.pandoc</code>. Project files are not hidden files and consist of the string <code>Project</code> plus the output format and the suffix <code>.pandoc</code>.</p>
 <p>The format of a settings file is very straightforward. It contains lines of the form:</p>
-<p><code>&lt;option&gt;::&lt;value&gt;</code></p>
+<pre><code>&lt;option&gt;::&lt;value&gt;</code></pre>
 <p><code>&lt;option&gt;</code> is one of Pandoc's long options without the two dashes. (For the input and output formats, the forms <code>read</code> and <code>write</code> are used, not the alternative forms <code>from</code> and <code>to</code>. Additionally, the option <code>output-dir</code> is valid.) <code>&lt;value&gt;</code> is a string or, for binary switches, either <code>t</code> or <code>nil</code>, which correspond to 'on' or 'off', respectively.</p>
 <p>Lines that do not correspond to this format are simply ignored (and can be used for comments). If for some reason you end up writing your own settings file by hand, make sure all your options have the right form, that is, that they contain <em>no</em> spaces and a <em>double</em> colon.</p>
 </div>
