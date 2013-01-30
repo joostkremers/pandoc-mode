@@ -7,7 +7,7 @@ options that pandoc accepts and to run pandoc on the input file.
 
 The website for `pandoc-mode` is:
 
-<http://joostkremers.fastmail.fm/pandoc-mode.html>
+<http://joostkremers.github.com/pandoc-mode/>
 
 Sources can be found on github:
 
