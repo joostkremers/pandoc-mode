@@ -1288,14 +1288,14 @@ set. Without any prefix argument, the option is toggled."
              (list ["Literal Haskell" (pandoc-toggle 'local 'read-lhs)
                     :active (member (pandoc-get 'local 'read) '("markdown" "rst" "latex"))
                     :style toggle :selected (pandoc-get 'local 'read-lhs)])
-             (list (cons "Extensions"
-                         (mapcar #'(lambda (ext)
-                                     (vector (car ext)
-                                             `(pandoc-toggle-extension ,(car ext) 'read)
-                                             :active `(string-match "markdown" (pandoc-get 'local 'read))
-                                             :style 'toggle
-                                             :selected `(pandoc-extension-active-p ,(car ext) 'read)))
-                                 pandoc-extensions))))
+             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc-get 'local 'read)))
+                           (mapcar #'(lambda (ext)
+                                       (vector (car ext)
+                                               `(pandoc-toggle-extension ,(car ext) 'read)
+                                               :active t
+                                               :style 'toggle
+                                               :selected `(pandoc-extension-active-p ,(car ext) 'read)))
+                                   pandoc-extensions))))
 
     ,(append (cons "Output Format"
                    (mapcar #'(lambda (option)
@@ -1310,14 +1310,14 @@ set. Without any prefix argument, the option is toggled."
                     :active (member (pandoc-get 'local 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
                     :style toggle :selected (pandoc-get 'local 'write-lhs)])
-             (list (cons "Extensions"
-                         (mapcar #'(lambda (ext)
-                                     (vector (car ext)
-                                             `(pandoc-toggle-extension ,(car ext) 'write)
-                                             :active `(string-match "markdown" (pandoc-get 'local 'write))
-                                             :style 'toggle
-                                             :selected `(pandoc-extension-active-p ,(car ext) 'write)))
-                                 pandoc-extensions))))
+             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc-get 'local 'write)))
+                           (mapcar #'(lambda (ext)
+                                       (vector (car ext)
+                                               `(pandoc-toggle-extension ,(car ext) 'write)
+                                               :active t
+                                               :style 'toggle
+                                               :selected `(pandoc-extension-active-p ,(car ext) 'write)))
+                                   pandoc-extensions))))
 
     ("Files"
      ("Output File"
