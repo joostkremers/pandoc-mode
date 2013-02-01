@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Joost Kremers" />
-  <meta name="date" content="2013-01-30" />
+  <meta name="date" content="2013-02-01" />
   <title>Emacs pandoc-mode</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -33,7 +33,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Emacs pandoc-mode</h1>
 <h2 class="author">Joost Kremers</h2>
-<h3 class="date">30 Jan 2013</h3>
+<h3 class="date">01 Feb 2013</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -62,7 +62,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 id="introduction"><a href="#introduction">Introduction</a></h1>
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. Supported input formats are markdown and (subsets of) reStructuredText, HTML, and LaTeX. Supported output formats are, among others, markdown, HTML(5), LaTeX, PDF, OpenOffice.org text document (odt), MS Word (docx), GNU Texinfo, MediaWiki markup, groff man pages, and several slide show formats.</p>
 <p><code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of the supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs.</p>
-<p>The current version of <code>pandoc-mode</code> is 2.2.0 and is compatible with Pandoc version 1.10.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.3.0 and is compatible with Pandoc version 1.10.</p>
 <h1 id="installation"><a href="#installation">Installation</a></h1>
 <p>The easiest way to install <code>pandoc-mode</code> is to use the <a href="http://melpa.milkbox.net/">Melpa</a> package repository. Alternatively, you can install it manually: download <code>pandoc-mode.el</code>, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to <code>~/.emacs</code>:</p>
 <pre class="sourceCode Commonlisp"><code class="sourceCode commonlisp">(<span class="kw">load</span> <span class="st">&quot;pandoc-mode&quot;</span>)</code></pre>
@@ -76,7 +76,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document, or load or save settings files. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard, but setting options can only be done through the menu (although it is possible to bind your own keys to the functions to set options; see the section <a href="#using-the-keyboard">'Using The Keyboard'</a>).</p>
 <p>The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.</p>
 <h2 id="input-and-output-formats"><a href="#input-and-output-formats">Input and output formats</a></h2>
-<p>The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to &quot;Native Haskell&quot;, so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with <code>C-c / w</code> (TAB completion works.)</p>
+<p>The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to &quot;Native Haskell&quot;, so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with <code>C-c / w</code> (TAB completion works.) If the input or output format is one of the markdown formats, the relevant submenu contains a further submenu with the Markdown extensions that Pandoc supports. This menu allows you to select or deselect individual extentions.</p>
 <p>As already stated, you may wish to use different output formats for a single input file. Most likely, the options that you want to pass to Pandoc will be different for each output format. To make this easier, <code>pandoc-mode</code> has the ability to save the settings for a specific output format. If you choose &quot;Save File Settings&quot; from the menu (<code>C-c / s</code>), Emacs saves the current settings to a hidden file in the same directory as the file you're editing. The name of this file is derived from the input file, appended with the name of the output format and the string <code>.pandoc</code>. (See the section <a href="#settings-files">'Settings Files'</a> for details.)</p>
 <p>A single document can have a settings file for each output format that Pandoc supports. For example, for this manual, which is written in markdown, I have three settings files, one for HTML output, one for LaTeX output and one for Texinfo output. These can simply be created by setting all options the way you want them for the first output format, save them, then choose another output format, set the required options, save again, etc. Because the name of a settings file contains the output format for which it was created, the different settings files won't interfere with each other.</p>
 <p>On systems that have symbolic links, it is also possible to specify a default output format. By selecting &quot;Set As Default Format&quot; from the Pandoc menu, a symbolic link is created to the settings file of the current output format (a settings file is created if one doesn't exist yet). This symbolic link has &quot;default&quot; as format in its name. The file it points to is read by the function <code>pandoc-load-default-settings</code>, making it possible to automatically load a specific settings file when <code>pandoc-mode</code> is invoked.</p>
@@ -130,7 +130,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode Commonlisp"><code class="sourceCode commonlisp">(<span class="kw">defun</span><span class="fu"> pandoc-current-date </span>(output-format &amp;optional text)
   (<span class="kw">format</span> <span class="st">&quot;%s%s&quot;</span> (<span class="kw">if</span> text (concat text <span class="st">&quot;, &quot;</span>) <span class="st">&quot;&quot;</span>)
                  (format-time-string <span class="st">&quot;%d %b %Y&quot;</span>)))</code></pre>
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 30 Jan 2013&quot;.</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 01 Feb 2013&quot;.</p>
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 <pre><code>@@lisp{(format-time-string &quot;%d %b %Y&quot;)}</code></pre>
 <p>Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.</p>
