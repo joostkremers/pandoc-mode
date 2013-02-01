@@ -1161,7 +1161,7 @@ set. Without any prefix argument, the option is toggled."
                                        :selected `(string= (pandoc-get 'local 'read)
                                                            ,(cdr option))))
                            pandoc-input-formats-menu))
-             (list ["Literal Haskell" (pandoc-toggle 'local'read-lhs)
+             (list ["Literal Haskell" (pandoc-toggle 'local 'read-lhs)
                     :active (member (pandoc-get 'local 'read) '("markdown" "rst" "latex"))
                     :style toggle :selected (pandoc-get 'local 'read-lhs)]))
 
@@ -1174,7 +1174,7 @@ set. Without any prefix argument, the option is toggled."
                                        :selected `(string= (pandoc-get 'local 'write)
                                                            ,(cdr option))))
                            pandoc-output-formats-menu))
-             (list ["Literal Haskell" (pandoc-toggle 'local'write-lhs)
+             (list ["Literal Haskell" (pandoc-toggle 'local 'write-lhs)
                     :active (member (pandoc-get 'local 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
                     :style toggle :selected (pandoc-get 'local 'write-lhs)]))
