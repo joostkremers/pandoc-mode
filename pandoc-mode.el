@@ -171,6 +171,53 @@ use, if you want to unclutter the menu a bit."
   :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension") (string :tag "Description")))
   :set 'pandoc-set-output-formats)
 
+(defvar pandoc-extensions
+  '(("footnotes"                  ("markdown" "markdown_phpextra"))
+    ("inline_notes"               ("markdown"))
+    ("pandoc_title_block"         ("markdown"))
+    ("mmd_title_block"            ())
+    ("table_captions"             ("markdown"))
+    ("implicit_figures"           ("markdown"))
+    ("simple_tables"              ("markdown"))
+    ("multiline_tables"           ("markdown"))
+    ("grid_tables"                ("markdown"))
+    ("pipe_tables"                ("markdown" "markdown_phpextra" "markdown_github"))
+    ("citations"                  ("markdown"))
+    ("raw_tex"                    ("markdown"))
+    ("raw_html"                   ("markdown" "markdown_phpextra" "markdown_github"))
+    ("tex_math_dollars"           ("markdown"))
+    ("tex_math_single_backslash"  ("markdown_github"))
+    ("tex_math_double_backslash"  ())
+    ("latex_macros"               ("markdown"))
+    ("fenced_code_blocks"         ("markdown" "markdown_phpextra" "markdown_github"))
+    ("fenced_code_attributes"     ("markdown" "markdown_github"))
+    ("backtick_code_blocks"       ("markdown" "markdown_github"))
+    ("inline_code_attributes"     ("markdown"))
+    ("markdown_in_html_blocks"    ("markdown"))
+    ("markdown_attribute"         ("markdown_phpextra"))
+    ("escaped_line_breaks"        ("markdown"))
+    ("link_attributes"            ())
+    ("autolink_bare_uris"         ("markdown_github"))
+    ("fancy_lists"                ("markdown"))
+    ("startnum"                   ("markdown"))
+    ("definition_lists"           ("markdown" "markdown_phpextra"))
+    ("example_lists"              ("markdown"))
+    ("all_symbols_escapable"      ("markdown"))
+    ("intraword_underscores"      ("markdown" "markdown_phpextra" "markdown_github"))
+    ("blank_before_blockquote"    ("markdown"))
+    ("blank_before_header"        ("markdown"))
+    ("strikeout"                  ("markdown" "markdown_github"))
+    ("superscript"                ("markdown"))
+    ("subscript"                  ("markdown"))
+    ("hard_line_breaks"           ("markdown_github"))
+    ("abbreviations"              ("markdown_phpextra"))
+    ("auto_identifiers"           ("markdown"))
+    ("header_attributes"          ("markdown" "markdown_phpextra"))
+    ("mmd_header_identifiers"     ())
+    ("implicit_header_references" ("markdown"))
+    ("line_blocks"                ("markdown")))
+  "List of Markdown extensions supported by Pandoc.")
+
 (defvar pandoc-cli-options
   '(variable
     data-dir
@@ -196,10 +243,12 @@ One option is preset, others are added by PANDOC-DEFINE-FILE-OPTION.")
 These are set by PANDOC-DEFINE-BINARY-OPTION.")
 
 (defvar pandoc-options
-  '((read)
+  `((read)
     (read-lhs)
+    (read-extensions ,@(mapcar 'list (sort (mapcar 'car pandoc-extensions) 'string<)))
     (write . "native")
     (write-lhs)
+    (write-extensions ,@(mapcar 'list (sort (mapcar 'car pandoc-extensions) 'string<)))
     (output)
     (data-dir)
     (output-dir) ; this is not actually a pandoc option
@@ -582,6 +631,70 @@ be retrieved."
 TYPE is either 'local or 'project."
   (pandoc-set 'local option (not (pandoc-get type option))))
 
+
+;; Note: the extensions appear to be binary options, but they are not: they
+;; can be on or off, but that doesn't tell us whether they're on or off
+;; because the user set them that way or because that's the default setting
+;; for the relevant format.
+;;
+;; What we do is we create an alist of the extensions, where each extension
+;; can have one of three values: nil, meaning default, the symbol -,
+;; meaning switched off by the user, or the symbol +, meaning switched on
+;; by the user.
+
+(defun pandoc-extension-in-format-p (extension format &optional rw)
+  "Check if EXTENSION is a default extension for FORMAT.
+RW must be either 'read or 'write, indicating whether FORMAT is
+being considered as an input or an output format."
+  (let ((formats (cadr (assoc extension pandoc-extensions))))
+    (or (member format formats)
+        (member format (cadr (assoc rw formats))))))
+
+(defun pandoc-extension-active-p (extension rw)
+  "Return T if EXTENSION is active in the current buffer.
+RW is either 'read or 'write, indicating whether to test for the
+input or the output format.
+
+An extension is active either if it's part of the in/output
+format and hasn't been deactivated by the user, or if the user
+has activated it."
+  (let ((value (pandoc-get-extension extension rw)))
+    (or (eq value '+)
+        (and (not value)
+             (pandoc-extension-in-format-p extension (pandoc-get rw) rw)))))
+
+(defun pandoc-set-extension (extension rw value)
+  "Set the value of EXTENSION for RW to VALUE.
+RW is either 'read or 'write, indicating whether the read or
+write extension is to be set."
+  (setcdr (assoc extension (if (eq rw 'read)
+                               (pandoc-get 'read-extensions)
+                             (pandoc-get 'write-extensions)))
+          value))
+
+(defun pandoc-get-extension (extension rw)
+  "Return the value of EXTENSION for RW.
+RW is either 'read or 'write, indicating whether the read or
+write extension is to be queried."
+  (cdr (assoc extension (if (eq rw 'read)
+                            (pandoc-get 'read-extensions)
+                          (pandoc-get 'write-extensions)))))
+
+(defun pandoc-toggle-extension (extension rw)
+  "Toggle the value of EXTENSION.
+RW is either 'read or 'write, indicating whether the extension
+should be toggled for the input or the output format."
+  (interactive (list (completing-read "Extension: " pandoc-extensions nil t)
+                     (intern (completing-read "Read/write: " '("read" "write") nil t))))
+  (let* ((current-value (pandoc-get-extension extension rw))
+         (new-value (cond
+                     ((memq current-value '(+ -)) ; if the value is set explicitly
+                      nil)  ; we can simply return it to the default
+                     ((pandoc-extension-in-format-p extension (pandoc-get rw) rw) ; if the extension is part of the current format
+                      '-)  ; we explicitly unset it
+                     (t '+)))) ; otherwise we explicitly set it
+    (pandoc-set-extension extension rw new-value)))
+
 (defun pandoc-create-settings-filename (type filename output-format)
   "Create a settings filename.
 TYPE is the type of settings file, either 'settings or 'project.
@@ -602,10 +715,12 @@ gets the suffix `.pdf'. If the output format is \"odt\", \"epub\"
 or \"docx\" but no output file is specified, one will be created,
 since pandoc does not support output to stdout for those two
 formats."
-  (let ((read (format "--read=%s%s" (pandoc-get 'local 'read) (if (pandoc-get 'local 'read-lhs) "+lhs" "")))
+  (let ((read (format "--read=%s%s%s" (pandoc-get 'local 'read) (if (pandoc-get 'local 'read-lhs) "+lhs" "")
+                      (pandoc-create-extensions-string (pandoc-get 'local 'read-extensions))))
         (write (if pdf
                    nil
-                 (format "--write=%s%s" (pandoc-get 'local 'write) (if (pandoc-get 'local 'write-lhs) "+lhs" ""))))
+                 (format "--write=%s%s%s" (pandoc-get 'local 'write) (if (pandoc-get 'local 'write-lhs) "+lhs" "")
+                         (pandoc-create-extensions-string (pandoc-get 'local 'write-extensions)))))
         (output (cond
                  ((or (eq (pandoc-get 'local 'output) t)                     ; if the user set the output file to T
                       (and (null (pandoc-get 'local 'output))                ; or if the user set no output file but either
@@ -640,6 +755,15 @@ formats."
                                       (t nil))))
                                pandoc-cli-options)))
     (delq nil (append (list read write output) variables other-options))))
+
+(defun pandoc-create-extensions-string (extensions)
+  "Create a string of extensions to be added to the Pandoc command line."
+  (mapconcat #'(lambda (elt)
+                 (if (cdr elt)
+                     (format "%s%s" (cdr elt) (car elt))
+                   ""))
+             extensions
+             ""))
 
 (defun pandoc-process-directives (output-format)
   "Processes pandoc-mode @@-directives in the current buffer.
@@ -1161,9 +1285,17 @@ set. Without any prefix argument, the option is toggled."
                                        :selected `(string= (pandoc-get 'local 'read)
                                                            ,(cdr option))))
                            pandoc-input-formats-menu))
-             (list ["Literal Haskell" (pandoc-toggle 'local'read-lhs)
+             (list ["Literal Haskell" (pandoc-toggle 'local 'read-lhs)
                     :active (member (pandoc-get 'local 'read) '("markdown" "rst" "latex"))
-                    :style toggle :selected (pandoc-get 'local 'read-lhs)]))
+                    :style toggle :selected (pandoc-get 'local 'read-lhs)])
+             (list (cons "Extensions"
+                         (mapcar #'(lambda (ext)
+                                     (vector (car ext)
+                                             `(pandoc-toggle-extension ,(car ext) 'read)
+                                             :active `(string-match "markdown" (pandoc-get 'local 'read))
+                                             :style 'toggle
+                                             :selected `(pandoc-extension-active-p ,(car ext) 'read)))
+                                 pandoc-extensions))))
 
     ,(append (cons "Output Format"
                    (mapcar #'(lambda (option)
@@ -1177,7 +1309,15 @@ set. Without any prefix argument, the option is toggled."
              (list ["Literal Haskell" (pandoc-toggle 'local'write-lhs)
                     :active (member (pandoc-get 'local 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
-                    :style toggle :selected (pandoc-get 'local 'write-lhs)]))
+                    :style toggle :selected (pandoc-get 'local 'write-lhs)])
+             (list (cons "Extensions"
+                         (mapcar #'(lambda (ext)
+                                     (vector (car ext)
+                                             `(pandoc-toggle-extension ,(car ext) 'write)
+                                             :active `(string-match "markdown" (pandoc-get 'local 'write))
+                                             :style 'toggle
+                                             :selected `(pandoc-extension-active-p ,(car ext) 'write)))
+                                 pandoc-extensions))))
 
     ("Files"
      ("Output File"
