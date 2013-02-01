@@ -661,15 +661,15 @@ has activated it."
   (let ((value (pandoc-get-extension extension rw)))
     (or (eq value '+)
         (and (not value)
-             (pandoc-extension-in-format-p extension (pandoc-get rw) rw)))))
+             (pandoc-extension-in-format-p extension (pandoc-get 'local rw) rw)))))
 
 (defun pandoc-set-extension (extension rw value)
   "Set the value of EXTENSION for RW to VALUE.
 RW is either 'read or 'write, indicating whether the read or
 write extension is to be set."
   (setcdr (assoc extension (if (eq rw 'read)
-                               (pandoc-get 'read-extensions)
-                             (pandoc-get 'write-extensions)))
+                               (pandoc-get 'local 'read-extensions)
+                             (pandoc-get 'local 'write-extensions)))
           value))
 
 (defun pandoc-get-extension (extension rw)
@@ -677,8 +677,8 @@ write extension is to be set."
 RW is either 'read or 'write, indicating whether the read or
 write extension is to be queried."
   (cdr (assoc extension (if (eq rw 'read)
-                            (pandoc-get 'read-extensions)
-                          (pandoc-get 'write-extensions)))))
+                            (pandoc-get 'local 'read-extensions)
+                          (pandoc-get 'local 'write-extensions)))))
 
 (defun pandoc-toggle-extension (extension rw)
   "Toggle the value of EXTENSION.
@@ -690,7 +690,7 @@ should be toggled for the input or the output format."
          (new-value (cond
                      ((memq current-value '(+ -)) ; if the value is set explicitly
                       nil)  ; we can simply return it to the default
-                     ((pandoc-extension-in-format-p extension (pandoc-get rw) rw) ; if the extension is part of the current format
+                     ((pandoc-extension-in-format-p extension (pandoc-get 'local rw) rw) ; if the extension is part of the current format
                       '-)  ; we explicitly unset it
                      (t '+)))) ; otherwise we explicitly set it
     (pandoc-set-extension extension rw new-value)))
