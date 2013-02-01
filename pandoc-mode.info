@@ -46,7 +46,7 @@ output profiles for a single input file, so that you can, for example,
 write your text in markdown and then translate it to HTML for online
 reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode' is 2.2.0 and is compatible with
+The current version of `pandoc-mode' is 2.3.0 and is compatible with
 Pandoc version 1.10.
 
 
@@ -129,7 +129,10 @@ but you can change it through the menu if you need to. The output
 format defaults to "Native Haskell", so most likely you will want to
 set it to something else before you run Pandoc. Note that the output
 format can also be set through the keyboard with `C-c / w' (TAB
-completion works.)
+completion works.) If the input or output format is one of the markdown
+formats, the relevant submenu contains a further submenu with the
+Markdown extensions that Pandoc supports. This menu allows you to
+select or deselect individual extentions.
 
 As already stated, you may wish to use different output formats for a
 single input file. Most likely, the options that you want to pass to
@@ -451,7 +454,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 30 Jan 2013".
+`@@date{Cologne}' to get "Cologne, 01 Feb 2013".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -652,30 +655,30 @@ Node: Usage3329
 Ref: #usage3434
 Node: Input and output formats4254
 Ref: #input-and-output-formats4420
-Node: Auxiliary files and options7335
-Ref: #auxiliary-files-and-options7534
-Node: Template variables9416
-Ref: #template-variables9587
-Node: Running Pandoc10292
-Ref: #running-pandoc10450
-Node: Setting an output file11964
-Ref: #setting-an-output-file12134
-Node: Creating a pdf13560
-Ref: #creating-a-pdf13691
-Node: Projects14560
-Ref: #projects14685
-Node: Managing numbered examples17306
-Ref: #managing-numbered-examples17481
-Node: Using @@-directives18764
-Ref: #using--directives18935
-Node: Defining @@-directives23150
-Ref: #defining--directives23312
-Node: Directive hooks24842
-Ref: #directive-hooks24990
-Node: Using The Keyboard25317
-Ref: #using-the-keyboard25474
-Node: Settings Files26937
-Ref: #settings-files27058
+Node: Auxiliary files and options7562
+Ref: #auxiliary-files-and-options7761
+Node: Template variables9643
+Ref: #template-variables9814
+Node: Running Pandoc10519
+Ref: #running-pandoc10677
+Node: Setting an output file12191
+Ref: #setting-an-output-file12361
+Node: Creating a pdf13787
+Ref: #creating-a-pdf13918
+Node: Projects14787
+Ref: #projects14912
+Node: Managing numbered examples17533
+Ref: #managing-numbered-examples17708
+Node: Using @@-directives18991
+Ref: #using--directives19162
+Node: Defining @@-directives23377
+Ref: #defining--directives23539
+Node: Directive hooks25069
+Ref: #directive-hooks25217
+Node: Using The Keyboard25544
+Ref: #using-the-keyboard25701
+Node: Settings Files27164
+Ref: #settings-files27285
 
 End Tag Table
 

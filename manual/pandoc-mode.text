@@ -10,7 +10,7 @@
 
 `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of the supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode` is 2.2.0 and is compatible with Pandoc version 1.10.
+The current version of `pandoc-mode` is 2.3.0 and is compatible with Pandoc version 1.10.
 
 
 # Installation #
@@ -47,7 +47,7 @@ The menu is divided into two parts. The upper half contains items related to run
 
 ## Input and output formats ##
 
-The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to "Native Haskell", so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with `C-c / w` (TAB completion works.)
+The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to "Native Haskell", so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with `C-c / w` (TAB completion works.) If the input or output format is one of the markdown formats, the relevant submenu contains a further submenu with the Markdown extensions that Pandoc supports. This menu allows you to select or deselect individual extentions.
 
 As already stated, you may wish to use different output formats for a single input file. Most likely, the options that you want to pass to Pandoc will be different for each output format. To make this easier, `pandoc-mode` has the ability to save the settings for a specific output format. If you choose "Save File Settings" from the menu (`C-c / s`), Emacs saves the current settings to a hidden file in the same directory as the file you're editing. The name of this file is derived from the input file, appended with the name of the output format and the string `.pandoc`. (See the section ['Settings Files'](#settings-files) for details.)
 
