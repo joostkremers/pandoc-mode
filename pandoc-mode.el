@@ -604,15 +604,23 @@ the named variable is deleted from the list.
 TYPE is either 'local or 'project."
   (when (assq option pandoc-options) ; check if the option is licit
     (let ((new-value
-           (if (eq option 'variable)
+           (cond
+            ((eq option 'variable)
                ;; new variables are added to the list; existing variables are
                ;; overwritten or deleted.
                (append (assq-delete-all (car value) (pandoc-get type 'variable))
                        (if (cdr value)
                            (list value)
-                         nil))
+                         nil)))
+            ;; the extensions are only supported here to make reading
+            ;; settings files easier. once these are converted to lisp
+            ;; format, the following two cond-clauses can be removed again.
+            ((eq option 'read-extensions)
+             (pandoc-set-extension (car value) 'read (cdr value) type))
+            ((eq option 'write-extensions)
+             (pandoc-set-extension (car value) 'write (cdr value) type))
              ;; all other options simply override the existing value.
-             value)))
+             (t value))))
       (setcdr (assq option (cond
                             ((eq type 'local) pandoc-local-options)
                             ((eq type 'project) pandoc-project-options)))
@@ -663,13 +671,16 @@ has activated it."
         (and (not value)
              (pandoc-extension-in-format-p extension (pandoc-get 'local rw) rw)))))
 
-(defun pandoc-set-extension (extension rw value)
+(defun pandoc-set-extension (extension rw value &optional type)
   "Set the value of EXTENSION for RW to VALUE.
 RW is either 'read or 'write, indicating whether the read or
-write extension is to be set."
+write extension is to be set.
+
+TYPE is either 'local or 'project."
+  (or type (setq type 'local))
   (setcdr (assoc extension (if (eq rw 'read)
-                               (pandoc-get 'local 'read-extensions)
-                             (pandoc-get 'local 'write-extensions)))
+                               (pandoc-get type 'read-extensions)
+                             (pandoc-get type 'write-extensions)))
           value))
 
 (defun pandoc-get-extension (extension rw)
@@ -917,19 +928,29 @@ asking."
   (let ((settings-file (pandoc-create-settings-filename type (buffer-file-name) format))
         (filename (buffer-file-name))
         ;; If TYPE is 'settings, we only need the options in
-        ;; pandoc-local-options that differ from pandoc-project-options. Note
-        ;; that we convert all values to strings, so that options that are nil
-        ;; in pandoc-local-options but non-nil in pandoc-project-options are
-        ;; also saved below.
-        (options (cond ((eq type 'settings) (delq nil (mapcar #'(lambda (option)
-                                                                  (when (not (equal (pandoc-get 'local option)
-                                                                                    (pandoc-get 'project option)))
-                                                                    (if (eq option 'variable)
-                                                                        (cons option (or (pandoc-get 'local option)
-                                                                                         "nil"))
-                                                                      (cons option (format "%s" (pandoc-get 'local option))))))
-                                                              (mapcar #'car pandoc-options))))
-                       ((eq type 'project) pandoc-project-options))))
+        ;; pandoc-local-options that differ from pandoc-project-options.
+        ;; Note that we convert all values to strings, so that options that
+        ;; are nil in pandoc-local-options but non-nil in
+        ;; pandoc-project-options are also saved below. the options
+        ;; read|write-extenions are also treated specially. their values
+        ;; are passed unchanged to pandoc-insert-options. if any extension
+        ;; is different from the project settings, they are *all* saved to
+        ;; the settings file.
+        (options (cond
+                  ((eq type 'settings)
+                   (delq nil (mapcar #'(lambda (option)
+                                         (when (not (equal (pandoc-get 'local option)
+                                                           (pandoc-get 'project option)))
+                                           (cons option 
+                                                 (cond
+                                                  ((eq option 'variable)
+                                                   (or (pandoc-get 'local option)
+                                                       "nil"))
+                                                  ((memq option '(read-extensions write-extensions))
+                                                   (pandoc-get 'local option))
+                                                  (t (format "%s" (pandoc-get 'local option)))))))
+                                     (mapcar #'car pandoc-options))))
+                  ((eq type 'project) pandoc-project-options))))
     (if (and (not no-confirm)
              (file-exists-p settings-file)
              (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
@@ -956,6 +977,11 @@ Options are written out in the format <option>::<value>."
                ((eq (car option) 'variable)
                 (mapc #'(lambda (variable)
                           (insert (format "variable::%s:%s\n" (car variable) (cdr variable))))
+                      (cdr option)))
+               ((memq (car option) '(read-extensions write-extensions))
+                (mapc #'(lambda (extension)
+                          (when (cdr extension)
+                            (insert (format "%s::%s:%s\n" (car option) (car extension) (cdr extension)))))
                       (cdr option)))
                (t (insert (format "%s::%s\n" (car option) (cdr option)))))))
         options))
@@ -1025,10 +1051,14 @@ Returns an alist with the options and their values."
             ;; If the option is a variable, we read its name and value and add
             ;; them to the alist as a dotted list. note that there may be more
             ;; than one variable-value pair in OPTIONS.
-            (add-to-list 'options (if (eq option 'variable)
+            ;; We do the same with the extensions.
+            (add-to-list 'options (if (memq option '(variable read-extension write-extensions))
                                       (progn
                                         (string-match "^\\(.*?\\):\\(.*?\\)$" value)
-                                        (cons 'variable (cons (intern (match-string 1 value)) (match-string 2 value))))
+                                        (cons option (cons (intern (match-string 1 value))
+                                                           (if (eq option 'variable)
+                                                               (match-string 2 value)
+                                                             (intern (match-string 2 value))))))
                                     (cons option (cond
                                                   ((string-match "^[0-9]$" value) (string-to-number value))
                                                   ((string= "t" value) t)
