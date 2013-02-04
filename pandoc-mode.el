@@ -917,6 +917,20 @@ to the project settings."
   (setq pandoc-project-options (copy-alist pandoc-local-options))
   (pandoc-save-settings 'project (pandoc-get 'local 'write)))
 
+;; A few notes regarding PANDOC-SAVE-SETTINGS:
+;;
+;; * If TYPE is 'settings, we only need the options in pandoc-local-options
+;;   that differ from pandoc-project-options. Note that we convert all
+;;   values to strings, so that options that are nil in
+;;   pandoc-local-options but non-nil in pandoc-project-options are also
+;;   saved below.
+;;
+;; * The options variable and read|write-extenions are treated specially.
+;;   Their values are passed unchanged to pandoc-insert-options. (Unless
+;;   the value is NIL, but that's only possible for the option variable.)
+;;   If only a single local variable or extension is different from the
+;;   project settings, they are *all* saved to the local settings file.
+
 (defun pandoc-save-settings (type format &optional no-confirm)
   "Save the settings of the current buffer for FORMAT.
 TYPE must be a quoted symbol and specifies the type of settings
@@ -927,15 +941,6 @@ is non-nil, any existing settings file is overwritten without
 asking."
   (let ((settings-file (pandoc-create-settings-filename type (buffer-file-name) format))
         (filename (buffer-file-name))
-        ;; If TYPE is 'settings, we only need the options in
-        ;; pandoc-local-options that differ from pandoc-project-options.
-        ;; Note that we convert all values to strings, so that options that
-        ;; are nil in pandoc-local-options but non-nil in
-        ;; pandoc-project-options are also saved below. the options
-        ;; read|write-extenions are also treated specially. their values
-        ;; are passed unchanged to pandoc-insert-options. if any extension
-        ;; is different from the project settings, they are *all* saved to
-        ;; the settings file.
         (options (cond
                   ((eq type 'settings)
                    (delq nil (mapcar #'(lambda (option)
@@ -943,11 +948,9 @@ asking."
                                                            (pandoc-get 'project option)))
                                            (cons option 
                                                  (cond
-                                                  ((eq option 'variable)
+                                                  ((memq option '(variable read-extensions write-extensions))
                                                    (or (pandoc-get 'local option)
                                                        "nil"))
-                                                  ((memq option '(read-extensions write-extensions))
-                                                   (pandoc-get 'local option))
                                                   (t (format "%s" (pandoc-get 'local option)))))))
                                      (mapcar #'car pandoc-options))))
                   ((eq type 'project) pandoc-project-options))))
