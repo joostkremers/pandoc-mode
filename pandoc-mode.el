@@ -121,7 +121,7 @@ list, not if it appears higher on the list."
 The value of this option is the basis for setting
 PANDOC-OUTPUT-FORMATS-MENU and PANDOC-OUTPUT-FORMATS-LIST."
   (setq pandoc-output-formats-menu (mapcar #'(lambda (elem)
-                                               (cons (caddr elem) (car elem)))
+                                               (cons (cadr (cdr elem)) (car elem)))
                                            value))
   (setq pandoc-output-formats-list (mapcar #'(lambda (elem)
                                                (cons (car elem) (cadr elem)))
