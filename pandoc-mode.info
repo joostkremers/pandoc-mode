@@ -46,8 +46,8 @@ output profiles for a single input file, so that you can, for example,
 write your text in markdown and then translate it to HTML for online
 reading, PDF for offline reading and Texinfo for reading in Emacs.
 
-The current version of `pandoc-mode' is 2.3.0 and is compatible with
-Pandoc version 1.10.
+The current version of `pandoc-mode' is 2.4.0 and is compatible with
+Pandoc version 1.11.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -454,7 +454,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 01 Feb 2013".
+`@@date{Cologne}' to get "Cologne, 19 Mar 2013".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in

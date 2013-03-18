@@ -5,7 +5,7 @@
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta name="generator" content="pandoc" />
   <meta name="author" content="Joost Kremers" />
-  <meta name="date" content="2013-02-01" />
+  <meta name="date" content="2013-03-19" />
   <title>Emacs pandoc-mode</title>
   <style type="text/css">code{white-space: pre;}</style>
   <style type="text/css">
@@ -33,7 +33,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <div id="header">
 <h1 class="title">Emacs pandoc-mode</h1>
 <h2 class="author">Joost Kremers</h2>
-<h3 class="date">01 Feb 2013</h3>
+<h3 class="date">19 Mar 2013</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -62,7 +62,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 id="introduction"><a href="#introduction">Introduction</a></h1>
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. Supported input formats are markdown and (subsets of) reStructuredText, HTML, and LaTeX. Supported output formats are, among others, markdown, HTML(5), LaTeX, PDF, OpenOffice.org text document (odt), MS Word (docx), GNU Texinfo, MediaWiki markup, groff man pages, and several slide show formats.</p>
 <p><code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of the supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs.</p>
-<p>The current version of <code>pandoc-mode</code> is 2.3.0 and is compatible with Pandoc version 1.10.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.4.0 and is compatible with Pandoc version 1.11.</p>
 <h1 id="installation"><a href="#installation">Installation</a></h1>
 <p>The easiest way to install <code>pandoc-mode</code> is to use the <a href="http://melpa.milkbox.net/">Melpa</a> package repository. Alternatively, you can install it manually: download <code>pandoc-mode.el</code>, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to <code>~/.emacs</code>:</p>
 <pre class="sourceCode Commonlisp"><code class="sourceCode commonlisp">(<span class="kw">load</span> <span class="st">&quot;pandoc-mode&quot;</span>)</code></pre>
@@ -130,7 +130,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <pre class="sourceCode Commonlisp"><code class="sourceCode commonlisp">(<span class="kw">defun</span><span class="fu"> pandoc-current-date </span>(output-format &amp;optional text)
   (<span class="kw">format</span> <span class="st">&quot;%s%s&quot;</span> (<span class="kw">if</span> text (concat text <span class="st">&quot;, &quot;</span>) <span class="st">&quot;&quot;</span>)
                  (format-time-string <span class="st">&quot;%d %b %Y&quot;</span>)))</code></pre>
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 01 Feb 2013&quot;.</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get &quot;Cologne, 19 Mar 2013&quot;.</p>
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 <pre><code>@@lisp{(format-time-string &quot;%d %b %Y&quot;)}</code></pre>
 <p>Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.</p>
