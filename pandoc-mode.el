@@ -1248,6 +1248,8 @@ is unset."
 (pandoc-define-string-option id-prefix "ID prefix")
 (pandoc-define-string-option indented-code-classes "Indented Code Classes")
 (pandoc-define-string-option highlight-style "Highlighting Style")
+(pandoc-define-string-option number-offset "Number Offsets")
+(pandoc-define-string-option default-image-extension "Default Image Extension")
 
 (pandoc-define-binary-option standalone "Standalone")
 (pandoc-define-binary-option preserve-tabs "Preserve Tabs")
