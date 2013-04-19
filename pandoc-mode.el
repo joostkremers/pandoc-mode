@@ -568,7 +568,7 @@ or T and indicates whether the option can have a default value."
   :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc-get 'local 'write))) :global nil
   (cond
    (pandoc-mode    ; pandoc-mode is turned on
-    (setq pandoc-local-options (copy-alist pandoc-options))
+    (setq pandoc-local-options (copy-tree pandoc-options))
     (pandoc-set 'local 'read (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc-settings-modified-flag nil)
     (or (buffer-live-p pandoc-output-buffer)
@@ -604,27 +604,27 @@ the named variable is deleted from the list.
 TYPE is either 'local or 'project."
   (when (assq option pandoc-options) ; check if the option is licit
     (let ((new-value
-           (cond
-            ((eq option 'variable)
+           (if (eq option 'variable)
                ;; new variables are added to the list; existing variables are
                ;; overwritten or deleted.
                (append (assq-delete-all (car value) (pandoc-get type 'variable))
                        (if (cdr value)
                            (list value)
-                         nil)))
-            ;; the extensions are only supported here to make reading
-            ;; settings files easier. once these are converted to lisp
-            ;; format, the following two cond-clauses can be removed again.
-            ((eq option 'read-extensions)
-             (pandoc-set-extension (car value) 'read (cdr value) type))
-            ((eq option 'write-extensions)
-             (pandoc-set-extension (car value) 'write (cdr value) type))
+                         nil))
              ;; all other options simply override the existing value.
-             (t value))))
-      (setcdr (assq option (cond
-                            ((eq type 'local) pandoc-local-options)
-                            ((eq type 'project) pandoc-project-options)))
-              new-value))
+             value)))
+      ;; the extensions are only supported here to make reading
+      ;; settings files easier. once these are converted to lisp
+      ;; format, the following two cond-clauses can be removed again.
+      (cond 
+       ((eq option 'read-extensions)
+        (pandoc-set-extension (car value) 'read (cdr value) type))
+       ((eq option 'write-extensions)
+        (pandoc-set-extension (car value) 'write (cdr value) type))
+       (t (setcdr (assq option (cond
+                                ((eq type 'local) pandoc-local-options)
+                                ((eq type 'project) pandoc-project-options)))
+                  new-value))))
     (setq pandoc-settings-modified-flag t)))
 
 (defun pandoc-get (type option &optional buffer)
@@ -839,8 +839,8 @@ format is used."
                filename)     ; we want to use settings for that format or no settings at all.
           (unless (pandoc-load-settings-for-file (expand-file-name filename) output-format t)
             ;; if we do not find a settings file, we unset all options:
-            (setq pandoc-local-options (copy-alist pandoc-options)
-                  pandoc-project-options (copy-alist pandoc-options))
+            (setq pandoc-local-options (copy-tree pandoc-options)
+                  pandoc-project-options (copy-tree pandoc-options))
             ;; and specify only the input and output formats:
             (pandoc-set 'local 'write output-format)
             (pandoc-set 'local 'read (pandoc-get 'local 'read buffer)))
@@ -914,7 +914,7 @@ appropriate output format."
 In order to achieve this, the current local settings are copied
 to the project settings."
   (interactive)
-  (setq pandoc-project-options (copy-alist pandoc-local-options))
+  (setq pandoc-project-options (copy-tree pandoc-local-options))
   (pandoc-save-settings 'project (pandoc-get 'local 'write)))
 
 ;; A few notes regarding PANDOC-SAVE-SETTINGS:
@@ -993,7 +993,7 @@ Options are written out in the format <option>::<value>."
   "Undo all settings specific to the current file.
 Project settings associated with the current file are kept."
   (interactive)
-  (setq pandoc-local-options (copy-alist pandoc-project-options))
+  (setq pandoc-local-options (copy-tree pandoc-project-options))
   (message "Local file settings undone for current session. Save local settings to make persistent."))
 
 (defun pandoc-load-default-settings ()
@@ -1026,8 +1026,8 @@ file is found for FILE, otherwise non-NIL."
   (let ((project-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format)))
         (local-settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))))
     (unless (nor project-settings local-settings)
-      (setq pandoc-project-options (copy-alist pandoc-options)
-            pandoc-local-options (copy-alist pandoc-options))
+      (setq pandoc-project-options (copy-tree pandoc-options)
+            pandoc-local-options (copy-tree pandoc-options))
       (mapc #'(lambda (option)
                 (pandoc-set 'local (car option) (cdr option))
                 (pandoc-set 'project (car option) (cdr option)))
@@ -1058,7 +1058,7 @@ Returns an alist with the options and their values."
             (add-to-list 'options (if (memq option '(variable read-extensions write-extensions))
                                       (progn
                                         (string-match "^\\(.*?\\):\\(.*?\\)$" value)
-                                        (cons option (cons (intern (match-string 1 value))
+                                        (cons option (cons (match-string 1 value)
                                                            (if (eq option 'variable)
                                                                (match-string 2 value)
                                                              (intern (match-string 2 value))))))
@@ -1131,7 +1131,7 @@ format)."
              (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'local 'write))))
     (pandoc-save-settings (pandoc-get 'local 'write) t))
   (unless (pandoc-load-settings-profile format t)
-    (setq pandoc-local-options (copy-alist pandoc-options))
+    (setq pandoc-local-options (copy-tree pandoc-options))
     (pandoc-set 'local 'write format)
     (pandoc-set 'local 'read (cdr (assq major-mode pandoc-major-modes)))))
 
