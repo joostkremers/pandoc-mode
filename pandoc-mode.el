@@ -1055,7 +1055,7 @@ Returns an alist with the options and their values."
             ;; them to the alist as a dotted list. note that there may be more
             ;; than one variable-value pair in OPTIONS.
             ;; We do the same with the extensions.
-            (add-to-list 'options (if (memq option '(variable read-extension write-extensions))
+            (add-to-list 'options (if (memq option '(variable read-extensions write-extensions))
                                       (progn
                                         (string-match "^\\(.*?\\):\\(.*?\\)$" value)
                                         (cons option (cons (intern (match-string 1 value))
