@@ -1018,7 +1018,7 @@ file is found for FILE, otherwise non-NIL."
   (when (and (not no-confirm)
              pandoc-settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'local 'write))))
-    (pandoc-save-settings (pandoc-get 'local 'write) t))
+    (pandoc-save-settings 'settings (pandoc-get 'local 'write) t))
   ;; We read the options from the settings files but do not store them in the
   ;; pandoc-{local|project}-options variables. Rather, we set them one by one
   ;; with pandoc-set(*), so we can make sure per-file settings override the
@@ -1129,7 +1129,7 @@ format)."
   (interactive (list (completing-read "Set output format to: " pandoc-output-formats-list nil t)))
   (when (and pandoc-settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc-get 'local 'write))))
-    (pandoc-save-settings (pandoc-get 'local 'write) t))
+    (pandoc-save-settings 'settings (pandoc-get 'local 'write) t))
   (unless (pandoc-load-settings-profile format t)
     (setq pandoc-local-options (copy-tree pandoc-options))
     (pandoc-set 'local 'write format)
