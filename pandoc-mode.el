@@ -230,7 +230,7 @@ use, if you want to unclutter the menu a bit."
   "List of Pandoc command-line options that do not need special treatment.
 This includes all command-line options except the list and alist
 options, because they need to be handled separately in
-`pandoc-format-cli-options'.")
+`pandoc-format-all-options'.")
 
 (defvar pandoc-filepath-options
   '(data-dir)
@@ -301,7 +301,7 @@ description of the option as it will appear in the menu."
   (declare (indent defun))
   `(progn
      (add-to-list 'pandoc-binary-options (cons ,description (quote ,option)) t)
-     (add-to-list 'pandoc-cli-options (list (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option))) t))
 
 (defmacro define-pandoc-file-option (option prompt &optional full-path default)
@@ -329,7 +329,7 @@ the option can have a default value."
   `(progn
      ,(when full-path
         `(add-to-list 'pandoc-filepath-options (quote ,option) t))
-     (add-to-list 'pandoc-cli-options (list (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options (list (quote ,option)) t)
      (add-to-list 'pandoc-files-menu
                   (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
@@ -378,7 +378,7 @@ formulated in such a way that the strings \"Default \" and \"Set
   (declare (indent defun))
   `(progn
      (add-to-list 'pandoc-options (list (quote ,option)) t)
-     (add-to-list 'pandoc-cli-options (list (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options-menu
                   (list ,prompt
                         ,(vector (concat "Default " prompt) `(pandoc-set (quote ,option) nil)
@@ -418,7 +418,7 @@ formulated in such a way that the strings \"No \", \"Set \" and
 or T and indicates whether the option can have a default value."
   `(progn
      (add-to-list 'pandoc-options (list (quote ,option)) t)
-     (add-to-list 'pandoc-cli-options (list (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options-menu
                   (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
                                 (list prompt
@@ -538,8 +538,9 @@ before it."
 
 (defmacro define-pandoc-choice-option (option prompt choices output-formats)
   "Define an option whose value is a choice between several items.
-The option is added to `pandoc-options' and a menu entry is
-created and a function to set the option.
+The option is added to `pandoc-options' and `pandoc-cli-options'.
+Furthermore, a menu entry is created and a function to set the
+option.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes). PROMPT is a string that is
@@ -551,6 +552,7 @@ a list of output formats for which OPTION should be active in the
 menu."
   `(progn
      (add-to-list 'pandoc-options (list (quote ,option)) t)
+     (add-to-list 'pandoc-cli-options (quote ,option) t)
      (add-to-list 'pandoc-options-menu (list ,prompt
                                              :active (quote (member (pandoc-get 'write) (quote ,output-formats)))
                                              ,(vector (car choices) `(pandoc-set (quote ,option) ,(car choices))
@@ -826,7 +828,7 @@ The return value is an absolute filename."
    ((eq type 'project)
     (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
 
-(defun pandoc-format-cli-options (input-file &optional pdf)
+(defun pandoc-format-all-options (input-file &optional pdf)
   "Create a list of strings with pandoc options for the current buffer.
 INPUT-FILE is the name of the input file. If PDF is non-nil, an
 output file is always set, derived either from the input file or
@@ -842,22 +844,15 @@ formats."
                  (format "--write=%s%s%s" (pandoc-get 'write) (if (pandoc-get 'write-lhs) "+lhs" "")
                          (pandoc-format-extensions (pandoc-get 'write-extensions)))))
         (output (pandoc-format-output-option input-file pdf))
-        (alist-options (mapcar #'(lambda (option)
-                                   (pandoc-format-alist-options option (pandoc-get option)))
-                               pandoc-alist-options))
         (list-options (mapcar #'(lambda (option)
                                   (pandoc-format-list-options option (pandoc-get option)))
                               pandoc-list-options))
-        (other-options (mapcar #'(lambda (option)
-                                   (let ((value (pandoc-get option)))
-                                     (when (and value (memq option pandoc-filepath-options))
-                                       (setq value (expand-file-name value)))
-                                     (cond
-                                      ((eq value t) (format "--%s" option))
-                                      ((stringp value) (format "--%s=%s" option value))
-                                      (t nil))))
-                               pandoc-cli-options)))
-    (delq nil (append (list read write output) list-options alist-options other-options))))
+        (alist-options (mapcar #'(lambda (option)
+                                   (pandoc-format-alist-options option (pandoc-get option)))
+                               pandoc-alist-options))
+        (cli-options (pandoc-format-cli-options)))
+    ;; Note: list-options and alist-options are both lists of lists, so we need to flatten them first.
+    (delq nil (append (list read write output) cli-options (apply #'append list-options) (apply #'append alist-options)))))
 
 (defun pandoc-format-extensions (extensions)
   "Create a string of extensions to be added to the Pandoc command line."
@@ -909,6 +904,18 @@ Return a string that can be added to the call to Pandoc."
                             ""
                           (format ":%s" value)))))
           alist))
+
+(defun pandoc-format-cli-options ()
+  "Create a list of options in `pandoc-cli-options'."
+  (mapcar #'(lambda (option)
+              (let ((value (pandoc-get option)))
+                (when (and value (memq option pandoc-filepath-options))
+                  (setq value (expand-file-name value)))
+                (cond
+                 ((eq value t) (format "--%s" option))
+                 ((stringp value) (format "--%s=%s" option value))
+                 (t nil))))
+          pandoc-cli-options))
 
 (defun pandoc-process-directives (output-format)
   "Processes pandoc-mode @@-directives in the current buffer.
@@ -980,7 +987,7 @@ format is used. If PDF is non-NIL, a pdf file is created."
             (pandoc-set 'read (pandoc-get 'read buffer)))
         ;; if no output format was provided, we use the buffer's options:
         (setq pandoc-local-settings (buffer-local-value 'pandoc-local-settings buffer)))
-      (let ((option-list (pandoc-format-output-option filename pdf)))
+      (let ((option-list (pandoc-format-all-options filename pdf)))
         (insert-buffer-substring-no-properties buffer)
         (message "Running pandoc...")
         (pandoc-process-directives (pandoc-get 'write))
