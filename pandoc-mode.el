@@ -445,7 +445,6 @@ or T and indicates whether the option can have a default value."
                             ((null prefix) (read-string ,(concat prompt ": ")))
                             (t ,default)))))))
 
-
 (defmacro define-pandoc-list-option (option type description prompt)
   "Define an option whose value is a list.
 The option is added to `pandoc-options' and
@@ -472,21 +471,21 @@ it."
                                  :active t)
                         ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                                  :active `(pandoc-get (quote ,option))))
-                  t)              ; add to the end of `pandoc-options-menu'
+                  t)              ; add to the end of `pandoc-{options|files}-menu'
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
-               (let ((value (if (eq prefix '-)
-                                nil
-                              ,(cond
+               (if (eq prefix '-)
+                   (let ((value (completing-read "Remove item: " (pandoc-get (quote ,option)) nil t)))
+                     (pandoc-remove-from-list-option (quote ,option) value)
+                     (message ,(concat prompt " \"%s\" removed.") value))
+                 (let ((value ,(cond
                                 ((eq type 'string)
-                                 `(read-string "Value: " nil nil (cdr (assq var (pandoc-get (quote ,option))))))
+                                 `(read-string "Add value: " nil nil (pandoc-get (quote ,option))))
                                 ((eq type 'file)
-                                 `(read-file-name "File: "))))))
-                 (pandoc-set (quote ,option) value)
-                 (message ,(concat prompt " %s.") (if value
-                                                      "added"
-                                                    "removed")))))))
+                                 `(read-file-name "Add file: ")))))
+                   (pandoc-set (quote ,option) value)
+                   (message ,(concat prompt " \"%s\" added.") value)))))))
 
 (defmacro define-pandoc-alist-option (option type description prompt)
   "Define an option whose value is an alist.
@@ -520,7 +519,6 @@ before it."
                (interactive "P")
                (let ((var (nonempty (completing-read (concat ,prompt ": ") (pandoc-get (quote ,option))))))
                  (when var
-                   (setq var (intern var))
                    (let ((value (if (eq prefix '-)
                                     nil
                                   ,(cond
@@ -532,7 +530,7 @@ before it."
                         '(when (string= value "")
                            (setq value t)))
                      (pandoc-set (quote ,option) (cons var value))
-                     (message ,(concat prompt " %s %s.") var (if value
+                     (message ,(concat prompt " `%s' \"%s\".") var (if value
                                                                  (format "added with value `%s'" value)
                                                                "removed")))))))))
 
@@ -673,16 +671,18 @@ menu."
 
 (defvar pandoc-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-c/r" 'pandoc-run-pandoc)
-    (define-key map "\C-c/p" 'pandoc-convert-to-pdf)
-    (define-key map "\C-c/s" 'pandoc-save-settings-file)
-    (define-key map "\C-c/Ps" 'pandoc-save-project-file)
-    (define-key map "\C-c/Pu" 'pandoc-undo-file-settings)
-    (define-key map "\C-c/w" 'pandoc-set-write)
-    (define-key map "\C-c/V" 'pandoc-view-output)
-    (define-key map "\C-c/S" 'pandoc-view-settings)
     (define-key map "\C-c/c" 'pandoc-insert-@)
     (define-key map "\C-c/C" 'pandoc-select-@)
+    (define-key map "\C-c/m" 'pandoc-set-metadata)
+    (define-key map "\C-c/p" 'pandoc-convert-to-pdf)
+    (define-key map "\C-c/Ps" 'pandoc-save-project-file)
+    (define-key map "\C-c/Pu" 'pandoc-undo-file-settings)
+    (define-key map "\C-c/r" 'pandoc-run-pandoc)
+    (define-key map "\C-c/s" 'pandoc-save-settings-file)
+    (define-key map "\C-c/S" 'pandoc-view-settings)
+    (define-key map "\C-c/v" 'pandoc-set-variable)
+    (define-key map "\C-c/V" 'pandoc-view-output)
+    (define-key map "\C-c/w" 'pandoc-set-write)
     map)
   "Keymap for pandoc-mode.")
 
@@ -719,6 +719,13 @@ This is for use in major mode hooks."
   (when (file-exists-p (pandoc-create-settings-filename 'settings (buffer-file-name) "default"))
     (turn-on-pandoc)))
 
+(defun pandoc-get (option &optional buffer)
+  "Returns the value of OPTION.
+Optional argument BUFFER is the buffer from which the value is to
+be retrieved."
+  (cdr (assq option (buffer-local-value 'pandoc-local-settings (or buffer (current-buffer))))))
+
+;; TODO list options aren't set correctly.
 (defun pandoc-set (option value)
   "Sets the local value of OPTION to VALUE.
 If OPTION is 'variable, VALUE should be a cons of the
@@ -726,29 +733,46 @@ form (variable-name . value), which is then added to the
 variables already stored, or just (variable-name), in which case
 the named variable is deleted from the list."
   (when (assq option pandoc-options) ; check if the option is licit
-    (let ((new-value
-           (if (memq option pandoc-alist-options)
-               ;; new variables are added to the list; existing variables are
-               ;; overwritten or deleted.
-               (append (assq-delete-all (car value) (pandoc-get option))
-                       (if (cdr value)
-                           (list value)
-                         nil))
-             ;; all other options simply override the existing value.
-             value)))
-      (cond
-       ((eq option 'read-extensions)
-        (pandoc-set-extension (car value) 'read (cdr value)))
-       ((eq option 'write-extensions)
-        (pandoc-set-extension (car value) 'write (cdr value)))
-       (t (setcdr (assq option pandoc-local-settings) new-value))))
+    (cond
+     ((memq option pandoc-alist-options)
+      (pandoc-set-alist-option option value))
+     ((memq option pandoc-list-options)
+      (pandoc-set-list-option option value))
+     ((eq option 'read-extensions)
+      (pandoc-set-extension (car value) 'read (cdr value)))
+     ((eq option 'write-extensions)
+      (pandoc-set-extension (car value) 'write (cdr value)))
+     (t (setcdr (assq option pandoc-local-settings) value)))
     (setq pandoc-settings-modified-flag t)))
 
-(defun pandoc-get (option &optional buffer)
-  "Returns the value of OPTION.
-Optional argument BUFFER is the buffer from which the value is to
-be retrieved."
-  (cdr (assq option (buffer-local-value 'pandoc-local-settings (or buffer (current-buffer))))))
+(defun pandoc-set-alist-option (option new-elem)
+  "Set an alist option.
+NEW-ELEM is a cons (<name> . <value>), which is added to the alist
+for OPTION in `pandoc-local-settings'. If an element with <name>
+already exists, it is replaced, or removed if <value> is NIL."
+  (let* ((value (cdr new-elem))
+         (items (pandoc-get option)) 
+         (item (assoc (car new-elem) items)))
+    (cond
+     ((and item value) ; if <name> exists and we have a new value
+      (setcdr item value)) ; replace the existing value
+     ((and item (not value)) ; if <name> exists but we have no new value
+      (setq items (delq item items))) ; remove <name>
+     ((and (not item) value) ; if <name> does not exist
+      (setq items (cons new-elem items)))) ; add it
+    (setcdr (assoc option pandoc-local-settings) items)))    
+
+(defun pandoc-set-list-option (option value)
+  "Add VALUE to list option OPTION."
+  (let* ((values (pandoc-get option))
+         (new-values (cons value values)))
+    (setcdr (assoc option pandoc-local-settings) new-values)))
+
+(defun pandoc-remove-from-list-option (option value)
+  "Remove VALUE from the list of OPTION."
+  (let* ((values (pandoc-get option))
+         (new-values (remove value values)))
+    (setcdr (assoc option pandoc-local-settings) new-values)))
 
 (defun pandoc-toggle (option)
   "Toggles the value of a switch."
@@ -976,7 +1000,7 @@ format is used. If PDF is non-NIL, a pdf file is created."
     ;; we do this in a temp buffer so we can process @@-directives without
     ;; having to undo them and set the options independently of the
     ;; original buffer.
-    (with-temp-buffer 
+    (with-temp-buffer
       (if (and output-format ; if an output format was provided (and the buffer is visiting a file)
                filename)     ; we want to use settings for that format or no settings at all.
           (unless (pandoc-load-settings-for-file (expand-file-name filename) output-format t)
@@ -1180,7 +1204,6 @@ options and their values."
     (mapc #'(lambda (option)
               (pandoc-set (car option) (cdr option)))
           options)
-    (setq pandoc-settings-modified-flag t)
     pandoc-local-settings))
 
 (defun pandoc-view-output ()
@@ -1197,14 +1220,18 @@ options and their values."
                                                     (if (cdr option)
                                                         option))
                                                 alist))))
-         (settings (funcall remove-defaults (copy-tree pandoc-local-settings)))
+         (settings (copy-tree pandoc-local-settings))
          (read-extensions (assq 'read-extensions settings))
          (write-extensions (assq 'write-extensions settings)))
     (setcdr read-extensions (funcall remove-defaults (cdr read-extensions)))
     (setcdr write-extensions (funcall remove-defaults (cdr write-extensions)))
+    (setq settings (funcall remove-defaults settings))
     (with-current-buffer pandoc-output-buffer
-      (erase-buffer)
-      (pp settings (current-buffer)))
+      (let ((print-length nil)
+            (print-level nil)
+            (print-circle nil))
+        (erase-buffer)
+        (pp settings (current-buffer))))
     (display-buffer pandoc-output-buffer)))
 
 (defun pandoc-insert-@ ()
@@ -1257,7 +1284,8 @@ format)."
   (unless (pandoc-load-settings-profile format t)
     (setq pandoc-local-settings (copy-tree pandoc-options))
     (pandoc-set 'write format)
-    (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes)))))
+    (pandoc-set 'read (cdr (assq major-mode pandoc-major-modes))))
+  (setq pandoc-settings-modified-flag nil))
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
