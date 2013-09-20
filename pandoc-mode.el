@@ -58,6 +58,12 @@
   :group 'pandoc
   :type 'file)
 
+(defcustom pandoc-data-dir "~/.pandoc/emacs/"
+  "Default `pandoc-mode' data dir.
+This is where `pandoc-mode' looks for global settings files."
+  :group 'pandoc
+  :type 'directory)
+
 (defcustom pandoc-directives '(("include" . pandoc-process-include-directive)
                                ("lisp" . pandoc-process-lisp-directive))
   "List of directives to be processed before pandoc is called.
@@ -852,6 +858,11 @@ The return value is an absolute filename."
    ((eq type 'project)
     (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
 
+(defun pandoc-create-global-settings-filename (format)
+  "Create a global settings filename.
+FORMAT is the output format to use."
+  (concat (file-name-as-directory pandoc-data-dir) format ".pandoc"))
+
 (defun pandoc-format-all-options (input-file &optional pdf)
   "Create a list of strings with pandoc options for the current buffer.
 INPUT-FILE is the name of the input file. If PDF is non-nil, an
@@ -1151,15 +1162,19 @@ project file is found for FILE, otherwise non-NIL."
              pandoc-settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
     (pandoc-save-settings 'settings (pandoc-get 'write) t))
-  (let* ((settings (or (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))
-                       (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format)))))
+  (let* ((pandoc-counter -1) ; We use this to keep track of which kind of settings file is being read.
+         (settings (or (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))
+                       (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format))
+                       (pandoc-read-settings-from-file (pandoc-create-global-settings-filename format)))))
     (when settings
       (setq pandoc-local-settings settings)
-      (message "Settings loaded for format \"%s\"." format))))
+      (message "%s settings file loaded for format \"%s\"." (nth pandoc-counter '("Local" "Project" "Global")) format))))
 
 (defun pandoc-read-settings-from-file (file)
   "Read the settings in FILE and return them.
 If FILE does not exist or cannot be read, return NIL."
+  (defvar pandoc-counter)
+  (setq pandoc-counter (1+ pandoc-counter)) ; Increase our file type counter.
   (if (file-readable-p file)
       (with-temp-buffer
         (insert-file-contents file)
