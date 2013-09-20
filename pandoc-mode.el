@@ -1434,7 +1434,7 @@ set. Without any prefix argument, the option is toggled."
     ["Create PDF" pandoc-convert-to-pdf :active t]
     ["View Output Buffer" pandoc-view-output :active t]
     ["Save File Settings" pandoc-save-settings-file :active t]
-    ["Set As Default Format" pandoc-set-default-format :active t]
+    ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))]
     ("Project"
      ["Save Project File" pandoc-save-project-file :active t]
      ["Undo File Settings" pandoc-undo-file-settings :active t])
