@@ -1452,7 +1452,7 @@ set. Without any prefix argument, the option is toggled."
                                        :selected `(string= (pandoc-get 'read)
                                                            ,(cdr option))))
                            pandoc-input-formats-menu))
-             (list ["Literal Haskell" (pandoc-toggle 'local 'read-lhs)
+             (list ["Literal Haskell" (pandoc-toggle 'read-lhs)
                     :active (member (pandoc-get 'read) '("markdown" "rst" "latex"))
                     :style toggle :selected (pandoc-get 'read-lhs)])
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc-get 'read)))
@@ -1473,7 +1473,7 @@ set. Without any prefix argument, the option is toggled."
                                        :selected `(string= (pandoc-get 'write)
                                                            ,(cdr option))))
                            pandoc-output-formats-menu))
-             (list ["Literal Haskell" (pandoc-toggle 'local 'write-lhs)
+             (list ["Literal Haskell" (pandoc-toggle 'write-lhs)
                     :active (member (pandoc-get 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
                     :style toggle :selected (pandoc-get 'write-lhs)])
@@ -1511,7 +1511,7 @@ set. Without any prefix argument, the option is toggled."
     ("Switches"
      ;; put the binary options into the menu
      ,@(mapcar #'(lambda (option)
-                   (vector (car option) `(pandoc-toggle 'local (quote ,(cdr option)))
+                   (vector (car option) `(pandoc-toggle (quote ,(cdr option)))
                            :active t
                            :style 'toggle
                            :selected `(pandoc-get (quote ,(cdr option)))))
