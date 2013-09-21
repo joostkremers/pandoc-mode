@@ -1134,16 +1134,14 @@ asking."
         (message "%s settings file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
       (setq pandoc-settings-modified-flag nil))))
 
-(defun pandoc-undo-file-settings ()
-  "Undo all settings specific to the current file.
-Read the project file if it exists, otherwise set all options to
-their default values."
+(defun pandoc-revert-settings ()
+  "Revert settings for the current buffer.
+The settings file is reread from disk, so that any changes made
+to the settings that have not been saved are reverted."
   (interactive)
-  (let ((settings (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project (buffer-file-name) (pandoc-get 'write)))))
-    (setq pandoc-local-settings
-          (or settings
-              (copy-tree pandoc-options)))
-    (message "Local file settings undone for current session. Save local settings to make persistent.")))
+  (let ((format (pandoc-get 'write)))
+    (setq pandoc-local-settings (copy-tree pandoc-options))
+    (pandoc-load-settings-profile format 'no-confirm)))
 
 (defun pandoc-load-default-settings ()
   "Load the default settings of the file in the current buffer.
@@ -1444,7 +1442,7 @@ set. Without any prefix argument, the option is toggled."
      ["Save File Settings" pandoc-save-settings-file :active t]
      ["Save Project File" pandoc-save-project-file :active t]
      ["Save Global Settings File" pandoc-save-global-settings-file :active t]
-     ["Undo File Settings" pandoc-undo-file-settings :active t]
+     ["Revert Settings" pandoc-revert-settings :active t]
      ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))])
     ("Example Lists"
      ["Insert New Example" pandoc-insert-@ :active t]
