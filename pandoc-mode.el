@@ -681,8 +681,6 @@ menu."
     (define-key map "\C-c/C" 'pandoc-select-@)
     (define-key map "\C-c/m" 'pandoc-set-metadata)
     (define-key map "\C-c/p" 'pandoc-convert-to-pdf)
-    (define-key map "\C-c/Ps" 'pandoc-save-project-file)
-    (define-key map "\C-c/Pu" 'pandoc-undo-file-settings)
     (define-key map "\C-c/r" 'pandoc-run-pandoc)
     (define-key map "\C-c/s" 'pandoc-save-settings-file)
     (define-key map "\C-c/S" 'pandoc-view-settings)
@@ -1095,6 +1093,11 @@ appropriate output format."
   (interactive)
   (pandoc-save-settings 'project (pandoc-get 'write)))
 
+(defun pandoc-save-global-settings-file ()
+  "Save the current settings to a global settings file."
+  (interactive)
+  (pandoc-save-settings 'global (pandoc-get 'write)))
+
 (defun pandoc-save-settings (type format &optional no-confirm)
   "Save the settings of the current buffer for FORMAT.
 TYPE must be a quoted symbol and specifies the type of settings
@@ -1105,7 +1108,9 @@ is non-nil, any existing settings file is overwritten without
 asking."
   (let* ((filename (buffer-file-name))
          (settings pandoc-local-settings)
-         (settings-file (pandoc-create-settings-filename type filename format)))
+         (settings-file (if (eq type 'global)
+                            (pandoc-create-global-settings-filename format)
+                          (pandoc-create-settings-filename type filename format))))
     (if (and (not no-confirm)
              (file-exists-p settings-file)
              (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
@@ -1117,14 +1122,16 @@ asking."
               (print-level nil)
               (print-circle nil))
           (insert ";; -*- mode: emacs-lisp -*-\n\n"
-                  (format ";; pandoc-mode %s file for %s\n"
+                  (format ";; pandoc-mode %s settings file%s\n"
                           type
-                          (file-name-nondirectory filename))
+                          (if (eq type 'local)
+                              (concat " for " (file-name-nondirectory filename))
+                            ""))
                   (format ";; saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M")))
           (pp settings (current-buffer)))
         (let ((make-backup-files nil))
           (write-region (point-min) (point-max) settings-file))
-        (message "%s file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
+        (message "%s settings file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
       (setq pandoc-settings-modified-flag nil))))
 
 (defun pandoc-undo-file-settings ()
