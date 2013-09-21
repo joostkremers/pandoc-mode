@@ -58,7 +58,7 @@
   :group 'pandoc
   :type 'file)
 
-(defcustom pandoc-data-dir "~/.pandoc/emacs/"
+(defcustom pandoc-data-dir "~/.emacs.d/pandoc-mode/"
   "Default `pandoc-mode' data dir.
 This is where `pandoc-mode' looks for global settings files."
   :group 'pandoc
