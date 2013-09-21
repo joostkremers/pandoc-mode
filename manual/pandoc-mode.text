@@ -6,11 +6,9 @@
 
 # Introduction #
 
-`pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. Supported input formats are markdown and (subsets of) reStructuredText, HTML, and LaTeX. Supported output formats are, among others, markdown, HTML(5), LaTeX, PDF, OpenOffice.org text document (odt), MS Word (docx), GNU Texinfo, MediaWiki markup, groff man pages, and several slide show formats.
+`pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
 
-`pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of the supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs.
-
-The current version of `pandoc-mode` is 2.4.0 and is compatible with Pandoc version 1.11.
+The current version of `pandoc-mode` is 2.5 and is compatible with Pandoc version 1.12.
 
 
 # Installation #
@@ -21,15 +19,15 @@ The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.milk
 (load "pandoc-mode")
 ```
 
-Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a markdown file, you can add a hook to your `~/.emacs`:
+Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a Markdown file, you can add a hook to your `~/.emacs`:
 
 ```Commonlisp
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 ```
 
-However, if you do not want to start `pandoc-mode` every time you work on a markdown document, you can use a different function in `markdown-mode-hook`: instead of using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`. This function checks if a default settings file exists for the file you're opening and only turns on `pandoc-mode` if it finds one. (For more info on the settings file, see the section ['Settings Files'](#settings-files).)
+However, if you do not want to start `pandoc-mode` every time you work on a Markdown document, you can use a different function in `markdown-mode-hook`: instead of using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`. This function checks if a default settings file exists for the file you're opening and only turns on `pandoc-mode` if it finds one. (For more info on the settings file, see the section ['Settings Files'](#settings-files).)
 
-Additionally, if you want to automatically load a pandoc-mode settings file for the file you're opening, you can add the following to your `~/.emacs`:
+Additionally, if you want to automatically load the default `pandoc-mode` settings file for the file you're opening, you can add the following to your `~/.emacs`:
 
 ```Commonlisp
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
@@ -40,20 +38,20 @@ The function `pandoc-load-default-settings` checks if a default settings file ex
 
 # Usage #
 
-When you start `pandoc-mode`, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document, or load or save settings files. The most important functions provided by `pandoc-mode` can also be accessed through the keyboard, but setting options can only be done through the menu (although it is possible to bind your own keys to the functions to set options; see the section ['Using The Keyboard'](#using-the-keyboard)).
+When you start `pandoc-mode`, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by `pandoc-mode` can also be accessed through the keyboard, but by default, most options can only be set through the menu. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section ['Using The Keyboard'](#using-the-keyboard)).
 
 The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.
 
 
 ## Input and output formats ##
 
-The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode, but you can change it through the menu if you need to. The output format defaults to "Native Haskell", so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with `C-c / w` (TAB completion works.) If the input or output format is one of the markdown formats, the relevant submenu contains a further submenu with the Markdown extensions that Pandoc supports. This menu allows you to select or deselect individual extentions.
+The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode of the input file, but you can change it through the menu if you need to. The output format defaults to "Native Haskell", so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with `C-c / w` (TAB completion works.) If the input or output format is one of the Markdown formats (Pandoc supports different Markdown dialects), the relevant submenu contains a further submenu with the Markdown extensions that Pandoc supports. This menu allows you to select or deselect individual extensions.
 
 As already stated, you may wish to use different output formats for a single input file. Most likely, the options that you want to pass to Pandoc will be different for each output format. To make this easier, `pandoc-mode` has the ability to save the settings for a specific output format. If you choose "Save File Settings" from the menu (`C-c / s`), Emacs saves the current settings to a hidden file in the same directory as the file you're editing. The name of this file is derived from the input file, appended with the name of the output format and the string `.pandoc`. (See the section ['Settings Files'](#settings-files) for details.)
 
-A single document can have a settings file for each output format that Pandoc supports. For example, for this manual, which is written in markdown, I have three settings files, one for HTML output, one for LaTeX output and one for Texinfo output. These can simply be created by setting all options the way you want them for the first output format, save them, then choose another output format, set the required options, save again, etc. Because the name of a settings file contains the output format for which it was created, the different settings files won't interfere with each other.
+A single document can have a settings file for each output format that Pandoc supports. For example, for this manual, which is written in Markdown, I have three settings files, one for HTML output, one for LaTeX output and one for Texinfo output. These can simply be created by setting all options the way you want them for the first output format, save them, then choose another output format, set the required options, save again, etc. Because the name of a settings file contains the output format for which it was created, the different settings files won't interfere with each other.
 
-On systems that have symbolic links, it is also possible to specify a default output format. By selecting "Set As Default Format" from the Pandoc menu, a symbolic link is created to the settings file of the current output format (a settings file is created if one doesn't exist yet). This symbolic link has "default" as format in its name. The file it points to is read by the function `pandoc-load-default-settings`, making it possible to automatically load a specific settings file when `pandoc-mode` is invoked.
+On systems that have symbolic links, it is also possible to specify a default output format. By selecting "Set As Default Format" from the Pandoc menu, a symbolic link is created to the settings file of the current output format (a settings file is created if one doesn't exist yet). This symbolic link has "default" as format in its name. The file it points to is read by the function `pandoc-load-default-settings`, making it possible to automatically load a specific settings file when `pandoc-mode` is invoked, as described above.
 
 When you switch output formats, either through the menu or with the keyboard (with `C-c / w`), Emacs checks if a corresponding settings file exists and loads it if one is found. That is, you can load a different settings file by simply switching output formats.
 
@@ -68,35 +66,39 @@ The settings part of the menu contains three more submenus: "Files", "Options", 
 
 When Emacs calls `pandoc`, it expands filenames, so that they are absolute and don't contain any abbreviations (such as `~` for one's home directory). This means you can have relative filenames in your settings, or indeed `~`, which can be practical if you move settings files to different locations or e.g. between computers with different OSes. (For example, Linux expands `~` to `/home/<user>`, while on OS X it becomes `/Users/<user>`.)
 
-The CSS style sheet is an exception to this: Emacs always cuts off the directory part of the filename you specify as CSS style sheet and doesn't expand it. The reason for this is that the CSS style sheet will normally be transferred along with the output file(s) to a server, where it will most likely be in a different directory than on the computer you're generating your .html-files on.
+The CSS style sheet is an exception to this: Emacs always cuts off the directory part of the filename you specify as CSS style sheet and doesn't expand it. The reason for this is that the CSS style sheet will normally be transferred along with the output file(s) to a server, where it will most likely be in a different directory than on the computer you're generating your HTML files on.
 
-Under "Options", you can set other options that require a value. The submenu "Switches" contains Pandoc's binary options. 
+Under "Options", you can set other options that require a value. The submenu "Switches" contains Pandoc's binary options, i.e., those that only can be present or absent and do not accept a specific value.
 
-Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing `C-c / S`). This displays all settings in the `*Pandoc output*` buffer in the same manner in which they appear in a settings file, i.e., with the following format:
-
-```
-<option>::<value>
-```
-
-
-## Template variables ##
-
-`pandoc-mode` allows you to set or change template variables through the menu (under the Options submenu) or the keyboard, with `C-c / v`. Emacs will ask you for the name of a variable and a value for it. If you provide a name that already exists (TAB completion works), the new value replaces the old one.
-
-Deleting a template variable is done with the corresponding menu item or by calling `C-c / v` with the prefix argument `C-u -` (or `M--`). Emacs will ask you for the variable name (TAB completion works here, too) and removes it from the list.
-
-Template variables are saved in the settings file and can also be viewed with `C-c / S`. They appear in the following format:
+Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing `C-c / S`). This displays all settings in the `*Pandoc output*` buffer in a Lisp-like format. For example, the settings for LaTeX output of this manual look like this:
 
 ```
-variable::<name>:<value>
+((number-sections . t)
+ (standalone . t)
+ (read . "markdown")
+ (write . "latex")
+ (output . "pandoc-mode-manual.tex")
+ (output-dir . "~/src/pandoc-mode/website/")
+ (variable
+  ("mainfont" . "Linux Libertine O")
+  ("sansfont" . "Linux Biolinum O")
+  ("geometry" . "a4paper"))
+ (latex-engine . "xelatex"))
 ```
+
+
+## Template variables and metadata ##
+
+`pandoc-mode` allows you to set or change template variables through the menu (under the Options submenu) or the keyboard, with `C-c / v` and `C-c / m`, respectively. Emacs will ask you for the name of a variable or metadata item and for a value for it. If you provide a name that already exists (TAB completion works), the new value replaces the old one.
+
+Deleting a template variable or metadata item is done with the corresponding menu item or by calling `C-c / v` or `C-c / m` with the negative prefix argument `C-u -` (or `M--`). Emacs will ask you for the variable name (TAB completion works here, too) and removes it from the list.
 
 
 ## Running Pandoc ##
 
 The first item in the menu is "Run Pandoc" (also accessible with `C-c / r`), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer `*Pandoc output*`. (Except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing `C-c / V`. Error messages from Pandoc are also displayed in this buffer.
 
-Note that when you run Pandoc, Pandoc doesn't read the file on disk, rather, Emacs feeds it the contents of the buffer through stdin. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.
+Note that when you run Pandoc, Pandoc doesn't read the file on disk. Rather, Emacs feeds it the contents of the buffer through `stdin`. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.
 
 If you call this command with a prefix argument (`C-u C-c / r`), Emacs asks you for an output format to use. If there is a settings file for the format you specify, the settings in it will be passed to Pandoc instead of the settings in the current buffer. If there is no settings file, Pandoc will be called with just the output format and no other options.
 
@@ -105,11 +107,9 @@ Note that specifying an output format this way does not change the output format
 
 ## Setting an output file ##
 
-If you want to save the output in a file rather than have it appear in a buffer, you can set the output file through the menu. Note that setting an output *file* is not the same thing as setting an output *format* (though normally the output file has a suffix that indicates the format of the file).
+If you want to save the output in a file rather than have it appear in a buffer, you can set the output file through the menu. Note that setting an output *file* is not the same thing as setting an output *format* (though normally the output file has a suffix that indicates the format of the file). The "Output File" submenu has three options: the default is to send output to stdout, in which case it is redirected to the buffer `*Pandoc output*`. Alternatively, you can let Emacs create an output filename for you. In this case the output file will have the same base name as the input file but with the proper suffix for the output format. Lastly, you can also specify an output file yourself.
 
-The "Output File" submenu has three options: the default is to send output to stdout, in which case it is redirected to the buffer `*Pandoc output*`. Alternatively, you can let Emacs create an output filename for you. In this case the output file will have the same base name as the input file but with the proper suffix for the output format. Lastly, you can also specify an output file yourself.
-
-Note that Pandoc does not allow output to be sent to stdout if the output format is an OpenOffice.org Document (ODT), Epub or MS Word (docx) file. Therefore, Emacs will always create an output filename in those cases, unless of course you've explicitly set an output file yourself.
+Note that Pandoc does not allow output to be sent to stdout if the output format is an OpenOffice.org Document (ODT), EPUB or MS Word (docx) file. Therefore, Emacs will always create an output filename in those cases, unless of course you've explicitly set an output file yourself.
 
 The output file you set is always just the base filename, it does not specify a directory. Which directory the output file is written to depends on the setting "Output Directory" (which is not actually a Pandoc option). Emacs creates an output destination out of the settings for the output directory and output file. If you don't specify any output directory, the output file will be written to the same directory that the input file is in.
 
@@ -118,22 +118,16 @@ The output file you set is always just the base filename, it does not specify a 
 
 The second item in the menu is "Create PDF" (`C-c / p`). This option calls Pandoc with an output file with the extention `.pdf`, causing Pandoc to create a pdf file by first converting to `.tex` and then calling LaTeX on it.
 
-If you choose this option, Emacs checks if your current output format is `latex`. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than `latex`, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX.
-
-If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats. All other options are unset. (Note that you can force Emacs to check for a LaTeX settings file by calling `C-c / p` with a prefix argument.)
+If you choose this option, Emacs checks if your current output format is `latex`. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than `latex`, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.
 
 
-# Projects #
+# Settings Files #
 
-If you have more than one file in a single directory for which you want to apply the same Pandoc settings, it is rather cumbersome to create a settings file for each of them, and even more cumbersome if you want to change something in those settings. To deal with such cases, `pandoc-mode` allows you to create a project file. A project file is called `Project.<format>.pandoc` and is essentially a normal settings file. The difference is that it defines settings that apply to all files in the directory.
+Apart from settings files for individual files (which are called *local settings files*), `pandoc-mode` supports two other types of settings files: project files and global files. Project files are settings files that apply to all input files in a given directory (except those files for which a local settings file exists). Global settings files, as the name implies, apply globally, to files for which no local or project file is found. Both types of files are specific to a particular output format, just like local settings files. Project files live in the directory they apply to and are called `Project.<format>.pandoc`. Global files live in the directory specified by the variable `pandoc-data-dir`, which defaults to `~/.emacs.d/pandoc/`, but this can of course be changed in the customisation group `pandoc`.
 
-In order to distinguish settings from a project file and settings from a file-specific settings file, the former are called "project settings" and the latter "local settings". You can create a project file by selecting "Project | Save Project File" from the menu (or with the key sequence `C-c / P s`). Emacs then simply saves the settings of the current file to the project file. This means that all the settings for the current input file become project settings.
+Whenever `pandoc-mode` loads settings for an input file, it first checks if there is a local settings file. If none is found, it looks for a project file, and if that isn't found, it tries to load a global settings file. In this way, local settings override project settings and project settings override global settings. Note, however, that if a local settings file exists, *all* settings are read from this file. Any project file or global file for the relevant output format is ignored.
 
-Just like a local settings file, a project file also contains an output format in its filename. This means that you can have different project files for different output formats. Furthermore, it is also possible to define a default project format: when you set a default format through the menu, Emacs makes both the project file *and* the local settings file for the current output format the default. If there is no project file for the current output format, however, a default will not be created. (This differs from local settings files: if you set a default output format, Emacs will create a local settings file if none exists).
-
-When Emacs loads Pandoc settings for a file, it first looks for and loads the project file for the selected output format, and then reads the file's local settings file, if one exists. This means that the local settings may actually override the project settings: if both files contain a value for a specific option, the one in the local settings file overrides the one in the project file.
-
-This means that if you open a file and a project settings file is loaded for it, you can make changes to the options and save those to a local settings file (with the menu option "Save File Settings" or the key sequence `C-c / s`). If you want to undo all file-specific settings and return to the settings defined in the project file, you can select the menu item "Project | Undo File Settings" (`C-c / P u`). This erases the local options, but only for *the current session*. If you want to make the change permanent, you need to save the local settings file (which will then be empty) or just delete it completely.
+You can create a project or global settings file through the menu in the submenu "Settings Files". This simply saves all settings for the current buffer to a project or global settings file. (Any local settings file for the file in the current buffer will be kept. You'll need to delete it manually if you no longer need it.)
 
 
 # Managing numbered examples #
@@ -217,44 +211,28 @@ The option setting functions are all called `pandoc-set-<option>` (with the exce
 
     (define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
 
-The following table lists the keys defined by default:
+The following table lists the keys defined by default and the functions they are bound to:
 
 `C-c/r`
-  ~  Run `pandoc` on the document
+  ~  Run `pandoc` on the document (`pandoc-run-pandoc`)
 `C-c/p`
-  ~  Run `markdown2pdf` on the document
+  ~  Run `markdown2pdf` on the document (`pandoc-convert-to-pdf`)
 `C-c/s`
-  ~  Save the settings file
-`C-c/Ps`
-  ~  Save the project file
-`C-c/Pu`
-  ~  Remove file-specific settings
+  ~ Save the settings file (`pandoc-save-settings-file`)
 `C-c/w`
-  ~  Set the output format
+  ~  Set the output format (`pandoc-set-write`)
+`C-c/m`
+  ~  Set a metadata item (`pandoc-set-metadata`)
 `C-c/v`
-  ~  Set a template variable
+  ~  Set a template variable (`pandoc-set-variable`)
 `C-c/V`
-  ~  View the output buffer
+  ~  View the output buffer (`pandoc-view-output`)
 `C-c/S`
-  ~  View the current settings
+  ~  View the current settings (`pandoc-view-settings`)
 `C-c/c`
-  ~  Insert a new `(@)`-item
+  ~  Insert a new `(@)`-item (`pandoc-insert-@`)
 `C-c/C`
-  ~  Select and insert a `(@)`-label
+  ~  Select and insert a `(@)`-label (`pandoc-select-@`)
 
-
-# Settings Files #
-
-As explained above, there are two types of settings files: project files, which apply to all input files in a single directory, and local settings files, which apply only to single input files. Both types of settings files are specific to a single output format, which is specified in the name. Local settings files are hidden (on Unix-like OSes, anyway) and consist of the name of the input file, plus a string indicating the output format and the suffix `.pandoc`. Project files are not hidden files and consist of the string `Project` plus the output format and the suffix `.pandoc`.
-
-The format of a settings file is very straightforward. It contains lines of the form:
-
-```
-<option>::<value>
-```
-
-`<option>` is one of Pandoc's long options without the two dashes. (For the input and output formats, the forms `read` and `write` are used, not the alternative forms `from` and `to`. Additionally, the option `output-dir` is valid.) `<value>` is a string or, for binary switches, either `t` or `nil`, which correspond to 'on' or 'off', respectively.
-
-Lines that do not correspond to this format are simply ignored (and can be used for comments). If for some reason you end up writing your own settings file by hand, make sure all your options have the right form, that is, that they contain *no* spaces and a *double* colon.
 
 </div>
