@@ -1440,11 +1440,12 @@ set. Without any prefix argument, the option is toggled."
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
     ["View Output Buffer" pandoc-view-output :active t]
-    ["Save File Settings" pandoc-save-settings-file :active t]
-    ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))]
-    ("Project"
+    ("Settings Files"
+     ["Save File Settings" pandoc-save-settings-file :active t]
      ["Save Project File" pandoc-save-project-file :active t]
-     ["Undo File Settings" pandoc-undo-file-settings :active t])
+     ["Save Global Settings File" pandoc-save-global-settings-file :active t]
+     ["Undo File Settings" pandoc-undo-file-settings :active t]
+     ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))])
     ("Example Lists"
      ["Insert New Example" pandoc-insert-@ :active t]
      ["Select And Insert Example Label" pandoc-select-@ :active t])
