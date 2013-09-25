@@ -127,6 +127,9 @@ Whenever `pandoc-mode` loads settings for an input file, it first checks if ther
 
 You can create a project or global settings file through the menu in the submenu "Settings Files". This simply saves all settings for the current buffer to a project or global settings file. (Any local settings file for the file in the current buffer will be kept. You'll need to delete it manually if you no longer need it.)
 
+Note that starting with version 2.5, `pandoc-mode` settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.
+
+
 
 # Managing numbered examples #
 
