@@ -1155,6 +1155,8 @@ settings have not been saved."
   (when (buffer-file-name)
     (pandoc-load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm)))
 
+(defvar pandoc-counter) ; We use this to keep track of which kind of settings file is being read.
+
 (defun pandoc-load-settings-for-file (file format &optional no-confirm)
   "Load the settings for FILE.
 Load FILE's own settings file if it exists, otherwise check for a
@@ -1167,7 +1169,7 @@ project file is found for FILE, otherwise non-NIL."
              pandoc-settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc-get 'write))))
     (pandoc-save-settings 'settings (pandoc-get 'write) t))
-  (let* ((pandoc-counter -1) ; We use this to keep track of which kind of settings file is being read.
+  (let* ((pandoc-counter -1)
          (settings (or (pandoc-read-settings-from-file (pandoc-create-settings-filename 'settings file format))
                        (pandoc-read-settings-from-file (pandoc-create-settings-filename 'project file format))
                        (pandoc-read-settings-from-file (pandoc-create-global-settings-filename format)))))
@@ -1178,7 +1180,6 @@ project file is found for FILE, otherwise non-NIL."
 (defun pandoc-read-settings-from-file (file)
   "Read the settings in FILE and return them.
 If FILE does not exist or cannot be read, return NIL."
-  (defvar pandoc-counter)
   (setq pandoc-counter (1+ pandoc-counter)) ; Increase our file type counter.
   (if (file-readable-p file)
       (with-temp-buffer
