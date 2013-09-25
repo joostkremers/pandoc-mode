@@ -13,13 +13,13 @@ The current version of `pandoc-mode` is 2.5 and is compatible with Pandoc versio
 
 The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.milkbox.net/) package repository. Alternatively, you can install it manually: download `pandoc-mode.el`, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
 
-```lisp
+```
 (load "pandoc-mode")
 ```
 
 Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a Markdown file, you can add a hook to your `~/.emacs`:
 
-```lisp
+```
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 ```
 
@@ -27,7 +27,7 @@ However, if you do not want to start `pandoc-mode` every time you work on a Mark
 
 Additionally, if you want to automatically load the default `pandoc-mode` settings file for the file you're opening, you can add the following to your `~/.emacs`:
 
-```lisp
+```
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 ```
 
@@ -144,7 +144,7 @@ Pandoc allows you to refer to such labeled example items in the text by writing 
 
 So suppose you define (e.g., in `~/.emacs`) a function `pandoc-current-date`:
 
-```lisp
+```
 (defun pandoc-current-date (output-format)
   (format-time-string "%d %b %Y"))
 ```
@@ -157,7 +157,7 @@ Note that the function that the directive calls must have one argument. which is
 
 It is possible to define a directive that can take an optional argument. This is simply done by defining the argument that the directive's function takes as optional. Suppose you define `pandoc-current-date` as follows:
 
-```lisp
+```
 (defun pandoc-current-date (output-format &optional text)
   (format "%s%s" (if text (concat text ", ") "")
                  (format-time-string "%d %b %Y")))
@@ -210,7 +210,7 @@ Although `pandoc-mode` can be controlled through the menu, it is possible to bin
 
 The option setting functions are all called `pandoc-set-<option>` (with the exception of the option `--read`, i.e., the input format, which is determined automatically and rarely needs to be set by the user). `<option>` corresponds to the long name of the relevant Pandoc switch. Functions can be bound in the following manner:
 
-```lisp
+```
 (define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
 ```
 
