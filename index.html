@@ -202,7 +202,7 @@
 
 <p>Processing <code>@@</code>-directives works everywhere in the document, including in code and code blocks, and also in the %-header block. So by putting the above <code>@@lisp</code> directive in the third line of the %-header block, the meta data for your documents will always show the date on which the file was created by Pandoc.</p>
 
-<p>If it should ever happen that you need to write a literal "<code>@@lisp</code>" in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
+<p>If it should ever happen that you need to write a literal <code>"@@lisp"</code> in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
 
 <p>The directives are processed in the order in which they appear in the customization buffer (and hence in the variable <code>pandoc-directives</code>). So in the default case, <code>@@include</code> directives are processed before <code>@@lisp</code> directives, which means that any <code>@@lisp</code> directive in a file included by <code>@@include</code> gets processed, but if a <code>@@lisp</code> directive produces an <code>@@include</code>, it does <em>not</em> get processed. (If this should ever be a problem, you can always create a directive <code>@@include2</code> and have it processed after <code>@@lisp</code>.)</p>
 
