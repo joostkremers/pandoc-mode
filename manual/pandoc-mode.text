@@ -2,8 +2,6 @@
 % Joost Kremers
 % @@date
 
-<div id="main">
-
 # Introduction #
 
 `pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
@@ -15,13 +13,13 @@ The current version of `pandoc-mode` is 2.5 and is compatible with Pandoc versio
 
 The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.milkbox.net/) package repository. Alternatively, you can install it manually: download `pandoc-mode.el`, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
 
-```Commonlisp
+```lisp
 (load "pandoc-mode")
 ```
 
 Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a Markdown file, you can add a hook to your `~/.emacs`:
 
-```Commonlisp
+```lisp
 (add-hook 'markdown-mode-hook 'turn-on-pandoc)
 ```
 
@@ -29,7 +27,7 @@ However, if you do not want to start `pandoc-mode` every time you work on a Mark
 
 Additionally, if you want to automatically load the default `pandoc-mode` settings file for the file you're opening, you can add the following to your `~/.emacs`:
 
-```Commonlisp
+```lisp
 (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
 ```
 
@@ -143,7 +141,7 @@ Pandoc allows you to refer to such labeled example items in the text by writing 
 
 So suppose you define (e.g., in `~/.emacs`) a function `pandoc-current-date`:
 
-```Commonlisp
+```lisp
 (defun pandoc-current-date (output-format)
   (format-time-string "%d %b %Y"))
 ```
@@ -156,7 +154,7 @@ Note that the function that the directive calls must have one argument. which is
 
 It is possible to define a directive that can take an optional argument. This is simply done by defining the argument that the directive's function takes as optional. Suppose you define `pandoc-current-date` as follows:
 
-```Commonlisp
+```lisp
 (defun pandoc-current-date (output-format &optional text)
   (format "%s%s" (if text (concat text ", ") "")
                  (format-time-string "%d %b %Y")))
@@ -213,26 +211,14 @@ The option setting functions are all called `pandoc-set-<option>` (with the exce
 
 The following table lists the keys defined by default and the functions they are bound to:
 
-`C-c/r`
-  ~  Run `pandoc` on the document (`pandoc-run-pandoc`)
-`C-c/p`
-  ~  Run `markdown2pdf` on the document (`pandoc-convert-to-pdf`)
-`C-c/s`
-  ~ Save the settings file (`pandoc-save-settings-file`)
-`C-c/w`
-  ~  Set the output format (`pandoc-set-write`)
-`C-c/m`
-  ~  Set a metadata item (`pandoc-set-metadata`)
-`C-c/v`
-  ~  Set a template variable (`pandoc-set-variable`)
-`C-c/V`
-  ~  View the output buffer (`pandoc-view-output`)
-`C-c/S`
-  ~  View the current settings (`pandoc-view-settings`)
-`C-c/c`
-  ~  Insert a new `(@)`-item (`pandoc-insert-@`)
-`C-c/C`
-  ~  Select and insert a `(@)`-label (`pandoc-select-@`)
+- `C-c/r` ~  Run `pandoc` on the document (`pandoc-run-pandoc`)
+- `C-c/p` ~  Run `markdown2pdf` on the document (`pandoc-convert-to-pdf`)
+- `C-c/s` ~  Save the settings file (`pandoc-save-settings-file`)
+- `C-c/w` ~  Set the output format (`pandoc-set-write`)
+- `C-c/m` ~  Set a metadata item (`pandoc-set-metadata`)
+- `C-c/v` ~  Set a template variable (`pandoc-set-variable`)
+- `C-c/V` ~  View the output buffer (`pandoc-view-output`)
+- `C-c/S` ~  View the current settings (`pandoc-view-settings`)
+- `C-c/c` ~  Insert a new `(@)`-item (`pandoc-insert-@`)
+- `C-c/C` ~  Select and insert a `(@)`-label (`pandoc-select-@`)
 
-
-</div>
