@@ -43,20 +43,20 @@
 
 <p>The easiest way to install <code>pandoc-mode</code> is to use the <a href="http://melpa.milkbox.net/">Melpa</a> package repository. Alternatively, you can install it manually: download <code>pandoc-mode.el</code>, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to <code>~/.emacs</code>:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nb">load</span> <span class="s">"pandoc-mode"</span><span class="p">)</span>
-</pre></div>
+<pre><code>(load "pandoc-mode")
+</code></pre>
 
 <p>Either installation method allows Emacs to load <code>pandoc-mode</code>, but they do not activate it. In order to activate <code>pandoc-mode</code> in a buffer, you need to type <code>M-x pandoc-mode</code>. To start <code>pandoc-mode</code> automatically when you load e.g., a Markdown file, you can add a hook to your <code>~/.emacs</code>:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">'markdown-mode-hook</span> <span class="ss">'turn-on-pandoc</span><span class="p">)</span>
-</pre></div>
+<pre><code>(add-hook 'markdown-mode-hook 'turn-on-pandoc)
+</code></pre>
 
 <p>However, if you do not want to start <code>pandoc-mode</code> every time you work on a Markdown document, you can use a different function in <code>markdown-mode-hook</code>: instead of using <code>turn-on-pandoc</code>, you can use <code>conditionally-turn-on-pandoc</code>. This function checks if a default settings file exists for the file you're opening and only turns on <code>pandoc-mode</code> if it finds one. (For more info on the settings file, see the section <a href="#settings-files">'Settings Files'</a>.)</p>
 
 <p>Additionally, if you want to automatically load the default <code>pandoc-mode</code> settings file for the file you're opening, you can add the following to your <code>~/.emacs</code>:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nv">add-hook</span> <span class="ss">'pandoc-mode-hook</span> <span class="ss">'pandoc-load-default-settings</span><span class="p">)</span>
-</pre></div>
+<pre><code>(add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+</code></pre>
 
 <p>The function <code>pandoc-load-default-settings</code> checks if a default settings file exists for the file being loaded and reads its settings if it finds one.</p>
 
@@ -153,6 +153,8 @@
 
 <p>You can create a project or global settings file through the menu in the submenu "Settings Files". This simply saves all settings for the current buffer to a project or global settings file. (Any local settings file for the file in the current buffer will be kept. You'll need to delete it manually if you no longer need it.)</p>
 
+<p>Note that starting with version 2.5, <code>pandoc-mode</code> settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.</p>
+
 <h1>
 <a name="managing-numbered-examples" class="anchor" href="#managing-numbered-examples"><span class="octicon octicon-link"></span></a>Managing numbered examples</h1>
 
@@ -167,9 +169,9 @@
 
 <p>So suppose you define (e.g., in <code>~/.emacs</code>) a function <code>pandoc-current-date</code>:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nb">defun</span> <span class="nv">pandoc-current-date</span> <span class="p">(</span><span class="nv">output-format</span><span class="p">)</span>
-  <span class="p">(</span><span class="nv">format-time-string</span> <span class="s">"%d %b %Y"</span><span class="p">))</span>
-</pre></div>
+<pre><code>(defun pandoc-current-date (output-format)
+  (format-time-string "%d %b %Y"))
+</code></pre>
 
 <p>Now you can define a directive <code>@@date</code> that calls this function. The effect is that every time you write <code>@@date</code> in your document, it is replaced with the current date.</p>
 
@@ -179,10 +181,10 @@
 
 <p>It is possible to define a directive that can take an optional argument. This is simply done by defining the argument that the directive's function takes as optional. Suppose you define <code>pandoc-current-date</code> as follows:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nb">defun</span> <span class="nv">pandoc-current-date</span> <span class="p">(</span><span class="nv">output-format</span> <span class="k">&amp;optional</span> <span class="nv">text</span><span class="p">)</span>
-  <span class="p">(</span><span class="nb">format</span> <span class="s">"%s%s"</span> <span class="p">(</span><span class="k">if</span> <span class="nv">text</span> <span class="p">(</span><span class="nv">concat</span> <span class="nv">text</span> <span class="s">", "</span><span class="p">)</span> <span class="s">""</span><span class="p">)</span>
-                 <span class="p">(</span><span class="nv">format-time-string</span> <span class="s">"%d %b %Y"</span><span class="p">)))</span>
-</pre></div>
+<pre><code>(defun pandoc-current-date (output-format &amp;optional text)
+  (format "%s%s" (if text (concat text ", ") "")
+                 (format-time-string "%d %b %Y")))
+</code></pre>
 
 <p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 25 Sep 2013".</p>
 
@@ -229,8 +231,8 @@
 
 <p>The option setting functions are all called <code>pandoc-set-&lt;option&gt;</code> (with the exception of the option <code>--read</code>, i.e., the input format, which is determined automatically and rarely needs to be set by the user). <code>&lt;option&gt;</code> corresponds to the long name of the relevant Pandoc switch. Functions can be bound in the following manner:</p>
 
-<div class="highlight highlight-lisp"><pre><span class="p">(</span><span class="nv">define-key</span> <span class="ss">'pandoc-mode-map</span> <span class="s">"\C-c/o"</span> <span class="ss">'pandoc-set-output</span><span class="p">)</span>
-</pre></div>
+<pre><code>(define-key 'pandoc-mode-map "\C-c/o" 'pandoc-set-output)
+</code></pre>
 
 <p>The following table lists the keys defined by default and the functions they are bound to:</p>
 
