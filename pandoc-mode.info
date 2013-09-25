@@ -363,6 +363,11 @@ current buffer to a project or global settings file. (Any local
 settings file for the file in the current buffer will be kept. You'll
 need to delete it manually if you no longer need it.)
 
+Note that starting with version 2.5, `pandoc-mode' settings files are
+written in a Lisp format (as demonstrated above). Old-style settings
+files continue to be read, so there is no need to change anything, but
+if you change any settings and save them, the file is converted.
+
 
 File: pandoc-mode.info,  Node: Managing numbered examples,  Next: Using @@-directives,  Prev: Settings Files,  Up: Top
 
@@ -436,7 +441,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 21 Sep 2013".
+`@@date{Cologne}' to get "Cologne, 25 Sep 2013".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -464,7 +469,7 @@ the above `@@lisp' directive in the third line of the %-header block,
 the meta data for your documents will always show the date on which the
 file was created by Pandoc.
 
-If it should ever happen that you need to write a literal "`@@lisp'" in
+If it should ever happen that you need to write a literal `"@@lisp"' in
 your document, you can simply put a backslash \ before the first `@':
 `\@@lisp'. Emacs removes the backslash (which is necessary in case the
 string `\@@lisp' is contained in a code block) and then continues
@@ -561,35 +566,26 @@ Functions can be bound in the following manner:
 The following table lists the keys defined by default and the functions
 they are bound to:
 
-`C-c/r'
-     Run `pandoc' on the document (`pandoc-run-pandoc')
+   * `C-c/r' ~ Run `pandoc' on the document (`pandoc-run-pandoc')
 
-`C-c/p'
-     Run `markdown2pdf' on the document (`pandoc-convert-to-pdf')
+   * `C-c/p' ~ Run `markdown2pdf' on the document
+     (`pandoc-convert-to-pdf')
 
-`C-c/s'
-     Save the settings file (`pandoc-save-settings-file')
+   * `C-c/s' ~ Save the settings file (`pandoc-save-settings-file')
 
-`C-c/w'
-     Set the output format (`pandoc-set-write')
+   * `C-c/w' ~ Set the output format (`pandoc-set-write')
 
-`C-c/m'
-     Set a metadata item (`pandoc-set-metadata')
+   * `C-c/m' ~ Set a metadata item (`pandoc-set-metadata')
 
-`C-c/v'
-     Set a template variable (`pandoc-set-variable')
+   * `C-c/v' ~ Set a template variable (`pandoc-set-variable')
 
-`C-c/V'
-     View the output buffer (`pandoc-view-output')
+   * `C-c/V' ~ View the output buffer (`pandoc-view-output')
 
-`C-c/S'
-     View the current settings (`pandoc-view-settings')
+   * `C-c/S' ~ View the current settings (`pandoc-view-settings')
 
-`C-c/c'
-     Insert a new `(@)'-item (`pandoc-insert-@')
+   * `C-c/c' ~ Insert a new `(@)'-item (`pandoc-insert-@')
 
-`C-c/C'
-     Select and insert a `(@)'-label (`pandoc-select-@')
+   * `C-c/C' ~ Select and insert a `(@)'-label (`pandoc-select-@')
 
 
 
@@ -615,16 +611,16 @@ Node: Creating a pdf13999
 Ref: #creating-a-pdf14130
 Node: Settings Files14857
 Ref: #settings-files15000
-Node: Managing numbered examples16637
-Ref: #managing-numbered-examples16818
-Node: Using @@-directives18101
-Ref: #using--directives18272
-Node: Defining @@-directives22487
-Ref: #defining--directives22649
-Node: Directive hooks24179
-Ref: #directive-hooks24327
-Node: Using The Keyboard24654
-Ref: #using-the-keyboard24788
+Node: Managing numbered examples16913
+Ref: #managing-numbered-examples17094
+Node: Using @@-directives18377
+Ref: #using--directives18548
+Node: Defining @@-directives22763
+Ref: #defining--directives22925
+Node: Directive hooks24455
+Ref: #directive-hooks24603
+Node: Using The Keyboard24930
+Ref: #using-the-keyboard25064
 
 End Tag Table
 
