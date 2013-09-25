@@ -171,7 +171,7 @@
   <span class="p">(</span><span class="nv">format-time-string</span> <span class="s">"%d %b %Y"</span><span class="p">))</span>
 </pre></div>
 
-<p>Now you can define a directive <code>\@@date</code> that calls this function. The effect is that every time you write <code>\@@date</code> in your document, it is replaced with the current date.</p>
+<p>Now you can define a directive <code>@@date</code> that calls this function. The effect is that every time you write <code>@@date</code> in your document, it is replaced with the current date.</p>
 
 <p>Note that the function that the directive calls must have one argument. which is used to pass the output format to the function (as a string). This way you can have your directives do different things depending on the output format.</p>
 
@@ -184,34 +184,34 @@
                  <span class="p">(</span><span class="nv">format-time-string</span> <span class="s">"%d %b %Y"</span><span class="p">)))</span>
 </pre></div>
 
-<p>This way, you could write <code>\@@date</code> to get just the date, and <code>\@@date{Cologne}</code> to get "Cologne, @<a href="https://github.com/date" class="user-mention">@date</a>".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 25 Sep 2013".</p>
 
-<p>Two directives have been predefined: <code>\@@lisp</code> and <code>\@@include</code>. Both of these take an argument. <code>\@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
+<p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
-<pre><code>\@@lisp{(format-time-string "%d %b %Y")}
+<pre><code>@@lisp{(format-time-string "%d %b %Y")}
 </code></pre>
 
 <p>Emacs takes the Elisp code between the curly braces, executes it, and replaces the directive with the result of the code.</p>
 
-<p><code>\@@include</code> can be used to include another file into the current document (which must of course have the same input format):</p>
+<p><code>@@include</code> can be used to include another file into the current document (which must of course have the same input format):</p>
 
-<pre><code>\@@include{copyright.text}
+<pre><code>@@include{copyright.text}
 </code></pre>
 
-<p>This directive reads the file <code>copyright.text</code> and replaces the <code>\@@include</code> directive with its contents.</p>
+<p>This directive reads the file <code>copyright.text</code> and replaces the <code>@@include</code> directive with its contents.</p>
 
-<p>Processing <code>@@</code>-directives works everywhere in the document, including in code and code blocks, and also in the %-header block. So by putting the above <code>\@@lisp</code> directive in the third line of the %-header block, the meta data for your documents will always show the date on which the file was created by Pandoc.</p>
+<p>Processing <code>@@</code>-directives works everywhere in the document, including in code and code blocks, and also in the %-header block. So by putting the above <code>@@lisp</code> directive in the third line of the %-header block, the meta data for your documents will always show the date on which the file was created by Pandoc.</p>
 
-<p>If it should ever happen that you need to write a literal "<code>\@@lisp</code>" in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
+<p>If it should ever happen that you need to write a literal "<code>@@lisp</code>" in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
 
-<p>The directives are processed in the order in which they appear in the customization buffer (and hence in the variable <code>pandoc-directives</code>). So in the default case, <code>\@@include</code> directives are processed before <code>\@@lisp</code> directives, which means that any <code>\@@lisp</code> directive in a file included by <code>\@@include</code> gets processed, but if a <code>\@@lisp</code> directive produces an <code>\@@include</code>, it does <em>not</em> get processed. (If this should ever be a problem, you can always create a directive <code>\@@include2</code> and have it processed after <code>\@@lisp</code>.)</p>
+<p>The directives are processed in the order in which they appear in the customization buffer (and hence in the variable <code>pandoc-directives</code>). So in the default case, <code>@@include</code> directives are processed before <code>@@lisp</code> directives, which means that any <code>@@lisp</code> directive in a file included by <code>@@include</code> gets processed, but if a <code>@@lisp</code> directive produces an <code>@@include</code>, it does <em>not</em> get processed. (If this should ever be a problem, you can always create a directive <code>@@include2</code> and have it processed after <code>@@lisp</code>.)</p>
 
-<p>After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the <em>start</em> of the inserted text. That means that if an <code>\@@include</code> directive produces another <code>\@@include</code> directive, the newly inserted <code>\@@include</code> directive gets processed as well.</p>
+<p>After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the <em>start</em> of the inserted text. That means that if an <code>@@include</code> directive produces another <code>@@include</code> directive, the newly inserted <code>@@include</code> directive gets processed as well.</p>
 
 <h2>
 <a name="defining--directives" class="anchor" href="#defining--directives"><span class="octicon octicon-link"></span></a>Defining @@-directives</h2>
 
-<p>Defining <code>@@</code>-directives yourself is done in two steps. First, you need to define the function that the directive will call. This function must take at least one argument to pass the output format and may take at most one additional argument. It should return a string, which is inserted into the buffer. The second step is to go to the customization buffer with <code>M-x customize-group</code> <code>RET</code> <code>pandoc</code> <code>RET</code>. One of the options there is <code>pandoc-directives</code>. This variable contains a list of directives and the functions that they are linked with. You can add a directive by providing a name (without <code>@@</code>) and the function to call. Note that directive names may only consists of letters (<code>a-z</code>, <code>A-Z</code>) or numbers (<code>0-9</code>). Other characters are not allowed. Directive names are case sensitive, so <code>@@Date</code> is not the same as <code>\@@date</code>.</p>
+<p>Defining <code>@@</code>-directives yourself is done in two steps. First, you need to define the function that the directive will call. This function must take at least one argument to pass the output format and may take at most one additional argument. It should return a string, which is inserted into the buffer. The second step is to go to the customization buffer with <code>M-x customize-group</code> <code>RET</code> <code>pandoc</code> <code>RET</code>. One of the options there is <code>pandoc-directives</code>. This variable contains a list of directives and the functions that they are linked with. You can add a directive by providing a name (without <code>@@</code>) and the function to call. Note that directive names may only consists of letters (<code>a-z</code>, <code>A-Z</code>) or numbers (<code>0-9</code>). Other characters are not allowed. Directive names are case sensitive, so <code>@@Date</code> is not the same as <code>@@date</code>.</p>
 
 <p>Passing more than one argument to an <code>@@</code>-directive is not supported. However, if you really want to, you could use <code>split-string</code> to split the argument of the <code>@@</code>-directive and "fake" multiple arguments that way.</p>
 
