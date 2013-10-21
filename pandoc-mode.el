@@ -946,7 +946,8 @@ Return a string that can be added to the call to Pandoc."
                   (setq value (expand-file-name value)))
                 (cond
                  ((eq value t) (format "--%s" option))
-                 ((stringp value) (format "--%s=%s" option value))
+                 ((or (numberp value)
+                      (stringp value)) (format "--%s=%s" option value))
                  (t nil))))
           pandoc-cli-options))
 
