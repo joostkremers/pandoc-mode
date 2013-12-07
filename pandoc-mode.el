@@ -604,7 +604,7 @@ menu."
         (let ((label (string-to-number (match-string 1))))
           (when (> label pandoc-@-counter)
             (setq pandoc-@-counter label))))))
-  (incf pandoc-@-counter))
+  (setq pandoc-@-counter (1+ pandoc-@-counter)))
 
 (defvar pandoc-@-mode-map
   (let ((map (make-sparse-keymap)))
