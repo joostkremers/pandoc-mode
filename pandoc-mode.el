@@ -1382,7 +1382,7 @@ input file."
 (define-pandoc-string-option mimetex "MimeTeX CGI Script" t)
 (define-pandoc-string-option webtex "WebTeX URL" t)
 (define-pandoc-string-option jsmath "jsMath URL" t)
-(define-pandoc-string-option mathjax "MathJax URL")
+(define-pandoc-string-option mathjax "MathJax URL" t)
 (define-pandoc-string-option title-prefix "Title prefix")
 (define-pandoc-string-option id-prefix "ID prefix")
 (define-pandoc-string-option indented-code-classes "Indented Code Classes")
