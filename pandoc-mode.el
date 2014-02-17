@@ -53,8 +53,11 @@
 
 (defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'wp)
 
-(defcustom pandoc-binary "/usr/bin/pandoc"
-  "The full path of the pandoc binary."
+(defcustom pandoc-binary "pandoc"
+  "The name of the pandoc binary.
+You can specify a full path here or a relative path (the
+default). In the latter case, the value of `exec-path` is used to
+search the binary."
   :group 'pandoc
   :type 'file)
 
