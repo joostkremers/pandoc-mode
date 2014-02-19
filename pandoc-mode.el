@@ -723,7 +723,8 @@ menu."
 (defun conditionally-turn-on-pandoc ()
   "Turn on pandoc-mode if a pandoc settings file exists.
 This is for use in major mode hooks."
-  (when (file-exists-p (pandoc-create-settings-filename 'settings (buffer-file-name) "default"))
+  (when (and (buffer-file-name)
+             (file-exists-p (pandoc-create-settings-filename 'settings (buffer-file-name) "default")))
     (turn-on-pandoc)))
 
 (defun pandoc-get (option &optional buffer)
