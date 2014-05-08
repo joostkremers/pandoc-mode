@@ -63,7 +63,7 @@
 <h1>
 <a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
-<p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard, but by default, most options can only be set through the menu. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section <a href="#using-the-keyboard">'Using The Keyboard'</a>).</p>
+<p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard, but for most options the menu is the easiest way to set them. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section <a href="#using-the-keyboard">'Using The Keyboard'</a>).</p>
 
 <p>The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.</p>
 
@@ -95,7 +95,7 @@
 
 <p>Under "Options", you can set other options that require a value. The submenu "Switches" contains Pandoc's binary options, i.e., those that only can be present or absent and do not accept a specific value.</p>
 
-<p>Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing <code>C-c / S</code>). This displays all settings in the <code>*Pandoc output*</code> buffer in a Lisp-like format. For example, the settings for LaTeX output of this manual look like this:</p>
+<p>Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing <code>C-c / S</code>). This displays all settings in the <code>*Pandoc output*</code> buffer in a Lisp-like format. For example, the settings for LaTeX output of this manual look like this (unset options omitted):</p>
 
 <pre><code>((number-sections . t)
  (standalone . t)
@@ -186,7 +186,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 25 Sep 2013".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 08 May 2014".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
