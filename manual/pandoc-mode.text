@@ -36,7 +36,7 @@ The function `pandoc-load-default-settings` checks if a default settings file ex
 
 # Usage #
 
-When you start `pandoc-mode`, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by `pandoc-mode` can also be accessed through the keyboard, but by default, most options can only be set through the menu. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section ['Using The Keyboard'](#using-the-keyboard)).
+When you start `pandoc-mode`, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by `pandoc-mode` can also be accessed through the keyboard, but for most options the menu is the easiest way to set them. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section ['Using The Keyboard'](#using-the-keyboard)).
 
 The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.
 
@@ -68,7 +68,7 @@ The CSS style sheet is an exception to this: Emacs always cuts off the directory
 
 Under "Options", you can set other options that require a value. The submenu "Switches" contains Pandoc's binary options, i.e., those that only can be present or absent and do not accept a specific value.
 
-Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing `C-c / S`). This displays all settings in the `*Pandoc output*` buffer in a Lisp-like format. For example, the settings for LaTeX output of this manual look like this:
+Furthermore, the menu contains an option to get a list of all the settings that you have defined (this function is also available by typing `C-c / S`). This displays all settings in the `*Pandoc output*` buffer in a Lisp-like format. For example, the settings for LaTeX output of this manual look like this (unset options omitted):
 
 ```
 ((number-sections . t)

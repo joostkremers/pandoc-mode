@@ -92,10 +92,10 @@ File: pandoc-mode.info,  Node: Usage,  Next: Settings Files,  Prev: Installation
 When you start `pandoc-mode', a menu appears through which all of
 Pandoc's options can be set and through which you can run Pandoc on
 your current document. The most important functions provided by
-`pandoc-mode' can also be accessed through the keyboard, but by
-default, most options can only be set through the menu. If you wish,
-however, it is of course possible to bind your own keys to the
-functions to set options. See the section *note 'Using The Keyboard':
+`pandoc-mode' can also be accessed through the keyboard, but for most
+options the menu is the easiest way to set them. If you wish, however,
+it is of course possible to bind your own keys to the functions to set
+options. See the section *note 'Using The Keyboard':
 #using-the-keyboard.).
 
 The menu is divided into two parts. The upper half contains items
@@ -212,7 +212,7 @@ Furthermore, the menu contains an option to get a list of all the
 settings that you have defined (this function is also available by
 typing `C-c / S'). This displays all settings in the `*Pandoc output*'
 buffer in a Lisp-like format. For example, the settings for LaTeX
-output of this manual look like this:
+output of this manual look like this (unset options omitted):
 
 ((number-sections . t)
  (standalone . t)
@@ -441,7 +441,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 25 Sep 2013".
+`@@date{Cologne}' to get "Cologne, 08 May 2014".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -597,30 +597,30 @@ Node: Installation1458
 Ref: #installation1581
 Node: Usage3066
 Ref: #usage3177
-Node: Input and output formats4009
-Ref: #input-and-output-formats4175
-Node: Auxiliary files and options7401
-Ref: #auxiliary-files-and-options7613
-Node: Template variables and metadata9867
-Ref: #template-variables-and-metadata10077
-Node: Running Pandoc10717
-Ref: #running-pandoc10888
-Node: Setting an output file12404
-Ref: #setting-an-output-file12574
-Node: Creating a pdf13999
-Ref: #creating-a-pdf14130
-Node: Settings Files14857
-Ref: #settings-files15000
-Node: Managing numbered examples16913
-Ref: #managing-numbered-examples17094
-Node: Using @@-directives18377
-Ref: #using--directives18548
-Node: Defining @@-directives22763
-Ref: #defining--directives22925
-Node: Directive hooks24455
-Ref: #directive-hooks24603
-Node: Using The Keyboard24930
-Ref: #using-the-keyboard25064
+Node: Input and output formats4008
+Ref: #input-and-output-formats4174
+Node: Auxiliary files and options7400
+Ref: #auxiliary-files-and-options7612
+Node: Template variables and metadata9890
+Ref: #template-variables-and-metadata10100
+Node: Running Pandoc10740
+Ref: #running-pandoc10911
+Node: Setting an output file12427
+Ref: #setting-an-output-file12597
+Node: Creating a pdf14022
+Ref: #creating-a-pdf14153
+Node: Settings Files14880
+Ref: #settings-files15023
+Node: Managing numbered examples16936
+Ref: #managing-numbered-examples17117
+Node: Using @@-directives18400
+Ref: #using--directives18571
+Node: Defining @@-directives22786
+Ref: #defining--directives22948
+Node: Directive hooks24478
+Ref: #directive-hooks24626
+Node: Using The Keyboard24953
+Ref: #using-the-keyboard25087
 
 End Tag Table
 
