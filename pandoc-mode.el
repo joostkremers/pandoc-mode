@@ -112,6 +112,7 @@ list, not if it appears higher on the list."
     ("HTML" . "html")
     ("LaTeX" . "latex")
     ("Textile" . "textile")
+    ("Orgmode" . "org")
     ("JSON" . "json")
     ("OPML" . "opml")
     ("Haddock Markup" . "haddock"))
