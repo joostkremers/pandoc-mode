@@ -92,6 +92,8 @@ list, not if it appears higher on the list."
   '((haskell-mode . "native")
     (text-mode . "markdown")
     (markdown-mode . "markdown")
+    (org-mode . "org")
+    (gfm-mode . "markdown_github")
     (mediawiki-mode . "mediawiki")
     (textile-mode . "textile")
     (rst-mode . "rst")
