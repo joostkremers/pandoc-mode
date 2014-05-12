@@ -1301,7 +1301,7 @@ options and their values."
 ;; Functions to set specific options. ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defun pandoc--set-write (format)
+(defun pandoc-set-write (format)
   "Sets the output format to FORMAT.
 If a settings and/or project file exists for FORMAT, they are
 loaded. If none exists, all options are unset (except the input
@@ -1482,7 +1482,7 @@ set. Without any prefix argument, the option is toggled."
     ,(append (cons "Output Format"
                    (mapcar #'(lambda (option)
                                (vector (car option)
-                                       `(pandoc--set-write ,(cdr option))
+                                       `(pandoc-set-write ,(cdr option))
                                        :active t
                                        :style 'radio
                                        :selected `(string= (pandoc--get 'write)
