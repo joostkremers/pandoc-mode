@@ -245,11 +245,12 @@ options, because they need to be handled separately in
 `pandoc--format-all-options'.")
 
 (defvar pandoc--filepath-options
-  '(data-dir)
+  '(data-dir
+    extract-media)
   "List of options that have a file path as value.
 These file paths are expanded before they are sent to pandoc. For
 relative paths, the file's working directory is used as base
-directory. One option is preset, others are added by
+directory. two options are preset, others are added by
 `define-pandoc-file-option'.")
 
 (defvar pandoc--binary-options nil
@@ -273,6 +274,7 @@ These are set by `define-pandoc-alist-option'.")
     (write-extensions ,@(mapcar 'list (sort (mapcar 'car pandoc--extensions) 'string<)))
     (output)
     (data-dir)
+    (extract-media)
     (output-dir)) ; this is not actually a pandoc option
   "Pandoc option alist.
 List of options and their default values. For each buffer in
@@ -1350,6 +1352,16 @@ input file."
                   nil
                 (read-directory-name "Output directory: " nil nil t))))
 
+(defun pandoc-set-extract-media (prefix)
+  "Set the option `Extract media'.
+If called with the prefix argument C-u - (or M--), no media files
+are extracted."
+  (interactive "P")
+  (pandoc--set 'extract-media
+              (if (eq prefix '-)
+                  nil
+                (read-directory-name "Extract media files to directory: " nil nil t))))
+
 (define-pandoc-file-option template "Template File" t)
 (define-pandoc-file-option css "CSS Style Sheet")
 (define-pandoc-file-option reference-odt "Reference ODT File" t)
@@ -1519,7 +1531,12 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc--get 'data-dir))]
       ["Set Data Directory" pandoc-set-data-dir :active t
        :style radio :selected (pandoc--get 'data-dir)])
-     ,@pandoc--files-menu)
+     ,@pandoc--files-menu
+     ("Extract Media"
+      ["Do Not Extract Media Files" (pandoc--set 'extract-media nil) :active t
+       :style radio :selected (null (pandoc--get 'extract-media))]
+      ["Extract Media Files" pandoc-set-extract-media :active t
+       :style radio :selected (pandoc--get 'extract-media)]))
 
     ("Options"
      ,@pandoc--options-menu)
