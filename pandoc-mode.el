@@ -355,13 +355,13 @@ the option can have a default value."
                                                 :active t
                                                 :style 'radio
                                                 :selected `(eq (pandoc--get (quote ,option)) t)))
-                                      (vector (concat "Set " prompt "...") (intern (concat "pandoc--set-"
+                                      (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-"
                                                                                            (symbol-name option)))
                                               :active t
                                               :style 'radio
                                               :selected `(stringp (pandoc--get (quote ,option)))))))
                   t) ; add to the end of `pandoc--options-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (pandoc--set (quote ,option)
@@ -397,12 +397,12 @@ formulated in such a way that the strings \"Default \" and \"Set
                                  :active t
                                  :style 'radio
                                  :selected `(null (pandoc--get (quote ,option))))
-                        ,(vector (concat "Set " prompt "...") (intern (concat "pandoc--set-" (symbol-name option)))
+                        ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
                                  :active t
                                  :style 'radio
                                  :selected `(pandoc--get (quote ,option))))
                   t) ; add to the end of `pandoc--options-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (pandoc--set (quote ,option)
@@ -443,12 +443,12 @@ or T and indicates whether the option can have a default value."
                                                 :active t
                                                 :style 'radio
                                                 :selected `(eq (pandoc--get (quote ,option)) t)))
-                                      (vector (concat "Set " prompt "...") (intern (concat "pandoc--set-" (symbol-name option)))
+                                      (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
                                               :active t
                                               :style 'radio
                                               :selected `(stringp (pandoc--get (quote ,option)))))))
                   t) ; add to the end of `pandoc--options-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (pandoc--set (quote ,option)
@@ -479,12 +479,12 @@ it."
                               'pandoc--options-menu
                             'pandoc--files-menu))
                   (list ,description
-                        ,(vector (concat "Add " prompt) (intern (concat "pandoc--set-" (symbol-name option)))
+                        ,(vector (concat "Add " prompt) (intern (concat "pandoc-set-" (symbol-name option)))
                                  :active t)
-                        ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc--set-" (symbol-name option))) `(quote -))
+                        ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                                  :active `(pandoc--get (quote ,option))))
                   t)              ; add to the end of `pandoc--{options|files}-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (if (eq prefix '-)
@@ -521,12 +521,12 @@ before it."
                               'pandoc--options-menu
                             'pandoc--files-menu))
                   (list ,description
-                        ,(vector (concat "Set/Change " prompt) (intern (concat "pandoc--set-" (symbol-name option)))
+                        ,(vector (concat "Set/Change " prompt) (intern (concat "pandoc-set-" (symbol-name option)))
                                  :active t)
-                        ,(vector (concat "Unset " prompt) (list (intern (concat "pandoc--set-" (symbol-name option))) `(quote -))
+                        ,(vector (concat "Unset " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                                  :active t))
                   t)              ; add to the end of `pandoc--options-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (let ((var (nonempty (completing-read (concat ,prompt ": ") (pandoc--get (quote ,option))))))
@@ -574,7 +574,7 @@ menu."
                                                                    :selected `(string= (pandoc--get (quote ,option)) ,choice)))
                                                        (cdr choices)))
                   t)              ; add to the end of `pandoc--options-menu'
-     (fset (quote ,(intern (concat "pandoc--set-" (symbol-name option))))
+     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            #'(lambda (prefix)
                (interactive "P")
                (pandoc--set (quote ,option)
