@@ -40,8 +40,8 @@ your text in Markdown and then translate it to HTML for online reading,
 PDF for offline reading and Texinfo for reading in Emacs, all with just
 a few keystrokes.
 
-The current version of `pandoc-mode' is 2.5 and is compatible with
-Pandoc version 1.12.
+The current version of `pandoc-mode' is 2.6 and is compatible with
+Pandoc version 1.13.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -441,7 +441,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 08 May 2014".
+`@@date{Cologne}' to get "Cologne, 28 Sep 2014".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
