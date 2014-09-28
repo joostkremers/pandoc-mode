@@ -1316,7 +1316,7 @@ format)."
     (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes))))
   (setq pandoc--settings-modified-flag nil))
 
-(defun pandoc--set-output (prefix)
+(defun pandoc-set-output (prefix)
   "Set the output file.
 If called with the prefix argument C-u - (or M--), the output
 file is unset. If called with any other prefix argument, the
@@ -1329,7 +1329,7 @@ output format."
                ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
                (t t))))
 
-(defun pandoc--set-data-dir (prefix)
+(defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
 If called with the prefix argument C-u - (or M--), the data
 directory is set to NIL, which means use $HOME/.pandoc."
@@ -1339,7 +1339,7 @@ directory is set to NIL, which means use $HOME/.pandoc."
                   nil
                 (read-directory-name "Data directory: " nil nil t))))
 
-(defun pandoc--set-output-dir (prefix)
+(defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the prefix argument C-u - (or M--), the output
 directory is set to NIL, which means use the directory of the
@@ -1452,7 +1452,7 @@ set. Without any prefix argument, the option is toggled."
      ["Save Project File" pandoc-save-project-file :active t]
      ["Save Global Settings File" pandoc-save-global-settings-file :active t]
      ["Revert Settings" pandoc-revert-settings :active t]
-     ["Set As Default Format" pandoc--set-default-format :active (not (eq system-type 'windows-nt))])
+     ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))])
     ("Example Lists"
      ["Insert New Example" pandoc-insert-@ :active t]
      ["Select And Insert Example Label" pandoc-select-@ :active t])
@@ -1507,17 +1507,17 @@ set. Without any prefix argument, the option is toggled."
        :style radio :selected (null (pandoc--get 'output))]
       ["Create Output Filename" (pandoc--set 'output t) :active t
        :style radio :selected (eq (pandoc--get 'output) t)]
-      ["Set Output File..." pandoc--set-output :active t
+      ["Set Output File..." pandoc-set-output :active t
        :style radio :selected (stringp (pandoc--get 'output))])
      ("Output Directory"
       ["Use Input Directory" (pandoc--set 'output-dir nil) :active t
        :style radio :selected (null (pandoc--get 'output-dir))]
-      ["Set Output Directory" pandoc--set-output-dir :active t
+      ["Set Output Directory" pandoc-set-output-dir :active t
        :style radio :selected (pandoc--get 'output-dir)])
      ("Data Directory"
       ["Use Default Data Directory" (pandoc--set 'data-dir nil) :active t
        :style radio :selected (null (pandoc--get 'data-dir))]
-      ["Set Data Directory" pandoc--set-data-dir :active t
+      ["Set Data Directory" pandoc-set-data-dir :active t
        :style radio :selected (pandoc--get 'data-dir)])
      ,@pandoc--files-menu)
 
