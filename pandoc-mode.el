@@ -1,6 +1,6 @@
 ;;; pandoc-mode.el --- Minor mode for interacting with Pandoc
 
-;; Copyright (c) 2009-2013 Joost Kremers
+;; Copyright (c) 2009-2014 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
