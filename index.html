@@ -122,7 +122,7 @@
 
 <p>The first item in the menu is "Run Pandoc" (also accessible with <code>C-c / r</code>), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer <code>*Pandoc output*</code>. (Except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing <code>C-c / V</code>. Error messages from Pandoc are also displayed in this buffer.</p>
 
-<p>Note that when you run Pandoc, Pandoc doesn't read the file on disk. Rather, Emacs feeds it the contents of the buffer through <code>stdin</code>. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.</p>
+<p>Note that when you run Pandoc, Pandoc doesn't read the file on disk. Rather, Emacs feeds it the contents of the buffer through <code>stdin</code>. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc. Alternatively, if the region is active, only the region is sent to Pandoc.</p>
 
 <p>If you call this command with a prefix argument (<code>C-u C-c / r</code>), Emacs asks you for an output format to use. If there is a settings file for the format you specify, the settings in it will be passed to Pandoc instead of the settings in the current buffer. If there is no settings file, Pandoc will be called with just the output format and no other options.</p>
 
@@ -140,7 +140,7 @@
 <h2>
 <a name="creating-a-pdf" class="anchor" href="#creating-a-pdf"><span class="octicon octicon-link"></span></a>Creating a pdf</h2>
 
-<p>The second item in the menu is "Create PDF" (<code>C-c / p</code>). This option calls Pandoc with an output file with the extention <code>.pdf</code>, causing Pandoc to create a pdf file by first converting to <code>.tex</code> and then calling LaTeX on it.</p>
+<p>The second item in the menu is "Create PDF" (<code>C-c / p</code>). This option calls Pandoc with an output file with the extention <code>.pdf</code>, causing Pandoc to create a pdf file by first converting to <code>.tex</code> and then calling LaTeX on it. Like <code>C-c / r</code>, this command operates on the region if it is active.</p>
 
 <p>If you choose this option, Emacs checks if your current output format is <code>latex</code>. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than <code>latex</code>, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.</p>
 
@@ -186,7 +186,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 08 May 2014".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 21 Oct 2014".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
