@@ -1006,7 +1006,7 @@ with the @@-directives."
     (insert-file-contents include-file)
     (buffer-string)))
 
-(defun pandoc--call-external (buffer output-format &optional pdf)
+(defun pandoc--call-external (buffer output-format &optional pdf region)
   "Call pandoc on the current document.
 This function creates a temporary buffer and sets up the required
 local options. BUFFER is the buffer whose contents must be sent
@@ -1014,7 +1014,9 @@ to pandoc. Its contents is copied into the temporary buffer, the
 @@-directives are processed, after which pandoc is called.
 
 OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
-format is used. If PDF is non-NIL, a pdf file is created."
+format is used. If PDF is non-NIL, a pdf file is created. REGION
+is a cons cell specifying the beginning and end of the region to
+be sent to pandoc."
   (let ((filename (buffer-file-name buffer)))
     ;; we do this in a temp buffer so we can process @@-directives without
     ;; having to undo them and set the options independently of the
@@ -1031,7 +1033,7 @@ format is used. If PDF is non-NIL, a pdf file is created."
         ;; if no output format was provided, we use the buffer's options:
         (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer)))
       (let ((option-list (pandoc--format-all-options filename pdf)))
-        (insert-buffer-substring-no-properties buffer)
+        (insert-buffer-substring-no-properties buffer (car region) (cdr region))
         (message "Running pandoc...")
         (pandoc--process-directives (pandoc--get 'write))
         (with-pandoc-output-buffer
@@ -1042,32 +1044,43 @@ format is used. If PDF is non-NIL, a pdf file is created."
           (message "Error in pandoc process.")
           (display-buffer pandoc--output-buffer))))))
 
-(defun pandoc-run-pandoc (prefix)
+(defun pandoc-run-pandoc (prefix &optional beg end)
   "Run pandoc on the current document.
 If called with a prefix argument, the user is asked for an output
 format. Otherwise, the output format currently set in the buffer
-is used."
-  (interactive "P")
+is used.
+
+If the region is active, pandoc is run on the region instead of
+the buffer."
+  (interactive "P\nr")
   (pandoc--call-external (current-buffer)
                         (if prefix
                             (completing-read "Output format to use: " pandoc--output-formats-list nil t)
-                          nil)))
+                          nil)
+                        nil
+                        (if (use-region-p)
+                            (cons beg end))))
 
-(defun pandoc-convert-to-pdf (prefix)
+(defun pandoc-convert-to-pdf (prefix &optional beg end)
   "Convert the current document to pdf.
 If the output format of the current buffer is set to \"latex\",
 the buffer's options are used. If called with a prefix argument,
 or if the current buffer's output format is not \"latex\", a
 LaTeX settings file is searched for and loaded when found. If no
 such settings file is found, all options are unset except for the
-input and output formats."
-  (interactive "P")
+input and output formats.
+
+If the region is active, pandoc is run on the region instead of
+the buffer."
+  (interactive "P\nr")
   (pandoc--call-external (current-buffer)
                         (if (or prefix
                                 (not (string= (pandoc--get 'write) "latex")))
                             "latex"
                           nil)
-                        t))
+                        t
+                        (if (use-region-p)
+                            (cons beg end))))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
