@@ -941,10 +941,23 @@ Return a string that can be added to the call to Pandoc."
   (mapcar #'(lambda (kv)
               (let ((key (car kv))
                     (value (cdr kv)))
-                (format "--%s=%s%s" option key
-                        (if (eq value t)
-                            ""
-                          (format ":%s" value)))))
+                ;; if key or value contains a colon, we use the short form
+                ;; of the option, because it uses = to separate the two.
+                (if (or (string-match-p ":" key)
+                        (string-match-p ":" value))
+                    ;; the only two alist options are `variable' and
+                    ;; `metadata', whose short forms are `V' and `M',
+                    ;; respectively, so we can just capitalise their first
+                    ;; letters.
+                    (format "-%c %s%s" (upcase (aref (symbol-name option) 0))
+                            key
+                            (if (eq value t)
+                                ""
+                              (format "=%s" value)))
+                  (format "--%s=%s%s" option key
+                          (if (eq value t)
+                              ""
+                            (format ":%s" value))))))
           alist))
 
 (defun pandoc--format-cli-options ()
