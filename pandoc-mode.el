@@ -1044,7 +1044,7 @@ be sent to pandoc."
           (message "Error in pandoc process.")
           (display-buffer pandoc--output-buffer))))))
 
-(defun pandoc-run-pandoc (prefix &optional beg end)
+(defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
 If called with a prefix argument, the user is asked for an output
 format. Otherwise, the output format currently set in the buffer
@@ -1052,16 +1052,16 @@ is used.
 
 If the region is active, pandoc is run on the region instead of
 the buffer."
-  (interactive "P\nr")
+  (interactive "P")
   (pandoc--call-external (current-buffer)
                         (if prefix
                             (completing-read "Output format to use: " pandoc--output-formats-list nil t)
                           nil)
                         nil
                         (if (use-region-p)
-                            (cons beg end))))
+                            (cons (region-beginning) (region-end)))))
 
-(defun pandoc-convert-to-pdf (prefix &optional beg end)
+(defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
 If the output format of the current buffer is set to \"latex\",
 the buffer's options are used. If called with a prefix argument,
@@ -1072,7 +1072,7 @@ input and output formats.
 
 If the region is active, pandoc is run on the region instead of
 the buffer."
-  (interactive "P\nr")
+  (interactive "P")
   (pandoc--call-external (current-buffer)
                         (if (or prefix
                                 (not (string= (pandoc--get 'write) "latex")))
@@ -1080,7 +1080,7 @@ the buffer."
                           nil)
                         t
                         (if (use-region-p)
-                            (cons beg end))))
+                            (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
