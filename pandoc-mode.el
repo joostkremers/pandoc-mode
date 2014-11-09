@@ -1267,8 +1267,10 @@ options and their values."
          (settings (copy-tree pandoc--local-settings))
          (read-extensions (assq 'read-extensions settings))
          (write-extensions (assq 'write-extensions settings)))
-    (setcdr read-extensions (funcall remove-defaults (cdr read-extensions)))
-    (setcdr write-extensions (funcall remove-defaults (cdr write-extensions)))
+    (when read-extensions
+      (setcdr read-extensions (funcall remove-defaults (cdr read-extensions))))
+    (when write-extensions
+      (setcdr write-extensions (funcall remove-defaults (cdr write-extensions))))
     (setq settings (funcall remove-defaults settings))
     (with-current-buffer pandoc--output-buffer
       (let ((print-length nil)
