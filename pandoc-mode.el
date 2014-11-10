@@ -1052,7 +1052,9 @@ be sent to pandoc."
         (with-pandoc-output-buffer
           (erase-buffer)
           (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
-        (if (= 0 (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list))
+        (if (= 0 (let ((coding-system-for-read 'utf-8)
+                       (coding-system-for-write 'utf-8))
+                   (apply 'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
             (message "Running pandoc... Finished.")
           (message "Error in pandoc process.")
           (display-buffer pandoc--output-buffer))))))
