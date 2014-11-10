@@ -746,6 +746,8 @@ form (variable-name . value), which is then added to the
 variables already stored, or just (variable-name), in which case
 the named variable is deleted from the list."
   (when (assq option pandoc--options) ; check if the option is licit
+    (unless (assq option pandoc--local-settings) ; add the option if it's not there
+      (add-to-list 'pandoc--local-settings (list option) 'append))
     (cond
      ((memq option pandoc--alist-options)
       (pandoc--set-alist-option option value))
