@@ -32,16 +32,16 @@
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
         <h1>
-<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h1>
+<a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
 <p>The current version of <code>pandoc-mode</code> is 2.6 and is compatible with Pandoc version 1.13.</p>
 
 <h1>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
 
-<p>The easiest way to install <code>pandoc-mode</code> is to use the <a href="http://melpa.milkbox.net/">Melpa</a> package repository. Alternatively, you can install it manually: download <code>pandoc-mode.el</code>, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to <code>~/.emacs</code>:</p>
+<p>The easiest way to install <code>pandoc-mode</code> is to use the <a href="http://melpa.org/">Melpa</a> package repository. Alternatively, you can install it manually: download <code>pandoc-mode.el</code>, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to <code>~/.emacs</code>:</p>
 
 <pre><code>(load "pandoc-mode")
 </code></pre>
@@ -61,14 +61,14 @@
 <p>The function <code>pandoc-load-default-settings</code> checks if a default settings file exists for the file being loaded and reads its settings if it finds one.</p>
 
 <h1>
-<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>When you start <code>pandoc-mode</code>, a menu appears through which all of Pandoc's options can be set and through which you can run Pandoc on your current document. The most important functions provided by <code>pandoc-mode</code> can also be accessed through the keyboard, but for most options the menu is the easiest way to set them. If you wish, however, it is of course possible to bind your own keys to the functions to set options. See the section <a href="#using-the-keyboard">'Using The Keyboard'</a>).</p>
 
 <p>The menu is divided into two parts. The upper half contains items related to running Pandoc, the lower half is the part where the various settings can be set and changed.</p>
 
 <h2>
-<a name="input-and-output-formats" class="anchor" href="#input-and-output-formats"><span class="octicon octicon-link"></span></a>Input and output formats</h2>
+<a id="input-and-output-formats" class="anchor" href="#input-and-output-formats" aria-hidden="true"><span class="octicon octicon-link"></span></a>Input and output formats</h2>
 
 <p>The most important settings are the input and output formats. The input format is set automatically by Emacs on the basis of the major mode of the input file, but you can change it through the menu if you need to. The output format defaults to "Native Haskell", so most likely you will want to set it to something else before you run Pandoc. Note that the output format can also be set through the keyboard with <code>C-c / w</code> (TAB completion works.) If the input or output format is one of the Markdown formats (Pandoc supports different Markdown dialects), the relevant submenu contains a further submenu with the Markdown extensions that Pandoc supports. This menu allows you to select or deselect individual extensions.</p>
 
@@ -85,7 +85,7 @@
 <p>The major modes for which <code>pandoc-mode</code> selects an input format automatically can be customized. You can add major modes or remove those that you don't use. Similarly, you can customize the output formats and (especially) the file extensions for each output format.</p>
 
 <h2>
-<a name="auxiliary-files-and-options" class="anchor" href="#auxiliary-files-and-options"><span class="octicon octicon-link"></span></a>Auxiliary files and options</h2>
+<a id="auxiliary-files-and-options" class="anchor" href="#auxiliary-files-and-options" aria-hidden="true"><span class="octicon octicon-link"></span></a>Auxiliary files and options</h2>
 
 <p>The settings part of the menu contains three more submenus: "Files", "Options", and "Switches". Under "Files", you can set various files that may be used by Pandoc, such as a template file, the reference ODT file, the CSS style sheet, files to be included in the header or before/after the body, etc. Most of these submenus have two options: no file, or specify a file. The "Files" submenu also contains options for the output file and output directory. These are treated somewhat differently from the other files, see the section <a href="#setting-an-output-file">'Setting an output file'</a> for details.</p>
 
@@ -111,14 +111,14 @@
 </code></pre>
 
 <h2>
-<a name="template-variables-and-metadata" class="anchor" href="#template-variables-and-metadata"><span class="octicon octicon-link"></span></a>Template variables and metadata</h2>
+<a id="template-variables-and-metadata" class="anchor" href="#template-variables-and-metadata" aria-hidden="true"><span class="octicon octicon-link"></span></a>Template variables and metadata</h2>
 
 <p><code>pandoc-mode</code> allows you to set or change template variables through the menu (under the Options submenu) or the keyboard, with <code>C-c / v</code> and <code>C-c / m</code>, respectively. Emacs will ask you for the name of a variable or metadata item and for a value for it. If you provide a name that already exists (TAB completion works), the new value replaces the old one.</p>
 
 <p>Deleting a template variable or metadata item is done with the corresponding menu item or by calling <code>C-c / v</code> or <code>C-c / m</code> with the negative prefix argument <code>C-u -</code> (or <code>M--</code>). Emacs will ask you for the variable name (TAB completion works here, too) and removes it from the list.</p>
 
 <h2>
-<a name="running-pandoc" class="anchor" href="#running-pandoc"><span class="octicon octicon-link"></span></a>Running Pandoc</h2>
+<a id="running-pandoc" class="anchor" href="#running-pandoc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Running Pandoc</h2>
 
 <p>The first item in the menu is "Run Pandoc" (also accessible with <code>C-c / r</code>), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer <code>*Pandoc output*</code>. (Except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing <code>C-c / V</code>. Error messages from Pandoc are also displayed in this buffer.</p>
 
@@ -129,7 +129,7 @@
 <p>Note that specifying an output format this way does not change the output format or any of the settings in the buffer, it just changes the output profile used for calling Pandoc. This can be useful if you use different output formats but don't want to keep switching between profiles when creating the different output files.</p>
 
 <h2>
-<a name="setting-an-output-file" class="anchor" href="#setting-an-output-file"><span class="octicon octicon-link"></span></a>Setting an output file</h2>
+<a id="setting-an-output-file" class="anchor" href="#setting-an-output-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setting an output file</h2>
 
 <p>If you want to save the output in a file rather than have it appear in a buffer, you can set the output file through the menu. Note that setting an output <em>file</em> is not the same thing as setting an output <em>format</em> (though normally the output file has a suffix that indicates the format of the file). The "Output File" submenu has three options: the default is to send output to stdout, in which case it is redirected to the buffer <code>*Pandoc output*</code>. Alternatively, you can let Emacs create an output filename for you. In this case the output file will have the same base name as the input file but with the proper suffix for the output format. Lastly, you can also specify an output file yourself.</p>
 
@@ -138,14 +138,14 @@
 <p>The output file you set is always just the base filename, it does not specify a directory. Which directory the output file is written to depends on the setting "Output Directory" (which is not actually a Pandoc option). Emacs creates an output destination out of the settings for the output directory and output file. If you don't specify any output directory, the output file will be written to the same directory that the input file is in.</p>
 
 <h2>
-<a name="creating-a-pdf" class="anchor" href="#creating-a-pdf"><span class="octicon octicon-link"></span></a>Creating a pdf</h2>
+<a id="creating-a-pdf" class="anchor" href="#creating-a-pdf" aria-hidden="true"><span class="octicon octicon-link"></span></a>Creating a pdf</h2>
 
 <p>The second item in the menu is "Create PDF" (<code>C-c / p</code>). This option calls Pandoc with an output file with the extention <code>.pdf</code>, causing Pandoc to create a pdf file by first converting to <code>.tex</code> and then calling LaTeX on it. Like <code>C-c / r</code>, this command operates on the region if it is active.</p>
 
 <p>If you choose this option, Emacs checks if your current output format is <code>latex</code>. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than <code>latex</code>, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.</p>
 
 <h1>
-<a name="settings-files" class="anchor" href="#settings-files"><span class="octicon octicon-link"></span></a>Settings Files</h1>
+<a id="settings-files" class="anchor" href="#settings-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Settings Files</h1>
 
 <p>Apart from settings files for individual files (which are called <em>local settings files</em>), <code>pandoc-mode</code> supports two other types of settings files: project files and global files. Project files are settings files that apply to all input files in a given directory (except those files for which a local settings file exists). Global settings files, as the name implies, apply globally, to files for which no local or project file is found. Both types of files are specific to a particular output format, just like local settings files. Project files live in the directory they apply to and are called <code>Project.&lt;format&gt;.pandoc</code>. Global files live in the directory specified by the variable <code>pandoc-data-dir</code>, which defaults to <code>~/.emacs.d/pandoc/</code>, but this can of course be changed in the customisation group <code>pandoc</code>.</p>
 
@@ -156,14 +156,14 @@
 <p>Note that starting with version 2.5, <code>pandoc-mode</code> settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.</p>
 
 <h1>
-<a name="managing-numbered-examples" class="anchor" href="#managing-numbered-examples"><span class="octicon octicon-link"></span></a>Managing numbered examples</h1>
+<a id="managing-numbered-examples" class="anchor" href="#managing-numbered-examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Managing numbered examples</h1>
 
 <p>Pandoc provides a method for creating examples that are numbered sequentially throughout the document (see <a href="http://johnmacfarlane.net/pandoc/README.html#numbered-example-lists">Numbered example lists</a> in the Pandoc documentation). <code>pandoc-mode</code> makes it easier to manage such lists. First, by going to "Example Lists | Insert New Example" (<code>C-c / c</code>), you can insert a new example list item with a numeric label: the first example you insert will be numbered <code>(@1)</code>, the second <code>(@2)</code>, and so on. Before inserting the first example item, Emacs will search the document for any existing definitions and number the new items sequentially, so that the numeric label will always be unique.</p>
 
 <p>Pandoc allows you to refer to such labeled example items in the text by writing <code>(@1)</code> and <code>pandoc-mode</code> provides a facility to make this easier. If you select the menu item "Example Lists | Select And Insert Example Label" (<code>C-c / C</code> : note the capital <code>C</code>) Emacs displays a list of all the <code>(@)</code>-definitions in your document. You can select one with the up or down keys (you can also use <code>j</code> and <code>k</code> or <code>n</code> and <code>p</code>) and then hit <code>return</code> to insert the label into your document. If you change your mind, you can leave the selection buffer with <code>q</code> without inserting anything into your document.</p>
 
 <h1>
-<a name="using--directives" class="anchor" href="#using--directives"><span class="octicon octicon-link"></span></a>Using @@-directives</h1>
+<a id="using--directives" class="anchor" href="#using--directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using @@-directives</h1>
 
 <p><code>pandoc-mode</code> includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called <code>@@</code>-directives ("double-at directives"), which trigger an Elisp function and are then replaced with the output of that function. A <code>@@</code>-directive takes the form <code>@@directive</code>, where <code>directive</code> can be any user-defined string. Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.</p>
 
@@ -211,7 +211,7 @@
 <p>After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the <em>start</em> of the inserted text. That means that if an <code>@@include</code> directive produces another <code>@@include</code> directive, the newly inserted <code>@@include</code> directive gets processed as well.</p>
 
 <h2>
-<a name="defining--directives" class="anchor" href="#defining--directives"><span class="octicon octicon-link"></span></a>Defining @@-directives</h2>
+<a id="defining--directives" class="anchor" href="#defining--directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining @@-directives</h2>
 
 <p>Defining <code>@@</code>-directives yourself is done in two steps. First, you need to define the function that the directive will call. This function must take at least one argument to pass the output format and may take at most one additional argument. It should return a string, which is inserted into the buffer. The second step is to go to the customization buffer with <code>M-x customize-group</code> <code>RET</code> <code>pandoc</code> <code>RET</code>. One of the options there is <code>pandoc-directives</code>. This variable contains a list of directives and the functions that they are linked with. You can add a directive by providing a name (without <code>@@</code>) and the function to call. Note that directive names may only consists of letters (<code>a-z</code>, <code>A-Z</code>) or numbers (<code>0-9</code>). Other characters are not allowed. Directive names are case sensitive, so <code>@@Date</code> is not the same as <code>@@date</code>.</p>
 
@@ -220,12 +220,12 @@
 <p>A final note: the function that processes the <code>@@</code>-directives is called <code>pandoc-process-directives</code> and can be called interactively. This may be useful if a directive is not producing the output that you expect. By running <code>pandoc-process-directives</code> interactively, you can see what exactly your directives produce before the resulting text is sent to pandoc. The changes can of course be undone with <code>M-x undo</code> (usually bound to <code>C-/</code>), or do your test in the <code>*scratch*</code> buffer.</p>
 
 <h2>
-<a name="directive-hooks" class="anchor" href="#directive-hooks"><span class="octicon octicon-link"></span></a>Directive hooks</h2>
+<a id="directive-hooks" class="anchor" href="#directive-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Directive hooks</h2>
 
 <p>There is another customizable variable related to <code>@@</code>-directives: <code>pandoc-directives-hook</code>. This is a list of functions that are executed <em>before</em> the directives are processed. These functions are not supposed to change anything in the buffer, they are intended for setting up things that the directive functions might need.</p>
 
 <h1>
-<a name="using-the-keyboard" class="anchor" href="#using-the-keyboard"><span class="octicon octicon-link"></span></a>Using The Keyboard</h1>
+<a id="using-the-keyboard" class="anchor" href="#using-the-keyboard" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using The Keyboard</h1>
 
 <p>Although <code>pandoc-mode</code> can be controlled through the menu, it is possible to bind all functions to keyboard sequences. <code>pandoc-mode</code> uses the prefix <code>C-c /</code>, if you bind any functions to keys, it would be best to use this prefix as well. In order to make your life a little easier if you do decide to bind certain option setting functions to key sequences, all of these have been set up so that they can be used with the prefix key <code>C-u -</code> (or <code>M--</code>) to unset the relevant option, and with any other prefix key to set the default value (if the option has one, of course).</p>
 
