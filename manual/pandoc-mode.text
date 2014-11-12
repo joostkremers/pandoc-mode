@@ -11,7 +11,7 @@ The current version of `pandoc-mode` is 2.6 and is compatible with Pandoc versio
 
 # Installation #
 
-The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.milkbox.net/) package repository. Alternatively, you can install it manually: download `pandoc-mode.el`, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
+The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.org/) package repository. Alternatively, you can install it manually: download `pandoc-mode.el`, put it into Emacs' loadpath (you can byte-compile it if you wish) and add the following line to `~/.emacs`:
 
 ```
 (load "pandoc-mode")

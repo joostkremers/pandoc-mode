@@ -50,10 +50,10 @@ File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction, 
 **************
 
 The easiest way to install `pandoc-mode' is to use the Melpa
-(http://melpa.milkbox.net/) package repository. Alternatively, you can
-install it manually: download `pandoc-mode.el', put it into Emacs'
-loadpath (you can byte-compile it if you wish) and add the following
-line to `~/.emacs':
+(http://melpa.org/) package repository. Alternatively, you can install
+it manually: download `pandoc-mode.el', put it into Emacs' loadpath
+(you can byte-compile it if you wish) and add the following line to
+`~/.emacs':
 
 (load "pandoc-mode")
 
@@ -444,7 +444,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 21 Oct 2014".
+`@@date{Cologne}' to get "Cologne, 13 Nov 2014".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -598,32 +598,32 @@ Node: Introduction484
 Ref: #introduction605
 Node: Installation1458
 Ref: #installation1581
-Node: Usage3066
-Ref: #usage3177
-Node: Input and output formats4008
-Ref: #input-and-output-formats4174
-Node: Auxiliary files and options7400
-Ref: #auxiliary-files-and-options7612
-Node: Template variables and metadata9890
-Ref: #template-variables-and-metadata10100
-Node: Running Pandoc10740
-Ref: #running-pandoc10911
-Node: Setting an output file12502
-Ref: #setting-an-output-file12672
-Node: Creating a pdf14097
-Ref: #creating-a-pdf14228
-Node: Settings Files15024
-Ref: #settings-files15167
-Node: Managing numbered examples17080
-Ref: #managing-numbered-examples17261
-Node: Using @@-directives18544
-Ref: #using--directives18715
-Node: Defining @@-directives22930
-Ref: #defining--directives23092
-Node: Directive hooks24622
-Ref: #directive-hooks24770
-Node: Using The Keyboard25097
-Ref: #using-the-keyboard25231
+Node: Usage3058
+Ref: #usage3169
+Node: Input and output formats4000
+Ref: #input-and-output-formats4166
+Node: Auxiliary files and options7392
+Ref: #auxiliary-files-and-options7604
+Node: Template variables and metadata9882
+Ref: #template-variables-and-metadata10092
+Node: Running Pandoc10732
+Ref: #running-pandoc10903
+Node: Setting an output file12494
+Ref: #setting-an-output-file12664
+Node: Creating a pdf14089
+Ref: #creating-a-pdf14220
+Node: Settings Files15016
+Ref: #settings-files15159
+Node: Managing numbered examples17072
+Ref: #managing-numbered-examples17253
+Node: Using @@-directives18536
+Ref: #using--directives18707
+Node: Defining @@-directives22922
+Ref: #defining--directives23084
+Node: Directive hooks24614
+Ref: #directive-hooks24762
+Node: Using The Keyboard25089
+Ref: #using-the-keyboard25223
 
 End Tag Table
 
