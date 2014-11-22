@@ -63,11 +63,11 @@ need to type `M-x pandoc-mode'. To start `pandoc-mode' automatically
 when you load e.g., a Markdown file, you can add a hook to your
 `~/.emacs':
 
-(add-hook 'markdown-mode-hook 'turn-on-pandoc)
+(add-hook 'markdown-mode-hook 'pandoc-mode)
 
 However, if you do not want to start `pandoc-mode' every time you work
 on a Markdown document, you can use a different function in
-`markdown-mode-hook': instead of using `turn-on-pandoc', you can use
+`markdown-mode-hook': instead of using `pandoc-mode', you can use
 `conditionally-turn-on-pandoc'. This function checks if a default
 settings file exists for the file you're opening and only turns on
 `pandoc-mode' if it finds one. (For more info on the settings file, see
@@ -444,7 +444,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 13 Nov 2014".
+`@@date{Cologne}' to get "Cologne, 22 Nov 2014".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -598,32 +598,32 @@ Node: Introduction484
 Ref: #introduction605
 Node: Installation1458
 Ref: #installation1581
-Node: Usage3058
-Ref: #usage3169
-Node: Input and output formats4000
-Ref: #input-and-output-formats4166
-Node: Auxiliary files and options7392
-Ref: #auxiliary-files-and-options7604
-Node: Template variables and metadata9882
-Ref: #template-variables-and-metadata10092
-Node: Running Pandoc10732
-Ref: #running-pandoc10903
-Node: Setting an output file12494
-Ref: #setting-an-output-file12664
-Node: Creating a pdf14089
-Ref: #creating-a-pdf14220
-Node: Settings Files15016
-Ref: #settings-files15159
-Node: Managing numbered examples17072
-Ref: #managing-numbered-examples17253
-Node: Using @@-directives18536
-Ref: #using--directives18707
-Node: Defining @@-directives22922
-Ref: #defining--directives23084
-Node: Directive hooks24614
-Ref: #directive-hooks24762
-Node: Using The Keyboard25089
-Ref: #using-the-keyboard25223
+Node: Usage3052
+Ref: #usage3163
+Node: Input and output formats3994
+Ref: #input-and-output-formats4160
+Node: Auxiliary files and options7386
+Ref: #auxiliary-files-and-options7598
+Node: Template variables and metadata9876
+Ref: #template-variables-and-metadata10086
+Node: Running Pandoc10726
+Ref: #running-pandoc10897
+Node: Setting an output file12488
+Ref: #setting-an-output-file12658
+Node: Creating a pdf14083
+Ref: #creating-a-pdf14214
+Node: Settings Files15010
+Ref: #settings-files15153
+Node: Managing numbered examples17066
+Ref: #managing-numbered-examples17247
+Node: Using @@-directives18530
+Ref: #using--directives18701
+Node: Defining @@-directives22916
+Ref: #defining--directives23078
+Node: Directive hooks24608
+Ref: #directive-hooks24756
+Node: Using The Keyboard25083
+Ref: #using-the-keyboard25217
 
 End Tag Table
 
