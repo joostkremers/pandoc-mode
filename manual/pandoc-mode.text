@@ -20,10 +20,10 @@ The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.org/
 Either installation method allows Emacs to load `pandoc-mode`, but they do not activate it. In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a Markdown file, you can add a hook to your `~/.emacs`:
 
 ```
-(add-hook 'markdown-mode-hook 'turn-on-pandoc)
+(add-hook 'markdown-mode-hook 'pandoc-mode)
 ```
 
-However, if you do not want to start `pandoc-mode` every time you work on a Markdown document, you can use a different function in `markdown-mode-hook`: instead of using `turn-on-pandoc`, you can use `conditionally-turn-on-pandoc`. This function checks if a default settings file exists for the file you're opening and only turns on `pandoc-mode` if it finds one. (For more info on the settings file, see the section ['Settings Files'](#settings-files).)
+However, if you do not want to start `pandoc-mode` every time you work on a Markdown document, you can use a different function in `markdown-mode-hook`: instead of using `pandoc-mode`, you can use `conditionally-turn-on-pandoc`. This function checks if a default settings file exists for the file you're opening and only turns on `pandoc-mode` if it finds one. (For more info on the settings file, see the section ['Settings Files'](#settings-files).)
 
 Additionally, if you want to automatically load the default `pandoc-mode` settings file for the file you're opening, you can add the following to your `~/.emacs`:
 

@@ -714,17 +714,6 @@ menu."
           pandoc--settings-modified-flag nil))))
 
 ;;;###autoload
-(defun turn-on-pandoc ()
-  "Unconditionally turn on pandoc-mode."
-  (interactive)
-  (pandoc-mode 1))
-
-(defun turn-off-pandoc ()
-  "Unconditionally turn off pandoc-mode"
-  (interactive)
-  (pandoc-mode -1))
-
-;;;###autoload
 (defun conditionally-turn-on-pandoc ()
   "Turn on pandoc-mode if a pandoc settings file exists.
 This is for use in major mode hooks."
