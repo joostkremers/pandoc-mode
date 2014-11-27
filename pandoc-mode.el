@@ -719,7 +719,7 @@ menu."
 This is for use in major mode hooks."
   (when (and (buffer-file-name)
              (file-exists-p (pandoc--create-settings-filename 'settings (buffer-file-name) "default")))
-    (turn-on-pandoc)))
+    (pandoc-mode 1)))
 
 (defun pandoc--get (option &optional buffer)
   "Returns the value of OPTION.
