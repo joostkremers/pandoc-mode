@@ -1509,7 +1509,7 @@ set. Without any prefix argument, the option is toggled."
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'read)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(pandoc--toggle-extension ,(car ext) 'read)
+                                             `(pandoc-toggle-extension ,(car ext) 'read)
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'read)))
@@ -1531,7 +1531,7 @@ set. Without any prefix argument, the option is toggled."
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'write)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(pandoc--toggle-extension ,(car ext) 'write)
+                                             `(pandoc-toggle-extension ,(car ext) 'write)
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'write)))
