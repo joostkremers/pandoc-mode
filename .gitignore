@@ -1,3 +1,4 @@
 *.elc
 *~
 *.texi
+/manual/pandoc-mode.md
