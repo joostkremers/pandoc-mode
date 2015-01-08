@@ -140,12 +140,12 @@ list, not if it appears higher on the list."
   "Set `pandoc-output-formats'.
 The value of this option is the basis for setting
 `pandoc--output-formats-menu' and `pandoc--output-formats-list'."
-  (setq pandoc--output-formats-menu (mapcar #'(lambda (elem)
-                                               (cons (cadr (cdr elem)) (car elem)))
-                                           value))
-  (setq pandoc--output-formats-list (mapcar #'(lambda (elem)
-                                               (cons (car elem) (cadr elem)))
-                                           value))
+  (setq pandoc--output-formats-menu (mapcar (lambda (elem)
+                                              (cons (cadr (cdr elem)) (car elem)))
+                                            value))
+  (setq pandoc--output-formats-list (mapcar (lambda (elem)
+                                              (cons (car elem) (cadr elem)))
+                                            value))
   (set-default var value))
 
 (defcustom pandoc-output-formats
