@@ -444,7 +444,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 08 Jan 2015".
+`@@date{Cologne}' to get "Cologne, 23 Jan 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -495,13 +495,39 @@ gets processed as well.
 
 * Menu:
 
+* Master file::
 * Defining @@-directives::
 * Directive hooks::
 
 
-File: pandoc-mode.info,  Node: Defining @@-directives,  Next: Directive hooks,  Up: Using @@-directives
+File: pandoc-mode.info,  Node: Master file,  Next: Defining @@-directives,  Up: Using @@-directives
 
-6.1 Defining @@-directives
+6.1 Master file
+===============
+
+If you have a master file with one or more `@@include' directives and
+you're editing one of the included files, running Pandoc from that
+buffer will not produce the desired result, because it runs Pandoc on
+the included file. To make working with included files easier, you can
+specify a master file for them, either through the menu or with the
+command `pandoc-set-master-file' (bound to `C-c / f'). When this option
+is set, Pandoc is run on the master file rather than on the file in the
+current buffer.
+
+The settings used in this case are always the settings for the master
+file, not the settings for the included file. The only exception is the
+output format. This makes it possible to change the output format while
+in a buffer visiting an included file and have `pandoc-mode' do the
+right thing.
+
+One thing to keep in mind is that the master file setting is dependent
+on the output format. This means that you need to set the output format
+_before_ you set the master file.
+
+
+File: pandoc-mode.info,  Node: Defining @@-directives,  Next: Directive hooks,  Prev: Master file,  Up: Using @@-directives
+
+6.2 Defining @@-directives
 ==========================
 
 Defining `@@'-directives yourself is done in two steps. First, you need
@@ -533,7 +559,7 @@ bound to `C-/'), or do your test in the `*scratch*' buffer.
 
 File: pandoc-mode.info,  Node: Directive hooks,  Prev: Defining @@-directives,  Up: Using @@-directives
 
-6.2 Directive hooks
+6.3 Directive hooks
 ===================
 
 There is another customizable variable related to `@@'-directives:
@@ -578,6 +604,8 @@ they are bound to:
 
    * `C-c/w' ~ Set the output format (`pandoc-set-write')
 
+   * `C-c/f' ~ Set the master file (`pandoc-set-master-file')
+
    * `C-c/m' ~ Set a metadata item (`pandoc-set-metadata')
 
    * `C-c/v' ~ Set a template variable (`pandoc-set-variable')
@@ -618,12 +646,14 @@ Node: Managing numbered examples17066
 Ref: #managing-numbered-examples17247
 Node: Using @@-directives18530
 Ref: #using--directives18701
-Node: Defining @@-directives22916
-Ref: #defining--directives23078
-Node: Directive hooks24608
-Ref: #directive-hooks24756
-Node: Using The Keyboard25083
-Ref: #using-the-keyboard25217
+Node: Master file22932
+Ref: #master-file23068
+Node: Defining @@-directives24049
+Ref: #defining--directives24231
+Node: Directive hooks25761
+Ref: #directive-hooks25909
+Node: Using The Keyboard26236
+Ref: #using-the-keyboard26370
 
 End Tag Table
 

@@ -190,6 +190,15 @@ The directives are processed in the order in which they appear in the customizat
 After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the *start* of the inserted text. That means that if an `\@@include` directive produces another `\@@include` directive, the newly inserted `\@@include` directive gets processed as well.
 
 
+## Master file ##
+
+If you have a master file with one or more `\@@include` directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu or with the command `pandoc-set-master-file` (bound to `C-c / f`). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.
+
+The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format. This makes it possible to change the output format while in a buffer visiting an included file and have `pandoc-mode` do the right thing.
+
+One thing to keep in mind is that the master file setting is dependent on the output format. This means that you need to set the output format *before* you set the master file.
+
+
 ## Defining @@-directives ##
 
 Defining `@@`-directives yourself is done in two steps. First, you need to define the function that the directive will call. This function must take at least one argument to pass the output format and may take at most one additional argument. It should return a string, which is inserted into the buffer. The second step is to go to the customization buffer with `M-x customize-group` `RET` `pandoc` `RET`. One of the options there is `pandoc-directives`. This variable contains a list of directives and the functions that they are linked with. You can add a directive by providing a name (without `@@`) and the function to call. Note that directive names may only consists of letters (`a-z`, `A-Z`) or numbers (`0-9`). Other characters are not allowed. Directive names are case sensitive, so `@@Date` is not the same as `\@@date`.
@@ -220,6 +229,7 @@ The following table lists the keys defined by default and the functions they are
 - `C-c/p` ~  Run `markdown2pdf` on the document (`pandoc-convert-to-pdf`)
 - `C-c/s` ~  Save the settings file (`pandoc-save-settings-file`)
 - `C-c/w` ~  Set the output format (`pandoc-set-write`)
+- `C-c/f` ~ Set the master file (`pandoc-set-master-file`)
 - `C-c/m` ~  Set a metadata item (`pandoc-set-metadata`)
 - `C-c/v` ~  Set a template variable (`pandoc-set-variable`)
 - `C-c/V` ~  View the output buffer (`pandoc-view-output`)

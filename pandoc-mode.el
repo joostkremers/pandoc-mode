@@ -285,7 +285,8 @@ These are set by `define-pandoc-alist-option'.")
     (output)
     (data-dir)
     (extract-media)
-    (output-dir)) ; this is not actually a pandoc option
+    (output-dir)
+    (master-file))                      ; the last two are not actually pandoc options
   "Pandoc option alist.
 List of options and their default values. For each buffer in
 which pandoc-mode is activated, a buffer-local copy of this list
@@ -694,6 +695,7 @@ menu."
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/c" #'pandoc-insert-@)
     (define-key map "\C-c/C" #'pandoc-select-@)
+    (define-key map "\C-c/f" #'pandoc-set-master-file)
     (define-key map "\C-c/m" #'pandoc-set-metadata)
     (define-key map "\C-c/p" #'pandoc-convert-to-pdf)
     (define-key map "\C-c/r" #'pandoc-run-pandoc)
@@ -1020,45 +1022,60 @@ with the @@-directives."
     (insert-file-contents include-file)
     (buffer-string)))
 
-(defun pandoc--call-external (buffer output-format &optional pdf region)
-  "Call pandoc on the current document.
+(defun pandoc--call-external (output-format &optional pdf region)
+  "Call pandoc on the current buffer.
 This function creates a temporary buffer and sets up the required
-local options. BUFFER is the buffer whose contents must be sent
-to pandoc. Its contents is copied into the temporary buffer, the
-@@-directives are processed, after which pandoc is called.
+local options. The contents of the current buffer is copied into
+the temporary buffer, the @@-directives are processed, after
+which pandoc is called.
 
-OUTPUT-FORMAT is the format to use. If nil, BUFFER's output
-format is used. If PDF is non-NIL, a pdf file is created. REGION
-is a cons cell specifying the beginning and end of the region to
-be sent to pandoc."
-  (let ((filename (buffer-file-name buffer)))
-    ;; we do this in a temp buffer so we can process @@-directives without
-    ;; having to undo them and set the options independently of the
-    ;; original buffer.
-    (with-temp-buffer
-      (if (and output-format ; if an output format was provided (and the buffer is visiting a file)
-               filename)     ; we want to use settings for that format or no settings at all.
-          (unless (pandoc--load-settings-for-file (expand-file-name filename) output-format t)
-            ;; if we do not find a settings file, we unset all options:
+OUTPUT-FORMAT is the format to use. If nil, the current buffer's
+output format is used. If PDF is non-nil, a pdf file is created.
+REGION is a cons cell specifying the beginning and end of the
+region to be sent to pandoc.
+
+If the current buffer's \"master file\" option is set, that file
+is processed instead. The output format is taken from the current
+buffer, however, unless one is provided specifically. REGION is
+also ignored in this case."
+  (let* ((orig-buffer (current-buffer))
+         (buffer (if (pandoc--get 'master-file)
+                     (find-file-noselect (pandoc--get 'master-file))
+                   (current-buffer)))
+         (filename (buffer-file-name buffer)))
+    ;; if there's a master file, ignore the region
+    (if (pandoc--get 'master-file)
+        (setq region nil))
+    (with-current-buffer buffer
+      ;; we use with-current-buffer so that we can work on the master file
+      ;; if there is one. we then change to a temp buffer, so we can
+      ;; process @@-directives without having to undo them and set the
+      ;; options independently of the original buffer.
+      (with-temp-buffer
+        (cond
+         ;; if an output format was provided, try and load a settings file for it
+         (output-format
+          (unless (and filename
+                       (pandoc--load-settings-for-file (expand-file-name filename) output-format t))
+            ;; if no settings file was found, unset all options except input and output format
             (setq pandoc--local-settings (copy-tree pandoc--options))
-            ;; and specify only the input and output formats:
             (pandoc--set 'write output-format)
-            (pandoc--set 'read (pandoc--get 'read buffer)))
-        ;; if no output format was provided, we use the buffer's options:
-        (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer)))
-      (let ((option-list (pandoc--format-all-options filename pdf)))
-        (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-        (message "Running pandoc...")
-        (pandoc--process-directives (pandoc--get 'write))
-        (with-pandoc-output-buffer
-          (erase-buffer)
-          (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
-        (if (= 0 (let ((coding-system-for-read 'utf-8)
-                       (coding-system-for-write 'utf-8))
-                   (apply #'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
-            (message "Running pandoc... Finished.")
-          (message "Error in pandoc process.")
-          (display-buffer pandoc--output-buffer))))))
+            (pandoc--set 'read (pandoc--get 'read buffer))))
+         ;; if no output format was provided, we use the buffer's options:
+         (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer)))) 
+        (let ((option-list (pandoc--format-all-options filename pdf)))
+          (insert-buffer-substring-no-properties buffer (car region) (cdr region))
+          (message "Running pandoc...")
+          (pandoc--process-directives (pandoc--get 'write))
+          (with-pandoc-output-buffer
+            (erase-buffer)
+            (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
+          (if (= 0 (let ((coding-system-for-read 'utf-8)
+                         (coding-system-for-write 'utf-8))
+                     (apply #'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
+              (message "Running pandoc... Finished.")
+            (message "Error in pandoc process.")
+            (display-buffer pandoc--output-buffer)))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
@@ -1069,13 +1086,12 @@ is used.
 If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
-  (pandoc--call-external (current-buffer)
-                        (if prefix
-                            (completing-read "Output format to use: " pandoc--output-formats-list nil t)
-                          nil)
-                        nil
-                        (if (use-region-p)
-                            (cons (region-beginning) (region-end)))))
+  (pandoc--call-external (if prefix
+                             (completing-read "Output format to use: " pandoc--output-formats-list nil t)
+                           nil)
+                         nil
+                         (if (use-region-p)
+                             (cons (region-beginning) (region-end)))))
 
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
@@ -1089,9 +1105,7 @@ input and output formats.
 If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
-  (pandoc--call-external (current-buffer)
-                         (if (or prefix
-                                 (not (string= (pandoc--get 'write) "latex")))
+  (pandoc--call-external (if (or prefix (not (string= (pandoc--get 'write) "latex")))
                              "latex"
                            nil)
                          t
@@ -1393,6 +1407,16 @@ are extracted."
                    nil
                  (read-directory-name "Extract media files to directory: " nil nil t))))
 
+(defun pandoc-set-master-file (prefix)
+  "Set the master file.
+If called with the prefix argumen C-u - (or M--), the master file
+is set to nil, which means the current file is the master file."
+  (interactive "P")
+  (pandoc--set 'master-file
+               (if (eq prefix '-)
+                   nil
+                 (read-file-name "Master file: "))))
+
 (define-pandoc-file-option template "Template File" t)
 (define-pandoc-file-option css "CSS Style Sheet")
 (define-pandoc-file-option reference-odt "Reference ODT File" t)
@@ -1501,6 +1525,10 @@ set. Without any prefix argument, the option is toggled."
      ["Select And Insert Example Label" pandoc-select-@ :active t])
     "--"
     ["View Current Settings" pandoc-view-settings :active t]
+    ("Master File"
+     ["Other File" pandoc-set-master-file :active t :style radio :selected (pandoc--get 'master-file)]
+     ["This File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))])
+
     ,(append (cons "Input Format"
                    (mapcar (lambda (option)
                              (vector (car option)
