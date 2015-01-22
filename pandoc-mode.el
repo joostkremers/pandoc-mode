@@ -42,10 +42,6 @@
 
 (require 'easymenu)
 
-(defmacro nor (&rest args)
-  "Return T if none of its arguments are true."
-  `(not (or ,@args)))
-
 (defun nonempty (string)
   "Return STRING, unless it is \"\", in which case return NIL."
   (when (not (string= string ""))
