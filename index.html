@@ -186,7 +186,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 21 Oct 2014".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 23 Jan 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
@@ -209,6 +209,15 @@
 <p>The directives are processed in the order in which they appear in the customization buffer (and hence in the variable <code>pandoc-directives</code>). So in the default case, <code>@@include</code> directives are processed before <code>@@lisp</code> directives, which means that any <code>@@lisp</code> directive in a file included by <code>@@include</code> gets processed, but if a <code>@@lisp</code> directive produces an <code>@@include</code>, it does <em>not</em> get processed. (If this should ever be a problem, you can always create a directive <code>@@include2</code> and have it processed after <code>@@lisp</code>.)</p>
 
 <p>After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the <em>start</em> of the inserted text. That means that if an <code>@@include</code> directive produces another <code>@@include</code> directive, the newly inserted <code>@@include</code> directive gets processed as well.</p>
+
+<h2>
+<a id="master-file" class="anchor" href="#master-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Master file</h2>
+
+<p>If you have a master file with one or more <code>@@include</code> directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu or with the command <code>pandoc-set-master-file</code> (bound to <code>C-c / f</code>). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.</p>
+
+<p>The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format. This makes it possible to change the output format while in a buffer visiting an included file and have <code>pandoc-mode</code> do the right thing.</p>
+
+<p>One thing to keep in mind is that the master file setting is dependent on the output format. This means that you need to set the output format <em>before</em> you set the master file.</p>
 
 <h2>
 <a id="defining--directives" class="anchor" href="#defining--directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining @@-directives</h2>
@@ -241,6 +250,7 @@
 <li>  <code>C-c/p</code> ~ Run <code>markdown2pdf</code> on the document (<code>pandoc-convert-to-pdf</code>)</li>
 <li>  <code>C-c/s</code> ~ Save the settings file (<code>pandoc-save-settings-file</code>)</li>
 <li>  <code>C-c/w</code> ~ Set the output format (<code>pandoc-set-write</code>)</li>
+<li>  <code>C-c/f</code> ~ Set the master file (<code>pandoc-set-master-file</code>)</li>
 <li>  <code>C-c/m</code> ~ Set a metadata item (<code>pandoc-set-metadata</code>)</li>
 <li>  <code>C-c/v</code> ~ Set a template variable (<code>pandoc-set-variable</code>)</li>
 <li>  <code>C-c/V</code> ~ View the output buffer (<code>pandoc-view-output</code>)</li>
