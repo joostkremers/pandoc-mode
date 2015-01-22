@@ -293,11 +293,9 @@ is made that stores the local values of the options. The
 `define-pandoc-*-option' functions add their options to this list
 with the default value NIL.")
 
-(defvar pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
-(make-variable-buffer-local 'pandoc--local-settings)
+(defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
-(defvar pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
-(make-variable-buffer-local 'pandoc--settings-modified-flag)
+(defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
 (defvar pandoc--output-buffer (get-buffer-create " *Pandoc output*"))
 
@@ -598,8 +596,7 @@ menu."
                                   nil
                                 value))))))))
 
-(defvar pandoc--@-counter 0 "Counter for (@)-lists.")
-(make-variable-buffer-local 'pandoc--@-counter)
+(defvar-local pandoc--@-counter 0 "Counter for (@)-lists.")
 
 (defvar pandoc--window-config nil
   "Stores the window configuration before calling pandoc--select-@.")
