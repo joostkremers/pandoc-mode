@@ -192,11 +192,13 @@ After Emacs has processed a directive and inserted the text it produced in the b
 
 ## Master file ##
 
-If you have a master file with one or more `\@@include` directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu or with the command `pandoc-set-master-file` (bound to `C-c / f`). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.
+If you have a master file with one or more `\@@include` directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu (Pandoc | Files | Master File) or with the command `pandoc-set-master-file` (bound to `C-c / f`). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.
 
-The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format. This makes it possible to change the output format while in a buffer visiting an included file and have `pandoc-mode` do the right thing.
+The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format, which is taken from the buffer from which you run Pandoc. This makes it possible to change the output format while in a buffer visiting an included file and have `pandoc-mode` do the right thing.
 
-One thing to keep in mind is that the master file setting is dependent on the output format. This means that you need to set the output format *before* you set the master file.
+One thing to keep in mind is that the master file setting is dependent on the output format. When you set a master file, it is only set for the output format that is active. This means that you need to set the output format *before* you set the master file.
+
+Note that the master file menu also has an option “Use This File As Master File”. When you select this option, the current file is set as master file and a project settings file is created for the current output format. This is a quick way to set the master file for all files in a directory, since the project settings will apply to all files in the directory.
 
 
 ## Defining @@-directives ##
