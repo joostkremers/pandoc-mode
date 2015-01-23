@@ -213,11 +213,13 @@
 <h2>
 <a id="master-file" class="anchor" href="#master-file" aria-hidden="true"><span class="octicon octicon-link"></span></a>Master file</h2>
 
-<p>If you have a master file with one or more <code>@@include</code> directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu or with the command <code>pandoc-set-master-file</code> (bound to <code>C-c / f</code>). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.</p>
+<p>If you have a master file with one or more <code>@@include</code> directives and you’re editing one of the included files, running Pandoc from that buffer will not produce the desired result, because it runs Pandoc on the included file. To make working with included files easier, you can specify a master file for them, either through the menu (Pandoc | Files | Master File) or with the command <code>pandoc-set-master-file</code> (bound to <code>C-c / f</code>). When this option is set, Pandoc is run on the master file rather than on the file in the current buffer.</p>
 
-<p>The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format. This makes it possible to change the output format while in a buffer visiting an included file and have <code>pandoc-mode</code> do the right thing.</p>
+<p>The settings used in this case are always the settings for the master file, not the settings for the included file. The only exception is the output format, which is taken from the buffer from which you run Pandoc. This makes it possible to change the output format while in a buffer visiting an included file and have <code>pandoc-mode</code> do the right thing.</p>
 
-<p>One thing to keep in mind is that the master file setting is dependent on the output format. This means that you need to set the output format <em>before</em> you set the master file.</p>
+<p>One thing to keep in mind is that the master file setting is dependent on the output format. When you set a master file, it is only set for the output format that is active. This means that you need to set the output format <em>before</em> you set the master file.</p>
+
+<p>Note that the master file menu also has an option “Use This File As Master File”. When you select this option, the current file is set as master file and a project settings file is created for the current output format. This is a quick way to set the master file for all files in a directory, since the project settings will apply to all files in the directory.</p>
 
 <h2>
 <a id="defining--directives" class="anchor" href="#defining--directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Defining @@-directives</h2>
