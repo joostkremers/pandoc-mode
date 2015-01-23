@@ -1521,9 +1521,6 @@ set. Without any prefix argument, the option is toggled."
      ["Select And Insert Example Label" pandoc-select-@ :active t])
     "--"
     ["View Current Settings" pandoc-view-settings :active t]
-    ("Master File"
-     ["Other File" pandoc-set-master-file :active t :style radio :selected (pandoc--get 'master-file)]
-     ["This File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))])
 
     ,(append (cons "Input Format"
                    (mapcar (lambda (option)
@@ -1569,6 +1566,9 @@ set. Without any prefix argument, the option is toggled."
                                    pandoc--extensions))))
 
     ("Files"
+     ("Master File"
+      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (pandoc--get 'master-file)]
+      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))])
      ("Output File"
       ["Output To Stdout" (pandoc--set 'output nil) :active t
        :style radio :selected (null (pandoc--get 'output))]
