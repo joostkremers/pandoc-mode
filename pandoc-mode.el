@@ -1211,11 +1211,14 @@ settings have not been saved."
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings for FILE.
 Load FILE's own settings file if it exists, otherwise check for a
-project file and load that. If NO-CONFIRM is t, no confirmation
-is asked if the current settings have not been saved. FILE must
-be an absolute path name. The settings are stored in the current
-buffer's `pandoc--local-settings'. Returns NIL if no settings or
-project file is found for FILE, otherwise non-NIL."
+project file and load that. If no project file exist, check if a
+global settings file exist.
+
+If NO-CONFIRM is t, no confirmation is asked if the current
+settings have not been saved. FILE must be an absolute path name.
+The settings are stored in the current buffer's
+`pandoc--local-settings'. Returns nil if no settings or project
+file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc--get 'write))))
