@@ -1057,8 +1057,10 @@ also ignored in this case."
             (setq pandoc--local-settings (copy-tree pandoc--options))
             (pandoc--set 'write output-format)
             (pandoc--set 'read (pandoc--get 'read buffer))))
-         ;; if no output format was provided, we use the buffer's options:
-         (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer)))) 
+         ;; if no output format was provided, we use BUFFER's options,
+         ;; except the output format, which we take from ORIG-BUFFER:
+         (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
+            (pandoc--set 'write (pandoc--get 'write orig-buffer))))
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (message "Running pandoc...")
