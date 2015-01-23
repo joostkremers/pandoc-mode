@@ -1415,6 +1415,15 @@ is set to nil, which means the current file is the master file."
                    nil
                  (read-file-name "Master file: "))))
 
+(defun pandoc-set-this-file-as-master ()
+  "Set the current file as master file.
+This option creates a Project settings file in the current
+directory to ensure that all files use the current file as master
+file."
+  (interactive)
+  (pandoc--set 'master-file (buffer-file-name))
+  (pandoc--save-settings 'project (pandoc--get 'write)))
+
 (define-pandoc-file-option template "Template File" t)
 (define-pandoc-file-option css "CSS Style Sheet")
 (define-pandoc-file-option reference-odt "Reference ODT File" t)
@@ -1569,8 +1578,9 @@ set. Without any prefix argument, the option is toggled."
 
     ("Files"
      ("Master File"
-      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (pandoc--get 'master-file)]
-      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))])
+      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))]
+      ["Use This File As Master File" pandoc-set-this-file-as-master :active t :style radio :selected (equal (pandoc--get 'master-file) (buffer-file-name))]
+      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (and (pandoc--get 'master-file) (not (equal (pandoc--get 'master-file) (buffer-file-name))))])
      ("Output File"
       ["Output To Stdout" (pandoc--set 'output nil) :active t
        :style radio :selected (null (pandoc--get 'output))]
