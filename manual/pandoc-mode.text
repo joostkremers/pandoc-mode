@@ -6,7 +6,7 @@
 
 `pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.9 and is compatible with Pandoc version 1.13.
+The current version of `pandoc-mode` is 2.10 and is compatible with Pandoc version 1.13.
 
 
 # Installation #
@@ -117,6 +117,12 @@ The output file you set is always just the base filename, it does not specify a 
 The second item in the menu is "Create PDF" (`C-c / p`). This option calls Pandoc with an output file with the extention `.pdf`, causing Pandoc to create a pdf file by first converting to `.tex` and then calling LaTeX on it. Like `C-c / r`, this command operates on the region if it is active.
 
 If you choose this option, Emacs checks if your current output format is `latex`. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than `latex`, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.
+
+
+# Font lock #
+
+`pandoc-mode` adds font lock keywords for citations and numbered example lists. The relevant faces can be customised in the customisation group `pandoc`.
+
 
 
 # Settings Files #
