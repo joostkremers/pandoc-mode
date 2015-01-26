@@ -1683,11 +1683,11 @@ set. Without any prefix argument, the option is toggled."
    	   (3 pandoc-citation-key-face)
    	   (4 pandoc-citation-brackets-face t)))
    (cons pandoc-regex-parenthetical-citation-multiple
-	 '((1 pandoc-citation-brackets-face t)
-	   (2 pandoc-citation-marker-face)
-	   (3 pandoc-citation-key-face)
-	   (4 pandoc-citation-extra-face t)
-	   (5 pandoc-citation-brackets-face t)))
+         '((1 pandoc-citation-brackets-face t)
+           (2 pandoc-citation-marker-face)
+           (3 pandoc-citation-key-face)
+           (4 pandoc-citation-extra-face t)
+           (5 pandoc-citation-brackets-face t)))
    (cons pandoc-regex-in-text-citation
 	 '((1 pandoc-citation-marker-face)
 	   (2 pandoc-citation-key-face)
@@ -1696,19 +1696,18 @@ set. Without any prefix argument, the option is toggled."
 	   (5 pandoc-citation-brackets-face)))
    (cons pandoc-regex-in-text-citation-2
 	 '((1 pandoc-citation-marker-face prepend)
-	   (2 pandoc-citation-key-face prepend)))
-   )
+	   (2 pandoc-citation-key-face prepend))))
   "Keywords for pandoc faces.")
 
-(defun  pandoc-faces-load ()
+(defun pandoc-faces-load ()
   "Load pandoc-faces."
-	(font-lock-add-keywords nil pandoc-faces-keywords)
-	(font-lock-fontify-buffer))
+  (font-lock-add-keywords nil pandoc-faces-keywords)
+  (font-lock-fontify-buffer))
 
-(defun  pandoc-faces-unload ()
+(defun pandoc-faces-unload ()
   "Unload pandoc-faces."
-	(font-lock-remove-keywords nil pandoc-faces-keywords)
-	(font-lock-fontify-buffer))
+  (font-lock-remove-keywords nil pandoc-faces-keywords)
+  (font-lock-fontify-buffer))
 
 (provide 'pandoc-mode)
 
