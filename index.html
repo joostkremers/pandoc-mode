@@ -36,7 +36,7 @@
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
-<p>The current version of <code>pandoc-mode</code> is 2.7 and is compatible with Pandoc version 1.13.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.10 and is compatible with Pandoc version 1.13.</p>
 
 <h1>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
@@ -145,6 +145,11 @@
 <p>If you choose this option, Emacs checks if your current output format is <code>latex</code>. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than <code>latex</code>, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.</p>
 
 <h1>
+<a id="font-lock" class="anchor" href="#font-lock" aria-hidden="true"><span class="octicon octicon-link"></span></a>Font lock</h1>
+
+<p><code>pandoc-mode</code> adds font lock keywords for citations and numbered example lists. The relevant faces can be customised in the customisation group <code>pandoc</code>.</p>
+
+<h1>
 <a id="settings-files" class="anchor" href="#settings-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Settings Files</h1>
 
 <p>Apart from settings files for individual files (which are called <em>local settings files</em>), <code>pandoc-mode</code> supports two other types of settings files: project files and global files. Project files are settings files that apply to all input files in a given directory (except those files for which a local settings file exists). Global settings files, as the name implies, apply globally, to files for which no local or project file is found. Both types of files are specific to a particular output format, just like local settings files. Project files live in the directory they apply to and are called <code>Project.&lt;format&gt;.pandoc</code>. Global files live in the directory specified by the variable <code>pandoc-data-dir</code>, which defaults to <code>~/.emacs.d/pandoc/</code>, but this can of course be changed in the customisation group <code>pandoc</code>.</p>
@@ -186,7 +191,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 23 Jan 2015".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 26 Jan 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
