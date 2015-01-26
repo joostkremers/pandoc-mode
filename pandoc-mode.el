@@ -1661,20 +1661,21 @@ set. Without any prefix argument, the option is toggled."
   :group 'pandoc)
 
 (defconst pandoc-regex-parenthetical-citation-single
-  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+]*\\)\\(\\]\\)"
+  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with only one key.")
 
 (defconst pandoc-regex-parenthetical-citation-multiple
-  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+]*\\)\\(.*?\\)\\(\\]\\)"
+  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with page numbers or multiple keys.")
 
 (defconst pandoc-regex-in-text-citation
-  "\\[\\{0\\}\\(-?@\\)\\([-a-zA-Z0-9_+]*\\)\\s-\\(\\[\\)\\(.*?\\)\\(\\]\\)"
+  "\\[\\{0\\}\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\s-\\(\\[\\)\\(.*?\\)\\(\\]\\)"
   "Regular expression for stand-alone citation with anchor.")
 
 (defconst pandoc-regex-in-text-citation-2
-  "\\(-?@\\)\\([-a-zA-Z0-9_+]*\\)"
+  "\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
+
 (defvar pandoc-faces-keywords
   (list
    (cons pandoc-regex-parenthetical-citation-single
