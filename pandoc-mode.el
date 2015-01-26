@@ -713,10 +713,12 @@ menu."
     (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc--settings-modified-flag nil)
     (or (buffer-live-p pandoc--output-buffer)
-        (setq pandoc--output-buffer (get-buffer-create " *Pandoc output*"))))
+        (setq pandoc--output-buffer (get-buffer-create " *Pandoc output*")))
+    (pandoc-faces-load))
    ((not pandoc-mode)    ; pandoc-mode is turned off
     (setq pandoc--local-settings nil
-          pandoc--settings-modified-flag nil))))
+          pandoc--settings-modified-flag nil)
+    (pandoc-faces-unload))))
 
 ;;;###autoload
 (defun conditionally-turn-on-pandoc ()
@@ -1620,6 +1622,93 @@ set. Without any prefix argument, the option is toggled."
                pandoc--binary-options))))
 
 (easy-menu-add pandoc-mode-menu pandoc-mode-map)
+
+;;; Faces:
+;;; Regexp based on github.com/vim-pandoc/vim-pandoc-syntax.
+;;; Overall structure modeled after face handling in markdown-mode.el:
+;;; http://jblevins.org/git/markdown-mode.git
+
+(defvar pandoc-citation-key-face 'pandoc-citation-key-face
+  "Face name to use for citations.")
+
+(defvar pandoc-citation-marker-face 'pandoc-citation-marker-face
+  "Face name to use for '@' citation identifier.")
+
+(defvar pandoc-citation-extra-face 'pandoc-citation-marker-face
+  "Face name to use for page numbers and other notation.")
+
+(defvar pandoc-citation-brackets-face 'pandoc-citation-brackets-face
+  "Face name to use for page numbers and other notation.")
+
+(defface pandoc-citation-key-face
+  '((t (:inherit font-lock-function-name-face)))
+  "Base face for pandoc citations."
+  :group 'pandoc)
+
+(defface pandoc-citation-marker-face
+  '((t (:inherit font-lock-variable-name-face)))
+  "Base face for pandoc citation marker '@'."
+  :group 'pandoc)
+
+(defface pandoc-citation-extra-face
+  '((t (:inherit font-lock-variable-name-face)))
+  "Base face for page numbers and other pandoc citation notation."
+  :group 'pandoc)
+
+(defface pandoc-citation-brackets-face
+  '((t (:inherit font-lock-function-name-face)))
+  "Base face for pandoc citation brackets."
+  :group 'pandoc)
+
+(defconst pandoc-regex-parenthetical-citation-single
+  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(\\]\\)"
+  "Regular expression for parenthetical citations with only one key.")
+
+(defconst pandoc-regex-parenthetical-citation-multiple
+  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
+  "Regular expression for parenthetical citations with page numbers or multiple keys.")
+
+(defconst pandoc-regex-in-text-citation
+  "\\[\\{0\\}\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\s-\\(\\[\\)\\(.*?\\)\\(\\]\\)"
+  "Regular expression for stand-alone citation with anchor.")
+
+(defconst pandoc-regex-in-text-citation-2
+  "\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
+  "Regular expression for stand-alone citation with no anchor.")
+
+(defvar pandoc-faces-keywords
+  (list
+   (cons pandoc-regex-parenthetical-citation-single
+   	 '((1 pandoc-citation-brackets-face t)
+   	   (2 pandoc-citation-marker-face)
+   	   (3 pandoc-citation-key-face)
+   	   (4 pandoc-citation-brackets-face t)))
+   (cons pandoc-regex-parenthetical-citation-multiple
+         '((1 pandoc-citation-brackets-face t)
+           (2 pandoc-citation-marker-face)
+           (3 pandoc-citation-key-face)
+           (4 pandoc-citation-extra-face t)
+           (5 pandoc-citation-brackets-face t)))
+   (cons pandoc-regex-in-text-citation
+	 '((1 pandoc-citation-marker-face)
+	   (2 pandoc-citation-key-face)
+	   (3 pandoc-citation-brackets-face)
+	   (4 pandoc-citation-extra-face)
+	   (5 pandoc-citation-brackets-face)))
+   (cons pandoc-regex-in-text-citation-2
+	 '((1 pandoc-citation-marker-face prepend)
+	   (2 pandoc-citation-key-face prepend))))
+  "Keywords for pandoc faces.")
+
+(defun pandoc-faces-load ()
+  "Load pandoc-faces."
+  (font-lock-add-keywords nil pandoc-faces-keywords)
+  (font-lock-fontify-buffer))
+
+(defun pandoc-faces-unload ()
+  "Unload pandoc-faces."
+  (font-lock-remove-keywords nil pandoc-faces-keywords)
+  (font-lock-fontify-buffer))
 
 (provide 'pandoc-mode)
 
