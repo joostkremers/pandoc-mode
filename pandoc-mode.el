@@ -974,7 +974,7 @@ Return a string that can be added to the call to Pandoc."
                (t nil))))
           pandoc--cli-options))
 
-(defun pandoc--process-directives (output-format)
+(defun pandoc-process-directives (output-format)
   "Processes pandoc-mode @@-directives in the current buffer.
 OUTPUT-FORMAT is passed unchanged to the functions associated
 with the @@-directives."
@@ -1066,7 +1066,7 @@ also ignored in this case."
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (message "Running pandoc...")
-          (pandoc--process-directives (pandoc--get 'write))
+          (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
             (erase-buffer)
             (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
