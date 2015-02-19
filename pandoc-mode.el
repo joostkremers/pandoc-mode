@@ -7,6 +7,7 @@
 ;; Created: 31 Oct 2009
 ;; Version: 2.10
 ;; Keywords: text, pandoc
+;; Package-Requires: ((hydra "0.10.0"))
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
@@ -41,6 +42,7 @@
 ;;; Code:
 
 (require 'easymenu)
+(require 'hydra)
 
 (defun nonempty (string)
   "Return STRING, unless it is \"\", in which case return NIL."
@@ -113,10 +115,8 @@ list, not if it appears higher on the list."
     ("Orgmode" . "org")
     ("JSON" . "json")
     ("OPML" . "opml")
-    ("Org" . "org")
     ("Textile" . "textile")
     ("MediaWiki" . "mediawiki")
-    ("reStructuredText" . "rst")
     ("Txt2Tags" . "t2t")
     ("Twiki" . "twiki")
     ("Haddock Markup" . "haddock"))
@@ -687,21 +687,65 @@ menu."
   (setq buffer-read-only t)
   (setq truncate-lines t))
 
+(defhydra pandoc-input-format-hydra (:color teal)
+  "
+_H_: Native Haskell
+_m_: markdown
+_r_: reStructuredText
+_h_: HTML
+_l_: LaTeX
+_o_: Orgmode
+_j_: JSON
+_O_: OPML
+_t_: Textile
+_w_: MediaWiki
+_2_: Txt2Tags
+_T_: Twiki
+_d_: Haddock Markup
+")
+
+(defhydra pandoc-main-hydra (:color teal)
+  "
+_r_: Run Pandoc               _f_: Files         
+_p_: Convert to pdf           _s_: Settings files
+_V_: View output buffer       _v_: Set variable  
+_S_: View current settings    _m_: Set metadata  
+_i_: Input format
+_w_: Output format
+
+"
+  ("r" pandoc-run-pandoc nil)
+  ("p" pandoc-convert-to-pdf nil)
+  ("V" pandoc-view-output nil)
+  ("w" pandoc-set-write nil :color red)
+  ("f" pandoc-set-master-file nil)
+  ("s" pandoc-save-settings-file nil)
+  ("v" pandoc-set-variable nil)
+  ("m" pandoc-set-metadata nil)
+  ("S" pandoc-view-settings nil)
+  ("q" nil "Cancel"))
+
 (defvar pandoc-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map "\C-c/c" #'pandoc-insert-@)
-    (define-key map "\C-c/C" #'pandoc-select-@)
-    (define-key map "\C-c/f" #'pandoc-set-master-file)
-    (define-key map "\C-c/m" #'pandoc-set-metadata)
-    (define-key map "\C-c/p" #'pandoc-convert-to-pdf)
-    (define-key map "\C-c/r" #'pandoc-run-pandoc)
-    (define-key map "\C-c/s" #'pandoc-save-settings-file)
-    (define-key map "\C-c/S" #'pandoc-view-settings)
-    (define-key map "\C-c/v" #'pandoc-set-variable)
-    (define-key map "\C-c/V" #'pandoc-view-output)
-    (define-key map "\C-c/w" #'pandoc-set-write)
+    (define-key map "\C-c/" #'pandoc-main-hydra/body)
     map)
-  "Keymap for pandoc-mode.")
+  "Keymap for pandoc-mode")
+
+;; (defvar pandoc-mode-map
+;;   (let ((map (make-sparse-keymap)))
+;;     (define-key map "\C-c/c" #'pandoc-insert-@)
+;;     (define-key map "\C-c/C" #'pandoc-select-@)
+;;     (define-key map "\C-c/f" #'pandoc-set-master-file)
+;;     (define-key map "\C-c/m" #'pandoc-set-metadata)
+;;     (define-key map "\C-c/p" #'pandoc-convert-to-pdf)
+;;     (define-key map "\C-c/r" #'pandoc-run-pandoc)
+;;     (define-key map "\C-c/s" #'pandoc-save-settings-file)
+;;     (define-key map "\C-c/S" #'pandoc-view-settings)
+;;     (define-key map "\C-c/v" #'pandoc-set-variable)
+;;     (define-key map "\C-c/V" #'pandoc-view-output)
+;;     (define-key map "\C-c/w" #'pandoc-set-write)
+;;     map)
+;;   "Keymap for pandoc-mode.")
 
 ;;;###autoload
 (define-minor-mode pandoc-mode
