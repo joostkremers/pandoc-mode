@@ -8,8 +8,8 @@ END-INFO-DIR-ENTRY
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
-Emacs pandoc-mode
-*****************
+Emacs pandoc-mode Joost Kremers 04 Mar 2015
+*******************************************
 
 * Menu:
 
@@ -83,6 +83,26 @@ the following to your `~/.emacs':
 The function `pandoc-load-default-settings' checks if a default
 settings file exists for the file being loaded and reads its settings
 if it finds one.
+
+* Menu:
+
+* OS X::
+
+
+File: pandoc-mode.info,  Node: OS X,  Up: Installation
+
+2.1 OS X
+========
+
+`pandoc-mode' expects that the `pandoc' binary can be found in your
+system's `$PATH' and that the contents of `$PATH' is available to
+Emacs. Especially on OS X, this may not always be the case. To remedy
+this, you can set the user option `pandoc-binary' to the full path of
+`pandoc' on your system. A more elegant solution is to install the
+`exec-path-from-shell'
+(https://github.com/purcell/exec-path-from-shell) package. This package
+makes sure that the contents of your system's `$PATH' variable is
+visible to Emacs, allowing Emacs to find `pandoc'.
 
 
 File: pandoc-mode.info,  Node: Usage,  Next: Font lock,  Prev: Installation,  Up: Top
@@ -455,7 +475,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 26 Jan 2015".
+`@@date{Cologne}' to get "Cologne, 04 Mar 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -642,40 +662,42 @@ they are bound to:
 
 Tag Table:
 Node: Top225
-Node: Introduction498
-Ref: #introduction619
-Node: Installation1473
-Ref: #installation1596
-Node: Usage3067
-Ref: #usage3173
-Node: Input and output formats4004
-Ref: #input-and-output-formats4170
-Node: Auxiliary files and options7396
-Ref: #auxiliary-files-and-options7608
-Node: Template variables and metadata9886
-Ref: #template-variables-and-metadata10096
-Node: Running Pandoc10736
-Ref: #running-pandoc10907
-Node: Setting an output file12498
-Ref: #setting-an-output-file12668
-Node: Creating a pdf14093
-Ref: #creating-a-pdf14224
-Node: Font lock15020
-Ref: #font-lock15136
-Node: Settings Files15291
-Ref: #settings-files15438
-Node: Managing numbered examples17351
-Ref: #managing-numbered-examples17532
-Node: Using @@-directives18815
-Ref: #using--directives18986
-Node: Master file23217
-Ref: #master-file23353
-Node: Defining @@-directives24871
-Ref: #defining--directives25053
-Node: Directive hooks26583
-Ref: #directive-hooks26731
-Node: Using The Keyboard27058
-Ref: #using-the-keyboard27192
+Node: Introduction550
+Ref: #introduction671
+Node: Installation1525
+Ref: #installation1648
+Node: OS X3138
+Ref: #os-x3215
+Node: Usage3769
+Ref: #usage3875
+Node: Input and output formats4706
+Ref: #input-and-output-formats4872
+Node: Auxiliary files and options8098
+Ref: #auxiliary-files-and-options8310
+Node: Template variables and metadata10588
+Ref: #template-variables-and-metadata10798
+Node: Running Pandoc11438
+Ref: #running-pandoc11609
+Node: Setting an output file13200
+Ref: #setting-an-output-file13370
+Node: Creating a pdf14795
+Ref: #creating-a-pdf14926
+Node: Font lock15722
+Ref: #font-lock15838
+Node: Settings Files15993
+Ref: #settings-files16140
+Node: Managing numbered examples18053
+Ref: #managing-numbered-examples18234
+Node: Using @@-directives19517
+Ref: #using--directives19688
+Node: Master file23919
+Ref: #master-file24055
+Node: Defining @@-directives25573
+Ref: #defining--directives25755
+Node: Directive hooks27285
+Ref: #directive-hooks27433
+Node: Using The Keyboard27760
+Ref: #using-the-keyboard27894
 
 End Tag Table
 
