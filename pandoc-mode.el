@@ -1067,7 +1067,7 @@ also ignored in this case."
           (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
             (erase-buffer)
-            (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
+            (insert (format "Running `%s %s'\n\n" (file-name-nondirectory pandoc-binary) (mapconcat #'identity option-list " "))))
           (if (= 0 (let ((coding-system-for-read 'utf-8)
                          (coding-system-for-write 'utf-8))
                      (apply #'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
