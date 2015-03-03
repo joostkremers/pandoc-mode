@@ -1061,18 +1061,19 @@ also ignored in this case."
          ;; except the output format, which we take from ORIG-BUFFER:
          (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
             (pandoc--set 'write (pandoc--get 'write orig-buffer))))
-        (let ((option-list (pandoc--format-all-options filename pdf)))
+        (let ((option-list (pandoc--format-all-options filename pdf))
+              (pandoc-binary-name (file-name-nondirectory pandoc-binary)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (message "Running pandoc...")
           (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
             (erase-buffer)
-            (insert (format "Running `pandoc %s'\n\n" (mapconcat #'identity option-list " "))))
+            (insert (format "Running `%s %s'\n\n" pandoc-binary-name (mapconcat #'identity option-list " "))))
           (if (= 0 (let ((coding-system-for-read 'utf-8)
                          (coding-system-for-write 'utf-8))
                      (apply #'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
-              (message "Running pandoc... Finished.")
-            (message "Error in pandoc process.")
+              (message "Running %s... Finished." pandoc-binary-name)
+            (message "Error in %s process." pandoc-binary-name)
             (display-buffer pandoc--output-buffer)))))))
 
 (defun pandoc-run-pandoc (prefix)
