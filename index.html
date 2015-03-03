@@ -60,6 +60,11 @@
 
 <p>The function <code>pandoc-load-default-settings</code> checks if a default settings file exists for the file being loaded and reads its settings if it finds one.</p>
 
+<h2>
+<a id="os-x" class="anchor" href="#os-x" aria-hidden="true"><span class="octicon octicon-link"></span></a>OS X</h2>
+
+<p><code>pandoc-mode</code> expects that the <code>pandoc</code> binary can be found in your system’s <code>$PATH</code> and that the contents of <code>$PATH</code> is available to Emacs. Especially on OS X, this may not always be the case. To remedy this, you can set the user option <code>pandoc-binary</code> to the full path of <code>pandoc</code> on your system. A more elegant solution is to install the <a href="https://github.com/purcell/exec-path-from-shell"><code>exec-path-from-shell</code></a> package. This package makes sure that the contents of your system’s <code>$PATH</code> variable is visible to Emacs, allowing Emacs to find <code>pandoc</code>.</p>
+
 <h1>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h1>
 
@@ -191,7 +196,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 26 Jan 2015".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 04 Mar 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
