@@ -1633,7 +1633,7 @@ set. Without any prefix argument, the option is toggled."
 (defvar pandoc-citation-marker-face 'pandoc-citation-marker-face
   "Face name to use for '@' citation identifier.")
 
-(defvar pandoc-citation-extra-face 'pandoc-citation-marker-face
+(defvar pandoc-citation-extra-face 'pandoc-citation-extra-face
   "Face name to use for page numbers and other notation.")
 
 (defvar pandoc-citation-brackets-face 'pandoc-citation-brackets-face
