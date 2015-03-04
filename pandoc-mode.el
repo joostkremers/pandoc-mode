@@ -1069,12 +1069,17 @@ also ignored in this case."
           (with-pandoc-output-buffer
             (erase-buffer)
             (insert (format "Running `%s %s'\n\n" pandoc-binary-name (mapconcat #'identity option-list " "))))
-          (if (= 0 (let ((coding-system-for-read 'utf-8)
-                         (coding-system-for-write 'utf-8))
-                     (apply #'call-process-region (point-min) (point-max) pandoc-binary nil pandoc--output-buffer t option-list)))
-              (message "Running %s... Finished." pandoc-binary-name)
-            (message "Error in %s process." pandoc-binary-name)
-            (display-buffer pandoc--output-buffer)))))))
+          (let ((coding-system-for-read 'utf-8)
+                (coding-system-for-write 'utf-8)
+                (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc-binary option-list)))
+            (set-process-sentinel process (lambda (p e)
+                                            (let ((pandoc-binary-name (file-name-nondirectory pandoc-binary)))
+                                              (if (string-equal e "finished\n")
+                                                  (message "Running %s... Finished." pandoc-binary-name)
+                                                (message "Error in %s process." pandoc-binary-name)
+                                                (display-buffer pandoc--output-buffer)))))
+            (process-send-region process (point-min) (point-max))
+            (process-send-eof process)))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
