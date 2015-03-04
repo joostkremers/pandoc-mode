@@ -1064,7 +1064,7 @@ also ignored in this case."
         (let ((option-list (pandoc--format-all-options filename pdf))
               (pandoc-binary-name (file-name-nondirectory pandoc-binary)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-          (message "Running pandoc...")
+          (message "Running %s..." pandoc-binary-name)
           (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
             (erase-buffer)
