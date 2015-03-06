@@ -127,18 +127,12 @@ list, not if it appears higher on the list."
 (defvar pandoc--output-formats-menu nil
   "List of items in pandoc-mode's output format menu.")
 
-(defvar pandoc--output-formats-list nil
-  "List of Pandoc output formats.")
-
 (defun pandoc--set-output-formats (var value)
   "Set `pandoc-output-formats'.
 The value of this option is the basis for setting
-`pandoc--output-formats-menu' and `pandoc--output-formats-list'."
+`pandoc--output-formats-menu'."
   (setq pandoc--output-formats-menu (mapcar (lambda (elem)
                                               (cons (cadr (cdr elem)) (car elem)))
-                                            value))
-  (setq pandoc--output-formats-list (mapcar (lambda (elem)
-                                              (cons (car elem) (cadr elem)))
                                             value))
   (set-default var value))
 
@@ -919,7 +913,7 @@ Return a string that can be added to the call to Pandoc."
             (file-name-sans-extension (file-name-nondirectory input-file))
             (if pdf
                 ".pdf"
-              (cdr (assoc (pandoc--get 'write) pandoc--output-formats-list)))))
+              (cadr (assoc (pandoc--get 'write) pandoc-output-formats)))))
    ((stringp (pandoc--get 'output)) ; if the user set an output file,
     (format "--output=%s/%s"      ; we combine it with the output directory
             (expand-file-name (or (pandoc--get 'output-dir)
@@ -1089,7 +1083,7 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
-                             (completing-read "Output format to use: " pandoc--output-formats-list nil t)
+                             (completing-read "Output format to use: " pandoc-output-formats nil t)
                            nil)
                          nil
                          (if (use-region-p)
@@ -1358,7 +1352,7 @@ options and their values."
 If a settings and/or project file exists for FORMAT, they are
 loaded. If none exists, all options are unset (except the input
 format)."
-  (interactive (list (completing-read "Set output format to: " pandoc--output-formats-list nil t)))
+  (interactive (list (completing-read "Set output format to: " pandoc-output-formats nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc--get 'write))))
     (pandoc--save-settings 'settings (pandoc--get 'write) t))
