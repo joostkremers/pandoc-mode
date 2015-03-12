@@ -2,3 +2,4 @@
 *~
 *.texi
 /manual/pandoc-mode.md
+/manual/.pandoc-mode.text.html.pandoc
