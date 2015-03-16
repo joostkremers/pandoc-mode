@@ -4,7 +4,7 @@
 
 `pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://johnmacfarlane.net/pandoc/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.11 and is compatible with Pandoc version 1.13.
+The current version of `pandoc-mode` is 2.12 and is compatible with Pandoc version 1.13.
 
 
 # Installation #
@@ -138,6 +138,26 @@ You can create a project or global settings file through the menu in the submenu
 
 Note that starting with version 2.5, `pandoc-mode` settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.
 
+
+# File-local variables #
+
+`pandoc-mode` also allows options to be set as file-local variables, which gives you the ability to keep the settings for a file in the file itself. To specify an option in this way, use the long form of the option as a variable name, prefixed with `pandoc/` (note the slash; use `pandoc/read` and `pandoc/write` for the input and output formats, and `pandoc/table-of-contents` for the TOC).
+
+For example, in order to set a bibliography file, add the following line to the local variable block:
+
+```
+pandoc/bibliography: "~/path/to/mybib.bib"
+```
+
+The easiest way to add a file-local variable is to use the command `M-x add-file-local-variable`. This will put the variable at the end of the file and add the correct comment syntax. Note that the values are Lisp expressions, which means that strings need to be surrounded with double quotes. Symbols do not need to be quoted, however.
+
+Settings specified as file-local variables are kept separate from other settings: they cannot be set through the menu, they are *never* saved to a settings file, and they are not shown when you call `pandoc-view-settings` (`C-c / S`). A source file can both have a settings file and specify settings in file-local variables. If this happens, the latter override the former
+
+Note that it is also possible to specify the customisation option `pandoc-binary` as a file-local variable. It does not require the `pandoc/` prefix, but since its value is a string, it must be enclosed in quotes:
+
+```
+pandoc-binary: "/path/to/alternate/pandoc“
+```
 
 
 # Managing numbered examples #

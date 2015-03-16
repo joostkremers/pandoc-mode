@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.11
+;; Version: 2.12
 ;; Keywords: text, pandoc
 
 ;; Redistribution and use in source and binary forms, with or without
@@ -724,7 +724,11 @@ This is for use in major mode hooks."
   "Returns the value of OPTION.
 Optional argument BUFFER is the buffer from which the value is to
 be retrieved."
-  (cdr (assq option (buffer-local-value 'pandoc--local-settings (or buffer (current-buffer))))))
+  (or buffer (setq buffer (current-buffer)))
+  (let ((var (intern (concat "pandoc/" (symbol-name option)))))
+    (if (local-variable-p var buffer)
+        (buffer-local-value var buffer)
+      (cdr (assq option (buffer-local-value 'pandoc--local-settings buffer))))))
 
 ;; TODO list options aren't set correctly.
 (defun pandoc--set (option value)
@@ -1012,6 +1016,18 @@ with the @@-directives."
     (insert-file-contents include-file)
     (buffer-string)))
 
+;; `pandoc-call-external' sets up a process sentinel that needs to refer to
+;; `pandoc-binary' to provide an informative message. We want to allow a
+;; buffer-local value of `pandoc-binary', but the process sentinel doesn't
+;; have the necessary context. With `lexical-binding' set to t, we could
+;; make the sentinel a closure, but this only works for Emacs >= 24.1. An
+;; alternative way is to use a global variable, which, however, means that
+;; we can only have one pandoc subprocess at a time. Hopefully that won't
+;; be a problem.
+
+(defvar pandoc--local-binary "pandoc"
+  "Temporary store for the buffer-local value of `pandoc-binary'.")
+
 (defun pandoc--call-external (output-format &optional pdf region)
   "Call pandoc on the current buffer.
 This function creates a temporary buffer and sets up the required
@@ -1036,6 +1052,8 @@ also ignored in this case."
     ;; if there's a master file, ignore the region
     (if (pandoc--get 'master-file)
         (setq region nil))
+    ;; keep track of the buffer-local value of `pandoc-binary', if there is one
+    (setq pandoc--local-binary (buffer-local-value 'pandoc-binary buffer))
     (with-current-buffer buffer
       ;; we use with-current-buffer so that we can work on the master file
       ;; if there is one. we then change to a temp buffer, so we can
@@ -1055,20 +1073,29 @@ also ignored in this case."
          ;; except the output format, which we take from ORIG-BUFFER:
          (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
             (pandoc--set 'write (pandoc--get 'write orig-buffer))))
+        ;; copy any local `pandoc/' variables from `orig-buffer' or
+        ;; `buffer' (the values in `orig-buffer' take precedence):
+        (mapc (lambda (option)
+                (let ((var (intern (concat "pandoc/" (symbol-name (car option))))))
+                  (if (local-variable-p var orig-buffer)
+                      (set (make-local-variable var) (buffer-local-value var orig-buffer))
+                    (if (local-variable-p var buffer)
+                        (set (make-local-variable var) (buffer-local-value var buffer))))))
+              pandoc--options)
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-          (message "Running %s..." (file-name-nondirectory pandoc-binary))
+          (message "Running %s..." (file-name-nondirectory pandoc--local-binary))
           (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
             (erase-buffer)
-            (insert (format "Running `%s %s'\n\n" pandoc-binary (mapconcat #'identity option-list " "))))
+            (insert (format "Running `%s %s'\n\n" pandoc--local-binary (mapconcat #'identity option-list " "))))
           (let ((coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8)
-                (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc-binary option-list)))
+                (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
             (set-process-sentinel process (lambda (p e)
                                             (if (string-equal e "finished\n")
-                                                (message "Running %s... Finished." (file-name-nondirectory pandoc-binary))
-                                              (message "Error in %s process." (file-name-nondirectory pandoc-binary))
+                                                (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
+                                              (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
                                               (display-buffer pandoc--output-buffer))))
             (process-send-region process (point-min) (point-max))
             (process-send-eof process)))))))

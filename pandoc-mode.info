@@ -8,7 +8,7 @@ END-INFO-DIR-ENTRY
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
-Emacs pandoc-mode Joost Kremers 04 Mar 2015
+Emacs pandoc-mode Joost Kremers 16 Mar 2015
 *******************************************
 
 * Menu:
@@ -18,6 +18,7 @@ Emacs pandoc-mode Joost Kremers 04 Mar 2015
 * Usage::
 * Font lock::
 * Settings Files::
+* File-local variables::
 * Managing numbered examples::
 * Using @@-directives::
 * Using The Keyboard::
@@ -41,7 +42,7 @@ your text in Markdown and then translate it to HTML for online reading,
 PDF for offline reading and Texinfo for reading in Emacs, all with just
 a few keystrokes.
 
-The current version of `pandoc-mode' is 2.10 and is compatible with
+The current version of `pandoc-mode' is 2.12 and is compatible with
 Pandoc version 1.13.
 
 
@@ -99,10 +100,9 @@ system's `$PATH' and that the contents of `$PATH' is available to
 Emacs. Especially on OS X, this may not always be the case. To remedy
 this, you can set the user option `pandoc-binary' to the full path of
 `pandoc' on your system. A more elegant solution is to install the
-`exec-path-from-shell'
-(https://github.com/purcell/exec-path-from-shell) package. This package
-makes sure that the contents of your system's `$PATH' variable is
-visible to Emacs, allowing Emacs to find `pandoc'.
+exec-path-from-shell (https://github.com/purcell/exec-path-from-shell)
+package. This package makes sure that the contents of your system's
+`$PATH' variable is visible to Emacs, allowing Emacs to find `pandoc'.
 
 
 File: pandoc-mode.info,  Node: Usage,  Next: Font lock,  Prev: Installation,  Up: Top
@@ -365,7 +365,7 @@ example lists. The relevant faces can be customised in the
 customisation group `pandoc'.
 
 
-File: pandoc-mode.info,  Node: Settings Files,  Next: Managing numbered examples,  Prev: Font lock,  Up: Top
+File: pandoc-mode.info,  Node: Settings Files,  Next: File-local variables,  Prev: Font lock,  Up: Top
 
 5 Settings Files
 ****************
@@ -403,9 +403,47 @@ files continue to be read, so there is no need to change anything, but
 if you change any settings and save them, the file is converted.
 
 
-File: pandoc-mode.info,  Node: Managing numbered examples,  Next: Using @@-directives,  Prev: Settings Files,  Up: Top
+File: pandoc-mode.info,  Node: File-local variables,  Next: Managing numbered examples,  Prev: Settings Files,  Up: Top
 
-6 Managing numbered examples
+6 File-local variables
+**********************
+
+`pandoc-mode' also allows options to be set as file-local variables,
+which gives you the ability to keep the settings for a file in the file
+itself. To specify an option in this way, use the long form of the
+option as a variable name, prefixed with `pandoc/' (note the slash; use
+`pandoc/read' and `pandoc/write' for the input and output formats, and
+`pandoc/table-of-contents' for the TOC).
+
+For example, in order to set a bibliography file, add the following
+line to the local variable block:
+
+pandoc/bibliography: "~/path/to/mybib.bib"
+
+The easiest way to add a file-local variable is to use the command `M-x
+add-file-local-variable'. This will put the variable at the end of the
+file and add the correct comment syntax. Note that the values are Lisp
+expressions, which means that strings need to be surrounded with double
+quotes. Symbols do not need to be quoted, however.
+
+Settings specified as file-local variables are kept separate from other
+settings: they cannot be set through the menu, they are _never_ saved
+to a settings file, and they are not shown when you call
+`pandoc-view-settings' (`C-c / S'). A source file can both have a
+settings file and specify settings in file-local variables. If this
+happens, the latter override the former
+
+Note that it is also possible to specify the customisation option
+`pandoc-binary' as a file-local variable. It does not require the
+`pandoc/' prefix, but since its value is a string, it must be enclosed
+in quotes:
+
+pandoc-binary: "/path/to/alternate/pandoc“
+
+
+File: pandoc-mode.info,  Node: Managing numbered examples,  Next: Using @@-directives,  Prev: File-local variables,  Up: Top
+
+7 Managing numbered examples
 ****************************
 
 Pandoc provides a method for creating examples that are numbered
@@ -432,7 +470,7 @@ inserting anything into your document.
 
 File: pandoc-mode.info,  Node: Using @@-directives,  Next: Using The Keyboard,  Prev: Managing numbered examples,  Up: Top
 
-7 Using @@-directives
+8 Using @@-directives
 *********************
 
 `pandoc-mode' includes a facility to make specific, automatic changes
@@ -475,7 +513,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 04 Mar 2015".
+`@@date{Cologne}' to get "Cologne, 16 Mar 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -533,7 +571,7 @@ gets processed as well.
 
 File: pandoc-mode.info,  Node: Master file,  Next: Defining @@-directives,  Up: Using @@-directives
 
-7.1 Master file
+8.1 Master file
 ===============
 
 If you have a master file with one or more `@@include' directives and
@@ -567,7 +605,7 @@ the directory.
 
 File: pandoc-mode.info,  Node: Defining @@-directives,  Next: Directive hooks,  Prev: Master file,  Up: Using @@-directives
 
-7.2 Defining @@-directives
+8.2 Defining @@-directives
 ==========================
 
 Defining `@@'-directives yourself is done in two steps. First, you need
@@ -599,7 +637,7 @@ bound to `C-/'), or do your test in the `*scratch*' buffer.
 
 File: pandoc-mode.info,  Node: Directive hooks,  Prev: Defining @@-directives,  Up: Using @@-directives
 
-7.3 Directive hooks
+8.3 Directive hooks
 ===================
 
 There is another customizable variable related to `@@'-directives:
@@ -611,7 +649,7 @@ things that the directive functions might need.
 
 File: pandoc-mode.info,  Node: Using The Keyboard,  Prev: Using @@-directives,  Up: Top
 
-8 Using The Keyboard
+9 Using The Keyboard
 ********************
 
 Although `pandoc-mode' can be controlled through the menu, it is
@@ -662,42 +700,44 @@ they are bound to:
 
 Tag Table:
 Node: Top225
-Node: Introduction550
-Ref: #introduction671
-Node: Installation1525
-Ref: #installation1648
-Node: OS X3138
-Ref: #os-x3215
-Node: Usage3769
-Ref: #usage3875
-Node: Input and output formats4706
-Ref: #input-and-output-formats4872
-Node: Auxiliary files and options8098
-Ref: #auxiliary-files-and-options8310
-Node: Template variables and metadata10588
-Ref: #template-variables-and-metadata10798
-Node: Running Pandoc11438
-Ref: #running-pandoc11609
-Node: Setting an output file13200
-Ref: #setting-an-output-file13370
-Node: Creating a pdf14795
-Ref: #creating-a-pdf14926
-Node: Font lock15722
-Ref: #font-lock15838
-Node: Settings Files15993
-Ref: #settings-files16140
-Node: Managing numbered examples18053
-Ref: #managing-numbered-examples18234
-Node: Using @@-directives19517
-Ref: #using--directives19688
-Node: Master file23919
-Ref: #master-file24055
-Node: Defining @@-directives25573
-Ref: #defining--directives25755
-Node: Directive hooks27285
-Ref: #directive-hooks27433
-Node: Using The Keyboard27760
-Ref: #using-the-keyboard27894
+Node: Introduction575
+Ref: #introduction696
+Node: Installation1550
+Ref: #installation1673
+Node: OS X3163
+Ref: #os-x3240
+Node: Usage3792
+Ref: #usage3898
+Node: Input and output formats4729
+Ref: #input-and-output-formats4895
+Node: Auxiliary files and options8121
+Ref: #auxiliary-files-and-options8333
+Node: Template variables and metadata10611
+Ref: #template-variables-and-metadata10821
+Node: Running Pandoc11461
+Ref: #running-pandoc11632
+Node: Setting an output file13223
+Ref: #setting-an-output-file13393
+Node: Creating a pdf14818
+Ref: #creating-a-pdf14949
+Node: Font lock15745
+Ref: #font-lock15861
+Node: Settings Files16016
+Ref: #settings-files16157
+Node: File-local variables18070
+Ref: #file-local-variables18240
+Node: Managing numbered examples19753
+Ref: #managing-numbered-examples19940
+Node: Using @@-directives21223
+Ref: #using--directives21394
+Node: Master file25625
+Ref: #master-file25761
+Node: Defining @@-directives27279
+Ref: #defining--directives27461
+Node: Directive hooks28991
+Ref: #directive-hooks29139
+Node: Using The Keyboard29466
+Ref: #using-the-keyboard29600
 
 End Tag Table
 
