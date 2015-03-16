@@ -36,7 +36,7 @@
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://johnmacfarlane.net/pandoc/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
-<p>The current version of <code>pandoc-mode</code> is 2.10 and is compatible with Pandoc version 1.13.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.12 and is compatible with Pandoc version 1.13.</p>
 
 <h1>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
@@ -166,6 +166,25 @@
 <p>Note that starting with version 2.5, <code>pandoc-mode</code> settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.</p>
 
 <h1>
+<a id="file-local-variables" class="anchor" href="#file-local-variables" aria-hidden="true"><span class="octicon octicon-link"></span></a>File-local variables</h1>
+
+<p><code>pandoc-mode</code> also allows options to be set as file-local variables, which gives you the ability to keep the settings for a file in the file itself. To specify an option in this way, use the long form of the option as a variable name, prefixed with <code>pandoc/</code> (note the slash; use <code>pandoc/read</code> and <code>pandoc/write</code> for the input and output formats, and <code>pandoc/table-of-contents</code> for the TOC).</p>
+
+<p>For example, in order to set a bibliography file, add the following line to the local variable block:</p>
+
+<pre><code>pandoc/bibliography: "~/path/to/mybib.bib"
+</code></pre>
+
+<p>The easiest way to add a file-local variable is to use the command <code>M-x add-file-local-variable</code>. This will put the variable at the end of the file and add the correct comment syntax. Note that the values are Lisp expressions, which means that strings need to be surrounded with double quotes. Symbols do not need to be quoted, however.</p>
+
+<p>Settings specified as file-local variables are kept separate from other settings: they cannot be set through the menu, they are <em>never</em> saved to a settings file, and they are not shown when you call <code>pandoc-view-settings</code> (<code>C-c / S</code>). A source file can both have a settings file and specify settings in file-local variables. If this happens, the latter override the former</p>
+
+<p>Note that it is also possible to specify the customisation option <code>pandoc-binary</code> as a file-local variable. It does not require the <code>pandoc/</code> prefix, but since its value is a string, it must be enclosed in quotes:</p>
+
+<pre><code>pandoc-binary: "/path/to/alternate/pandoc“
+</code></pre>
+
+<h1>
 <a id="managing-numbered-examples" class="anchor" href="#managing-numbered-examples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Managing numbered examples</h1>
 
 <p>Pandoc provides a method for creating examples that are numbered sequentially throughout the document (see <a href="http://johnmacfarlane.net/pandoc/README.html#numbered-example-lists">Numbered example lists</a> in the Pandoc documentation). <code>pandoc-mode</code> makes it easier to manage such lists. First, by going to "Example Lists | Insert New Example" (<code>C-c / c</code>), you can insert a new example list item with a numeric label: the first example you insert will be numbered <code>(@1)</code>, the second <code>(@2)</code>, and so on. Before inserting the first example item, Emacs will search the document for any existing definitions and number the new items sequentially, so that the numeric label will always be unique.</p>
@@ -196,7 +215,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 04 Mar 2015".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 16 Mar 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
@@ -277,7 +296,7 @@
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Pandoc-mode maintained by <a href="https://github.com/joostkremers">joostkremers</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
 
