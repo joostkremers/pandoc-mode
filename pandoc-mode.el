@@ -1735,4 +1735,4 @@ set. Without any prefix argument, the option is toggled."
 
 (provide 'pandoc-mode)
 
-;;; pandoc-mode ends here
+;;; pandoc-mode.el ends here
