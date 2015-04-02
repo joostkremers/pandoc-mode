@@ -633,18 +633,19 @@ options and their values."
             (value (match-string 2)))
         ;; If the option is a variable or extension, we read its name and
         ;; value and add them to the alist as a dotted list.
-        (add-to-list 'options (if (memq option '(variable read-extensions write-extensions))
-                                  (progn
-                                    (string-match "^\\(.*?\\):\\(.*?\\)$" value)
-                                    (cons option (cons (match-string 1 value)
-                                                       (if (eq option 'variable)
-                                                           (match-string 2 value)
-                                                         (intern (match-string 2 value))))))
-                                (cons option (cond
-                                              ((string-match "^[0-9]$" value) (string-to-number value))
-                                              ((string= "t" value) t)
-                                              ((string= "nil" value) nil)
-                                              (t value)))))))
+        (push (if (memq option '(variable read-extensions write-extensions))
+                  (progn
+                    (string-match "^\\(.*?\\):\\(.*?\\)$" value)
+                    (cons option (cons (match-string 1 value)
+                                       (if (eq option 'variable)
+                                           (match-string 2 value)
+                                         (intern (match-string 2 value))))))
+                (cons option (cond
+                              ((string-match "^[0-9]$" value) (string-to-number value))
+                              ((string= "t" value) t)
+                              ((string= "nil" value) nil)
+                              (t value))))
+              options)))
     ;; `options' isn't in the proper format for pandoc--local-settings yet:
     ;; there may be multiple variables and extensions in it. Since we're in
     ;; a temp buffer, we can simply use pandoc--set to set all options and
@@ -697,8 +698,8 @@ options and their values."
     (goto-char (point-min))
     (let (definitions)
       (while (re-search-forward "^[[:space:]]*\\((@.*?).*\\)$" nil t)
-        (add-to-list 'definitions (match-string-no-properties 1) t))
-      definitions)))
+        (push (match-string-no-properties 1) definitions))
+      (nreverse definitions))))
 
 (defun pandoc-select-@ ()
   "Show a list of (@)-definitions and allow the user to choose one."
