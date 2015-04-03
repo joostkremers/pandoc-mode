@@ -43,6 +43,8 @@
 
 ;;; Code:
 
+(require 'dash)
+
 (defun nonempty (string)
   "Return STRING, unless it is \"\", in which case return NIL."
   (when (not (string= string ""))
