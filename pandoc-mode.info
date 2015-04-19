@@ -8,7 +8,7 @@ END-INFO-DIR-ENTRY
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
-Emacs pandoc-mode Joost Kremers 31 Mar 2015
+Emacs pandoc-mode Joost Kremers 19 Apr 2015
 *******************************************
 
 * Menu:
@@ -401,8 +401,8 @@ file is found. Both types of files are specific to a particular output
 format, just like local settings files. Project files live in the
 directory they apply to and are called `Project.<format>.pandoc'.
 Global files live in the directory specified by the variable
-`pandoc-data-dir', which defaults to `~/.emacs.d/pandoc/', but this can
-of course be changed in the customisation group `pandoc'.
+`pandoc-data-dir', which defaults to `~/.emacs.d/pandoc-mode/', but
+this can of course be changed in the customisation group `pandoc'.
 
 Whenever `pandoc-mode' loads settings for an input file, it first
 checks if there is a local settings file. If none is found, it looks
@@ -537,7 +537,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 31 Mar 2015".
+`@@date{Cologne}' to get "Cologne, 19 Apr 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -732,20 +732,20 @@ Node: Font lock17395
 Ref: #font-lock17511
 Node: Settings Files17666
 Ref: #settings-files17807
-Node: File-local variables19720
-Ref: #file-local-variables19890
-Node: Managing numbered examples21403
-Ref: #managing-numbered-examples21590
-Node: Using @@-directives22839
-Ref: #using--directives23016
-Node: Master file27571
-Ref: #master-file27707
-Node: Defining @@-directives29200
-Ref: #defining--directives29382
-Node: Directive hooks30912
-Ref: #directive-hooks31060
-Node: Disabling the hydra menu31387
-Ref: #disabling-the-hydra-menu31539
+Node: File-local variables19725
+Ref: #file-local-variables19895
+Node: Managing numbered examples21408
+Ref: #managing-numbered-examples21595
+Node: Using @@-directives22844
+Ref: #using--directives23021
+Node: Master file27576
+Ref: #master-file27712
+Node: Defining @@-directives29205
+Ref: #defining--directives29387
+Node: Directive hooks30917
+Ref: #directive-hooks31065
+Node: Disabling the hydra menu31392
+Ref: #disabling-the-hydra-menu31544
 
 End Tag Table
 
