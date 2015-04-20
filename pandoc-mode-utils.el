@@ -937,8 +937,9 @@ evaluated."
 (define-pandoc-switch         reference-links (specific "r" "%-21s") "Reference Links")
 
 ;; html-based
-(define-pandoc-string-option  id-prefix         (html "i" "%-31s") "ID prefix")
-(define-pandoc-file-option    css               (html "c" "%-31s") "CSS Style Sheet")
+(define-pandoc-string-option     id-prefix    (html "i" "%-31s") "ID prefix")
+(define-pandoc-list-option file  css          (html "c" "%-31s") "CSS Style Sheet" "CSS")
+
 (define-pandoc-string-option  title-prefix      (html "t" "%-31s") "Title prefix")
 (define-pandoc-choice-option  email-obfuscation (html "e" "%-31s") "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
 (define-pandoc-switch         section-divs      (html "d" "%-31s") "Wrap Sections in <div> Tags")
