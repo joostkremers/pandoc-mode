@@ -168,7 +168,7 @@
   "Turn on pandoc-mode if a pandoc settings file exists.
 This is for use in major mode hooks."
   (when (and (buffer-file-name)
-             (file-exists-p (pandoc--create-settings-filename 'settings (buffer-file-name) "default")))
+             (file-exists-p (pandoc--create-settings-filename 'local (buffer-file-name) "default")))
     (pandoc-mode 1)))
 
 (defun pandoc-toggle-extension (extension rw)
@@ -202,11 +202,11 @@ N is the index of the extension in `pandoc--extensions'."
 
 (defun pandoc--create-settings-filename (type filename output-format)
   "Create a settings filename.
-TYPE is the type of settings file, either 'settings or 'project.
+TYPE is the type of settings file, either 'local or 'project.
 The return value is an absolute filename."
   (setq filename (expand-file-name filename))
   (cond
-   ((eq type 'settings)
+   ((eq type 'local)
     (concat (file-name-directory filename) "." (file-name-nondirectory filename) "." output-format ".pandoc"))
    ((eq type 'project)
     (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
@@ -492,15 +492,15 @@ files. (Therefore, this function is not available on Windows.)"
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
     (let ((current-settings-file
-           (file-name-nondirectory (pandoc--create-settings-filename 'settings (buffer-file-name)
+           (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
                                                                      (pandoc--get 'write))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
                                                                      (pandoc--get 'write)))))
       (when (not (file-exists-p current-settings-file))
-        (pandoc--save-settings 'settings (pandoc--get 'write)))
+        (pandoc--save-settings 'local (pandoc--get 'write)))
       (make-symbolic-link current-settings-file
-                          (pandoc--create-settings-filename 'settings (buffer-file-name) "default") t)
+                          (pandoc--create-settings-filename 'local (buffer-file-name) "default") t)
       (when (file-exists-p current-project-file)
         (make-symbolic-link current-project-file
                             (pandoc--create-settings-filename 'project (buffer-file-name) "default") t))
@@ -511,7 +511,7 @@ files. (Therefore, this function is not available on Windows.)"
 This function just calls pandoc--save-settings with the
 appropriate output format."
   (interactive)
-  (pandoc--save-settings 'settings (pandoc--get 'write)))
+  (pandoc--save-settings 'local (pandoc--get 'write)))
 
 (defun pandoc-save-project-file ()
   "Save the current settings as a project file."
@@ -526,7 +526,7 @@ appropriate output format."
 (defun pandoc--save-settings (type format &optional no-confirm)
   "Save the settings of the current buffer for FORMAT.
 TYPE must be a quoted symbol and specifies the type of settings
-file. If its value is 'settings, a normal settings file is
+file. If its value is 'local, a normal settings file is
 created for the current file. If TYPE's value is 'project, a
 project settings file is written. If optional argument NO-CONFIRM
 is non-nil, any existing settings file is overwritten without
@@ -577,10 +577,10 @@ This function is for use in `pandoc-mode-hook'."
   "Load the options for FORMAT from the corresponding settings file.
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
-  (when (buffer-file-name)
-    (pandoc--load-settings-for-file (expand-file-name (buffer-file-name)) format no-confirm)))
-
-(defvar pandoc--counter) ; We use this to keep track of which kind of settings file is being read.
+  (pandoc--load-settings-for-file (when (buffer-file-name)
+                                    (expand-file-name (buffer-file-name)))
+                                  format
+                                  no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings for FILE.
@@ -590,25 +590,32 @@ global settings file exist.
 
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved. FILE must be an absolute path name.
-The settings are stored in the current buffer's
-`pandoc--local-settings'. Returns nil if no settings or project
+If FILE is nil, a global settings file is read, if any. The
+settings are stored in the current buffer's
+`pandoc--local-settings'. Return nil if no settings or project
 file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc--get 'write))))
-    (pandoc--save-settings 'settings (pandoc--get 'write) t))
-  (let* ((pandoc--counter -1)
-         (settings (or (pandoc--read-settings-from-file (pandoc--create-settings-filename 'settings file format))
-                       (pandoc--read-settings-from-file (pandoc--create-settings-filename 'project file format))
-                       (pandoc--read-settings-from-file (pandoc--create-global-settings-filename format)))))
-    (when settings
-      (setq pandoc--local-settings settings)
-      (message "%s settings file loaded for format \"%s\"." (nth pandoc--counter '("Local" "Project" "Global")) format))))
+    (pandoc--save-settings 'local (pandoc--get 'write) t))
+  (let (settings)
+    ;; first try to read local settings
+    (when file
+      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-settings-filename 'local file format)))))
+    ;; if it fails, try project settings
+    (when (and file (not (cdr settings)))
+      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-settings-filename 'project file format)))))
+    ;; if that fails too, or if there is no file, try reading global settings
+    (unless (cdr settings)
+      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-global-settings-filename format)))))
+    ;; now set them
+    (when (cdr settings)
+      (setq pandoc--local-settings (cdr settings))
+      (message "%s settings file loaded for format \"%s\"." (capitalize (symbol-name (car settings))) format))))
 
 (defun pandoc--read-settings-from-file (file)
   "Read the settings in FILE and return them.
-If FILE does not exist or cannot be read, return NIL."
-  (setq pandoc--counter (1+ pandoc--counter)) ; Increase our file type counter.
+If FILE does not exist or cannot be read, return nil."
   (if (file-readable-p file)
       (with-temp-buffer
         (insert-file-contents file)
@@ -732,7 +739,7 @@ format)."
   (interactive (list (completing-read "Set output format to: " pandoc--output-formats nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc--get 'write))))
-    (pandoc--save-settings 'settings (pandoc--get 'write) t))
+    (pandoc--save-settings 'local (pandoc--get 'write) t))
   (unless (pandoc--load-settings-profile format t)
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--set 'write format)
