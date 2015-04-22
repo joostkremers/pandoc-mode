@@ -433,11 +433,10 @@ also ignored in this case."
               pandoc--options)
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-          (message "Running %s..." (file-name-nondirectory pandoc--local-binary))
+          (message "Running %s %s" (file-name-nondirectory pandoc--local-binary) option-list)
           (pandoc-process-directives (pandoc--get 'write))
           (with-pandoc-output-buffer
-            (erase-buffer)
-            (insert (format "Running `%s %s'\n\n" pandoc--local-binary (mapconcat #'identity option-list " "))))
+            (erase-buffer))
           (let ((coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8)
                 (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
