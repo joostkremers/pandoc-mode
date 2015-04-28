@@ -1197,6 +1197,12 @@ _M_: Use current file as master file
 (defvar pandoc-citation-brackets-face 'pandoc-citation-brackets-face
   "Face name to use for page numbers and other notation.")
 
+(defvar pandoc-strikethrough-text-face 'pandoc-strikethrough-text-face
+  "Face name to use for strikethrough text.")
+
+(defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
+  "Face name to use for strikethrough tilde syntax.")
+
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for pandoc citations."
@@ -1217,6 +1223,16 @@ _M_: Use current file as master file
   "Base face for pandoc citation brackets."
   :group 'pandoc)
 
+(defface pandoc-strikethrough-text-face
+  '((t (:strike-through t)))
+  "Base face for pandoc strikethrough text."
+  :group 'pandoc)
+
+(defface pandoc-strikethrough-tilde-face
+  '((t (:inherit font-lock-warning-face)))
+  "Base face for pandoc citation brackets."
+  :group 'pandoc)
+
 (defconst pandoc-regex-parenthetical-citation-single
   "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with only one key.")
@@ -1233,8 +1249,16 @@ _M_: Use current file as master file
   "\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
 
+(defconst pandoc-regex-strikethrough
+  "\\(~~\\)\\(.*?\\)\\(~~\\)"
+  "Regular expression for stand-alone citation with no anchor.")
+
 (defvar pandoc-faces-keywords
   (list
+   (cons pandoc-regex-strikethrough
+	 '((1 pandoc-strikethrough-tilde-face keep)
+	   (2 pandoc-strikethrough-text-face keep)
+	   (3 pandoc-strikethrough-tilde-face keep)))
    (cons pandoc-regex-parenthetical-citation-single
    	 '((1 pandoc-citation-brackets-face t)
    	   (2 pandoc-citation-marker-face)
