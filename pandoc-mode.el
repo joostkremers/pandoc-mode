@@ -1201,7 +1201,7 @@ _M_: Use current file as master file
   "Face name to use for strikethrough text.")
 
 (defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
-  "Face name to use for strikethrough tilde syntax.")
+  "Face name to use for strikethrough delimiters.")
 
 
 (defface pandoc-citation-key-face
@@ -1251,15 +1251,11 @@ _M_: Use current file as master file
   "Regular expression for stand-alone citation with no anchor.")
 
 (defconst pandoc-regex-strikethrough
-  "\\(~~\\)\\(.*?\\)\\(~~\\)"
+  "\\(~\\{2\\}\\)\\([^~].*?\\)\\(~\\{2\\}\\)"
   "Regular expression for pandoc markdown's strikethrough syntax.")
 
 (defvar pandoc-faces-keywords
   (list
-   (cons pandoc-regex-strikethrough
-   	 '((1 pandoc-strikethrough-tilde-face )
-   	   (2 pandoc-strikethrough-text-face )
-   	   (3 pandoc-strikethrough-tilde-face )))
    (cons pandoc-regex-parenthetical-citation-single
    	 '((1 pandoc-citation-brackets-face t)
    	   (2 pandoc-citation-marker-face)
@@ -1279,7 +1275,11 @@ _M_: Use current file as master file
 	   (5 pandoc-citation-brackets-face)))
    (cons pandoc-regex-in-text-citation-2
 	 '((1 pandoc-citation-marker-face t)
-	   (2 pandoc-citation-key-face t))))
+	   (2 pandoc-citation-key-face t)))
+   (cons pandoc-regex-strikethrough
+   	 '((1 pandoc-strikethrough-tilde-face)
+   	   (2 pandoc-strikethrough-text-face )
+   	   (3 pandoc-strikethrough-tilde-face))))
   "Keywords for pandoc faces.")
 
 (defun pandoc-faces-load ()
