@@ -1203,6 +1203,7 @@ _M_: Use current file as master file
 (defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
   "Face name to use for strikethrough tilde syntax.")
 
+
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for pandoc citations."
@@ -1230,7 +1231,7 @@ _M_: Use current file as master file
 
 (defface pandoc-strikethrough-tilde-face
   '((t (:inherit font-lock-warning-face)))
-  "Base face for pandoc citation brackets."
+  "Base face for pandoc strikethrough delimiters."
   :group 'pandoc)
 
 (defconst pandoc-regex-parenthetical-citation-single
@@ -1246,19 +1247,19 @@ _M_: Use current file as master file
   "Regular expression for stand-alone citation with anchor.")
 
 (defconst pandoc-regex-in-text-citation-2
-  "\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
+  "\\<\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
 
 (defconst pandoc-regex-strikethrough
   "\\(~~\\)\\(.*?\\)\\(~~\\)"
-  "Regular expression for stand-alone citation with no anchor.")
+  "Regular expression for pandoc markdown's strikethrough syntax.")
 
 (defvar pandoc-faces-keywords
   (list
    (cons pandoc-regex-strikethrough
-	 '((1 pandoc-strikethrough-tilde-face keep)
-	   (2 pandoc-strikethrough-text-face keep)
-	   (3 pandoc-strikethrough-tilde-face keep)))
+   	 '((1 pandoc-strikethrough-tilde-face )
+   	   (2 pandoc-strikethrough-text-face )
+   	   (3 pandoc-strikethrough-tilde-face )))
    (cons pandoc-regex-parenthetical-citation-single
    	 '((1 pandoc-citation-brackets-face t)
    	   (2 pandoc-citation-marker-face)
@@ -1277,8 +1278,8 @@ _M_: Use current file as master file
 	   (4 pandoc-citation-extra-face)
 	   (5 pandoc-citation-brackets-face)))
    (cons pandoc-regex-in-text-citation-2
-	 '((1 pandoc-citation-marker-face prepend)
-	   (2 pandoc-citation-key-face prepend))))
+	 '((1 pandoc-citation-marker-face t)
+	   (2 pandoc-citation-key-face t))))
   "Keywords for pandoc faces.")
 
 (defun pandoc-faces-load ()
