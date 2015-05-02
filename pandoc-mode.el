@@ -1247,7 +1247,7 @@ _M_: Use current file as master file
   "Regular expression for stand-alone citation with anchor.")
 
 (defconst pandoc-regex-in-text-citation-2
-  "\\<\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
+  "[^[:alnum:]]\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
 
 (defconst pandoc-regex-strikethrough
@@ -1261,11 +1261,14 @@ _M_: Use current file as master file
    	   (2 pandoc-citation-marker-face)
    	   (3 pandoc-citation-key-face)
    	   (4 pandoc-citation-brackets-face t)))
+   (cons pandoc-regex-in-text-citation-2
+   	 '((1 pandoc-citation-marker-face)
+   	   (2 pandoc-citation-key-face)))
    (cons pandoc-regex-parenthetical-citation-multiple
          '((1 pandoc-citation-brackets-face t)
            (2 pandoc-citation-marker-face)
            (3 pandoc-citation-key-face)
-           (4 pandoc-citation-extra-face t)
+           (4 pandoc-citation-extra-face append)
            (5 pandoc-citation-brackets-face t)))
    (cons pandoc-regex-in-text-citation
 	 '((1 pandoc-citation-marker-face)
@@ -1273,9 +1276,9 @@ _M_: Use current file as master file
 	   (3 pandoc-citation-brackets-face)
 	   (4 pandoc-citation-extra-face)
 	   (5 pandoc-citation-brackets-face)))
-   (cons pandoc-regex-in-text-citation-2
-	 '((1 pandoc-citation-marker-face t)
-	   (2 pandoc-citation-key-face t)))
+   ;; (cons pandoc-regex-in-text-citation-2
+   ;; 	 '((1 pandoc-citation-marker-face prepend)
+   ;; 	   (2 pandoc-citation-key-face prepend)))
    (cons pandoc-regex-strikethrough
    	 '((1 pandoc-strikethrough-tilde-face)
    	   (2 pandoc-strikethrough-text-face )
@@ -1293,5 +1296,6 @@ _M_: Use current file as master file
   (font-lock-fontify-buffer))
 
 (provide 'pandoc-mode)
+
 
 ;;; pandoc-mode.el ends here
