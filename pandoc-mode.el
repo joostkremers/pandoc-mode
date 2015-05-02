@@ -1239,7 +1239,7 @@ _M_: Use current file as master file
   "Regular expression for parenthetical citations with only one key.")
 
 (defconst pandoc-regex-parenthetical-citation-multiple
-  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
+  "\\(\\[\\)\\(.*?\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with page numbers or multiple keys.")
 
 (defconst pandoc-regex-in-text-citation
@@ -1266,19 +1266,17 @@ _M_: Use current file as master file
    	   (2 pandoc-citation-key-face)))
    (cons pandoc-regex-parenthetical-citation-multiple
          '((1 pandoc-citation-brackets-face t)
-           (2 pandoc-citation-marker-face)
-           (3 pandoc-citation-key-face)
-           (4 pandoc-citation-extra-face append)
-           (5 pandoc-citation-brackets-face t)))
+           (2 pandoc-citation-extra-face)
+           (3 pandoc-citation-marker-face)
+           (4 pandoc-citation-key-face)
+           (5 pandoc-citation-extra-face append)
+           (6 pandoc-citation-brackets-face t)))
    (cons pandoc-regex-in-text-citation
 	 '((1 pandoc-citation-marker-face)
 	   (2 pandoc-citation-key-face)
 	   (3 pandoc-citation-brackets-face)
 	   (4 pandoc-citation-extra-face)
 	   (5 pandoc-citation-brackets-face)))
-   ;; (cons pandoc-regex-in-text-citation-2
-   ;; 	 '((1 pandoc-citation-marker-face prepend)
-   ;; 	   (2 pandoc-citation-key-face prepend)))
    (cons pandoc-regex-strikethrough
    	 '((1 pandoc-strikethrough-tilde-face)
    	   (2 pandoc-strikethrough-text-face )
