@@ -1197,6 +1197,13 @@ _M_: Use current file as master file
 (defvar pandoc-citation-brackets-face 'pandoc-citation-brackets-face
   "Face name to use for page numbers and other notation.")
 
+(defvar pandoc-strikethrough-text-face 'pandoc-strikethrough-text-face
+  "Face name to use for strikethrough text.")
+
+(defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
+  "Face name to use for strikethrough delimiters.")
+
+
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for pandoc citations."
@@ -1217,12 +1224,22 @@ _M_: Use current file as master file
   "Base face for pandoc citation brackets."
   :group 'pandoc)
 
+(defface pandoc-strikethrough-text-face
+  '((t (:strike-through t)))
+  "Base face for pandoc strikethrough text."
+  :group 'pandoc)
+
+(defface pandoc-strikethrough-tilde-face
+  '((t (:inherit font-lock-warning-face)))
+  "Base face for pandoc strikethrough delimiters."
+  :group 'pandoc)
+
 (defconst pandoc-regex-parenthetical-citation-single
   "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with only one key.")
 
 (defconst pandoc-regex-parenthetical-citation-multiple
-  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
+  "\\(\\[\\)\\(.*?\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(.*?\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with page numbers or multiple keys.")
 
 (defconst pandoc-regex-in-text-citation
@@ -1230,8 +1247,12 @@ _M_: Use current file as master file
   "Regular expression for stand-alone citation with anchor.")
 
 (defconst pandoc-regex-in-text-citation-2
-  "\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
+  "[^[:alnum:]]\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
+
+(defconst pandoc-regex-strikethrough
+  "\\(~\\{2\\}\\)\\([^~].*?\\)\\(~\\{2\\}\\)"
+  "Regular expression for pandoc markdown's strikethrough syntax.")
 
 (defvar pandoc-faces-keywords
   (list
@@ -1240,21 +1261,26 @@ _M_: Use current file as master file
    	   (2 pandoc-citation-marker-face)
    	   (3 pandoc-citation-key-face)
    	   (4 pandoc-citation-brackets-face t)))
+   (cons pandoc-regex-in-text-citation-2
+   	 '((1 pandoc-citation-marker-face)
+   	   (2 pandoc-citation-key-face)))
    (cons pandoc-regex-parenthetical-citation-multiple
          '((1 pandoc-citation-brackets-face t)
-           (2 pandoc-citation-marker-face)
-           (3 pandoc-citation-key-face)
-           (4 pandoc-citation-extra-face t)
-           (5 pandoc-citation-brackets-face t)))
+           (2 pandoc-citation-extra-face)
+           (3 pandoc-citation-marker-face)
+           (4 pandoc-citation-key-face)
+           (5 pandoc-citation-extra-face append)
+           (6 pandoc-citation-brackets-face t)))
    (cons pandoc-regex-in-text-citation
 	 '((1 pandoc-citation-marker-face)
 	   (2 pandoc-citation-key-face)
 	   (3 pandoc-citation-brackets-face)
 	   (4 pandoc-citation-extra-face)
 	   (5 pandoc-citation-brackets-face)))
-   (cons pandoc-regex-in-text-citation-2
-	 '((1 pandoc-citation-marker-face prepend)
-	   (2 pandoc-citation-key-face prepend))))
+   (cons pandoc-regex-strikethrough
+   	 '((1 pandoc-strikethrough-tilde-face)
+   	   (2 pandoc-strikethrough-text-face )
+   	   (3 pandoc-strikethrough-tilde-face))))
   "Keywords for pandoc faces.")
 
 (defun pandoc-faces-load ()
@@ -1268,5 +1294,6 @@ _M_: Use current file as master file
   (font-lock-fontify-buffer))
 
 (provide 'pandoc-mode)
+
 
 ;;; pandoc-mode.el ends here
