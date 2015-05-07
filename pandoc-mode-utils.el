@@ -44,6 +44,7 @@
 ;;; Code:
 
 (require 'dash)
+(require 'cl)
 
 (defun nonempty (string)
   "Return STRING, unless it is \"\", in which case return NIL."

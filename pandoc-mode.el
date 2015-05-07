@@ -45,6 +45,7 @@
 (require 'hydra)
 (require 'dash)
 (require 'pandoc-mode-utils)
+(require 'cl)
 
 (defvar-local pandoc--@-counter 0 "Counter for (@)-lists.")
 
