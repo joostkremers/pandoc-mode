@@ -438,9 +438,9 @@ also ignored in this case."
           (with-pandoc-output-buffer
             (erase-buffer)
             (insert (format "Running `%s %s'\n\n" pandoc--local-binary (mapconcat #'identity option-list " "))))
-          (let ((coding-system-for-read 'utf-8)
-                (coding-system-for-write 'utf-8)
-                (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
+          (let* ((coding-system-for-read 'utf-8)
+                 (coding-system-for-write 'utf-8)
+                 (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
             (set-process-sentinel process (lambda (p e)
                                             (if (string-equal e "finished\n")
                                                 (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
