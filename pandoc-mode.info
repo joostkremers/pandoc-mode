@@ -8,8 +8,8 @@ END-INFO-DIR-ENTRY
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
-Emacs pandoc-mode Joost Kremers 19 Apr 2015
-*******************************************
+Emacs pandoc-mode
+*****************
 
 * Menu:
 
@@ -537,7 +537,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 19 Apr 2015".
+`@@date{Cologne}' to get "Cologne, 13 May 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -708,44 +708,44 @@ rather than `toc').
 
 Tag Table:
 Node: Top225
-Node: Introduction581
-Ref: #introduction702
-Node: Installation1541
-Ref: #installation1664
-Node: OS X3170
-Ref: #os-x3247
-Node: Usage3799
-Ref: #usage3905
-Node: Input and output formats5646
-Ref: #input-and-output-formats5801
-Node: The options menu8641
-Ref: #the-options-menu8820
-Node: Template variables and metadata12024
-Ref: #template-variables-and-metadata12223
-Node: Running Pandoc12786
-Ref: #running-pandoc12957
-Node: Setting an output file14625
-Ref: #setting-an-output-file14795
-Node: Creating a pdf16450
-Ref: #creating-a-pdf16581
-Node: Font lock17395
-Ref: #font-lock17511
-Node: Settings Files17666
-Ref: #settings-files17807
-Node: File-local variables19725
-Ref: #file-local-variables19895
-Node: Managing numbered examples21408
-Ref: #managing-numbered-examples21595
-Node: Using @@-directives22844
-Ref: #using--directives23021
-Node: Master file27576
-Ref: #master-file27712
-Node: Defining @@-directives29205
-Ref: #defining--directives29387
-Node: Directive hooks30917
-Ref: #directive-hooks31065
-Node: Disabling the hydra menu31392
-Ref: #disabling-the-hydra-menu31544
+Node: Introduction529
+Ref: #introduction650
+Node: Installation1489
+Ref: #installation1612
+Node: OS X3118
+Ref: #os-x3195
+Node: Usage3747
+Ref: #usage3853
+Node: Input and output formats5594
+Ref: #input-and-output-formats5749
+Node: The options menu8589
+Ref: #the-options-menu8768
+Node: Template variables and metadata11972
+Ref: #template-variables-and-metadata12171
+Node: Running Pandoc12734
+Ref: #running-pandoc12905
+Node: Setting an output file14573
+Ref: #setting-an-output-file14743
+Node: Creating a pdf16398
+Ref: #creating-a-pdf16529
+Node: Font lock17343
+Ref: #font-lock17459
+Node: Settings Files17614
+Ref: #settings-files17755
+Node: File-local variables19673
+Ref: #file-local-variables19843
+Node: Managing numbered examples21356
+Ref: #managing-numbered-examples21543
+Node: Using @@-directives22792
+Ref: #using--directives22969
+Node: Master file27524
+Ref: #master-file27660
+Node: Defining @@-directives29153
+Ref: #defining--directives29335
+Node: Directive hooks30865
+Ref: #directive-hooks31013
+Node: Disabling the hydra menu31340
+Ref: #disabling-the-hydra-menu31492
 
 End Tag Table
 
