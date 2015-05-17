@@ -499,7 +499,8 @@ to the text before sending it to Pandoc. This is done with so-called
 `@@'-directives ("double-at directives"), which trigger an Elisp
 function and are then replaced with the output of that function. A
 `@@'-directive takes the form `@@directive', where `directive' can be
-any user-defined string. Before Pandoc is called, Emacs searches the
+any user-defined string (see *note how to define directive strings:
+#defining--directives.). Before Pandoc is called, Emacs searches the
 text for these directives and replaces them with the output of the
 functions they call.
 
@@ -537,7 +538,7 @@ directive's function takes as optional. Suppose you define
                  (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date' to get just the date, and
-`@@date{Cologne}' to get "Cologne, 13 May 2015".
+`@@date{Cologne}' to get "Cologne, 17 May 2015".
 
 Two directives have been predefined: `@@lisp' and `@@include'. Both of
 these take an argument. `@@lisp' can be used to include Elisp code in
@@ -738,14 +739,14 @@ Node: Managing numbered examples21356
 Ref: #managing-numbered-examples21543
 Node: Using @@-directives22792
 Ref: #using--directives22969
-Node: Master file27524
-Ref: #master-file27660
-Node: Defining @@-directives29153
-Ref: #defining--directives29335
-Node: Directive hooks30865
-Ref: #directive-hooks31013
-Node: Disabling the hydra menu31340
-Ref: #disabling-the-hydra-menu31492
+Node: Master file27592
+Ref: #master-file27728
+Node: Defining @@-directives29221
+Ref: #defining--directives29403
+Node: Directive hooks30933
+Ref: #directive-hooks31081
+Node: Disabling the hydra menu31408
+Ref: #disabling-the-hydra-menu31560
 
 End Tag Table
 
