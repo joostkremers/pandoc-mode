@@ -229,7 +229,9 @@ formats."
   (let ((read (format "--read=%s%s%s" (pandoc--get 'read) (if (pandoc--get 'read-lhs) "+lhs" "")
                       (pandoc--format-extensions (pandoc--get 'read-extensions))))
         (write (if pdf
-                   nil
+                   (if (string= (pandoc--get 'write) "beamer")
+                       "--write=beamer"
+                     "--write=latex")
                  (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
                          (pandoc--format-extensions (pandoc--get 'write-extensions)))))
         (output (pandoc--format-output-option input-file pdf))
@@ -468,22 +470,22 @@ the buffer."
 
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
-If the output format of the current buffer is set to \"latex\",
-the buffer's options are used. If called with a prefix argument,
-or if the current buffer's output format is not \"latex\", a
-LaTeX settings file is searched for and loaded when found. If no
-such settings file is found, all options are unset except for the
-input and output formats.
+If the output format of the current buffer is set to \"latex\" or
+\"beamer\", the buffer's options are used. If called with a
+prefix argument, or if the current buffer's output format is not
+\"latex\" or \"beamer\", a LaTeX settings file is searched for
+and loaded when found. If no such settings file is found, all
+options are unset except for the input and output formats.
 
 If the region is active, pandoc is run on the region instead of
 the buffer."
-  (interactive "P")
-  (pandoc--call-external (if (or prefix (not (string= (pandoc--get 'write) "latex")))
-                             "latex"
-                           nil)
-                         t
-                         (if (use-region-p)
-                             (cons (region-beginning) (region-end)))))
+(interactive "P")
+(pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
+                           "latex"
+                         nil)
+                       t
+                       (if (use-region-p)
+                           (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
