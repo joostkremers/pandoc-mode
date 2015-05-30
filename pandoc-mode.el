@@ -1206,7 +1206,18 @@ _M_: Use current file as master file
 (defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
   "Face name to use for strikethrough delimiters.")
 
+(defvar pandoc-directive-@@-face 'pandoc-directive-@@-face
+  "Face name to use for '@@' in @@directives.")
 
+(defvar pandoc-directive-type-face 'pandoc-directive-type-face
+  "Face name to use for 'include' or 'lisp' in @@directives.")
+
+(defvar pandoc-directive-braces-face 'pandoc-directive-braces-face
+  "Face name to use for braces in @@directives.")
+
+(defvar pandoc-directive-contents-face 'pandoc-directive-contents-face
+  "Face name to use for contents of @@directives.")
+  
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for pandoc citations."
@@ -1237,6 +1248,26 @@ _M_: Use current file as master file
   "Base face for pandoc strikethrough delimiters."
   :group 'pandoc)
 
+(defface pandoc-directive-@@-face
+  '((t (:inherit font-lock-type-face)))
+  "Base face for pandoc-mode @@directive syntax."
+  :group 'pandoc)
+
+(defface pandoc-directive-type-face
+  '((t (:inherit font-lock-preprocessor-face)))
+  "Base face for pandoc-mode @@directive type (include or lisp)."
+  :group 'pandoc)
+
+(defface pandoc-directive-braces-face
+  '((t (:inherit font-lock-variable-name-face)))
+  "Base face for pandoc-mode @@directive braces."
+  :group 'pandoc)
+
+(defface pandoc-directive-contents-face
+  '((t (:inherit font-lock-constant-face)))
+  "Base face for pandoc-mode @@directive type (include or lisp)."
+  :group 'pandoc)
+
 (defconst pandoc-regex-parenthetical-citation-single
   "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)\\(\\]\\)"
   "Regular expression for parenthetical citations with only one key.")
@@ -1257,8 +1288,18 @@ _M_: Use current file as master file
   "\\(~\\{2\\}\\)\\([^~].*?\\)\\(~\\{2\\}\\)"
   "Regular expression for pandoc markdown's strikethrough syntax.")
 
+(defconst pandoc-regex-@@-directive
+  "\\(@@\\)\\(include\\|lisp\\)\\({\\)\\(.*?\\)\\(}\\)"
+  "Regular expression for pandoc-mode's @@directives.")
+
 (defvar pandoc-faces-keywords
   (list
+   (cons pandoc-regex-@@-directive
+   	 '((1 pandoc-directive-@@-face)
+	   (2 pandoc-directive-type-face)
+	   (3 pandoc-directive-braces-face)
+   	   (4 pandoc-directive-contents-face)
+	   (5 pandoc-directive-braces-face)))
    (cons pandoc-regex-parenthetical-citation-single
    	 '((1 pandoc-citation-brackets-face t)
    	   (2 pandoc-citation-marker-face)
