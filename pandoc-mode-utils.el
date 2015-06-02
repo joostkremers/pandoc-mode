@@ -44,7 +44,7 @@
 ;;; Code:
 
 (require 'dash)
-(require 'cl)
+(require 'cl-lib)
 
 (defun nonempty (string)
   "Return STRING, unless it is \"\", in which case return NIL."
