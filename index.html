@@ -1,42 +1,30 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Pandoc-mode : Emacs mode for interacting with Pandoc">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Pandoc-mode</title>
+    <meta charset="UTF-8">
+    <title>Pandoc-mode by joostkremers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Pandoc-mode</h1>
+      <h2 class="project-tagline">Emacs mode for interacting with Pandoc</h2>
+      <a href="https://github.com/joostkremers/pandoc-mode" class="btn">View on GitHub</a>
+      <a href="https://github.com/joostkremers/pandoc-mode/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/joostkremers/pandoc-mode/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/joostkremers/pandoc-mode">View on GitHub</a>
-
-          <h1 id="project_title">Pandoc-mode</h1>
-          <h2 id="project_tagline">Emacs mode for interacting with Pandoc</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/joostkremers/pandoc-mode/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/joostkremers/pandoc-mode/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <section class="main-content">
+      <h1>
 <a id="introduction" class="anchor" href="#introduction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Introduction</h1>
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://pandoc.org/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
-<p>The current version of <code>pandoc-mode</code> is 2.12 and is compatible with Pandoc version 1.13.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.13 and is compatible with Pandoc version 1.13.</p>
 
 <h1>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h1>
@@ -212,7 +200,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 17 May 2015".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 05 Jun 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
@@ -281,18 +269,16 @@
 </code></pre>
 
 <p>It’s also possible to bind other commands to keys. The switches (i.e., the options that can only be on or off) can be toggled with the command <code>pandoc-toggle-interactive</code>. All other options (except <code>--read</code>) have dedicated functions to set them, called <code>pandoc-set-&lt;option&gt;</code>, where <code>&lt;option&gt;</code> corresponds to the long form of the option without the double dashes (use <code>write</code> rather than <code>to</code>, and <code>table-of-contents</code> rather than <code>toc</code>).</p>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Pandoc-mode maintained by <a href="https://github.com/joostkremers">joostkremers</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/joostkremers/pandoc-mode">Pandoc-mode</a> is maintained by <a href="https://github.com/joostkremers">joostkremers</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
+
