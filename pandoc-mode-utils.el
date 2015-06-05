@@ -115,7 +115,8 @@ list, not if it appears higher on the list."
   :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
 
 (defvar pandoc--input-formats
-  '(("haddock"           "Haddock Markup"      "k")
+  '(("commonmark"        "CommonMark"          "c")
+    ("haddock"           "Haddock Markup"      "k")
     ("html"              "HTML"                "h")
     ("json"              "JSON"                "j")
     ("latex"             "LaTeX"               "l")
@@ -143,6 +144,7 @@ list, not if it appears higher on the list."
 (defvar pandoc--output-formats
   '(("asciidoc"          "AsciiDoc"                 "a")
     ("beamer"            "Beamer Slide Show"        "B")
+    ("commonmark"        "CommonMark"               "C")
     ("context"           "ConTeXt"                  "c")
     ("docbook"           "DocBook XML"              "D")
     ("dokuwiki"          "DokuWiki"                 "W")
@@ -275,7 +277,8 @@ possible to customize the extensions."
     ("ignore_line_breaks"                  ())
     ("yaml_metadata_block"                 ("markdown"))
     ("ascii_identifiers"                   ("markdown_github"))
-    ("lists_without_preceding_blankline"   ("markdown_github")))
+    ("lists_without_preceding_blankline"   ("markdown_github"))
+    ("shortcut_reference_links"            ("markdown" "markdown_strict" "markdown_github" "markdown_php")))
   "List of Markdown extensions supported by Pandoc.")
 
 (defvar pandoc--cli-options nil
@@ -950,10 +953,11 @@ evaluated."
 (define-pandoc-switch         self-contained    (html "s" "%-31s") "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-choice-option  latex-engine     (tex "e" "%-30s") "LaTeX Engine" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context"))
-(define-pandoc-switch         listings         (tex "L" "%-30s") "Use LaTeX listings Package")
-(define-pandoc-switch         no-tex-ligatures (tex "l" "%-30s") "Do Not Use TeX Ligatures")
-(define-pandoc-switch         chapters         (tex "c" "%-30s") "Top-level Headers Are Chapters")
+(define-pandoc-list-option string latex-engine-opt (tex "o" "%-30s") "Options for LaTeX command")
+(define-pandoc-choice-option      latex-engine     (tex "e" "%-30s") "LaTeX Engine" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context"))
+(define-pandoc-switch             listings         (tex "L" "%-30s") "Use LaTeX listings Package")
+(define-pandoc-switch             no-tex-ligatures (tex "l" "%-30s") "Do Not Use TeX Ligatures")
+(define-pandoc-switch             chapters         (tex "c" "%-30s") "Top-level Headers Are Chapters")
 
 ;; epub
 (define-pandoc-number-option     epub-chapter-level (epub "c" "%-18s") "EPub Chapter Level")
