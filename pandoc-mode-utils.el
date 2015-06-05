@@ -56,8 +56,8 @@
 (defcustom pandoc-binary "pandoc"
   "The name of the pandoc binary.
 You can specify a full path here or a relative path (the
-default). In the latter case, the value of `exec-path` is used to
-search the binary."
+default).  In the latter case, the value of `exec-path` is used
+to search the binary."
   :group 'pandoc
   :type 'file)
 
@@ -75,7 +75,7 @@ return a string that will replace the directive and its
 argument (if any).
 
 The directives are processed in the order in which they appear in
-this list. If a directive produces output that contains another
+this list.  If a directive produces output that contains another
 directive, the new directive will only be processed if it is of
 the same type (i.e., an @@include directive loading a text that
 also contains @@include directives) or if it is lower on the
@@ -220,9 +220,9 @@ list, not if it appears higher on the list."
     ("textile"           ".textile"))
   "List of Pandoc output formats and their associated file extensions.
 These extensions are used when pandoc-mode creates an output
-file. The file extension should include a dot. Note that it does
+file.  The file extension should include a dot.  Note that it does
 not make sense to change the names of the output formats, since
-Pandoc only recognizes the ones listed here. However, it is
+Pandoc only recognizes the ones listed here.  However, it is
 possible to customize the extensions."
   :group 'pandoc
   :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension"))))
@@ -288,9 +288,9 @@ options, because they need to be handled separately in
   '(data-dir
     extract-media)
   "List of options that have a file path as value.
-These file paths are expanded before they are sent to pandoc. For
-relative paths, the file's working directory is used as base
-directory. two options are preset, others are added by
+These file paths are expanded before they are sent to Pandoc.
+For relative paths, the file's working directory is used as base
+directory.  Two options are preset, others are added by
 `define-pandoc-file-option'.")
 
 (defvar pandoc--switches nil
@@ -318,9 +318,9 @@ These are set by `define-pandoc-alist-option'.")
     (output-dir)
     (master-file))                      ; the last two are not actually pandoc options
   "Pandoc option alist.
-List of options and their default values. For each buffer in
+List of options and their default values.  For each buffer in
 which pandoc-mode is activated, a buffer-local copy of this list
-is made that stores the local values of the options. The
+is made that stores the local values of the options.  The
 `define-pandoc-*-option' functions add their options to this list
 with the default value NIL.")
 
@@ -346,19 +346,19 @@ Make sure that `pandoc--output-buffer' really exists."
      (with-current-buffer pandoc--output-buffer
        ,@body)))
 
-(defun pandoc--pp-switch (option)
-  "Return a pretty-printed representation of a switch."
-  (if (pandoc--get option)
+(defun pandoc--pp-switch (switch)
+  "Return a pretty-printed representation of SWITCH."
+  (if (pandoc--get switch)
       "yes"
     "no"))
 
 (defun pandoc--pp-option (option)
-  "Return an pretty-printed representation of an option."
+  "Return an pretty-printed representation of OPTION."
   (or (pandoc--get option)
       ""))
 
 (defun pandoc--get (option &optional buffer)
-  "Returns the value of OPTION.
+  "Return the value of OPTION.
 Optional argument BUFFER is the buffer from which the value is to
 be retrieved."
   (or buffer (setq buffer (current-buffer)))
@@ -369,7 +369,7 @@ be retrieved."
 
 ;; TODO list options aren't set correctly.
 (defun pandoc--set (option value)
-  "Sets the local value of OPTION to VALUE.
+  "Set the local value of OPTION to VALUE.
 If OPTION is 'variable, VALUE should be a cons of the
 form (variable-name . value), which is then added to the
 variables already stored, or just (variable-name), in which case
@@ -393,9 +393,9 @@ the named variable is deleted from the list."
     (setq pandoc--settings-modified-flag t)))
 
 (defun pandoc--set-alist-option (option new-elem)
-  "Set an alist option.
+  "Set an alist OPTION.
 NEW-ELEM is a cons (<name> . <value>), which is added to the alist
-for OPTION in `pandoc--local-settings'. If an element with <name>
+for OPTION in `pandoc--local-settings'.  If an element with <name>
 already exists, it is replaced, or removed if <value> is NIL."
   (let* ((value (cdr new-elem))
          (items (pandoc--get option))
@@ -421,9 +421,9 @@ already exists, it is replaced, or removed if <value> is NIL."
          (new-values (remove value values)))
     (setcdr (assoc option pandoc--local-settings) new-values)))
 
-(defun pandoc--toggle (option)
-  "Toggles the value of a switch."
-  (pandoc--set option (not (pandoc--get option))))
+(defun pandoc--toggle (switch)
+  "Toggle the value of SWITCH."
+  (pandoc--set switch (not (pandoc--get switch))))
 
 ;; Note: the extensions appear to be binary options, but they are not:
 ;; they're really (balanced) ternary options. They can be on or off, but
