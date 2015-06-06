@@ -953,7 +953,7 @@ evaluated."
 (define-pandoc-switch         self-contained    (html "s" "%-31s") "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option string latex-engine-opt (tex "o" "%-30s") "Options for LaTeX command")
+(define-pandoc-list-option string latex-engine-opt (tex "o" "%-30s") "Options for LaTeX command" "LaTeX Options")
 (define-pandoc-choice-option      latex-engine     (tex "e" "%-30s") "LaTeX Engine" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context"))
 (define-pandoc-switch             listings         (tex "L" "%-30s") "Use LaTeX listings Package")
 (define-pandoc-switch             no-tex-ligatures (tex "l" "%-30s") "Do Not Use TeX Ligatures")
