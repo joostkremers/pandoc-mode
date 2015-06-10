@@ -441,16 +441,23 @@ also ignored in this case."
           (with-pandoc-output-buffer
             (erase-buffer)
             (insert (format "Running `%s %s'\n\n" pandoc--local-binary (mapconcat #'identity option-list " "))))
-          (let* ((coding-system-for-read 'utf-8)
-                 (coding-system-for-write 'utf-8)
-                 (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
-            (set-process-sentinel process (lambda (p e)
-                                            (if (string-equal e "finished\n")
-                                                (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
-                                              (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
-                                              (display-buffer pandoc--output-buffer))))
-            (process-send-region process (point-min) (point-max))
-            (process-send-eof process)))))))
+	  (let ((coding-system-for-read 'utf-8)
+                (coding-system-for-write 'utf-8))
+            (if pandoc-use-async
+                (let ((process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
+                  (set-process-sentinel process (lambda (p e)
+                                                  (if (string-equal e "finished\n")
+                                                      (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
+                                                    (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
+                                                    (display-buffer pandoc--output-buffer))))
+                  (process-send-region process (point-min) (point-max))
+                  (process-send-eof process)))
+            (if (= 0 (let ((coding-system-for-read 'utf-8)
+                           (coding-system-for-write 'utf-8))
+                       (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list)))
+                (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
+              (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
+              (display-buffer pandoc--output-buffer))))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
@@ -1217,7 +1224,7 @@ _M_: Use current file as master file
 
 (defvar pandoc-directive-contents-face 'pandoc-directive-contents-face
   "Face name to use for contents of @@directives.")
-  
+
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for pandoc citations."

@@ -61,6 +61,14 @@ to search the binary."
   :group 'pandoc
   :type 'file)
 
+(defcustom pandoc-use-async t
+  "If non-NIL, use an asynchronous process to run pandoc.
+Using an asynchronous subprocess avoids freezing Emacs, but can
+cause problems sometimes.  Setting this option to nil runs pandoc
+in a synchronous subprocess."
+  :group 'pandoc
+  :type 'boolean)
+
 (defcustom pandoc-data-dir "~/.emacs.d/pandoc-mode/"
   "Default `pandoc-mode' data dir.
 This is where `pandoc-mode' looks for global settings files."
