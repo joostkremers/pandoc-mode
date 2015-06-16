@@ -451,11 +451,11 @@ also ignored in this case."
                                                     (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
                                                     (display-buffer pandoc--output-buffer))))
                   (process-send-region process (point-min) (point-max))
-                  (process-send-eof process)))
-            (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
-                (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
-              (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
-              (display-buffer pandoc--output-buffer))))))))
+                  (process-send-eof process))
+              (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
+                  (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
+                (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
+                (display-buffer pandoc--output-buffer)))))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
