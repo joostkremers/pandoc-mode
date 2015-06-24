@@ -1286,7 +1286,7 @@ _M_: Use current file as master file
   "Regular expression for stand-alone citation with anchor.")
 
 (defconst pandoc-regex-in-text-citation-2
-  "[^[:alnum:]]\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
+  "\\(?:[^[:alnum:]]\\|^\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]*\\)"
   "Regular expression for stand-alone citation with no anchor.")
 
 (defconst pandoc-regex-strikethrough
