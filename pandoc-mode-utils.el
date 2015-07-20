@@ -957,7 +957,7 @@ evaluated."
 (define-pandoc-switch         section-divs      (html "d" "%-31s") "Wrap Sections in <div> Tags")
 (define-pandoc-string-option  number-offset     (html "o" "%-31s") "Number Offsets")
 (define-pandoc-switch         ascii             (html "a" "%-31s") "Use Only ASCII in HTML")
-(define-pandoc-switch         html-q-tags       (html "q" "%-31s") "Use <q> Tags for Quotes in HTML")
+(define-pandoc-switch         html-q-tags       (html "Q" "%-31s") "Use <q> Tags for Quotes in HTML")
 (define-pandoc-switch         self-contained    (html "s" "%-31s") "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
