@@ -519,7 +519,7 @@ description of the option as it will appear in the menu."
      (push (cons ,description (quote ,option)) pandoc--switches)
      (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) pandoc--options)
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) description) (format " [%%s(pandoc--pp-switch '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) description) (format " [%%s(pandoc--pp-switch '%s)]" option))
                          (cadr hydra)
                          `(pandoc--toggle (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))))
@@ -568,7 +568,7 @@ the option can have a default value."
                                        :style 'radio
                                        :selected `(stringp (pandoc--get (quote ,option)))))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -612,7 +612,7 @@ formulated in such a way that the strings \"Default \" and \"Set
                           :style 'radio
                           :selected `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -661,7 +661,7 @@ or T and indicates whether the option can have a default value."
                                        :style 'radio
                                        :selected `(stringp (pandoc--get (quote ,option)))))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -698,7 +698,7 @@ it."
                  ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                           :active `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -741,7 +741,7 @@ before it."
                  ,(vector (concat "Unset " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                           :active t))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -793,7 +793,7 @@ menu."
                                      :selected `(string= (pandoc--get (quote ,option)) ,choice)))
                            (cdr choices)))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
-     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
+     (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
@@ -879,12 +879,12 @@ insert."
 
 (defun pandoc--tabulate-input-formats ()
   "Tabulate input formats for `pandoc-input-format-hydra'."
-  (let ((strings (--map (concat "_" (caddr it) "_: " (cadr it)) pandoc--input-formats)))
+  (let ((strings (--map (concat "_" (cl-caddr it) "_: " (cadr it)) pandoc--input-formats)))
     (pandoc--tabulate strings t nil 70)))
 
 (defun pandoc--tabulate-output-formats ()
   "Tabulate output formats for `pandoc-output-format-hydra'."
-  (let ((strings (--map (concat "_" (caddr it) "_: " (cadr it)) pandoc--output-formats)))
+  (let ((strings (--map (concat "_" (cl-caddr it) "_: " (cadr it)) pandoc--output-formats)))
     (pandoc--tabulate strings t nil 150)))
 
 (defmacro define-pandoc-hydra (name body docstring hexpr &rest extra-heads)
