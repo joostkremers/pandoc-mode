@@ -848,7 +848,9 @@ If TRIM is `t', each row is trimmed to its widest member."
   (or fmt-str (setq fmt-str (format "%%-%ds" colwidth)))
   (or colsep (setq colsep "  "))
   (let* ((n-cols (/ width (+ (length colsep) colwidth)))
-         (n-rows (ceiling (/ (length strings) (float n-cols))))
+         (n-rows (if (= n-cols 0) ; happens when `width' is too small to hold `strings'.
+                     (length strings)
+                   (ceiling (/ (length strings) (float n-cols)))))
          (cols (-partition-all n-rows (--map (format fmt-str it) strings))))
     (if trim
         (setq cols (-map #'pandoc--trim-right-padding cols)))
