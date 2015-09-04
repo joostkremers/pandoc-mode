@@ -447,7 +447,9 @@ also ignored in this case."
                 (let ((process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
                   (set-process-sentinel process (lambda (p e)
                                                   (if (string-equal e "finished\n")
-                                                      (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary))
+                                                      (progn
+                                                        (run-hooks 'pandoc-async-success-hook)
+                                                        (message "Running %s... Finished." (file-name-nondirectory pandoc--local-binary)))
                                                     (message "Error in %s process." (file-name-nondirectory pandoc--local-binary))
                                                     (display-buffer pandoc--output-buffer))))
                   (process-send-region process (point-min) (point-max))
