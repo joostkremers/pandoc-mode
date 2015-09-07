@@ -70,8 +70,8 @@ in a synchronous subprocess."
   :type 'boolean)
 
 (defcustom pandoc-async-success-hook nil
-  "List of functions to call when the asynchronous pandoc process
-succeeds."
+  "List of functions to call when `pandoc' returns successfully.
+Note, this hook is only run when `pandoc-use-async' is set to t."
   :group 'pandoc
   :type 'function)
 
