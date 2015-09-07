@@ -69,6 +69,12 @@ in a synchronous subprocess."
   :group 'pandoc
   :type 'boolean)
 
+(defcustom pandoc-async-success-hook nil
+  "List of functions to call when the asynchronous pandoc process
+succeeds."
+  :group 'pandoc
+  :type 'function)
+
 (defcustom pandoc-data-dir "~/.emacs.d/pandoc-mode/"
   "Default `pandoc-mode' data dir.
 This is where `pandoc-mode' looks for global settings files."
