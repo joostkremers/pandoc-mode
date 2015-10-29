@@ -329,34 +329,33 @@ with the @@-directives."
   (interactive (list (pandoc--get 'write)))
   (mapc #'funcall pandoc-directives-hook)
   (let ((case-fold-search nil))
-    (mapc (lambda (directive)
-            (goto-char (point-min))
-            (while (re-search-forward (concat "\\([\\]?\\)@@" (car directive)) nil t)
-              (if (string= (match-string 1) "\\")
-                  (delete-region (match-beginning 1) (match-end 1))
-                (let ((@@-beg (match-beginning 0))
-                      (@@-end (match-end 0)))
-                  (cond
-                   ((eq (char-after) ?{) ; if there is an argument.
-                    ;; note: point is on the left brace, and scan-lists
-                    ;; returns the position *after* the right brace. we need
-                    ;; to adjust both values to get the actual argument.
-                    (let* ((arg-beg (1+ (point)))
-                           (arg-end (1- (scan-lists (point) 1 0)))
-                           (text (buffer-substring-no-properties arg-beg arg-end)))
-                      (goto-char @@-beg)
-                      (delete-region @@-beg (1+ arg-end))
-                      (insert (funcall (cdr directive) output-format text)))
-                    (goto-char @@-beg))
-                   ;; check if the next character is not a letter or number.
-                   ;; if it is, we're actually on a different directive.
-                   ((looking-at "[a-zA-Z0-9]") t)
-                   ;; otherwise there is no argument.
-                   (t (goto-char @@-beg)
-                      (delete-region @@-beg @@-end) ; else there is no argument
-                      (insert (funcall (cdr directive) output-format))
-                      (goto-char @@-beg)))))))
-          pandoc-directives)))
+    (goto-char (point-min))
+    (while (re-search-forward (concat "\\([\\]?\\)@@" (regexp-opt (mapcar #'car pandoc-directives) t)) nil t)
+      (if (string= (match-string 1) "\\")
+          (delete-region (match-beginning 1) (match-end 1))
+        (let ((@@-beg (match-beginning 0))
+              (@@-end (match-end 0))
+              (directive-fn (cdr (assoc (match-string 2) pandoc-directives))))
+          (cond
+           ((eq (char-after) ?{) ; if there is an argument.
+            ;; note: point is on the left brace, and scan-lists
+            ;; returns the position *after* the right brace. we need
+            ;; to adjust both values to get the actual argument.
+            (let* ((arg-beg (1+ (point)))
+                   (arg-end (1- (scan-lists (point) 1 0)))
+                   (text (buffer-substring-no-properties arg-beg arg-end)))
+              (goto-char @@-beg)
+              (delete-region @@-beg (1+ arg-end))
+              (insert (funcall directive-fn output-format text)))
+            (goto-char @@-beg))
+           ;; check if the next character is not a letter or number.
+           ;; if it is, we're actually on a different directive.
+           ((looking-at "[a-zA-Z0-9]") t)
+           ;; otherwise there is no argument.
+           (t (goto-char @@-beg)
+              (delete-region @@-beg @@-end) ; else there is no argument
+              (insert (funcall directive-fn output-format))
+              (goto-char @@-beg))))))))
 
 (defun pandoc--process-lisp-directive (output-format lisp)
   "Process @@lisp directives."
