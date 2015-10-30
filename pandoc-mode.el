@@ -328,9 +328,10 @@ OUTPUT-FORMAT is passed unchanged to the functions associated
 with the @@-directives."
   (interactive (list (pandoc--get 'write)))
   (mapc #'funcall pandoc-directives-hook)
-  (let ((case-fold-search nil))
+  (let ((case-fold-search nil)
+        (directives-regexp (concat "\\([\\]?\\)@@" (regexp-opt (mapcar #'car pandoc-directives) t))))
     (goto-char (point-min))
-    (while (re-search-forward (concat "\\([\\]?\\)@@" (regexp-opt (mapcar #'car pandoc-directives) t)) nil t)
+    (while (re-search-forward directives-regexp nil t)
       (if (string= (match-string 1) "\\")
           (delete-region (match-beginning 1) (match-end 1))
         (let ((@@-beg (match-beginning 0))
