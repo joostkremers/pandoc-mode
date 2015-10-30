@@ -5,7 +5,7 @@
     <title>Pandoc-mode by joostkremers</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
@@ -179,7 +179,7 @@
 <h1>
 <a id="using--directives" class="anchor" href="#using--directives" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using @@-directives</h1>
 
-<p><code>pandoc-mode</code> includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called <code>@@</code>-directives ("double-at directives"), which trigger an Elisp function and are then replaced with the output of that function. A <code>@@</code>-directive takes the form <code>@@directive</code>, where <code>directive</code> can be any user-defined string (see <a href="#defining--directives">how to define directive strings</a>). Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.</p>
+<p><code>pandoc-mode</code> includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called <code>@@</code>-directives, which trigger an Elisp function and are then replaced with the output of that function. A <code>@@</code>-directive takes the form <code>@@directive</code>, where <code>directive</code> can be any user-defined string (see <a href="#defining--directives">how to define directive strings</a>). Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.</p>
 
 <p>So suppose you define (e.g., in <code>~/.emacs.d/init</code>) a function <code>my-pandoc-current-date</code>:</p>
 
@@ -189,9 +189,9 @@
 
 <p>Now you can define a directive <code>@@date</code> that calls this function. The effect is that every time you write <code>@@date</code> in your document, it is replaced with the current date.</p>
 
-<p>Note that the function that the directive calls must have one argument. which is used to pass the output format to the function (as a string). This way you can have your directives do different things depending on the output format. This argument can be called anything you like. In the above example, it is called <code>_</code> (i.e., just an underscore), to indicate that the variable is not actually used in the function. If you do use it, you’re advised to choose a different name.</p>
+<p>Note that the function that the directive calls must have one argument. which is used to pass the output format to the function (as a string). This way you can have your directives do different things depending on the output format. This argument can be called anything you like. In the above example, it is called <code>_</code> (i.e., just an underscore), to indicate that the variable is not actually used in the function. If you do use it, you should probably choose a more meaningful name.</p>
 
-<p><code>@@</code>-directives can also take the form <code>@@directive{...}</code>. Here, the text between curly braces is an argument, which is passed to the function that the directive calls as its second argument. Note that there should be <em>no</em> space between the directive and the left brace. If there is, Emacs won't see the argument and will treat it as normal text.</p>
+<p><code>@@</code>-directives can also take the form <code>@@directive{...}</code>. Here, the text between curly braces is an argument, which is passed to the function called by the directive as the second argument. Note that there should be <em>no</em> space between the directive and the left brace. If there is, Emacs won't see the argument and will treat it as normal text.</p>
 
 <p>It is possible to define a directive that can take an optional argument. This is simply done by defining the argument that the directive's function takes as optional. Suppose you define <code>my-pandoc-current-date</code> as follows:</p>
 
@@ -200,7 +200,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 05 Jun 2015".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 30 Okt 2015".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
@@ -219,8 +219,6 @@
 <p>Processing <code>@@</code>-directives works everywhere in the document, including in code and code blocks, and also in the %-header block. So by putting the above <code>@@lisp</code> directive in the third line of the %-header block, the meta data for your documents will always show the date on which the file was created by Pandoc.</p>
 
 <p>If it should ever happen that you need to write a literal <code>"@@lisp"</code> in your document, you can simply put a backslash \ before the first <code>@</code>: <code>\@@lisp</code>. Emacs removes the backslash (which is necessary in case the string <code>\@@lisp</code> is contained in a code block) and then continues searching for the next directive.</p>
-
-<p>The directives are processed in the order in which they appear in the customisation buffer (and hence in the variable <code>pandoc-directives</code>). So in the default case, <code>@@include</code> directives are processed before <code>@@lisp</code> directives, which means that any <code>@@lisp</code> directive in a file included by <code>@@include</code> gets processed, but if a <code>@@lisp</code> directive produces an <code>@@include</code>, it does <em>not</em> get processed. (If this should ever be a problem, you can always create a directive <code>@@include2</code> and have it processed after <code>@@lisp</code>.)</p>
 
 <p>After Emacs has processed a directive and inserted the text it produced in the buffer, processing of directives is resumed from the <em>start</em> of the inserted text. That means that if an <code>@@include</code> directive produces another <code>@@include</code> directive, the newly inserted <code>@@include</code> directive gets processed as well.</p>
 
@@ -242,7 +240,7 @@
 
 <p>Passing more than one argument to an <code>@@</code>-directive is not supported. However, if you really want to, you could use <code>split-string</code> to split the argument of the <code>@@</code>-directive and "fake" multiple arguments that way.</p>
 
-<p>A final note: the function that processes the <code>@@</code>-directives is called <code>pandoc-process-directives</code> and can be called interactively. This may be useful if a directive is not producing the output that you expect. By running <code>pandoc-process-directives</code> interactively, you can see what exactly your directives produce before the resulting text is sent to pandoc. The changes can of course be undone with <code>M-x undo</code> (usually bound to <code>C-/</code>), or do your test in the <code>*scratch*</code> buffer.</p>
+<p>A final note: the function that processes the <code>@@</code>-directives is called <code>pandoc-process-directives</code> and can be called interactively. This may be useful if a directive is not producing the output that you expect. By running <code>pandoc-process-directives</code> interactively, you can see what exactly your directives produce before the resulting text is sent to pandoc. The changes can of course be undone with <code>M-x undo</code> (usually bound to <code>C-/</code>).</p>
 
 <h2>
 <a id="directive-hooks" class="anchor" href="#directive-hooks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Directive hooks</h2>
@@ -281,4 +279,3 @@
   
   </body>
 </html>
-
