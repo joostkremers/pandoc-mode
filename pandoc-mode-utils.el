@@ -1018,16 +1018,15 @@ evaluated."
 (define-pandoc-switch         reference-links (specific "r" "%-21s") "Reference Links")
 
 ;; html-based
-(define-pandoc-string-option id-prefix    (html "i" "%-31s")      "ID prefix")
-(define-pandoc-list-option   css          (html "c" "%-31s") file "CSS Style Sheet" "CSS")
-
-(define-pandoc-string-option  title-prefix      (html "t" "%-31s") "Title prefix")
-(define-pandoc-choice-option  email-obfuscation (html "e" "%-31s") "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
-(define-pandoc-switch         section-divs      (html "d" "%-31s") "Wrap Sections in <div> Tags")
-(define-pandoc-string-option  number-offset     (html "o" "%-31s") "Number Offsets")
-(define-pandoc-switch         ascii             (html "a" "%-31s") "Use Only ASCII in HTML")
-(define-pandoc-switch         html-q-tags       (html "Q" "%-31s") "Use <q> Tags for Quotes in HTML")
-(define-pandoc-switch         self-contained    (html "s" "%-31s") "Self-contained Document")
+(define-pandoc-string-option  id-prefix         (html "i" "%-31s")      "ID prefix")
+(define-pandoc-list-option    css               (html "c" "%-31s") file "CSS Style Sheet" "CSS")
+(define-pandoc-string-option  title-prefix      (html "t" "%-31s")      "Title prefix")
+(define-pandoc-choice-option  email-obfuscation (html "e" "%-31s")      "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
+(define-pandoc-switch         section-divs      (html "d" "%-31s")      "Wrap Sections in <div> Tags")
+(define-pandoc-string-option  number-offset     (html "o" "%-31s")      "Number Offsets")
+(define-pandoc-switch         ascii             (html "a" "%-31s")      "Use Only ASCII in HTML")
+(define-pandoc-switch         html-q-tags       (html "Q" "%-31s")      "Use <q> Tags for Quotes in HTML")
+(define-pandoc-switch         self-contained    (html "s" "%-31s")      "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
 (define-pandoc-list-option    latex-engine-opt (tex "o" "%-30s") string "Options for LaTeX command" "LaTeX Options")
