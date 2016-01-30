@@ -988,18 +988,19 @@ evaluated."
 
 
 ;;; General writer options
-(define-pandoc-file-option          include-after-body  (writer "A" "%-19s")        "Include After Body"  'full-path)
-(define-pandoc-file-option          include-before-body (writer "B" "%-19s")        "Include Before Body" 'full-path)
-(define-pandoc-file-option          include-in-header   (writer "H" "%-19s")        "Include Header"      'full-path)
-(define-pandoc-string-option        highlight-style     (writer "S" "%-19s")        "Highlighting Style")
-(define-pandoc-switch               no-highlight        (writer "h" "%-19s")        "No Highlighting")
-(define-pandoc-number-option        toc-depth           (writer "D" "%-19s")        "TOC Depth")
-(define-pandoc-switch               table-of-contents   (writer "T" "%-19s")        "Table of Contents")
-(define-pandoc-number-option        columns             (writer "c" "%-19s")        "Column Width")
-(define-pandoc-switch               no-wrap             (writer "w" "%-19s")        "No Wrap")
-(define-pandoc-alist-option         variable            (writer "v" "%-19s") string "Variables"           "Variable")
-(define-pandoc-file-option          template            (writer "t" "%-19s")        "Template File"       'full-path)
-(define-pandoc-switch               standalone          (writer "s" "%-19s")        "Standalone")
+(define-pandoc-file-option   include-after-body  (writer "A" "%-19s")        "Include After Body"  'full-path)
+(define-pandoc-file-option   include-before-body (writer "B" "%-19s")        "Include Before Body" 'full-path)
+(define-pandoc-file-option   include-in-header   (writer "H" "%-19s")        "Include Header"      'full-path)
+(define-pandoc-string-option highlight-style     (writer "S" "%-19s")        "Highlighting Style")
+(define-pandoc-switch        no-highlight        (writer "h" "%-19s")        "No Highlighting")
+(define-pandoc-number-option toc-depth           (writer "D" "%-19s")        "TOC Depth")
+(define-pandoc-switch        table-of-contents   (writer "T" "%-19s")        "Table of Contents")
+(define-pandoc-number-option columns             (writer "c" "%-19s")        "Column Width")
+(define-pandoc-switch        no-wrap             (writer "w" "%-19s")        "No Wrap")
+(define-pandoc-alist-option  variable            (writer "v" "%-19s") string "Variables"           "Variable")
+(define-pandoc-file-option   template            (writer "t" "%-19s")        "Template File"       'full-path)
+(define-pandoc-switch        standalone          (writer "s" "%-19s")        "Standalone")
+(define-pandoc-switch        verbose             (writer "v" "%-21s")        "Verbose output")
 ;; print-default-template ; not actually included
 
 
