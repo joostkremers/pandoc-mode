@@ -981,7 +981,6 @@ evaluated."
 (define-pandoc-string-option  indented-code-classes   (reader "c" "%-23s")        "Indented Code Classes")
 (define-pandoc-number-option  base-header-level       (reader "h" "%-23s")        "Base Header Level")
 (define-pandoc-switch         old-dashes              (reader "o" "%-23s")        "Use Old-style Dashes")
-(define-pandoc-switch         strict                  (reader "S" "%-23s")        "Strict")
 (define-pandoc-switch         smart                   (reader "s" "%-23s")        "Smart")
 (define-pandoc-switch         parse-raw               (reader "r" "%-23s")        "Parse Raw")
 ;; extract-media
@@ -990,6 +989,7 @@ evaluated."
 
 
 ;;; General writer options
+(define-pandoc-switch        verbose             (writer "v" "%-21s")        "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-file-option   include-after-body  (writer "A" "%-19s")        "Include After Body"  'full-path)
 (define-pandoc-file-option   include-before-body (writer "B" "%-19s")        "Include Before Body" 'full-path)
 (define-pandoc-file-option   include-in-header   (writer "H" "%-19s")        "Include Header"      'full-path)
@@ -998,11 +998,12 @@ evaluated."
 (define-pandoc-number-option toc-depth           (writer "D" "%-19s")        "TOC Depth")
 (define-pandoc-switch        table-of-contents   (writer "T" "%-19s")        "Table of Contents")
 (define-pandoc-number-option columns             (writer "c" "%-19s")        "Column Width")
-(define-pandoc-switch        no-wrap             (writer "w" "%-19s")        "No Wrap")
+(define-pandoc-switch        no-wrap             (writer "W" "%-19s")        "No Wrap")
+(define-pandoc-choice-option wrap                (writer "w" "%-19s")        "Wrap" ("auto" "none" "preserve"))
+(define-pandoc-number-option dpi                 (writer "d" "%-19s")        "DPI")
 (define-pandoc-alist-option  variable            (writer "v" "%-19s") string "Variables"           "Variable")
 (define-pandoc-file-option   template            (writer "t" "%-19s")        "Template File"       'full-path)
 (define-pandoc-switch        standalone          (writer "s" "%-19s")        "Standalone")
-(define-pandoc-switch        verbose             (writer "v" "%-21s")        "Verbose output")
 ;; print-default-template ; not actually included
 
 
@@ -1018,9 +1019,9 @@ evaluated."
 (define-pandoc-switch         reference-links (specific "r" "%-21s") "Reference Links")
 
 ;; html-based
-(define-pandoc-string-option  id-prefix         (html "i" "%-31s")      "ID prefix")
 (define-pandoc-list-option    css               (html "c" "%-31s") file "CSS Style Sheet" "CSS")
 (define-pandoc-string-option  title-prefix      (html "t" "%-31s")      "Title prefix")
+(define-pandoc-string-option  id-prefix         (html "i" "%-31s")      "ID prefix")
 (define-pandoc-choice-option  email-obfuscation (html "e" "%-31s")      "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
 (define-pandoc-switch         section-divs      (html "d" "%-31s")      "Wrap Sections in <div> Tags")
 (define-pandoc-string-option  number-offset     (html "o" "%-31s")      "Number Offsets")
