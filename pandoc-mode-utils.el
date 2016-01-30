@@ -821,7 +821,7 @@ before it."
                                                                      (format "added with value `%s'" value)
                                                                    "removed")))))))))
 
-(defmacro define-pandoc-choice-option (option hydra prompt choices output-formats)
+(defmacro define-pandoc-choice-option (option hydra prompt choices &optional output-formats)
   "Define OPTION as a choice option.
 The option is added to `pandoc--options' and `pandoc--cli-options'.
 Furthermore, a menu entry is created and a function to set the
@@ -847,7 +847,9 @@ menu."
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--cli-options)
      (push (list ,prompt
-                 :active (quote (member (pandoc--get 'write) (quote ,output-formats)))
+                 :active ,(if output-formats
+                              `(quote (member (pandoc--get 'write) (quote ,output-formats)))
+                            t)
                  ,(vector (car choices) `(pandoc--set (quote ,option) ,(car choices))
                           :style 'radio
                           :selected `(null (pandoc--get (quote ,option))))
