@@ -497,7 +497,7 @@ the text before sending it to Pandoc.  This is done with so-called
 ‘@@’-directives, which trigger an Elisp function and are then replaced
 with the output of that function.  A ‘@@’-directive takes the form
 ‘@@directive’, where ‘directive’ can be any user-defined string (see
-*note how to define directive strings: #defining--directives.).  Before
+*note How to define directive strings: #defining--directives.).  Before
 Pandoc is called, Emacs searches the text for these directives and
 replaces them with the output of the functions they call.
 
