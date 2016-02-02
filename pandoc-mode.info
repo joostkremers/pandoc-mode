@@ -511,7 +511,7 @@ Now you can define a directive ‘@@date’ that calls this function.  The
 effect is that every time you write ‘@@date’ in your document, it is
 replaced with the current date.
 
-Note that the function that the directive calls must have one argument.
+Note that the function that the directive calls must have one argument,
 which is used to pass the output format to the function (as a string).
 This way you can have your directives do different things depending on
 the output format.  This argument can be called anything you like.  In
