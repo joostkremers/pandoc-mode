@@ -12,7 +12,7 @@
   <body>
     <section class="page-header">
       <h1 class="project-name">Pandoc-mode</h1>
-      <h2 class="project-tagline">Emacs mode for interacting with Pandoc</h2>
+      <h2 class="project-tagline">An Emacs mode for interacting with Pandoc</h2>
       <a href="https://github.com/joostkremers/pandoc-mode" class="btn">View on GitHub</a>
       <a href="https://github.com/joostkremers/pandoc-mode/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/joostkremers/pandoc-mode/tarball/master" class="btn">Download .tar.gz</a>
@@ -179,7 +179,7 @@
 <h1>
 <a id="using--directives" class="anchor" href="#using--directives" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Using @@-directives</h1>
 
-<p><code>pandoc-mode</code> includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called <code>@@</code>-directives, which trigger an Elisp function and are then replaced with the output of that function. A <code>@@</code>-directive takes the form <code>@@directive</code>, where <code>directive</code> can be any user-defined string (see <a href="#defining--directives">how to define directive strings</a>). Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.</p>
+<p><code>pandoc-mode</code> includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called <code>@@</code>-directives, which trigger an Elisp function and are then replaced with the output of that function. A <code>@@</code>-directive takes the form <code>@@directive</code>, where <code>directive</code> can be any user-defined string (see <a href="#defining--directives">How to define directive strings</a>). Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.</p>
 
 <p>So suppose you define (e.g., in <code>~/.emacs.d/init</code>) a function <code>my-pandoc-current-date</code>:</p>
 
@@ -189,7 +189,7 @@
 
 <p>Now you can define a directive <code>@@date</code> that calls this function. The effect is that every time you write <code>@@date</code> in your document, it is replaced with the current date.</p>
 
-<p>Note that the function that the directive calls must have one argument. which is used to pass the output format to the function (as a string). This way you can have your directives do different things depending on the output format. This argument can be called anything you like. In the above example, it is called <code>_</code> (i.e., just an underscore), to indicate that the variable is not actually used in the function. If you do use it, you should probably choose a more meaningful name.</p>
+<p>Note that the function that the directive calls must have one argument, which is used to pass the output format to the function (as a string). This way you can have your directives do different things depending on the output format. This argument can be called anything you like. In the above example, it is called <code>_</code> (i.e., just an underscore), to indicate that the variable is not actually used in the function. If you do use it, you should probably choose a more meaningful name.</p>
 
 <p><code>@@</code>-directives can also take the form <code>@@directive{...}</code>. Here, the text between curly braces is an argument, which is passed to the function called by the directive as the second argument. Note that there should be <em>no</em> space between the directive and the left brace. If there is, Emacs won't see the argument and will treat it as normal text.</p>
 
