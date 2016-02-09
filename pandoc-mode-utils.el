@@ -1,4 +1,4 @@
-;;; pandoc-mode-utils.el --- Part of `pandoc-mode'
+;;; pandoc-mode-utils.el --- Part of `pandoc-mode'  -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2009-2015 Joost Kremers
 
