@@ -442,7 +442,7 @@ also ignored in this case."
           (pandoc-process-directives (pandoc--get 'write))
           (with-current-buffer (get-buffer-create pandoc--output-buffer)
             (erase-buffer))
-          (pandoc--log 'log (make-string 50 ?=))
+          (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
           (pandoc--log 'log "Calling %s with:\n\n %s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
 	  (let ((coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8))
