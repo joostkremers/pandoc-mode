@@ -999,7 +999,7 @@ evaluated."
 
 
 ;;; General writer options
-(define-pandoc-switch        verbose             (writer "V" "%-21s")        "Verbose output") ; Pandoc's README places this in the general options
+(define-pandoc-switch        verbose             (writer "V" "%-19s")        "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-file-option   include-after-body  (writer "A" "%-19s")        "Include After Body"  'full-path)
 (define-pandoc-file-option   include-before-body (writer "B" "%-19s")        "Include Before Body" 'full-path)
 (define-pandoc-file-option   include-in-header   (writer "H" "%-19s")        "Include Header"      'full-path)
