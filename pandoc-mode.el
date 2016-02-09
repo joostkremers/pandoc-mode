@@ -1,4 +1,4 @@
-;;; pandoc-mode.el --- Minor mode for interacting with Pandoc
+;;; pandoc-mode.el --- Minor mode for interacting with Pandoc  -*- lexical-binding: t -*-
 
 ;; Copyright (c) 2009-2015 Joost Kremers
 
@@ -358,11 +358,11 @@ with the @@-directives."
               (insert (funcall directive-fn output-format))
               (goto-char @@-beg))))))))
 
-(defun pandoc--process-lisp-directive (output-format lisp)
+(defun pandoc--process-lisp-directive (_ lisp)
   "Process @@lisp directives."
   (format "%s" (eval (car (read-from-string lisp)))))
 
-(defun pandoc--process-include-directive (output-format include-file)
+(defun pandoc--process-include-directive (_ include-file)
   "Process @@include directives."
   (with-temp-buffer
     (insert-file-contents include-file)
