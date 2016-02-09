@@ -380,7 +380,7 @@ Make sure that `pandoc--output-buffer' really exists."
     "no"))
 
 (defun pandoc--pp-option (option)
-  "Return an pretty-printed representation of OPTION."
+  "Return a pretty-printed representation of OPTION."
   (or (pandoc--get option)
       ""))
 
