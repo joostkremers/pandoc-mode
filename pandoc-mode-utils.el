@@ -356,6 +356,7 @@ with the default value NIL.")
 (defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
 (defvar pandoc--output-buffer (get-buffer-create " *Pandoc output*"))
+(defvar pandoc--log-buffer (get-buffer-create " *Pandoc log*"))
 
 (defvar pandoc--options-menu nil
   "Auxiliary variable for creating the options menu.")
@@ -363,15 +364,16 @@ with the default value NIL.")
 (defvar pandoc--files-menu nil
   "Auxiliary variable for creating the file menu.")
 
-(defmacro with-pandoc-output-buffer (&rest body)
-  "Execute BODY with `pandoc--output-buffer' temporarily current.
-Make sure that `pandoc--output-buffer' really exists."
-  (declare (indent defun))
-  `(progn
-     (or (buffer-live-p pandoc--output-buffer)
-         (setq pandoc--output-buffer (get-buffer-create " *Pandoc output*")))
-     (with-current-buffer pandoc--output-buffer
-       ,@body)))
+(defun pandoc--log (type format-string &rest args)
+  "Write a message to the *Pandoc log* buffer.
+If TYPE is `message', also display the message in the echo area.
+Any other value just logs the message, adding an empty line after
+it.  The arguments FORMAT-STRING and ARGS function as with
+`message'."
+  (with-current-buffer (get-buffer-create pandoc--log-buffer)
+    (insert (apply #'format format-string args) "\n\n"))
+  (when (eq type 'message)
+    (apply #'message format-string args)))
 
 (defun pandoc--pp-switch (switch)
   "Return a pretty-printed representation of SWITCH."

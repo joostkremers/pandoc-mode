@@ -440,9 +440,10 @@ also ignored in this case."
                    (file-name-nondirectory pandoc--local-binary)
                    (file-name-nondirectory filename))
           (pandoc-process-directives (pandoc--get 'write))
-          (with-pandoc-output-buffer
-            (erase-buffer)
-            (insert (format "Running `%s %s'\n\n" pandoc--local-binary (mapconcat #'identity option-list " "))))
+          (with-current-buffer (get-buffer-create pandoc--output-buffer)
+            (erase-buffer))
+          (pandoc--log 'log (make-string 50 ?=))
+          (pandoc--log 'log "Calling %s with:\n\n %s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
 	  (let ((coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8))
             (if pandoc-use-async
@@ -451,12 +452,12 @@ also ignored in this case."
                                                   (if (string-equal e "finished\n")
                                                       (progn
                                                         (run-hooks 'pandoc-async-success-hook)
-                                                        (message "%s: %s exited successfully"
-                                                                 (file-name-nondirectory filename)
-                                                                 (file-name-nondirectory pandoc--local-binary)))
-                                                    (message "%s: Error in %s process"
-                                                             (file-name-nondirectory filename)
-                                                             (file-name-nondirectory pandoc--local-binary))
+                                                        (pandoc--log 'message "%s: %s exited successfully"
+                                                               (file-name-nondirectory filename)
+                                                               (file-name-nondirectory pandoc--local-binary)))
+                                                    (pandoc--log 'message "%s: Error in %s process"
+                                                           (file-name-nondirectory filename)
+                                                           (file-name-nondirectory pandoc--local-binary))
                                                     (display-buffer pandoc--output-buffer))
                                                   (if (fboundp 'notifications-notify)
                                                       (notifications-notify :title "Pandoc"
@@ -464,12 +465,12 @@ also ignored in this case."
                   (process-send-region process (point-min) (point-max))
                   (process-send-eof process))
               (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
-                  (message "%s: %s exited successfully"
-                           (file-name-nondirectory filename)
-                           (file-name-nondirectory pandoc--local-binary))
-                (message "%s: Error in %s process"
+                  (pandoc--log 'message "%s: %s exited successfully"
                          (file-name-nondirectory filename)
                          (file-name-nondirectory pandoc--local-binary))
+                (pandoc--log 'message "%s: Error in %s process"
+                       (file-name-nondirectory filename)
+                       (file-name-nondirectory pandoc--local-binary))
                 (display-buffer pandoc--output-buffer)))))))))
 
 (defun pandoc-run-pandoc (prefix)
