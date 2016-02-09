@@ -839,7 +839,7 @@ file."
   (pandoc--set 'master-file (buffer-file-name))
   (pandoc--save-settings 'project (pandoc--get 'write)))
 
-(defun pandoc-toggle-interactive (prefix option)
+(defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
 If called with the prefix argument C-u - (or M--), the options is
 unset. If called with any other prefix argument, the option is
