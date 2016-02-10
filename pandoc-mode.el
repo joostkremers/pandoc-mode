@@ -458,10 +458,7 @@ also ignored in this case."
                                                     (pandoc--log 'message "%s: Error in %s process"
                                                            (file-name-nondirectory filename)
                                                            (file-name-nondirectory pandoc--local-binary))
-                                                    (display-buffer pandoc--output-buffer))
-                                                  (if (fboundp 'notifications-notify)
-                                                      (notifications-notify :title "Pandoc"
-                                                                            :body (current-message)))))
+                                                    (display-buffer pandoc--output-buffer))))
                   (process-send-region process (point-min) (point-max))
                   (process-send-eof process))
               (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
@@ -483,11 +480,11 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
-                             (completing-read "Output format to use: " pandoc--output-formats nil t)
-                           nil)
-                         nil
-                         (if (use-region-p)
-                             (cons (region-beginning) (region-end)))))
+                       (completing-read "Output format to use: " pandoc--output-formats nil t)
+                     nil)
+                   nil
+                   (if (use-region-p)
+                       (cons (region-beginning) (region-end)))))
 
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
