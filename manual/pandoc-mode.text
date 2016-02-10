@@ -73,7 +73,7 @@ Many Pandoc options have file names as values. When `pandoc-mode` calls `pandoc`
 
 The CSS style sheet is an exception to this: `pandoc-mode` always cuts off the directory part of the filename you specify as CSS style sheet and doesn't expand it. The reason for this is that the CSS style sheet will normally be transferred along with the output file(s) to a server, where it will most likely be in a different directory than on the computer you're generating your HTML files on.
 
-To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (`C-c / S`). This displays all settings in the `*Pandoc output*` buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this (unset options omitted):
+To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (`C-c / S`). This displays all settings in a `*Help*` buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this:
 
 ```
 ((standalone . t)
@@ -93,7 +93,9 @@ Deleting a template variable or metadata item can be done by prefixing the menu 
 
 ## Running Pandoc ##
 
-The first item in the menu is "Run Pandoc" (accessible with `C-c / r`), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer `*Pandoc output*`. (Except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing `C-c / V`. Error messages from Pandoc are also displayed in this buffer.
+The first item in the menu is "Run Pandoc" (accessible with `C-c / r`), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout (except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.). Emacs captures this output and redirects it to the buffer `*Pandoc output*`. The output buffer is not normally shown, but you can make it visible through the menu or by typing `C-c / V`. Error messages from Pandoc are also displayed in this buffer.
+
+When you run Pandoc, `pandoc-mode` also generates a few messages, which are logged in a buffer calles `*Pandoc log*`. You will rarely need to see this, since `pandoc-mode` displays a message telling you whether Pandoc finished successfully or not. In the latter case, the output buffer is displayed, so you can see the error that Pandoc reported.
 
 Note that when you run Pandoc, Pandoc doesn't read the file on disk. Rather, Emacs feeds it the contents of the buffer through `stdin`. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc. Alternatively, if the region is active, only the region is sent to Pandoc.
 
@@ -132,6 +134,8 @@ Apart from settings files for individual files (which are called *local settings
 Whenever `pandoc-mode` loads settings for an input file, it first checks if there is a local settings file. If none is found, it looks for a project file, and if that isn't found, it tries to load a global settings file. In this way, local settings override project settings and project settings override global settings. Note, however, that if a local settings file exists, *all* settings are read from this file. Any project file or global file for the relevant output format is ignored.
 
 You can create a project or global settings file through the menu in the submenu "Settings Files". This simply saves all settings for the current buffer to a project or global settings file. (Any local settings file for the file in the current buffer will be kept. You'll need to delete it manually if you no longer need it.)
+
+The name of a global settings file has the form `<format>.pandoc`, where `<format>` obviously specifies the output format. `<format>` can also be the string `"default“`, however, in which case it specifies a default settings file, which is loaded by `pandoc-load-default-settings` when no default local or project settings file is found. In this way, you can override the default output format used for new files.
 
 Note that starting with version 2.5, `pandoc-mode` settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.
 

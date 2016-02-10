@@ -5,6 +5,14 @@ INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
 (pandoc-mode).  Minor mode for interacting with Pandoc.
 END-INFO-DIR-ENTRY
 
+INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
+(pandoc-mode).  Minor mode for interacting with Pandoc.
+END-INFO-DIR-ENTRY
+
+INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
+(pandoc-mode).  Minor mode for interacting with Pandoc.
+END-INFO-DIR-ENTRY
+
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
@@ -253,9 +261,9 @@ computer you’re generating your HTML files on.
 
 To get an overview of all the settings for the current file and output
 format, you can use the option “View current settings” in the main menu
-(‘C-c / S’).  This displays all settings in the ‘*Pandoc output*’ buffer
-in a Lisp-like format.  For example, the settings for TeXinfo output of
-this manual look like this (unset options omitted):
+(‘C-c / S’).  This displays all settings in a ‘*Help*’ buffer in a
+Lisp-like format.  For example, the settings for TeXinfo output of this
+manual look like this:
 
 ((standalone . t)
  (read . "markdown")
@@ -288,12 +296,19 @@ File: pandoc-mode.info,  Node: Running Pandoc,  Next: Setting an output file,  P
 
 The first item in the menu is "Run Pandoc" (accessible with ‘C-c / r’),
 which, as the name suggests, runs Pandoc on the document, passing all
-options you have set.  By default, Pandoc sends the output to stdout,
-which is redirected to the buffer ‘*Pandoc output*’.  (Except when the
-output format is "odt", "epub" or "docx", in which case output is always
-sent to a file.)  The output buffer is not normally shown, but you can
-make it visible through the menu or by typing ‘C-c / V’.  Error messages
-from Pandoc are also displayed in this buffer.
+options you have set.  By default, Pandoc sends the output to stdout
+(except when the output format is "odt", "epub" or "docx", in which case
+output is always sent to a file.).  Emacs captures this output and
+redirects it to the buffer ‘*Pandoc output*’.  The output buffer is not
+normally shown, but you can make it visible through the menu or by
+typing ‘C-c / V’.  Error messages from Pandoc are also displayed in this
+buffer.
+
+When you run Pandoc, ‘pandoc-mode’ also generates a few messages, which
+are logged in a buffer calles ‘*Pandoc log*’.  You will rarely need to
+see this, since ‘pandoc-mode’ displays a message telling you whether
+Pandoc finished successfully or not.  In the latter case, the output
+buffer is displayed, so you can see the error that Pandoc reported.
 
 Note that when you run Pandoc, Pandoc doesn’t read the file on disk.
 Rather, Emacs feeds it the contents of the buffer through ‘stdin’.  This
@@ -416,6 +431,13 @@ current buffer to a project or global settings file.  (Any local
 settings file for the file in the current buffer will be kept.  You’ll
 need to delete it manually if you no longer need it.)
 
+The name of a global settings file has the form ‘<format>.pandoc’, where
+‘<format>’ obviously specifies the output format.  ‘<format>’ can also
+be the string ‘"default“’, however, in which case it specifies a default
+settings file, which is loaded by ‘pandoc-load-default-settings’ when no
+default local or project settings file is found.  In this way, you can
+override the default output format used for new files.
+
 Note that starting with version 2.5, ‘pandoc-mode’ settings files are
 written in a Lisp format (as demonstrated above).  Old-style settings
 files continue to be read, so there is no need to change anything, but
@@ -535,7 +557,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 02 Feb 2016".
+‘@@date{Cologne}’ to get "Cologne, 10 Feb 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -694,45 +716,45 @@ than ‘toc’).
 
 
 Tag Table:
-Node: Top218
-Node: Introduction522
-Ref: #introduction643
-Node: Installation1500
-Ref: #installation1623
-Node: OS X3203
-Ref: #os-x3280
-Node: Usage3871
-Ref: #usage3977
-Node: Input and output formats5759
-Ref: #input-and-output-formats5914
-Node: The options menu8850
-Ref: #the-options-menu9029
-Node: Template variables and metadata12335
-Ref: #template-variables-and-metadata12534
-Node: Running Pandoc13109
-Ref: #running-pandoc13280
-Node: Setting an output file14995
-Ref: #setting-an-output-file15165
-Node: Creating a pdf16859
-Ref: #creating-a-pdf16990
-Node: Font lock17835
-Ref: #font-lock17951
-Node: Settings Files18115
-Ref: #settings-files18256
-Node: File-local variables20218
-Ref: #file-local-variables20388
-Node: Managing numbered examples21948
-Ref: #managing-numbered-examples22135
-Node: Using @@-directives23445
-Ref: #using--directives23622
-Node: Master file27845
-Ref: #master-file27981
-Node: Defining @@-directives29503
-Ref: #defining--directives29685
-Node: Directive hooks31263
-Ref: #directive-hooks31411
-Node: Disabling the hydra menu31748
-Ref: #disabling-the-hydra-menu31900
+Node: Top488
+Node: Introduction792
+Ref: #introduction913
+Node: Installation1770
+Ref: #installation1893
+Node: OS X3473
+Ref: #os-x3550
+Node: Usage4141
+Ref: #usage4247
+Node: Input and output formats6029
+Ref: #input-and-output-formats6184
+Node: The options menu9120
+Ref: #the-options-menu9299
+Node: Template variables and metadata12570
+Ref: #template-variables-and-metadata12769
+Node: Running Pandoc13344
+Ref: #running-pandoc13515
+Node: Setting an output file15616
+Ref: #setting-an-output-file15786
+Node: Creating a pdf17480
+Ref: #creating-a-pdf17611
+Node: Font lock18456
+Ref: #font-lock18572
+Node: Settings Files18736
+Ref: #settings-files18877
+Node: File-local variables21278
+Ref: #file-local-variables21448
+Node: Managing numbered examples23008
+Ref: #managing-numbered-examples23195
+Node: Using @@-directives24505
+Ref: #using--directives24682
+Node: Master file28905
+Ref: #master-file29041
+Node: Defining @@-directives30563
+Ref: #defining--directives30745
+Node: Directive hooks32323
+Ref: #directive-hooks32471
+Node: Disabling the hydra menu32808
+Ref: #disabling-the-hydra-menu32960
 
 End Tag Table
 
