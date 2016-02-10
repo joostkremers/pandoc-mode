@@ -73,7 +73,7 @@ in a synchronous subprocess."
   "List of functions to call when `pandoc' returns successfully.
 Note, this hook is only run when `pandoc-use-async' is set to t."
   :group 'pandoc
-  :type 'function)
+  :type 'hook)
 
 (defcustom pandoc-data-dir "~/.emacs.d/pandoc-mode/"
   "Default `pandoc-mode' data dir.
