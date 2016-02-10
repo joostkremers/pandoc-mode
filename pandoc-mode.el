@@ -516,10 +516,10 @@ files. (Therefore, this function is not available on Windows.)"
       (message "This option is not available on MS Windows")
     (let ((current-settings-file
            (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
-                                                                     (pandoc--get 'write))))
+                                                               (pandoc--get 'write))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
-                                                                     (pandoc--get 'write)))))
+                                                               (pandoc--get 'write)))))
       (when (not (file-exists-p current-settings-file))
         (pandoc--save-settings 'local (pandoc--get 'write)))
       (make-symbolic-link current-settings-file
@@ -601,9 +601,9 @@ This function is for use in `pandoc-mode-hook'."
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
   (pandoc--load-settings-for-file (when (buffer-file-name)
-                                    (expand-file-name (buffer-file-name)))
-                                  format
-                                  no-confirm))
+                              (expand-file-name (buffer-file-name)))
+                            format
+                            no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings for FILE.
@@ -787,10 +787,10 @@ output file is created on the basis of the input file and the
 output format."
   (interactive "P")
   (pandoc--set 'output
-               (cond
-                ((eq prefix '-) nil)
-                ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
-                (t t))))
+         (cond
+          ((eq prefix '-) nil)
+          ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
+          (t t))))
 
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
@@ -798,9 +798,9 @@ If called with the prefix argument C-u - (or M--), the data
 directory is set to NIL, which means use $HOME/.pandoc."
   (interactive "P")
   (pandoc--set 'data-dir
-               (if (eq prefix '-)
-                   nil
-                 (read-directory-name "Data directory: " nil nil t))))
+         (if (eq prefix '-)
+             nil
+           (read-directory-name "Data directory: " nil nil t))))
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
@@ -809,9 +809,9 @@ directory is set to NIL, which means use the directory of the
 input file."
   (interactive "P")
   (pandoc--set 'output-dir
-               (if (eq prefix '-)
-                   nil
-                 (read-directory-name "Output directory: " nil nil t))))
+         (if (eq prefix '-)
+             nil
+           (read-directory-name "Output directory: " nil nil t))))
 
 (defun pandoc-set-extract-media (prefix)
   "Set the option `Extract media'.
@@ -819,9 +819,9 @@ If called with the prefix argument C-u - (or M--), no media files
 are extracted."
   (interactive "P")
   (pandoc--set 'extract-media
-               (if (eq prefix '-)
-                   nil
-                 (read-directory-name "Extract media files to directory: " nil nil t))))
+         (if (eq prefix '-)
+             nil
+           (read-directory-name "Extract media files to directory: " nil nil t))))
 
 (defun pandoc-set-master-file (prefix)
   "Set the master file.
@@ -829,9 +829,9 @@ If called with the prefix argumen C-u - (or M--), the master file
 is set to nil, which means the current file is the master file."
   (interactive "P")
   (pandoc--set 'master-file
-               (if (eq prefix '-)
-                   nil
-                 (read-file-name "Master file: "))))
+         (if (eq prefix '-)
+             nil
+           (read-file-name "Master file: "))))
 
 (defun pandoc-set-this-file-as-master ()
   "Set the current file as master file.
@@ -855,12 +855,12 @@ set. Without any prefix argument, the option is toggled."
                                                                      (t "Set")))
                                               pandoc--switches nil t) pandoc--switches))))
     (pandoc--set option (cond
-                         ((eq prefix '-) nil)
-                         ((null prefix) (not (pandoc--get option)))
-                         (t t)))
+                   ((eq prefix '-) nil)
+                   ((null prefix) (not (pandoc--get option)))
+                   (t t)))
     (message "Option `%s' %s." (car (rassq option pandoc--switches)) (if (pandoc--get option)
-                                                                         "set"
-                                                                       "unset"))))
+                                                                   "set"
+                                                                 "unset"))))
 
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
   `("Pandoc"
@@ -970,16 +970,16 @@ set. Without any prefix argument, the option is toggled."
     ("Math Rendering"
      ,@pandoc--math-menu-list)))
 
-    ;; ("Options"
-    ;;  ,@pandoc--options-menu)
-    ;; ("Switches"
-    ;;  ;; put the binary options into the menu
-    ;;  ,@(mapcar (lambda (option)
-    ;;              (vector (car option) `(pandoc--toggle (quote ,(cdr option)))
-    ;;                      :active t
-    ;;                      :style 'toggle
-    ;;                      :selected `(pandoc--get (quote ,(cdr option)))))
-    ;;            pandoc--switches))
+;; ("Options"
+;;  ,@pandoc--options-menu)
+;; ("Switches"
+;;  ;; put the binary options into the menu
+;;  ,@(mapcar (lambda (option)
+;;              (vector (car option) `(pandoc--toggle (quote ,(cdr option)))
+;;                      :active t
+;;                      :style 'toggle
+;;                      :selected `(pandoc--get (quote ,(cdr option)))))
+;;            pandoc--switches))
 
 (easy-menu-add pandoc-mode-menu pandoc-mode-map)
 
@@ -1364,6 +1364,5 @@ _M_: Use current file as master file
   (font-lock-fontify-buffer))
 
 (provide 'pandoc-mode)
-
 
 ;;; pandoc-mode.el ends here
