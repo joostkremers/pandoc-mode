@@ -445,30 +445,32 @@ also ignored in this case."
           (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
           (pandoc--log 'log "Calling %s with:\n\n %s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
 	  (let ((coding-system-for-read 'utf-8)
-                (coding-system-for-write 'utf-8))
-            (if pandoc-use-async
-                (let ((process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
-                  (set-process-sentinel process (lambda (_ e)
-                                                  (if (string-equal e "finished\n")
-                                                      (progn
-                                                        (run-hooks 'pandoc-async-success-hook)
-                                                        (pandoc--log 'message "%s: %s exited successfully"
-                                                               (file-name-nondirectory filename)
-                                                               (file-name-nondirectory pandoc--local-binary)))
-                                                    (pandoc--log 'message "%s: Error in %s process"
-                                                           (file-name-nondirectory filename)
-                                                           (file-name-nondirectory pandoc--local-binary))
-                                                    (display-buffer pandoc--output-buffer))))
-                  (process-send-region process (point-min) (point-max))
-                  (process-send-eof process))
+                (coding-system-for-write 'utf-8)
+                (log-success (lambda (file binary)
+                               (pandoc--log 'message "%s: %s exited successfully"
+                                      (file-name-nondirectory file)
+                                      (file-name-nondirectory binary))))
+                (log-failure (lambda (file binary)
+                               (pandoc--log 'message "%s: Error in %s process"
+                                      (file-name-nondirectory file)
+                                      (file-name-nondirectory binary)))))
+            (cond
+             (pandoc-use-async
+              (let ((process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
+                (set-process-sentinel process (lambda (_ e)
+                                                (cond
+                                                 ((string-equal e "finished\n")
+                                                  (run-hooks 'pandoc-async-success-hook)
+                                                  (funcall log-success filename pandoc--local-binary))
+                                                 (t (funcall log-failure filename pandoc--local-binary)
+                                                    (display-buffer pandoc--output-buffer)))))
+                (process-send-region process (point-min) (point-max))
+                (process-send-eof process)))
+             ((not pandoc-use-async)
               (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
-                  (pandoc--log 'message "%s: %s exited successfully"
-                         (file-name-nondirectory filename)
-                         (file-name-nondirectory pandoc--local-binary))
-                (pandoc--log 'message "%s: Error in %s process"
-                       (file-name-nondirectory filename)
-                       (file-name-nondirectory pandoc--local-binary))
-                (display-buffer pandoc--output-buffer)))))))))
+                  (funcall log-success filename pandoc--local-binary)
+                (funcall log-failure filename pandoc--local-binary)
+                (display-buffer pandoc--output-buffer))))))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
@@ -497,13 +499,13 @@ options are unset except for the input and output formats.
 
 If the region is active, pandoc is run on the region instead of
 the buffer."
-(interactive "P")
-(pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
-                           "latex"
-                         nil)
-                       t
-                       (if (use-region-p)
-                           (cons (region-beginning) (region-end)))))
+  (interactive "P")
+  (pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
+                       "latex"
+                     nil)
+                   t
+                   (if (use-region-p)
+                       (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Sets the current output format as default.
