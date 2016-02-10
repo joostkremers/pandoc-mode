@@ -204,7 +204,10 @@ N is the index of the extension in `pandoc--extensions'."
 (defun pandoc--create-settings-filename (type filename output-format)
   "Create a settings filename.
 TYPE is the type of settings file, either 'local or 'project.
-The return value is an absolute filename."
+FILENAME is name of the file for which the settings file is to be
+created, OUTPUT-FORMAT the output format of the settings file,
+which is recorded in its name.  The return value is an absolute
+filename."
   (setq filename (expand-file-name filename))
   (cond
    ((eq type 'local)
@@ -219,10 +222,10 @@ FORMAT is the output format to use."
 
 (defun pandoc--format-all-options (input-file &optional pdf)
   "Create a list of strings with pandoc options for the current buffer.
-INPUT-FILE is the name of the input file. If PDF is non-nil, an
+INPUT-FILE is the name of the input file.  If PDF is non-nil, an
 output file is always set, derived either from the input file or
 from the output file set for the \"latex\" output profile, and
-gets the suffix `.pdf'. If the output format is \"odt\", \"epub\"
+gets the suffix `.pdf'.  If the output format is \"odt\", \"epub\"
 or \"docx\" but no output file is specified, one will be created,
 since pandoc does not support output to stdout for those two
 formats."
@@ -246,7 +249,8 @@ formats."
     (delq nil (append (list read write output) cli-options (apply #'append list-options) (apply #'append alist-options)))))
 
 (defun pandoc--format-extensions (extensions)
-  "Create a string of extensions to be added to the Pandoc command line."
+  "Create a string of extensions to be added to the Pandoc command line.
+EXTENSIONS is an alist of (<extension> . <value>) pairs."
   (mapconcat (lambda (elt)
                (if (cdr elt)
                    (format "%s%s" (cdr elt) (car elt))
@@ -256,7 +260,9 @@ formats."
 
 (defun pandoc--format-output-option (input-file pdf)
   "Create the output option for calling Pandoc.
-Return a string that can be added to the call to Pandoc."
+INPUT-FILE is the name of the input file.  PDF is t if the output
+file is a pdf file.  Return a string that can be added to the
+call to Pandoc."
   (cond
    ((or (eq (pandoc--get 'output) t) ; if the user set the output file to T
         (and (null (pandoc--get 'output)) ; or if the user set no output file but either
@@ -359,11 +365,15 @@ with the @@-directives."
               (goto-char @@-beg))))))))
 
 (defun pandoc--process-lisp-directive (_ lisp)
-  "Process @@lisp directives."
+  "Process @@lisp directives.
+The first argument _ is the output argument and is ignored.  LISP
+is the argument of the @@lisp directive."
   (format "%s" (eval (car (read-from-string lisp)))))
 
 (defun pandoc--process-include-directive (_ include-file)
-  "Process @@include directives."
+  "Process @@include directives.
+The first argument _ is the output argument and is ignored.
+INCLUDE-FILE is the argument of the @@include directive."
   (with-temp-buffer
     (insert-file-contents include-file)
     (buffer-string)))
@@ -383,12 +393,12 @@ with the @@-directives."
 (defun pandoc--call-external (output-format &optional pdf region)
   "Call pandoc on the current buffer.
 This function creates a temporary buffer and sets up the required
-local options. The contents of the current buffer is copied into
+local options.  The contents of the current buffer is copied into
 the temporary buffer, the @@-directives are processed, after
 which pandoc is called.
 
-OUTPUT-FORMAT is the format to use. If nil, the current buffer's
-output format is used. If PDF is non-nil, a pdf file is created.
+OUTPUT-FORMAT is the format to use.  If nil, the current buffer's
+output format is used.  If PDF is non-nil, a pdf file is created.
 REGION is a cons cell specifying the beginning and end of the
 region to be sent to pandoc.
 
@@ -474,8 +484,8 @@ also ignored in this case."
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
-If called with a prefix argument, the user is asked for an output
-format. Otherwise, the output format currently set in the buffer
+If called with a PREFIX argument, the user is asked for an output
+format.  Otherwise, the output format currently set in the buffer
 is used.
 
 If the region is active, pandoc is run on the region instead of
@@ -491,8 +501,8 @@ the buffer."
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
 If the output format of the current buffer is set to \"latex\" or
-\"beamer\", the buffer's options are used. If called with a
-prefix argument, or if the current buffer's output format is not
+\"beamer\", the buffer's options are used.  If called with a
+PREFIX argument, or if the current buffer's output format is not
 \"latex\" or \"beamer\", a LaTeX settings file is searched for
 and loaded when found. If no such settings file is found, all
 options are unset except for the input and output formats.
@@ -508,9 +518,9 @@ the buffer."
                        (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
-  "Sets the current output format as default.
+  "Set the current output format as default.
 This is done by creating a symbolic link to the relevant settings
-files. (Therefore, this function is not available on Windows.)"
+files.  (Therefore, this function is not available on Windows.)"
   (interactive)
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
@@ -547,13 +557,12 @@ appropriate output format."
   (pandoc--save-settings 'global (pandoc--get 'write)))
 
 (defun pandoc--save-settings (type format &optional no-confirm)
-  "Save the settings of the current buffer for FORMAT.
+  "Save the settings of the current buffer.
 TYPE must be a quoted symbol and specifies the type of settings
-file. If its value is 'local, a normal settings file is
-created for the current file. If TYPE's value is 'project, a
-project settings file is written. If optional argument NO-CONFIRM
-is non-nil, any existing settings file is overwritten without
-asking."
+file.  It can be `local', `project', or `global'.  FORMAT is the
+output format for which the settings are to be saved.  If
+NO-CONFIRM is non-nil, any existing settings file is overwritten
+without asking."
   (let* ((filename (buffer-file-name))
          (settings pandoc--local-settings)
          (settings-file (if (eq type 'global)
@@ -606,16 +615,15 @@ settings have not been saved."
                             no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
-  "Load the settings for FILE.
-Load FILE's own settings file if it exists, otherwise check for a
-project file and load that. If no project file exist, check if a
-global settings file exist.
+  "Load the settings file of FILE for FORMAT.
+Search for a local, a project and a global settings file, in that
+order, and load the first one that exists and is readable.
 
 If NO-CONFIRM is t, no confirmation is asked if the current
-settings have not been saved. FILE must be an absolute path name.
-If FILE is nil, a global settings file is read, if any. The
-settings are stored in the current buffer's
-`pandoc--local-settings'. Return nil if no settings or project
+settings have not been saved.  FILE must be an absolute path
+name.  If FILE is nil, a global settings file is read, if any.
+The settings are stored in the current buffer's
+`pandoc--local-settings'.  Return nil if no settings or project
 file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
@@ -654,7 +662,7 @@ If FILE does not exist or cannot be read, return nil."
 (defun pandoc--read-old-settings-from-buffer ()
   "Read old-style settings from the current buffer.
 `pandoc--settings-modified-flag' is set, so that the user will be
-asked to save the settings on exit. Return an alist with the
+asked to save the settings on exit.  Return an alist with the
 options and their values."
   (goto-char (point-min))
   (let (options)                        ; we collect the options in a list
@@ -758,9 +766,9 @@ options and their values."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pandoc-set-write (format)
-  "Sets the output format to FORMAT.
+  "Set the output format to FORMAT.
 If a settings and/or project file exists for FORMAT, they are
-loaded. If none exists, all options are unset (except the input
+loaded.  If none exists, all options are unset (except the input
 format)."
   (interactive (list (completing-read "Set output format to: " pandoc--output-formats nil t)))
   (when (and pandoc--settings-modified-flag
@@ -782,7 +790,7 @@ format)."
 (defun pandoc-set-output (prefix)
   "Set the output file.
 If called with the prefix argument C-u - (or M--), the output
-file is unset. If called with any other prefix argument, the
+file is unset.  If called with any other prefix argument, the
 output file is created on the basis of the input file and the
 output format."
   (interactive "P")
@@ -845,8 +853,8 @@ file."
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
 If called with the prefix argument C-u - (or M--), the options is
-unset. If called with any other prefix argument, the option is
-set. Without any prefix argument, the option is toggled."
+unset.  If called with any other prefix argument, the option is
+set.  Without any prefix argument, the option is toggled."
   (interactive "P")
   (let* ((completion-ignore-case t)
          (option (cdr (assoc (completing-read (format "%s option: " (cond
@@ -1068,7 +1076,9 @@ _s_: Select and insert example label
   ("b" pandoc-main-hydra/body "Back"))
 
 (defun pandoc--extension-active-marker (extension rw)
-  "Return a marker indicating whether EXTENSION is active."
+  "Return a marker indicating whether EXTENSION is active.
+RW is either `read' or `write', indicating whether to take the
+input or the output format."
   (if (pandoc--extension-active-p extension rw)
       pandoc-extension-active-marker
     pandoc-extension-inactive-marker))
@@ -1236,7 +1246,7 @@ _M_: Use current file as master file
   "Face name to use for '@@' in @@directives.")
 
 (defvar pandoc-directive-type-face 'pandoc-directive-type-face
-  "Face name to use for 'include' or 'lisp' in @@directives.")
+  "Face name to use for name of @@directives.")
 
 (defvar pandoc-directive-braces-face 'pandoc-directive-braces-face
   "Face name to use for braces in @@directives.")
