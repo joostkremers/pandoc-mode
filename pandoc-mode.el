@@ -712,6 +712,11 @@ options and their values."
             (print-circle nil))
         (pp settings)))))
 
+(defun pandoc-view-log ()
+  "Display the log buffer in a temporary window."
+  (interactive)
+  (display-buffer pandoc--log-buffer))
+
 (defun pandoc-insert-@ ()
   "Insert a new labeled (@) list marker at point."
   (interactive)
@@ -860,6 +865,7 @@ set. Without any prefix argument, the option is toggled."
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
     ["View Output Buffer" pandoc-view-output :active t]
+    ["View Log Buffer" pandoc-view-log :active t]
     ("Settings Files"
      ["Save File Settings" pandoc-save-settings-file :active t]
      ["Save Project File" pandoc-save-project-file :active t]
@@ -985,6 +991,7 @@ _r_: Run Pandoc               _I_: Input format
 _p_: Convert to pdf           _O_: Output format
 _V_: View output buffer       _s_: Settings files
 _S_: View current settings    _e_: Example lists
+_L_: View log buffer
 _o_: Options
 
 "
@@ -992,6 +999,7 @@ _o_: Options
   ("p" pandoc-convert-to-pdf)
   ("V" pandoc-view-output)
   ("S" pandoc-view-settings)
+  ("L" pandoc-view-log)
   ("I" pandoc-input-format-hydra/body)
   ("O" pandoc-output-format-hydra/body)
   ("s" pandoc-settings-file-hydra/body)
