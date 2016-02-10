@@ -470,8 +470,8 @@ also ignored in this case."
                 (set-process-sentinel process (lambda (_ e)
                                                 (cond
                                                  ((string-equal e "finished\n")
-                                                  (run-hooks 'pandoc-async-success-hook)
-                                                  (funcall log-success filename pandoc--local-binary))
+                                                  (funcall log-success filename pandoc--local-binary)
+                                                  (run-hooks 'pandoc-async-success-hook))
                                                  (t (funcall log-failure filename pandoc--local-binary)
                                                     (display-buffer pandoc--output-buffer)))))
                 (process-send-region process (point-min) (point-max))
