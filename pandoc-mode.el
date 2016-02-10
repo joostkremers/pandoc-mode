@@ -693,7 +693,7 @@ options and their values."
   (display-buffer pandoc--output-buffer))
 
 (defun pandoc-view-settings ()
-  "Displays the settings file in the *Pandoc output* buffer."
+  "Displays the settings file in a *Help* buffer."
   (interactive)
   ;; remove all options that do not have a value.
   (let* ((remove-defaults (lambda (alist)
@@ -709,13 +709,11 @@ options and their values."
     (when write-extensions
       (setcdr write-extensions (funcall remove-defaults (cdr write-extensions))))
     (setq settings (funcall remove-defaults settings))
-    (with-current-buffer pandoc--output-buffer
+    (with-help-window " *Pandoc Help*"
       (let ((print-length nil)
             (print-level nil)
             (print-circle nil))
-        (erase-buffer)
-        (pp settings (current-buffer))))
-    (display-buffer pandoc--output-buffer)))
+        (pp settings)))))
 
 (defun pandoc-insert-@ ()
   "Insert a new labeled (@) list marker at point."
