@@ -447,7 +447,7 @@ also ignored in this case."
 	  (let ((coding-system-for-read 'utf-8)
                 (coding-system-for-write 'utf-8)
                 (log-success (lambda (file binary)
-                               (pandoc--log 'message "%s: %s exited successfully"
+                               (pandoc--log 'message "%s: %s finished successfully"
                                       (file-name-nondirectory file)
                                       (file-name-nondirectory binary))))
                 (log-failure (lambda (file binary)
