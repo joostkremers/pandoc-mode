@@ -396,13 +396,8 @@ be retrieved."
         (buffer-local-value var buffer)
       (cdr (assq option (buffer-local-value 'pandoc--local-settings buffer))))))
 
-;; TODO list options aren't set correctly.
 (defun pandoc--set (option value)
-  "Set the local value of OPTION to VALUE.
-If OPTION is 'variable, VALUE should be a cons of the
-form (variable-name . value), which is then added to the
-variables already stored, or just (variable-name), in which case
-the named variable is deleted from the list."
+  "Set the local value of OPTION to VALUE."
   (when (assq option pandoc--options) ; check if the option is licit
     (unless (assq option pandoc--local-settings) ; add the option if it's not there
       (push (list option) pandoc--local-settings)
