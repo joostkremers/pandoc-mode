@@ -425,11 +425,15 @@ the named variable is deleted from the list."
   "Set an alist OPTION.
 NEW-ELEM is a cons (<name> . <value>), which is added to the alist
 for OPTION in `pandoc--local-settings'.  If an element with <name>
-already exists, it is replaced, or removed if <value> is NIL."
+already exists, it is replaced, or removed if <value> is NIL.
+
+If NEW-ELEM is nil, OPTION is unset entirely."
   (let* ((value (cdr new-elem))
          (items (pandoc--get option))
          (item (assoc (car new-elem) items)))
     (cond
+     ((null new-elem)
+      (setcdr items nil))
      ((and item value) ; if <name> exists and we have a new value
       (setcdr item value)) ; replace the existing value
      ((and item (not value)) ; if <name> exists but we have no new value
@@ -439,10 +443,13 @@ already exists, it is replaced, or removed if <value> is NIL."
     (setcdr (assoc option pandoc--local-settings) items)))
 
 (defun pandoc--set-list-option (option value)
-  "Add VALUE to list option OPTION."
-  (let* ((values (pandoc--get option))
-         (new-values (cons value values)))
-    (setcdr (assoc option pandoc--local-settings) new-values)))
+  "Add VALUE to list option OPTION.
+If VALUE is nil, OPTION is unset entirely."
+  (let* ((values (pandoc--get option)))
+    (setcdr (assoc option pandoc--local-settings)
+            (if value
+                (cons value values)
+              nil)))) ; if VALUE was nil, we unset the option
 
 (defun pandoc--remove-from-list-option (option value)
   "Remove VALUE from the list of OPTION."
