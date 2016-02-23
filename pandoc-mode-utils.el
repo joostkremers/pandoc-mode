@@ -46,11 +46,6 @@
 (require 'dash)
 (require 'cl-lib)
 
-(defun nonempty (string)
-  "Return STRING, unless it is \"\", in which case return NIL."
-  (when (not (string= string ""))
-    string))
-
 (defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'wp)
 
 (defcustom pandoc-binary "pandoc"
