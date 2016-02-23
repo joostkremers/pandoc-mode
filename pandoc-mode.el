@@ -288,7 +288,9 @@ call to Pandoc."
 (defun pandoc--format-list-options (option values)
   "Create a list of cli options for OPTION from the values in VALUES."
   (mapcar (lambda (value)
-            (format "--%s=%s" option value))
+            (format "--%s=%s" option (if (eq (get option 'pandoc-list-type) 'file)
+                                         (pandoc--expand-absolute-path value)
+                                       value)))
           values))
 
 (defun pandoc--format-alist-options (option alist)
@@ -319,8 +321,9 @@ call to Pandoc."
   "Create a list of options in `pandoc--cli-options'."
   (mapcar (lambda (option)
             (let ((value (pandoc--get option)))
-              (when (and value (memq option pandoc--filepath-options))
-                (setq value (expand-file-name value)))
+              (when (and value
+                         (memq option pandoc--filepath-options))
+                (setq value (pandoc--expand-absolute-path value)))
               (cond
                ((eq value t) (format "--%s" option))
                ((or (numberp value)
@@ -838,10 +841,9 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 `\\[negative-argument]'), the master file is set to nil, which
 means the current file is the master file."
   (interactive "P")
-  (pandoc--set 'master-file
-         (if (eq prefix '-)
-             nil
-           (read-file-name "Master file: "))))
+  (pandoc--set 'master-file (cond
+                       ((eq prefix '-) nil)
+                       (t (pandoc--read-file-name "Master file: " default-directory (not prefix))))))
 
 (defun pandoc-set-this-file-as-master ()
   "Set the current file as master file.

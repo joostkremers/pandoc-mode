@@ -5,14 +5,6 @@ INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
 (pandoc-mode).  Minor mode for interacting with Pandoc.
 END-INFO-DIR-ENTRY
 
-INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
-(pandoc-mode).  Minor mode for interacting with Pandoc.
-END-INFO-DIR-ENTRY
-
-INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
-(pandoc-mode).  Minor mode for interacting with Pandoc.
-END-INFO-DIR-ENTRY
-
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
@@ -241,23 +233,45 @@ Unsetting an option can usually be done by prefixing the relevant key
 with a dash ‘-’.  This is actually the negative prefix argument, which
 can be typed without the meta (alt) key when inside a hydra menu.  So
 for example, if you’re in the files menu (‘C-c / o f’), you can set an
-output file with ‘o’.  To unset the output file, type ‘- o’.
+output file with ‘o’, and to unset the output file, you can type ‘- o’.
 
-Many Pandoc options have file names as values.  When ‘pandoc-mode’ calls
-‘pandoc’, it expands filenames, so that they are absolute and don’t
-contain any abbreviations (such as ‘~’ for one’s home directory).  This
-means you can have relative filenames in your settings, or indeed ‘~’,
-which can be practical if you move settings files to different locations
-or e.g.  between computers with different OSes.  (For example, Linux
-expands ‘~’ to ‘/home/<user>’, while on OS X it becomes
-‘/Users/<user>’.)
+Many Pandoc options have file names as values.  These are normally
+prompted for and stored as _relative_ paths.  File name completion is
+available, starting from the current directory.  For some options, such
+as ‘--css’, relative paths make more sense because an absolute file
+would almost certainly be incorrect once the output html file is moved
+to the web server.  Other options, such as ‘--template’, look in
+Pandoc’s data directory and therefore also do not require an absolute
+path.  Lastly, auxiliary files, such as ‘--include-in-header’, will
+usually be stored in the same directory as the source file or in a
+subdirectory, in which case a relative path is unproblematic.
 
-The CSS style sheet is an exception to this: ‘pandoc-mode’ always cuts
-off the directory part of the filename you specify as CSS style sheet
-and doesn’t expand it.  The reason for this is that the CSS style sheet
-will normally be transferred along with the output file(s) to a server,
-where it will most likely be in a different directory than on the
-computer you’re generating your HTML files on.
+However, if for some reason you need to store an absolute path for an
+option, you can do so by using the prefix argument ‘C-u’.  So for
+example in the general writer options menu, accessible through ‘C-/ o
+w’, pressing ‘C-u H’ asks for a file to include in the header and stores
+it as an absolute path.  Note that absolute paths are not expanded,
+i.e., they may contain abbreviations such as ‘~’ for one’s home
+directory.  This makes it easier to share settings files between
+computers with different OSes (for example, Linux expands ‘~’ to
+‘/home/<user>’, while on OS X it becomes ‘/Users/<user>’).
+
+File options may have a default value (although currently, this is only
+the case for ‘--epub-stylesheet’).  Such options can be specified on the
+‘pandoc’ command line without naming a file.  To select such a default
+value for a file option, use a numeric prefix argument, which in the
+hydra menu is obtained by pressing a number without the meta key.  That
+is, to select the default EPUB style sheet, go to the EPUB options menu
+(‘C-/ o s E’) and press ‘1 s’.
+
+Options that are not files or numbers are “string options”, which
+include options that specify a URL. These may also have a default value,
+which can be set in the same way as with file options.  Note, though,
+that this does not apply to options that only have a limited set of
+possible values (e.g., ‘--email-obfuscation’, ‘--latex-engine’).  These
+can be set or unset, you cannot explicitly request their default value.
+(‘pandoc’ uses their default values even if they are not specified on
+the command line, unlike string options.)
 
 To get an overview of all the settings for the current file and output
 format, you can use the option “View current settings” in the main menu
@@ -557,7 +571,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 10 Feb 2016".
+‘@@date{Cologne}’ to get "Cologne, 23 Feb 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -716,45 +730,45 @@ than ‘toc’).
 
 
 Tag Table:
-Node: Top488
-Node: Introduction792
-Ref: #introduction913
-Node: Installation1770
-Ref: #installation1893
-Node: OS X3473
-Ref: #os-x3550
-Node: Usage4141
-Ref: #usage4247
-Node: Input and output formats6029
-Ref: #input-and-output-formats6184
-Node: The options menu9120
-Ref: #the-options-menu9299
-Node: Template variables and metadata12570
-Ref: #template-variables-and-metadata12769
-Node: Running Pandoc13344
-Ref: #running-pandoc13515
-Node: Setting an output file15616
-Ref: #setting-an-output-file15786
-Node: Creating a pdf17480
-Ref: #creating-a-pdf17611
-Node: Font lock18456
-Ref: #font-lock18572
-Node: Settings Files18736
-Ref: #settings-files18877
-Node: File-local variables21278
-Ref: #file-local-variables21448
-Node: Managing numbered examples23008
-Ref: #managing-numbered-examples23195
-Node: Using @@-directives24505
-Ref: #using--directives24682
-Node: Master file28905
-Ref: #master-file29041
-Node: Defining @@-directives30563
-Ref: #defining--directives30745
-Node: Directive hooks32323
-Ref: #directive-hooks32471
-Node: Disabling the hydra menu32808
-Ref: #disabling-the-hydra-menu32960
+Node: Top218
+Node: Introduction522
+Ref: #introduction643
+Node: Installation1500
+Ref: #installation1623
+Node: OS X3203
+Ref: #os-x3280
+Node: Usage3871
+Ref: #usage3977
+Node: Input and output formats5759
+Ref: #input-and-output-formats5914
+Node: The options menu8850
+Ref: #the-options-menu9029
+Node: Template variables and metadata13724
+Ref: #template-variables-and-metadata13923
+Node: Running Pandoc14498
+Ref: #running-pandoc14669
+Node: Setting an output file16770
+Ref: #setting-an-output-file16940
+Node: Creating a pdf18634
+Ref: #creating-a-pdf18765
+Node: Font lock19610
+Ref: #font-lock19726
+Node: Settings Files19890
+Ref: #settings-files20031
+Node: File-local variables22432
+Ref: #file-local-variables22602
+Node: Managing numbered examples24162
+Ref: #managing-numbered-examples24349
+Node: Using @@-directives25659
+Ref: #using--directives25836
+Node: Master file30059
+Ref: #master-file30195
+Node: Defining @@-directives31717
+Ref: #defining--directives31899
+Node: Directive hooks33477
+Ref: #directive-hooks33625
+Node: Disabling the hydra menu33962
+Ref: #disabling-the-hydra-menu34114
 
 End Tag Table
 

@@ -359,6 +359,26 @@ with the default value NIL.")
 (defvar pandoc--files-menu nil
   "Auxiliary variable for creating the file menu.")
 
+(defun pandoc--read-file-name (prompt dir relative)
+  "Read a file name using PROMPT.
+DIR is the directory used for completing file names.  If RELATIVE
+is non-nil, return the file path as a relative path starting from
+DIR, otherwise return the full path."
+  ;; we inhibit inserting the default directory, though not all completion
+  ;; systems honor this.
+  (let* ((insert-default-directory (not relative))
+         (file (read-file-name prompt dir)))
+    (if relative
+        (file-relative-name file dir)
+      file)))
+
+(defun pandoc--expand-absolute-path (filename)
+  "Expand FILENAME if it is an absolute path.
+If FILENAME is a relative path, return it unchanged."
+  (if (file-name-absolute-p filename)
+      (expand-file-name filename)
+    filename))
+
 (defun pandoc--log (type format-string &rest args)
   "Write a message to the *Pandoc log* buffer.
 If TYPE is `message', also display the message in the echo area.
@@ -549,18 +569,17 @@ the menu."
                          `(pandoc--toggle (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))))
 
-(defmacro define-pandoc-file-option (option hydra prompt &optional full-path default)
+(defmacro define-pandoc-file-option (option hydra prompt &optional default)
   "Define OPTION as a file option.
 The option is added to `pandoc--options', `pandoc--cli-options',
-and to `pandoc--filepath-options' (unless FULL-PATH is NIL).
-Furthermore, a menu entry is created and a function to set/unset
-the option.
+and to `pandoc--filepath-options'.  Furthermore, a menu entry is
+created and a function to set/unset the option.
 
 The function to set the option can be called with the prefix
 argument `\\[universal-argument] -' (or `\\[negative-argument]')
-to unset the option.  A default value (if any) can be set by
-calling the function with any other prefix argument.  If no
-prefix argument is given, the user is prompted for a value.
+to unset the option.  It can also be called with the prefix
+argument \\[universal-argument], in which case the file's full
+path is stored.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -574,14 +593,11 @@ OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"No \", \"Set \" and
-\"Default \" can be added before it. If FULL-PATH is T, the full
-path to the file is stored, otherwise just the file name without
-directory. DEFAULT must be either NIL or T and indicates whether
-the option can have a default value."
+\"Default \" can be added before it. DEFAULT must be either NIL
+or T and indicates whether the option can have a default value."
   (declare (indent defun))
   `(progn
-     ,(when full-path
-        `(push (quote ,option) pandoc--filepath-options))
+     (push (quote ,option) pandoc--filepath-options)
      (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) pandoc--options)
      (push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
@@ -601,26 +617,27 @@ the option can have a default value."
                                        :style 'radio
                                        :selected `(stringp (pandoc--get (quote ,option)))))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
                           (cond
-                           ((eq prefix '-) nil)
-                           ((null prefix) ,(if full-path
-                                               `(read-file-name ,(concat prompt ": "))
-                                             `(file-name-nondirectory (read-file-name ,(concat prompt ": ")))))
-                           (t ,default)))))))
+                           ((eq prefix '-) nil) ; C-u - or M--
+                           ((listp prefix) ; no prefix or C-u
+                            (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
+                           (t ,default))))))) ; any other prefix
 
 (defmacro define-pandoc-number-option (option hydra prompt)
   "Define OPTION as a numeric option.
 The option is added to `pandoc--options' and to
-`pandoc--cli-options'.  Furthermore, a menu entry is created and a
-function to set/unset the option.
+`pandoc--cli-options'.  Furthermore, a menu entry is created and
+a function to set/unset the option.
 
 The function to set the option can be called with the prefix
 argument `\\[universal-argument] -' (or `\\[negative-argument]')
@@ -654,10 +671,12 @@ formulated in such a way that the strings \"Default \" and \"Set
                           :style 'radio
                           :selected `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
@@ -711,10 +730,12 @@ or T and indicates whether the option can have a default value."
                                        :style 'radio
                                        :selected `(stringp (pandoc--get (quote ,option)))))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
@@ -726,11 +747,14 @@ or T and indicates whether the option can have a default value."
 
 (defmacro define-pandoc-list-option (option hydra type description prompt)
   "Define OPTION as a list option.
-The option is added to `pandoc--options' and
-`pandoc--list-options'.  Furthermore, a menu entry is created and
-a function to set the option.  This function can also be called
-with the prefix argument `\\[universal-argument] -' (or
-`\\[negative-argument]') to unset the option.
+The option is added to `pandoc--options' and `pandoc--list-options'.
+
+Furthermore, a menu entry is created and a function to set the
+option.  This function can also be called with the prefix
+argument `\\[universal-argument] -' (or `\\[negative-argument]') to remove an item from the list,
+or with the prefix argument `\\[universal-argument] \\[universal-argument]' to clear the entire list.
+If the list is a list of files, the function can also be called
+with the prefix argument `\\[universal-argument]' to store the full path.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -748,41 +772,51 @@ option's submenu.  PROMPT is a string that is used to prompt for
 setting and unsetting the option.  It must be formulated in such a
 way that the strings \"Add \", \"Remove \" can be added before
 it."
+
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--list-options)
+     (put (quote ,option) (quote pandoc-list-type) (quote ,type))
      (push (list ,description
                  ,(vector (concat "Add " prompt) (intern (concat "pandoc-set-" (symbol-name option)))
                           :active t)
                  ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                           :active `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
-             (if (eq prefix '-)
-                 (let ((value (completing-read "Remove item: " (pandoc--get (quote ,option)) nil t)))
-                   (pandoc--remove-from-list-option (quote ,option) value)
-                   (message ,(concat prompt " \"%s\" removed.") value))
+             (cond
+              ((and (listp prefix)
+                    (eq (car prefix) 16)) ; C-u C-u
+               (pandoc--set (quote ,option) nil)
+               (message ,(concat description " removed.")))
+              ((listp prefix) ; C-u or no prefix arg
                (let ((value ,(cond
                               ((eq type 'string)
                                `(read-string "Add value: " nil nil (pandoc--get (quote ,option))))
                               ((eq type 'file)
-                               `(read-file-name "Add file: ")))))
+                               `(pandoc--read-file-name "Add file: " default-directory (not prefix))))))
                  (pandoc--set (quote ,option) value)
-                 (message ,(concat prompt " \"%s\" added.") value)))))))
+                 (message ,(concat prompt " \"%s\" added.") value)))
+              ((eq prefix '-)
+               (let ((value (completing-read "Remove item: " (pandoc--get (quote ,option)) nil t)))
+                 (pandoc--remove-from-list-option (quote ,option) value)
+                 (message ,(concat prompt " \"%s\" removed.") value))))))))
 
-(defmacro define-pandoc-alist-option (option hydra type description prompt)
+(defmacro define-pandoc-alist-option (option hydra description prompt)
   "Define OPTION as an alist option.
-The option is added to `pandoc--options' and
-`pandoc--alist-options'.  Furthermore, a menu entry is created
-and a function to set the option.  This function can also be
-called with the prefix argument `\\[universal-argument] -' (or
-`\\[negative-argument]') to unset the option.
+The option is added to `pandoc--options' and `pandoc--alist-options'.
+Furthermore, a menu entry is created and a function to set the
+option.  This function can also be called with the prefix
+argument `\\[universal-argument] -' (or `\\[negative-argument]') to remove an item from the list,
+or with the prefix argument `\\[universal-argument] \\[universal-argument]' to clear the entire list.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -793,13 +827,12 @@ describing the width of the option (which must be the same for
 all options in a single hydra).
 
 OPTION must be a symbol and must be identical to the long form of
-the pandoc option (without dashes).  TYPE specifies the kind of
-data that is stored in the list.  Currently, possible values are
-`string' and `file'.  DESCRIPTION is the description for the
-option's submenu.  PROMPT is a string that is used to prompt for
-setting and unsetting the option.  It must be formulated in such a
-way that the strings \"Set/Change \" and \"Unset \" can be added
-before it."
+the pandoc option (without dashes).  DESCRIPTION is the
+description for the option's submenu.  PROMPT is a string that is
+used to prompt for setting and unsetting the option.  It must be
+formulated in such a way that the strings \"Set/Change \" and
+\"Unset \" can be added before it."
+
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--alist-options)
@@ -809,29 +842,32 @@ before it."
                  ,(vector (concat "Unset " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                           :active t))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) description) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
-             (let ((var (nonempty (completing-read (concat ,prompt ": ") (pandoc--get (quote ,option))))))
-               (when var
-                 (let ((value (if (eq prefix '-)
-                                  nil
-                                ,(cond
-                                  ((eq type 'string)
-                                   `(read-string "Value: " nil nil (cdr (assq var (pandoc--get (quote ,option))))))
-                                  ((eq type 'file)
-                                   `(read-file-name "File: "))))))
-                   ,(when (eq type 'string) ;; strings may be empty (which corresponds to boolean True in Pandoc)
-                      '(when (string= value "")
-                         (setq value t)))
-                   (pandoc--set (quote ,option) (cons var value))
-                   (message ,(concat prompt " `%s' \"%s\".") var (if value
-                                                                     (format "added with value `%s'" value)
-                                                                   "removed")))))))))
+             (if (and (listp prefix)
+                      (eq (car prefix) 16)) ; C-u C-u
+                 (progn
+                   (pandoc--set (quote ,option) nil)
+                   (message ,(concat description " removed")))
+               ;; for prefix argument - or no prefix argument
+               (let ((var (completing-read (concat ,prompt ": ") (pandoc--get (quote ,option)))))
+                 (when (and var (not (string= "" var)))
+                   (let ((value (if (eq prefix '-)
+                                    nil
+                                  (read-string "Value: " nil nil (cdr (assq var (pandoc--get (quote ,option))))))))
+                     (when (string= value "") ;; strings may be empty (which corresponds to boolean True in Pandoc)
+                       (setq value t))
+                     (pandoc--set (quote ,option) (cons var value))
+                     (message ,(concat prompt " `%s' \"%s\".") var (if value
+                                                                       (format "added with value `%s'" value)
+                                                                     "removed"))))))))))
 
 (defmacro define-pandoc-choice-option (option hydra prompt choices &optional output-formats)
   "Define OPTION as a choice option.
@@ -871,10 +907,12 @@ menu."
                                      :selected `(string= (pandoc--get (quote ,option)) ,choice)))
                            (cdr choices)))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-menu-list")))
+
      (push (quote ,(list (concat "_" (cadr hydra) "_: " (format (cl-caddr hydra) prompt) (format " [%%s(pandoc--pp-option '%s)]" option))
                          (cadr hydra)
                          (intern (concat "pandoc-set-" (symbol-name option)))))
            ,(intern (concat "pandoc--" (symbol-name (car hydra)) "-hydra-list")))
+
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
            (lambda (prefix)
              (interactive "P")
@@ -983,47 +1021,47 @@ evaluated."
 ;; Note that the options are added to the menus and hydras in reverse order.
 
 ;;; Reader options
-(define-pandoc-choice-option track-changes           (reader "T" "%-23s")        "Track Changes" ("accept" "reject" "all") ("docx"))
-(define-pandoc-number-option tab-stop                (reader "t" "%-23s")        "Tab Stop Width")
-(define-pandoc-switch        preserve-tabs           (reader "p" "%-23s")        "Preserve Tabs")
-(define-pandoc-switch        normalize               (reader "n" "%-23s")        "Normalize Document")
-(define-pandoc-alist-option  metadata                (reader "m" "%-23s") string "Metadata" "Metadata item")
-(define-pandoc-list-option   filter                  (reader "f" "%-23s") file   "Filters" "Filter")
-(define-pandoc-string-option default-image-extension (reader "i" "%-23s")        "Default Image Extension")
-(define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")        "Indented Code Classes")
-(define-pandoc-number-option base-header-level       (reader "h" "%-23s")        "Base Header Level")
-(define-pandoc-switch        old-dashes              (reader "o" "%-23s")        "Use Old-style Dashes")
-(define-pandoc-switch        smart                   (reader "s" "%-23s")        "Smart")
-(define-pandoc-switch        parse-raw               (reader "r" "%-23s")        "Parse Raw")
+(define-pandoc-choice-option track-changes           (reader "T" "%-23s")      "Track Changes" ("accept" "reject" "all") ("docx"))
+(define-pandoc-number-option tab-stop                (reader "t" "%-23s")      "Tab Stop Width")
+(define-pandoc-switch        preserve-tabs           (reader "p" "%-23s")      "Preserve Tabs")
+(define-pandoc-switch        normalize               (reader "n" "%-23s")      "Normalize Document")
+(define-pandoc-alist-option  metadata                (reader "m" "%-23s")      "Metadata" "Metadata item")
+(define-pandoc-list-option   filter                  (reader "f" "%-23s") file "Filters" "Filter")
+(define-pandoc-string-option default-image-extension (reader "i" "%-23s")      "Default Image Extension")
+(define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")      "Indented Code Classes")
+(define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level")
+(define-pandoc-switch        old-dashes              (reader "o" "%-23s")      "Use Old-style Dashes")
+(define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart")
+(define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw")
 ;; extract-media
 
 ;; TODO for data-dir, output-dir and extract-media, a macro define-pandoc-dir-option might be useful.
 
 
 ;;; General writer options
-(define-pandoc-switch        verbose             (writer "V" "%-19s")        "Verbose output") ; Pandoc's README places this in the general options
-(define-pandoc-file-option   include-after-body  (writer "A" "%-19s")        "Include After Body"  'full-path)
-(define-pandoc-file-option   include-before-body (writer "B" "%-19s")        "Include Before Body" 'full-path)
-(define-pandoc-file-option   include-in-header   (writer "H" "%-19s")        "Include Header"      'full-path)
-(define-pandoc-string-option highlight-style     (writer "S" "%-19s")        "Highlighting Style")
-(define-pandoc-switch        no-highlight        (writer "h" "%-19s")        "No Highlighting")
-(define-pandoc-number-option toc-depth           (writer "D" "%-19s")        "TOC Depth")
-(define-pandoc-switch        table-of-contents   (writer "T" "%-19s")        "Table of Contents")
-(define-pandoc-number-option columns             (writer "c" "%-19s")        "Column Width")
-(define-pandoc-switch        no-wrap             (writer "W" "%-19s")        "No Wrap")
-(define-pandoc-choice-option wrap                (writer "w" "%-19s")        "Wrap" ("auto" "none" "preserve"))
-(define-pandoc-number-option dpi                 (writer "d" "%-19s")        "DPI")
-(define-pandoc-alist-option  variable            (writer "v" "%-19s") string "Variables"           "Variable")
-(define-pandoc-file-option   template            (writer "t" "%-19s")        "Template File"       'full-path)
-(define-pandoc-switch        standalone          (writer "s" "%-19s")        "Standalone")
+(define-pandoc-switch        verbose             (writer "V" "%-19s") "Verbose output") ; Pandoc's README places this in the general options
+(define-pandoc-file-option   include-after-body  (writer "A" "%-19s") "Include After Body")
+(define-pandoc-file-option   include-before-body (writer "B" "%-19s") "Include Before Body")
+(define-pandoc-file-option   include-in-header   (writer "H" "%-19s") "Include Header")
+(define-pandoc-string-option highlight-style     (writer "S" "%-19s") "Highlighting Style")
+(define-pandoc-switch        no-highlight        (writer "h" "%-19s") "No Highlighting")
+(define-pandoc-number-option toc-depth           (writer "D" "%-19s") "TOC Depth")
+(define-pandoc-switch        table-of-contents   (writer "T" "%-19s") "Table of Contents")
+(define-pandoc-number-option columns             (writer "c" "%-19s") "Column Width")
+(define-pandoc-switch        no-wrap             (writer "W" "%-19s") "No Wrap")
+(define-pandoc-choice-option wrap                (writer "w" "%-19s") "Wrap"                ("auto" "none" "preserve"))
+(define-pandoc-number-option dpi                 (writer "d" "%-19s") "DPI")
+(define-pandoc-alist-option  variable            (writer "v" "%-19s") "Variables"           "Variable")
+(define-pandoc-file-option   template            (writer "t" "%-19s") "Template File")
+(define-pandoc-switch        standalone          (writer "s" "%-19s") "Standalone")
 ;; print-default-template ; not actually included
 
 
 ;;; Options affecting specific writers
 
 ;; general
-(define-pandoc-file-option   reference-docx  (specific "d" "%-21s") "Reference docx File" 'full-path)
-(define-pandoc-file-option   reference-odt   (specific "o" "%-21s") "Reference ODT File"  'full-path)
+(define-pandoc-file-option   reference-docx  (specific "d" "%-21s") "Reference docx File")
+(define-pandoc-file-option   reference-odt   (specific "o" "%-21s") "Reference ODT File")
 (define-pandoc-number-option slide-level     (specific "h" "%-21s") "Slide Level Header")
 (define-pandoc-switch        incremental     (specific "i" "%-21s") "Incremental")
 (define-pandoc-switch        number-sections (specific "n" "%-21s") "Number Sections")
@@ -1042,7 +1080,7 @@ evaluated."
 (define-pandoc-switch        self-contained    (html "s" "%-31s")      "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "Options for LaTeX command" "LaTeX Options")
+(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options" "LaTeX Option")
 (define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context"))
 (define-pandoc-switch        listings         (tex "L" "%-30s")        "Use LaTeX listings Package")
 (define-pandoc-switch        no-tex-ligatures (tex "l" "%-30s")        "Do Not Use TeX Ligatures")
@@ -1051,16 +1089,16 @@ evaluated."
 ;; epub
 (define-pandoc-number-option epub-chapter-level (epub "c" "%-18s")      "EPub Chapter Level")
 (define-pandoc-list-option   epub-embed-font    (epub "f" "%-18s") file "EPUB Fonts"         "EPUB Embedded Font")
-(define-pandoc-file-option   epub-metadata      (epub "m" "%-18s")      "EPUB Metadata File" 'full-path)
-(define-pandoc-file-option   epub-cover-image   (epub "C" "%-18s")      "EPUB Cover Image"   'full-path)
-(define-pandoc-file-option   epub-stylesheet    (epub "s" "%-18s")      "EPUB Style Sheet"   'full-path 'default)
+(define-pandoc-file-option   epub-metadata      (epub "m" "%-18s")      "EPUB Metadata File")
+(define-pandoc-file-option   epub-cover-image   (epub "C" "%-18s")      "EPUB Cover Image")
+(define-pandoc-file-option   epub-stylesheet    (epub "s" "%-18s")      "EPUB Style Sheet" 'default)
 
 
 ;;; Citation rendering
 (define-pandoc-switch      biblatex               (citations "l" "%-27s")      "Use BibLaTeX")
 (define-pandoc-switch      natbib                 (citations "n" "%-27s")      "Use NatBib")
-(define-pandoc-file-option citation-abbreviations (citations "a" "%-27s")      "Citation Abbreviations File" 'full-path)
-(define-pandoc-file-option csl                    (citations "c" "%-27s")      "CSL File"                    'full-path)
+(define-pandoc-file-option citation-abbreviations (citations "a" "%-27s")      "Citation Abbreviations File")
+(define-pandoc-file-option csl                    (citations "c" "%-27s")      "CSL File")
 (define-pandoc-list-option bibliography           (citations "B" "%-27s") file "Bibliography Files"          "Bibliography File")
 
 
