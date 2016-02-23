@@ -514,11 +514,11 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
-                             "latex"
-                           nil)
-                         t
-                         (if (use-region-p)
-                             (cons (region-beginning) (region-end)))))
+                       "latex"
+                     nil)
+                   t
+                   (if (use-region-p)
+                       (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
@@ -529,10 +529,10 @@ files.  (Therefore, this function is not available on Windows.)"
       (message "This option is not available on MS Windows")
     (let ((current-settings-file
            (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
-                                                                     (pandoc--get 'write))))
+                                                               (pandoc--get 'write))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
-                                                                     (pandoc--get 'write)))))
+                                                               (pandoc--get 'write)))))
       (when (not (file-exists-p current-settings-file))
         (pandoc--save-settings 'local (pandoc--get 'write)))
       (make-symbolic-link current-settings-file
@@ -613,9 +613,9 @@ This function is for use in `pandoc-mode-hook'."
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
   (pandoc--load-settings-for-file (when (buffer-file-name)
-                                    (expand-file-name (buffer-file-name)))
-                                  format
-                                  no-confirm))
+                              (expand-file-name (buffer-file-name)))
+                            format
+                            no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings file of FILE for FORMAT.
