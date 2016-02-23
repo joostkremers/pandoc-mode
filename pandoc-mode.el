@@ -145,7 +145,7 @@
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/" #'pandoc-main-hydra/body)
     map)
-  "Keymap for pandoc-mode")
+  "Keymap for pandoc-mode".)
 
 ;;;###autoload
 (define-minor-mode pandoc-mode
@@ -366,13 +366,13 @@ with the @@-directives."
 
 (defun pandoc--process-lisp-directive (_ lisp)
   "Process @@lisp directives.
-The first argument _ is the output argument and is ignored.  LISP
+The first argument is the output argument and is ignored.  LISP
 is the argument of the @@lisp directive."
   (format "%s" (eval (car (read-from-string lisp)))))
 
 (defun pandoc--process-include-directive (_ include-file)
   "Process @@include directives.
-The first argument _ is the output argument and is ignored.
+The first argument is the output argument and is ignored.
 INCLUDE-FILE is the argument of the @@include directive."
   (with-temp-buffer
     (insert-file-contents include-file)
@@ -511,11 +511,11 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
-                       "latex"
-                     nil)
-                   t
-                   (if (use-region-p)
-                       (cons (region-beginning) (region-end)))))
+                             "latex"
+                           nil)
+                         t
+                         (if (use-region-p)
+                             (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
@@ -526,10 +526,10 @@ files.  (Therefore, this function is not available on Windows.)"
       (message "This option is not available on MS Windows")
     (let ((current-settings-file
            (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
-                                                               (pandoc--get 'write))))
+                                                                     (pandoc--get 'write))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
-                                                               (pandoc--get 'write)))))
+                                                                     (pandoc--get 'write)))))
       (when (not (file-exists-p current-settings-file))
         (pandoc--save-settings 'local (pandoc--get 'write)))
       (make-symbolic-link current-settings-file
@@ -610,9 +610,9 @@ This function is for use in `pandoc-mode-hook'."
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
   (pandoc--load-settings-for-file (when (buffer-file-name)
-                              (expand-file-name (buffer-file-name)))
-                            format
-                            no-confirm))
+                                    (expand-file-name (buffer-file-name)))
+                                  format
+                                  no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings file of FILE for FORMAT.
@@ -789,10 +789,10 @@ format)."
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
-If called with the prefix argument C-u - (or M--), the output
-file is unset.  If called with any other prefix argument, the
-output file is created on the basis of the input file and the
-output format."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]', the output file is unset.  If called
+with any other prefix argument, the output file is created on the
+basis of the input file and the output format."
   (interactive "P")
   (pandoc--set 'output
          (cond
@@ -802,8 +802,9 @@ output format."
 
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
-If called with the prefix argument C-u - (or M--), the data
-directory is set to NIL, which means use $HOME/.pandoc."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), the data directory is set to NIL, which
+means use $HOME/.pandoc."
   (interactive "P")
   (pandoc--set 'data-dir
          (if (eq prefix '-)
@@ -812,9 +813,9 @@ directory is set to NIL, which means use $HOME/.pandoc."
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
-If called with the prefix argument C-u - (or M--), the output
-directory is set to NIL, which means use the directory of the
-input file."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), the output directory is set to NIL,
+which means use the directory of the input file."
   (interactive "P")
   (pandoc--set 'output-dir
          (if (eq prefix '-)
@@ -823,8 +824,8 @@ input file."
 
 (defun pandoc-set-extract-media (prefix)
   "Set the option `Extract media'.
-If called with the prefix argument C-u - (or M--), no media files
-are extracted."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), no media files are extracted."
   (interactive "P")
   (pandoc--set 'extract-media
          (if (eq prefix '-)
@@ -833,8 +834,9 @@ are extracted."
 
 (defun pandoc-set-master-file (prefix)
   "Set the master file.
-If called with the prefix argumen C-u - (or M--), the master file
-is set to nil, which means the current file is the master file."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), the master file is set to nil, which
+means the current file is the master file."
   (interactive "P")
   (pandoc--set 'master-file
          (if (eq prefix '-)
@@ -852,9 +854,10 @@ file."
 
 (defun pandoc-toggle-interactive (prefix)
   "Toggle one of pandoc's binary options.
-If called with the prefix argument C-u - (or M--), the options is
-unset.  If called with any other prefix argument, the option is
-set.  Without any prefix argument, the option is toggled."
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), the options is unset.  If called with
+any other prefix argument, the option is set.  Without any prefix
+argument, the option is toggled."
   (interactive "P")
   (let* ((completion-ignore-case t)
          (option (cdr (assoc (completing-read (format "%s option: " (cond

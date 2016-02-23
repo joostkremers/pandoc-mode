@@ -557,10 +557,10 @@ Furthermore, a menu entry is created and a function to set/unset
 the option.
 
 The function to set the option can be called with the prefix
-argument C-u - (or M--) to unset the option.  A default value (if
-any) can be set by calling the function with any other prefix
-argument.  If no prefix argument is given, the user is prompted
-for a value.
+argument `\\[universal-argument] -' (or `\\[negative-argument]')
+to unset the option.  A default value (if any) can be set by
+calling the function with any other prefix argument.  If no
+prefix argument is given, the user is prompted for a value.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -623,8 +623,9 @@ The option is added to `pandoc--options' and to
 function to set/unset the option.
 
 The function to set the option can be called with the prefix
-argument C-u - (or M--) to unset the option.  If no prefix
-argument is given, the user is prompted for a value.
+argument `\\[universal-argument] -' (or `\\[negative-argument]')
+to unset the option.  If no prefix argument is given, the user is
+prompted for a value.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -672,10 +673,10 @@ The option is added to `pandoc--options' and to
 function to set the option.
 
 The function to set the option can be called with the prefix
-argument C-u - (or M--) to unset the option.  A default value (if
-any) can be set by calling the function with any other prefix
-argument.  If no prefix argument is given, the user is prompted
-for a value.
+argument `\\[universal-argument] -' (or `\\[negative-argument]')
+to unset the option.  A default value (if any) can be set by
+calling the function with any other prefix argument.  If no
+prefix argument is given, the user is prompted for a value.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -726,9 +727,10 @@ or T and indicates whether the option can have a default value."
 (defmacro define-pandoc-list-option (option hydra type description prompt)
   "Define OPTION as a list option.
 The option is added to `pandoc--options' and
-`pandoc--list-options'.  Furthermore, a menu entry is created and a
-function to set the option.  This function can also be called with
-the prefix argument C-u - (or M--) to unset the option.
+`pandoc--list-options'.  Furthermore, a menu entry is created and
+a function to set the option.  This function can also be called
+with the prefix argument `\\[universal-argument] -' (or
+`\\[negative-argument]') to unset the option.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
@@ -777,9 +779,10 @@ it."
 (defmacro define-pandoc-alist-option (option hydra type description prompt)
   "Define OPTION as an alist option.
 The option is added to `pandoc--options' and
-`pandoc--alist-options'.  Furthermore, a menu entry is created and
-a function to set the option.  This function can also be called
-with the prefix argument C-u - (or M--) to unset the option.
+`pandoc--alist-options'.  Furthermore, a menu entry is created
+and a function to set the option.  This function can also be
+called with the prefix argument `\\[universal-argument] -' (or
+`\\[negative-argument]') to unset the option.
 
 HYDRA is a list describing how the option must be added to one of
 the hydras.  The first element is a symbol naming the hydra (and
