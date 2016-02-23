@@ -423,7 +423,7 @@ If NEW-ELEM is nil, OPTION is unset entirely."
          (item (assoc (car new-elem) items)))
     (cond
      ((null new-elem)
-      (setcdr items nil))
+      (setq items nil))
      ((and item value) ; if <name> exists and we have a new value
       (setcdr item value)) ; replace the existing value
      ((and item (not value)) ; if <name> exists but we have no new value
