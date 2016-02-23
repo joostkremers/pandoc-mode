@@ -145,7 +145,7 @@
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/" #'pandoc-main-hydra/body)
     map)
-  "Keymap for pandoc-mode".)
+  "Keymap for pandoc-mode.")
 
 ;;;###autoload
 (define-minor-mode pandoc-mode
