@@ -557,6 +557,8 @@ appropriate output format."
 (defun pandoc-save-global-settings-file ()
   "Save the current settings to a global settings file."
   (interactive)
+  (unless (file-directory-p pandoc-data-dir)
+    (make-directory pandoc-data-dir))
   (pandoc--save-settings 'global (pandoc--get 'write)))
 
 (defun pandoc--save-settings (type format &optional no-confirm)
