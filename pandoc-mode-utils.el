@@ -593,7 +593,7 @@ OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"No \", \"Set \" and
-\"Default \" can be added before it. DEFAULT must be either NIL
+\"Default \" can be added before it.  DEFAULT must be either NIL
 or T and indicates whether the option can have a default value."
   (declare (indent defun))
   `(progn
@@ -709,7 +709,7 @@ OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"No \", \"Set \" and
-\"Default \" can be added before it. DEFAULT must be either NIL
+\"Default \" can be added before it.  DEFAULT must be either NIL
 or T and indicates whether the option can have a default value."
   `(progn
      (push (list (quote ,option)) pandoc--options)
@@ -947,14 +947,14 @@ the basis of COLWIDTH and WIDTH.
 
 FMT-STR is a format string that is used to format STRINGS.  It
 defaults to \"%-<n>s\", where <n> is colwidth.  FMT-STR must
-contain a \"%s\" specifier for the strings to be tabulated. Note
+contain a \"%s\" specifier for the strings to be tabulated.  Note
 that if FMT-STR is provided, COLWIDTH is only used to calculate
-the number of rows and columns, not for padding the strings. The
+the number of rows and columns, not for padding the strings.  The
 calling function must then ensure that the strings are of
 equal length.
 
-COLSEP is the string placed between two columns. It defaults to
-two spaces. The length of this string is taken into account when
+COLSEP is the string placed between two columns.  It defaults to
+two spaces.  The length of this string is taken into account when
 calculating the number of columns.
 
 If TRIM is t, each row is trimmed to its widest member."

@@ -406,8 +406,8 @@ REGION is a cons cell specifying the beginning and end of the
 region to be sent to pandoc.
 
 If the current buffer's \"master file\" option is set, that file
-is processed instead. The output format is taken from the current
-buffer, however, unless one is provided specifically. REGION is
+is processed instead.  The output format is taken from the current
+buffer, however, unless one is provided specifically.  REGION is
 also ignored in this case."
   (let* ((orig-buffer (current-buffer))
          (buffer (if (pandoc--get 'master-file)
@@ -507,7 +507,7 @@ If the output format of the current buffer is set to \"latex\" or
 \"beamer\", the buffer's options are used.  If called with a
 PREFIX argument, or if the current buffer's output format is not
 \"latex\" or \"beamer\", a LaTeX settings file is searched for
-and loaded when found. If no such settings file is found, all
+and loaded when found.  If no such settings file is found, all
 options are unset except for the input and output formats.
 
 If the region is active, pandoc is run on the region instead of
@@ -575,7 +575,7 @@ without asking."
                           (pandoc--create-settings-filename type filename format))))
     (if (and (not no-confirm)
              (file-exists-p settings-file)
-             (not (y-or-n-p (format "%s file `%s' already exists. Overwrite? "
+             (not (y-or-n-p (format "%s file `%s' already exists.  Overwrite? "
                                     (capitalize (symbol-name type))
                                     (file-name-nondirectory settings-file)))))
         (message "%s file not written." (capitalize (symbol-name type)))
@@ -632,7 +632,7 @@ The settings are stored in the current buffer's
 file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
-             (y-or-n-p (format "Current settings for format \"%s\" modified. Save first? " (pandoc--get 'write))))
+             (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get 'write))))
     (pandoc--save-settings 'local (pandoc--get 'write) t))
   (let (settings)
     ;; first try to read local settings
@@ -777,7 +777,7 @@ loaded.  If none exists, all options are unset (except the input
 format)."
   (interactive (list (completing-read "Set output format to: " pandoc--output-formats nil t)))
   (when (and pandoc--settings-modified-flag
-             (y-or-n-p (format "Current settings for output format \"%s\" changed. Save? " (pandoc--get 'write))))
+             (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get 'write))))
     (pandoc--save-settings 'local (pandoc--get 'write) t))
   (unless (pandoc--load-settings-profile format t)
     (setq pandoc--local-settings (copy-tree pandoc--options))
