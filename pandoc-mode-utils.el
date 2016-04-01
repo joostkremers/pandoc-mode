@@ -191,6 +191,7 @@ list, not if it appears higher on the list."
     ("s5"                "S5 HTML/JS Slide Show"    "s")
     ("slideous"          "Slideous Slide Show"      "u")
     ("slidy"             "Slidy Slide Show"         "y")
+    ("tei"               "TEI"                      "A") ; not an appropriate shortcut key
     ("texinfo"           "TeXinfo"                  "i")
     ("textile"           "Textile"                  "T"))
   "List of Pandoc output formats, their descriptions and hydra shortcut keys.")
