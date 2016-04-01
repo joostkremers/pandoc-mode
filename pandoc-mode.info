@@ -118,11 +118,11 @@ menu in the menu bar.  It has the same structure as the hydra menu and
 it has the advantage that options that do not apply to the current file
 (due to its input or output format), are generally greyed out.  On the
 other hand, the hydra menu shows the value of the options and allows you
-to change more than one option without reopening the menu.  The menu bar
-menu disappears when you select an option, the hydra menu (generally)
-does not.  Instead, it can be dismissed with ‘q’.  Below, I talk about
-the hydra menu specifically, but most of what is said applies to the
-menu bar menu as well.
+to change more than one option without having to keep reopening the
+menu.  The menu bar menu disappears when you select an option, the hydra
+menu (generally) does not.  Instead, it can be dismissed with ‘q’.
+Below, I talk about the hydra menu specifically, but most of what is
+said applies to the menu bar menu as well.
 
 In the options menu, you can set options for running ‘pandoc’ on your
 input file.  All Pandoc options can be set from the menu (except for one
@@ -739,36 +739,36 @@ Node: OS X3203
 Ref: #os-x3280
 Node: Usage3871
 Ref: #usage3977
-Node: Input and output formats5759
-Ref: #input-and-output-formats5914
-Node: The options menu8850
-Ref: #the-options-menu9029
-Node: Template variables and metadata13724
-Ref: #template-variables-and-metadata13923
-Node: Running Pandoc14498
-Ref: #running-pandoc14669
-Node: Setting an output file16770
-Ref: #setting-an-output-file16940
-Node: Creating a pdf18634
-Ref: #creating-a-pdf18765
-Node: Font lock19610
-Ref: #font-lock19726
-Node: Settings Files19890
-Ref: #settings-files20031
-Node: File-local variables22432
-Ref: #file-local-variables22602
-Node: Managing numbered examples24162
-Ref: #managing-numbered-examples24349
-Node: Using @@-directives25659
-Ref: #using--directives25836
-Node: Master file30059
-Ref: #master-file30195
-Node: Defining @@-directives31717
-Ref: #defining--directives31899
-Node: Directive hooks33477
-Ref: #directive-hooks33625
-Node: Disabling the hydra menu33962
-Ref: #disabling-the-hydra-menu34114
+Node: Input and output formats5773
+Ref: #input-and-output-formats5928
+Node: The options menu8864
+Ref: #the-options-menu9043
+Node: Template variables and metadata13738
+Ref: #template-variables-and-metadata13937
+Node: Running Pandoc14512
+Ref: #running-pandoc14683
+Node: Setting an output file16784
+Ref: #setting-an-output-file16954
+Node: Creating a pdf18648
+Ref: #creating-a-pdf18779
+Node: Font lock19624
+Ref: #font-lock19740
+Node: Settings Files19904
+Ref: #settings-files20045
+Node: File-local variables22446
+Ref: #file-local-variables22616
+Node: Managing numbered examples24176
+Ref: #managing-numbered-examples24363
+Node: Using @@-directives25673
+Ref: #using--directives25850
+Node: Master file30073
+Ref: #master-file30209
+Node: Defining @@-directives31731
+Ref: #defining--directives31913
+Node: Directive hooks33491
+Ref: #directive-hooks33639
+Node: Disabling the hydra menu33976
+Ref: #disabling-the-hydra-menu34128
 
 End Tag Table
 
