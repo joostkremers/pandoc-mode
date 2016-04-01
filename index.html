@@ -24,7 +24,7 @@
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://pandoc.org/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
-<p>The current version of <code>pandoc-mode</code> is 2.14 and is compatible with Pandoc version 1.16.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.17 and is compatible with Pandoc version 1.17.</p>
 
 <h1>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
@@ -83,13 +83,17 @@
 
 <p>One nice thing about the hydra menus is that the value of an option is displayed beside it. Pandoc’s options come in several different kinds. Switches, (boolean options that do not take a value), are toggled when you select them, and their value is displayed as either “yes” or “no”. If you select another kind of option, you are asked to provide a value in the minibuffer. For template variables and metadata items, you are asked both a variable / metadata name and a value.</p>
 
-<p>Unsetting an option can usually be done by prefixing the relevant key with a dash <code>-</code>. This is actually the negative prefix argument, which can be typed without the meta (alt) key when inside a hydra menu. So for example, if you’re in the files menu (<code>C-c / o f</code>), you can set an output file with <code>o</code>. To unset the output file, type <code>- o</code>.</p>
+<p>Unsetting an option can usually be done by prefixing the relevant key with a dash <code>-</code>. This is actually the negative prefix argument, which can be typed without the meta (alt) key when inside a hydra menu. So for example, if you’re in the files menu (<code>C-c / o f</code>), you can set an output file with <code>o</code>, and to unset the output file, you can type <code>- o</code>.</p>
 
-<p>Many Pandoc options have file names as values. When <code>pandoc-mode</code> calls <code>pandoc</code>, it expands filenames, so that they are absolute and don't contain any abbreviations (such as <code>~</code> for one's home directory). This means you can have relative filenames in your settings, or indeed <code>~</code>, which can be practical if you move settings files to different locations or e.g. between computers with different OSes. (For example, Linux expands <code>~</code> to <code>/home/&lt;user&gt;</code>, while on OS X it becomes <code>/Users/&lt;user&gt;</code>.)</p>
+<p>Many Pandoc options have file names as values. These are normally prompted for and stored as <em>relative</em> paths. File name completion is available, starting from the current directory. For some options, such as <code>--css</code>, relative paths make more sense because an absolute file would almost certainly be incorrect once the output html file is moved to the web server. Other options, such as <code>--template</code>, look in Pandoc's data directory and therefore also do not require an absolute path. Lastly, auxiliary files, such as <code>--include-in-header</code>, will usually be stored in the same directory as the source file or in a subdirectory, in which case a relative path is unproblematic.</p>
 
-<p>The CSS style sheet is an exception to this: <code>pandoc-mode</code> always cuts off the directory part of the filename you specify as CSS style sheet and doesn't expand it. The reason for this is that the CSS style sheet will normally be transferred along with the output file(s) to a server, where it will most likely be in a different directory than on the computer you're generating your HTML files on.</p>
+<p>However, if for some reason you need to store an absolute path for an option, you can do so by using the prefix argument <code>C-u</code>. So for example in the general writer options menu, accessible through <code>C-/ o w</code>, pressing <code>C-u H</code> asks for a file to include in the header and stores it as an absolute path. Note that absolute paths are not expanded, i.e., they may contain abbreviations such as <code>~</code> for one’s home directory. This makes it easier to share settings files between computers with different OSes (for example, Linux expands <code>~</code> to <code>/home/&lt;user&gt;</code>, while on OS X it becomes <code>/Users/&lt;user&gt;</code>).</p>
 
-<p>To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (<code>C-c / S</code>). This displays all settings in the <code>*Pandoc output*</code> buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this (unset options omitted):</p>
+<p>File options may have a default value (although currently, this is only the case for <code>--epub-stylesheet</code>). Such options can be specified on the <code>pandoc</code> command line without naming a file. To select such a default value for a file option, use a numeric prefix argument, which in the hydra menu is obtained by pressing a number without the meta key. That is, to select the default EPUB style sheet, go to the EPUB options menu (<code>C-/ o s E</code>) and press <code>1 s</code>.</p>
+
+<p>Options that are not files or numbers are “string options”, which include options that specify a URL. These may also have a default value, which can be set in the same way as with file options. Note, though, that this does not apply to options that only have a limited set of possible values (e.g., <code>--email-obfuscation</code>, <code>--latex-engine</code>). These can be set or unset, you cannot explicitly request their default value. (`pandoc' uses their default values even if they are not specified on the command line, unlike string options.)</p>
+
+<p>To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (<code>C-c / S</code>). This displays all settings in a <code>*Help*</code> buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this:</p>
 
 <pre><code>((standalone . t)
  (read . "markdown")
@@ -108,7 +112,9 @@
 <h2>
 <a id="running-pandoc" class="anchor" href="#running-pandoc" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Running Pandoc</h2>
 
-<p>The first item in the menu is "Run Pandoc" (accessible with <code>C-c / r</code>), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout, which is redirected to the buffer <code>*Pandoc output*</code>. (Except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.) The output buffer is not normally shown, but you can make it visible through the menu or by typing <code>C-c / V</code>. Error messages from Pandoc are also displayed in this buffer.</p>
+<p>The first item in the menu is "Run Pandoc" (accessible with <code>C-c / r</code>), which, as the name suggests, runs Pandoc on the document, passing all options you have set. By default, Pandoc sends the output to stdout (except when the output format is "odt", "epub" or "docx", in which case output is always sent to a file.). Emacs captures this output and redirects it to the buffer <code>*Pandoc output*</code>. The output buffer is not normally shown, but you can make it visible through the menu or by typing <code>C-c / V</code>. Error messages from Pandoc are also displayed in this buffer.</p>
+
+<p>When you run Pandoc, <code>pandoc-mode</code> also generates a few messages, which are logged in a buffer calles <code>*Pandoc log*</code>. You will rarely need to see this, since <code>pandoc-mode</code> displays a message telling you whether Pandoc finished successfully or not. In the latter case, the output buffer is displayed, so you can see the error that Pandoc reported.</p>
 
 <p>Note that when you run Pandoc, Pandoc doesn't read the file on disk. Rather, Emacs feeds it the contents of the buffer through <code>stdin</code>. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc. Alternatively, if the region is active, only the region is sent to Pandoc.</p>
 
@@ -147,6 +153,8 @@
 <p>Whenever <code>pandoc-mode</code> loads settings for an input file, it first checks if there is a local settings file. If none is found, it looks for a project file, and if that isn't found, it tries to load a global settings file. In this way, local settings override project settings and project settings override global settings. Note, however, that if a local settings file exists, <em>all</em> settings are read from this file. Any project file or global file for the relevant output format is ignored.</p>
 
 <p>You can create a project or global settings file through the menu in the submenu "Settings Files". This simply saves all settings for the current buffer to a project or global settings file. (Any local settings file for the file in the current buffer will be kept. You'll need to delete it manually if you no longer need it.)</p>
+
+<p>The name of a global settings file has the form <code>&lt;format&gt;.pandoc</code>, where <code>&lt;format&gt;</code> obviously specifies the output format. <code>&lt;format&gt;</code> can also be the string <code>"default“</code>, however, in which case it specifies a default settings file, which is loaded by <code>pandoc-load-default-settings</code> when no default local or project settings file is found. In this way, you can override the default output format used for new files.</p>
 
 <p>Note that starting with version 2.5, <code>pandoc-mode</code> settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.</p>
 
@@ -200,7 +208,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 02 Feb 2016".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 01 Apr 2016".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
