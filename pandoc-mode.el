@@ -842,7 +842,7 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 If called with the PREFIX argument `\\[universal-argument] -' (or
 `\\[negative-argument]'), document scope is used."
   (interactive "P")
-  (pandoc--set 'file-scope (if (eq prefix '-) nil t))
+  (pandoc--set 'file-scope (if (eq prefix '-) nil t)))
 
 (defun pandoc-set-master-file (prefix)
   "Set the master file.
