@@ -1387,12 +1387,12 @@ _M_: Use current file as master file
 (defun pandoc-faces-load ()
   "Load pandoc-faces."
   (font-lock-add-keywords nil pandoc-faces-keywords)
-  (font-lock-fontify-buffer))
+  (font-lock-flush))
 
 (defun pandoc-faces-unload ()
   "Unload pandoc-faces."
   (font-lock-remove-keywords nil pandoc-faces-keywords)
-  (font-lock-fontify-buffer))
+  (font-lock-flush))
 
 (provide 'pandoc-mode)
 
