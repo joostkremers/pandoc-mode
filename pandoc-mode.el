@@ -413,7 +413,12 @@ also ignored in this case."
          (buffer (if (pandoc--get 'master-file)
                      (find-file-noselect (pandoc--get 'master-file))
                    (current-buffer)))
-         (filename (buffer-file-name buffer)))
+         (filename (or (buffer-file-name buffer)
+                       ;; if the buffer is not visiting a file, use the buffer
+                       ;; name (but sanitize it a bit)
+                       (concat "./" (cl-remove-if-not (lambda (c)
+                                                        (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
+                                                      (buffer-name))))))
     ;; if there's a master file, ignore the region
     (if (pandoc--get 'master-file)
         (setq region nil))
