@@ -413,12 +413,16 @@ also ignored in this case."
          (buffer (if (pandoc--get 'master-file)
                      (find-file-noselect (pandoc--get 'master-file))
                    (current-buffer)))
-         (filename (or (buffer-file-name buffer)
-                       ;; if the buffer is not visiting a file, use the buffer
-                       ;; name (but sanitize it a bit)
-                       (concat "./" (cl-remove-if-not (lambda (c)
-                                                        (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
-                                                      (buffer-name))))))
+         (filename (buffer-file-name buffer))
+         (display-name (buffer-name)))
+    ;; If the buffer is visiting a file, we want to display the file name in
+    ;; messages. If the buffer is not visiting a file, we create a file name in
+    ;; case we need one, but we display the buffer name in messages.
+    (if filename
+        (setq display-name (file-name-nondirectory filename))
+      (setq filename (concat "./" (cl-remove-if-not (lambda (c)
+                                                      (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
+                                                    (buffer-name)))))
     ;; if there's a master file, ignore the region
     (if (pandoc--get 'master-file)
         (setq region nil))
@@ -456,7 +460,7 @@ also ignored in this case."
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (message "Running %s on %s"
                    (file-name-nondirectory pandoc--local-binary)
-                   (file-name-nondirectory filename))
+                   display-name)
           (pandoc-process-directives (pandoc--get 'write))
           (with-current-buffer (get-buffer-create pandoc--output-buffer)
             (erase-buffer))
@@ -478,16 +482,16 @@ also ignored in this case."
                 (set-process-sentinel process (lambda (_ e)
                                                 (cond
                                                  ((string-equal e "finished\n")
-                                                  (funcall log-success filename pandoc--local-binary)
+                                                  (funcall log-success display-name pandoc--local-binary)
                                                   (run-hooks 'pandoc-async-success-hook))
-                                                 (t (funcall log-failure filename pandoc--local-binary)
+                                                 (t (funcall log-failure display-name pandoc--local-binary)
                                                     (display-buffer pandoc--output-buffer)))))
                 (process-send-region process (point-min) (point-max))
                 (process-send-eof process)))
              ((not pandoc-use-async)
               (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
-                  (funcall log-success filename pandoc--local-binary)
-                (funcall log-failure filename pandoc--local-binary)
+                  (funcall log-success display-name pandoc--local-binary)
+                (funcall log-failure display-name pandoc--local-binary)
                 (display-buffer pandoc--output-buffer))))))))))
 
 (defun pandoc-run-pandoc (prefix)
