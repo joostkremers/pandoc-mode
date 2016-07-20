@@ -478,7 +478,8 @@ also ignored in this case."
                                       (file-name-nondirectory binary)))))
             (cond
              (pandoc-use-async
-              (let ((process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
+               (let* ((process-connection-type nil)
+		(process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
                 (set-process-sentinel process (lambda (_ e)
                                                 (cond
                                                  ((string-equal e "finished\n")
