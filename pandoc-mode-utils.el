@@ -64,6 +64,16 @@ in a synchronous subprocess."
   :group 'pandoc
   :type 'boolean)
 
+(defcustom pandoc-process-connection-type (default-value process-connection-type)
+  "Control type of device used to communicate with the pandoc subprocess.
+This option only takes effect if `pandoc-use-async' is set to t.
+The variable `process-connection-type' is set to the value of
+this option before calling pandoc.  See the doc string of that
+variable for details."
+  :group 'pandoc
+  :type '(choice (const :tag "Use a pty" t)
+                 (const :tag "Use a pipe" nil)))
+
 (defcustom pandoc-async-success-hook nil
   "List of functions to call when `pandoc' returns successfully.
 This hook is only run when `pandoc-use-async' is set to t."
