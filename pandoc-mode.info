@@ -140,6 +140,7 @@ below.)
 * Running Pandoc::
 * Setting an output file::
 * Creating a pdf::
+* Connection Type::
 
 
 File: pandoc-mode.info,  Node: Input and output formats,  Next: The options menu,  Up: Usage
@@ -382,7 +383,7 @@ output directory, the output file will be written to the same directory
 that the input file is in.
 
 
-File: pandoc-mode.info,  Node: Creating a pdf,  Prev: Setting an output file,  Up: Usage
+File: pandoc-mode.info,  Node: Creating a pdf,  Next: Connection Type,  Prev: Setting an output file,  Up: Usage
 
 3.6 Creating a pdf
 ==================
@@ -401,6 +402,18 @@ allows you to create a pdf without having to switch the output format to
 LaTeX. If your current output format is not LaTeX and no LaTeX settings
 file is found, Emacs calls Pandoc with only the input and output
 formats.
+
+
+File: pandoc-mode.info,  Node: Connection Type,  Prev: Creating a pdf,  Up: Usage
+
+3.7 Connection Type
+===================
+
+By default, Emacs starts ‘pandoc’ as an asynchronous process using a
+tty.  If this causes problems for some reason, you can try using a pipe
+instead by customising ‘pandoc-process-connection-type’.  Alternatively,
+you can use a synchronous process by unsetting the user option
+‘pandoc-use-async’.
 
 
 File: pandoc-mode.info,  Node: Font lock,  Next: Settings Files,  Prev: Usage,  Up: Top
@@ -571,7 +584,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 01 Apr 2016".
+‘@@date{Cologne}’ to get "Cologne, 04 Aug 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -739,36 +752,38 @@ Node: OS X3203
 Ref: #os-x3280
 Node: Usage3871
 Ref: #usage3977
-Node: Input and output formats5773
-Ref: #input-and-output-formats5928
-Node: The options menu8864
-Ref: #the-options-menu9043
-Node: Template variables and metadata13738
-Ref: #template-variables-and-metadata13937
-Node: Running Pandoc14512
-Ref: #running-pandoc14683
-Node: Setting an output file16784
-Ref: #setting-an-output-file16954
-Node: Creating a pdf18648
-Ref: #creating-a-pdf18779
-Node: Font lock19624
-Ref: #font-lock19740
-Node: Settings Files19904
-Ref: #settings-files20045
-Node: File-local variables22446
-Ref: #file-local-variables22616
-Node: Managing numbered examples24176
-Ref: #managing-numbered-examples24363
-Node: Using @@-directives25673
-Ref: #using--directives25850
-Node: Master file30073
-Ref: #master-file30209
-Node: Defining @@-directives31731
-Ref: #defining--directives31913
-Node: Directive hooks33491
-Ref: #directive-hooks33639
-Node: Disabling the hydra menu33976
-Ref: #disabling-the-hydra-menu34128
+Node: Input and output formats5793
+Ref: #input-and-output-formats5948
+Node: The options menu8884
+Ref: #the-options-menu9063
+Node: Template variables and metadata13758
+Ref: #template-variables-and-metadata13957
+Node: Running Pandoc14532
+Ref: #running-pandoc14703
+Node: Setting an output file16804
+Ref: #setting-an-output-file16974
+Node: Creating a pdf18668
+Ref: #creating-a-pdf18823
+Node: Connection Type19668
+Ref: #connection-type19794
+Node: Font lock20104
+Ref: #font-lock20220
+Node: Settings Files20384
+Ref: #settings-files20525
+Node: File-local variables22926
+Ref: #file-local-variables23096
+Node: Managing numbered examples24656
+Ref: #managing-numbered-examples24843
+Node: Using @@-directives26153
+Ref: #using--directives26330
+Node: Master file30553
+Ref: #master-file30689
+Node: Defining @@-directives32211
+Ref: #defining--directives32393
+Node: Directive hooks33971
+Ref: #directive-hooks34119
+Node: Disabling the hydra menu34456
+Ref: #disabling-the-hydra-menu34608
 
 End Tag Table
 

@@ -126,6 +126,11 @@ The second item in the main menu is "Create PDF" (invoked with `C-c / p`). This 
 If you choose this option, Emacs checks if your current output format is `latex`. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than `latex`, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.
 
 
+## Connection Type ##
+
+By default, Emacs starts `pandoc` as an asynchronous process using a tty. If this causes problems for some reason, you can try using a pipe instead by customising `pandoc-process-connection-type`. Alternatively, you can use a synchronous process by unsetting the user option `pandoc-use-async`.
+
+
 # Font lock #
 
 `pandoc-mode` adds font lock keywords for citations and numbered example lists. The relevant faces can be customised in the customisation group `pandoc`.
