@@ -140,6 +140,11 @@
 
 <p>If you choose this option, Emacs checks if your current output format is <code>latex</code>. If it is, Emacs calls Pandoc with the buffer's settings. If the output format is something other than <code>latex</code>, Emacs checks if you have a settings file for LaTeX output and uses those settings. This allows you to create a pdf without having to switch the output format to LaTeX. If your current output format is not LaTeX and no LaTeX settings file is found, Emacs calls Pandoc with only the input and output formats.</p>
 
+<h2>
+<a id="connection-type" class="anchor" href="#connection-type" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Connection Type</h2>
+
+<p>By default, Emacs starts <code>pandoc</code> as an asynchronous process using a tty. If this causes problems for some reason, you can try using a pipe instead by customising <code>pandoc-process-connection-type</code>. Alternatively, you can use a synchronous process by unsetting the user option <code>pandoc-use-async</code>.</p>
+
 <h1>
 <a id="font-lock" class="anchor" href="#font-lock" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Font lock</h1>
 
@@ -208,7 +213,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 01 Apr 2016".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 04 Aug 2016".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
