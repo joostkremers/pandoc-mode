@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.17
+;; Version: 2.18
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -165,11 +165,15 @@ list, not if it appears higher on the list."
   "List of items in pandoc-mode's input format menu.")
 
 (defvar pandoc--output-formats
+  ;; used shortcut keys:
+  ;; A B C D E   G H I J K L M N O P R S T   W
+  ;; a   c d e f   h i j k l m n o p r s t u w y z
   '(("asciidoc"          "AsciiDoc"                 "a")
     ("beamer"            "Beamer Slide Show"        "B")
     ("commonmark"        "CommonMark"               "C")
     ("context"           "ConTeXt"                  "c")
     ("docbook"           "DocBook XML"              "D")
+    ("docbook5"          "DocBook XML v. 5"         "K") ; not an appropriate shortcut key
     ("docx"              "MS Word (docx)"           "d")
     ("dokuwiki"          "DokuWiki"                 "W")
     ("dzslides"          "DZSlides Slide Show"      "z")
@@ -211,6 +215,7 @@ list, not if it appears higher on the list."
     ("beamer"            ".tex")
     ("context"           ".tex")
     ("docbook"           ".xml")
+    ("docbook5"          ".xml")
     ("dokuwiki"          ".txt")
     ("dzslides"          ".html")
     ("epub"              ".epub")

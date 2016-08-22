@@ -41,8 +41,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.17 and is compatible with
-Pandoc version 1.17.
+The current version of ‘pandoc-mode’ is 2.18 and is compatible with
+Pandoc version 1.17.1.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -584,7 +584,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 04 Aug 2016".
+‘@@date{Cologne}’ to get "Cologne, 22 Aug 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -746,44 +746,44 @@ Tag Table:
 Node: Top218
 Node: Introduction522
 Ref: #introduction643
-Node: Installation1500
-Ref: #installation1623
-Node: OS X3203
-Ref: #os-x3280
-Node: Usage3871
-Ref: #usage3977
-Node: Input and output formats5793
-Ref: #input-and-output-formats5948
-Node: The options menu8884
-Ref: #the-options-menu9063
-Node: Template variables and metadata13758
-Ref: #template-variables-and-metadata13957
-Node: Running Pandoc14532
-Ref: #running-pandoc14703
-Node: Setting an output file16804
-Ref: #setting-an-output-file16974
-Node: Creating a pdf18668
-Ref: #creating-a-pdf18823
-Node: Connection Type19668
-Ref: #connection-type19794
-Node: Font lock20104
-Ref: #font-lock20220
-Node: Settings Files20384
-Ref: #settings-files20525
-Node: File-local variables22926
-Ref: #file-local-variables23096
-Node: Managing numbered examples24656
-Ref: #managing-numbered-examples24843
-Node: Using @@-directives26153
-Ref: #using--directives26330
-Node: Master file30553
-Ref: #master-file30689
-Node: Defining @@-directives32211
-Ref: #defining--directives32393
-Node: Directive hooks33971
-Ref: #directive-hooks34119
-Node: Disabling the hydra menu34456
-Ref: #disabling-the-hydra-menu34608
+Node: Installation1502
+Ref: #installation1625
+Node: OS X3205
+Ref: #os-x3282
+Node: Usage3873
+Ref: #usage3979
+Node: Input and output formats5795
+Ref: #input-and-output-formats5950
+Node: The options menu8886
+Ref: #the-options-menu9065
+Node: Template variables and metadata13760
+Ref: #template-variables-and-metadata13959
+Node: Running Pandoc14534
+Ref: #running-pandoc14705
+Node: Setting an output file16806
+Ref: #setting-an-output-file16976
+Node: Creating a pdf18670
+Ref: #creating-a-pdf18825
+Node: Connection Type19670
+Ref: #connection-type19796
+Node: Font lock20106
+Ref: #font-lock20222
+Node: Settings Files20386
+Ref: #settings-files20527
+Node: File-local variables22928
+Ref: #file-local-variables23098
+Node: Managing numbered examples24658
+Ref: #managing-numbered-examples24845
+Node: Using @@-directives26155
+Ref: #using--directives26332
+Node: Master file30555
+Ref: #master-file30691
+Node: Defining @@-directives32213
+Ref: #defining--directives32395
+Node: Directive hooks33973
+Ref: #directive-hooks34121
+Node: Disabling the hydra menu34458
+Ref: #disabling-the-hydra-menu34610
 
 End Tag Table
 
