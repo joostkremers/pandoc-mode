@@ -24,7 +24,7 @@
 
 <p><code>pandoc-mode</code> is an Emacs mode for interacting with <a href="http://pandoc.org/">Pandoc</a>. Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. <code>pandoc-mode</code> is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.</p>
 
-<p>The current version of <code>pandoc-mode</code> is 2.17 and is compatible with Pandoc version 1.17.</p>
+<p>The current version of <code>pandoc-mode</code> is 2.18 and is compatible with Pandoc version 1.17.1.</p>
 
 <h1>
 <a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
@@ -213,7 +213,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 04 Aug 2016".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 22 Aug 2016".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
