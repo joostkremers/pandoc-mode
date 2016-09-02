@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.18
+;; Version: 2.19
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -166,17 +166,17 @@ list, not if it appears higher on the list."
 
 (defvar pandoc--output-formats
   ;; used shortcut keys:
-  ;; A B C D E   G H I J K L M N O P R S T   W
+  ;; A B C D E   G H I J K L M N O P R S T   W   Z
   ;; a   c d e f   h i j k l m n o p r s t u w y z
   '(("asciidoc"          "AsciiDoc"                 "a")
     ("beamer"            "Beamer Slide Show"        "B")
     ("commonmark"        "CommonMark"               "C")
     ("context"           "ConTeXt"                  "c")
     ("docbook"           "DocBook XML"              "D")
-    ("docbook5"          "DocBook XML v. 5"         "K") ; not an appropriate shortcut key
+    ("docbook5"          "DocBook XML v. 5"         "K") ; not really an appropriate shortcut key
     ("docx"              "MS Word (docx)"           "d")
     ("dokuwiki"          "DokuWiki"                 "W")
-    ("dzslides"          "DZSlides Slide Show"      "z")
+    ("dzslides"          "DZSlides Slide Show"      "z") ; not really an appropriate shortcut key
     ("epub"              "EPUB E-Book"              "e")
     ("epub3"             "EPUB3 E-Book"             "E")
     ("fb2"               "FictionBook2"             "f")
@@ -207,7 +207,8 @@ list, not if it appears higher on the list."
     ("slidy"             "Slidy Slide Show"         "y")
     ("tei"               "TEI"                      "A") ; not an appropriate shortcut key
     ("texinfo"           "TeXinfo"                  "i")
-    ("textile"           "Textile"                  "T"))
+    ("textile"           "Textile"                  "T")
+    ("zimwiki"           "ZimWiki"                  "Z"))
   "List of Pandoc output formats, their descriptions and hydra shortcut keys.")
 
 (defcustom pandoc-output-format-extensions
