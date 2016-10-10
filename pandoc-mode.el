@@ -1410,6 +1410,46 @@ _M_: Use current file as master file
     (with-no-warnings
       (font-lock-fontify-buffer))))
 
+;;; Citation jumping:
+;;; Jump to citation in a bibliography file.
+
+(defun pandoc-citation-at-point (biblist)
+  "Retrieve citation key at point, if any, and pass it, along with BIBLIST, to `pandoc-citation-goto-reference."
+  (cond
+   ((thing-at-point-looking-at pandoc-regex-in-text-citation)
+     (pandoc-goto-citation-reference biblist (match-string-no-properties 4)))
+   ((thing-at-point-looking-at pandoc-regex-in-text-citation-2)
+    (pandoc-goto-citation-reference biblist (match-string-no-properties 2)))
+   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-single)
+    (pandoc-goto-citation-reference biblist (match-string-no-properties 3)))
+   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-multiple)
+    (pandoc-goto-citation-reference biblist (match-string-no-properties 4)))
+   (t (error "No citation at point"))))
+	
+(defun pandoc-goto-citation-reference (biblist key)
+  "Jump to a citation's reference, by searching the files in BIBLIST for the KEY.  Once KEY is found, this function relies on `switch-to-buffer-other-window', if a buffer containing the relevant bibliography file is already open.  If no buffer is found, it will open one with `find-file-other-window'."
+  (loop for bibfile in biblist
+	if (with-temp-buffer
+	     (insert-file-contents bibfile)
+	     (search-forward key nil t))
+	
+	do (let ((buf (get-file-buffer bibfile)))
+		  (if buf
+		      (switch-to-buffer-other-window buf)
+		    (find-file-other-window bibfile)))
+	(with-current-buffer (get-file-buffer bibfile))
+	(goto-char (point-min))
+	(search-forward key)))
+
+(defun pandoc-jump-to-reference ()
+  "Jump to bibtex reference for citation at point."
+  (interactive)
+  (let
+      ((biblist (pandoc--get 'bibliography)))
+   (if biblist
+	(pandoc-citation-at-point biblist)
+      (error "No bibliography selected"))))
+
 (provide 'pandoc-mode)
 
 ;;; pandoc-mode.el ends here
