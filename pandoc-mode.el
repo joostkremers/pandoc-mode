@@ -1447,15 +1447,17 @@ The default is `pandoc-goto-citation'"
   (loop for bibfile in biblist
 	if (with-temp-buffer
 	     (insert-file-contents bibfile)
-	     (search-forward key nil t))
-	
+	     (re-search-forward (concat
+				 "@[a-zA-Z]*[{(][[:space:]]*"
+				 key) nil t))
 	do (let ((buf (get-file-buffer bibfile)))
 		  (if buf
 		      (switch-to-buffer-other-window buf)
 		    (find-file-other-window bibfile)))
 	(with-current-buffer (get-file-buffer bibfile))
 	(goto-char (point-min))
-	(search-forward key)))
+	(re-search-forward
+	 (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t)))
 
 (defun pandoc-jump-to-reference ()
   "Jump to bibtex reference for citation at point."
