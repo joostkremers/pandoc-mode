@@ -427,6 +427,12 @@ feature may be bound to a key combination as follows:
 
 (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
+The jump behavior may be customized:
+
+(setq pandoc-citation-jump-function 'my-pandoc-jump-function)
+
+The default behavior is to open (or locate) the appropriate .bib file in another window and position the cursor at the indicated bibliographic key.
+
 
 File: pandoc-mode.info,  Node: Font lock,  Next: Settings Files,  Prev: Usage,  Up: Top
 

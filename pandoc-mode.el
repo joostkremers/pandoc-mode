@@ -1255,9 +1255,6 @@ _M_: Use current file as master file
 ;;; Overall structure modeled after face handling in markdown-mode.el:
 ;;; http://jblevins.org/git/markdown-mode.git
 
-(defgroup pandoc nil
-  "Minor mode for pandoc.")
-
 (defvar pandoc-citation-key-face 'pandoc-citation-key-face
   "Face name to use for citations.")
 
@@ -1416,21 +1413,17 @@ _M_: Use current file as master file
 ;;; Citation jumping:
 ;;; Jump to citation in a bibliography file.
 
-
-(defcustom pandoc-citation-jump-function 'pandoc-goto-citation-reference
-  "This function is given two arguments.
-
-1) A list of BIBLIOGRAPHY files
-2) The string that matches the citation KEY at point
-
-It should direct the user to a bibliographic reference that matches KEY.
-
-The default is `pandoc-goto-citation'"
-  :group 'pandoc
-  :type 'function)
+(defun pandoc-jump-to-reference ()
+  "Jump to bibtex reference for citation at point."
+  (interactive)
+  (let
+      ((biblist (pandoc--get 'bibliography)))
+   (if biblist
+	(pandoc-citation-at-point biblist)
+      (error "No bibliography selected"))))
 
 (defun pandoc-citation-at-point (biblist)
-  "Retrieve citation key at point, if any, and pass it, along with BIBLIST, to the display function stored in the variable `pandoc-citation-jump-functino'."
+  "Retrieve citation key at point, if any, and pass it, along with BIBLIST, to the display function stored in the variable `pandoc-citation-jump-function'."
   (cond
    ((thing-at-point-looking-at pandoc-regex-in-text-citation)
      (funcall pandoc-citation-jump-function biblist (match-string-no-properties 4)))
@@ -1459,14 +1452,6 @@ The default is `pandoc-goto-citation'"
 	(re-search-forward
 	 (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t)))
 
-(defun pandoc-jump-to-reference ()
-  "Jump to bibtex reference for citation at point."
-  (interactive)
-  (let
-      ((biblist (pandoc--get 'bibliography)))
-   (if biblist
-	(pandoc-citation-at-point biblist)
-      (error "No bibliography selected"))))
 
 (provide 'pandoc-mode)
 
