@@ -1440,10 +1440,9 @@ _M_: Use current file as master file
   (loop for bibfile in biblist
 	if (with-temp-buffer
 	     (insert-file-contents bibfile)
-	     (re-search-forward (concat
-				 "@[a-zA-Z]*[{(][[:space:]]*"
-				 key) nil t))
-	do (let ((buf (get-file-buffer bibfile)))
+	     (re-search-forward
+	      (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t))
+	finally do (let ((buf (get-file-buffer bibfile)))
 		  (if buf
 		      (switch-to-buffer-other-window buf)
 		    (find-file-other-window bibfile)))
