@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.19
+;; Version: 2.20
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -257,7 +257,6 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
                  ""))
              extensions
              ""))
-
 (defun pandoc--format-output-option (input-file pdf)
   "Create the output option for calling Pandoc.
 INPUT-FILE is the name of the input file.  PDF is t if the output
