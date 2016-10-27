@@ -1078,13 +1078,15 @@ evaluated."
 ;;; Options affecting specific writers
 
 ;; general
-(define-pandoc-file-option   reference-docx  (specific "d" "%-21s") "Reference docx File")
-(define-pandoc-file-option   reference-odt   (specific "o" "%-21s") "Reference ODT File")
-(define-pandoc-number-option slide-level     (specific "h" "%-21s") "Slide Level Header")
-(define-pandoc-switch        incremental     (specific "i" "%-21s") "Incremental")
-(define-pandoc-switch        number-sections (specific "n" "%-21s") "Number Sections")
-(define-pandoc-switch        atx-headers     (specific "a" "%-21s") "Use ATX-style Headers")
-(define-pandoc-switch        reference-links (specific "r" "%-21s") "Reference Links")
+(define-pandoc-file-option   reference-docx     (specific "d" "%-21s") "Reference docx File")
+(define-pandoc-file-option   reference-odt      (specific "o" "%-21s") "Reference ODT File")
+(define-pandoc-number-option slide-level        (specific "h" "%-21s") "Slide Level Header")
+(define-pandoc-switch        incremental        (specific "i" "%-21s") "Incremental")
+(define-pandoc-switch        number-sections    (specific "n" "%-21s") "Number Sections")
+(define-pandoc-switch        atx-headers        (specific "a" "%-21s") "Use ATX-style Headers")
+(define-pandoc-switch        reference-links    (specific "r" "%-21s") "Reference Links")
+(define-pandoc-choice-option reference-location (specific "l" "%-21s") "Reference Location" ("block" "section" "document") ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
+(define-pandoc-choice-option top-level-division (specific "t" "%-21s") "Top Level Division" ("section" "part" "chapter")   ("latex" "context" "docbook" "docbook5" "tei"))
 
 ;; html-based
 (define-pandoc-list-option   css               (html "c" "%-31s") file "CSS Style Sheet" "CSS")
