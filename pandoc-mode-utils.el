@@ -118,19 +118,25 @@ list, not if it appears higher on the list."
   :type 'string)
 
 (defcustom pandoc-citation-jump-function 'pandoc-goto-citation-reference
-  "Function used to locate a BibTeX reference from a citation key.
+  "Action to take when locating a BibTeX reference from a citation key.
+Three actions have been predefined: Open the BibTeX file in Emacs
+and jump to the location of the key (the default option), open
+the BibTeX file in Ebib and show the key, or show the key's entry
+in a *Help* buffer.
 
-This function is given two arguments:
+It is also possible to use a custom function.  This function must
+take two arguments:
 
 1) The string that matches the citation KEY at point
 2) A list of BIBLIOGRAPHY files
 
 It should direct the user to a bibliographic reference that
-matches KEY.
-
-The default is `pandoc-goto-citation-reference'."
+matches KEY."
   :group 'pandoc
-  :type 'function)
+  :type '(choice (const :tag "Open BibTeX file" pandoc-goto-citation-reference)
+                 (const :tag "Open Ebib" pandoc-open-in-ebib)
+                 (const :tag "Show entry in *Help* buffer" pandoc-show-entry-as-help)
+                 (function :tag "Use a custom function")))
 
 (defcustom pandoc-major-modes
   '((haskell-mode . "native")

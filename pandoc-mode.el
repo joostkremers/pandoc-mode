@@ -1453,6 +1453,39 @@ This function is the default value of `pandoc-citation-jump-function'."
       (re-search-forward key-regexp nil t)
       (beginning-of-line))))
 
+(defun pandoc-open-in-ebib (key biblist)
+  "Open BibTeX item KEY in Ebib.
+BIBLIST is a list of BibTeX files in which to search for KEY.
+
+This function is for use in `pandoc-citation-jump-function'."
+  (let ((bibfile (cl-loop for file in biblist
+                          if (with-temp-buffer
+                               (insert-file-contents file)
+                               (re-search-forward (concat "@[a-zA-Z]*[[:space:]]*[{(][[:space:]]*" key) nil t))
+                          return file)))
+    (if bibfile
+        (ebib bibfile key)
+      (error "Key '%s' not found" key))))
+
+(defun pandoc-show-entry-as-help (key biblist)
+  "Show the BibTeX item KEY in a *Help* buffer.
+BIBLIST is a list of BibTeX files in which to search for KEY.
+
+This function is for use in `pandoc-citation-jump-function'."
+  (let ((entry (cl-loop for file in biblist
+                        thereis (with-temp-buffer
+                                  (insert-file-contents file)
+                                  (when (re-search-forward (concat "@[a-zA-Z]*[[:space:]]*\\([{(]\\)[[:space:]]*" key) nil t)
+                                    (beginning-of-line)
+                                    (let ((beg (point)))
+                                      (goto-char (match-beginning 1))
+                                      (forward-list)
+                                      (buffer-substring beg (point))))))))
+    (if entry
+        (with-help-window (help-buffer)
+          (princ entry))
+      (error "Key `%s' not found" key))))
+
 (provide 'pandoc-mode)
 
 ;;; pandoc-mode.el ends here
