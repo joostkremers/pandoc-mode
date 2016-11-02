@@ -128,7 +128,7 @@ This function is given two arguments:
 It should direct the user to a bibliographic reference that
 matches KEY.
 
-The default is `pandoc-goto-citation'."
+The default is `pandoc-goto-citation-reference'."
   :group 'pandoc
   :type 'function)
 
