@@ -118,16 +118,17 @@ list, not if it appears higher on the list."
   :type 'string)
 
 (defcustom pandoc-citation-jump-function 'pandoc-goto-citation-reference
-  "Function used to locate bibtex reference from citation key.
+  "Function used to locate a BibTeX reference from a citation key.
 
 This function is given two arguments:
 
 1) A list of BIBLIOGRAPHY files
 2) The string that matches the citation KEY at point
 
-It should direct the user to a bibliographic reference that matches KEY.
+It should direct the user to a bibliographic reference that
+matches KEY.
 
-The default is `pandoc-goto-citation'"
+The default is `pandoc-goto-citation'."
   :group 'pandoc
   :type 'function)
 
