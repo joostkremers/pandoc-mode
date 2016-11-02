@@ -131,6 +131,17 @@ If you choose this option, Emacs checks if your current output format is `latex`
 By default, Emacs starts `pandoc` as an asynchronous process using a tty. If this causes problems for some reason, you can try using a pipe instead by customising `pandoc-process-connection-type`. Alternatively, you can use a synchronous process by unsetting the user option `pandoc-use-async`.
 
 
+## Citation Jumping ##
+
+`pandoc-mode` provides the function `pandoc-jump-to-reference` that locates a reference within external bibliography files indicated by the `bibliography` user option. Note that entries to the `bibliography` user option list must have an absolute path for this option to work properly (i.e. `"./Bibliography.bib"` rather than `"Bibliography.bib"`). This feature is not bound to any key by default, but may of course be bound to a key combination as follows:
+
+    (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
+
+The jump behaviour can be customised by changing the option `pandoc-citation-jump-function`. Its default value is `pandoc-goto-citation-reference`, which opens the relevant BibTeX file in a new window and moves point to the entry. Two alternative functions have been defined: `pandoc-open-in-ebib`, which opens the relevant entry in Ebib, and `pandoc-show-entry-as-help`, which shows the entry in a `*Help*` buffer, but does not open the corresponding BibTeX file.
+
+Alternatively, you may also define your own function, which should take two arguments: the key of the entry to be displayed and a list of BibTeX files.
+
+
 # Font lock #
 
 `pandoc-mode` adds font lock keywords for citations and numbered example lists. The relevant faces can be customised in the customisation group `pandoc`.
