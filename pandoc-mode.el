@@ -1450,7 +1450,8 @@ This function is the default value of `pandoc-citation-jump-function'."
         (error "Key '%s' not found" key)
       (find-file-other-window bibfile)
       (goto-char (point-min))
-      (re-search-forward key-regexp nil t))))
+      (re-search-forward key-regexp nil t)
+      (beginning-of-line))))
 
 (provide 'pandoc-mode)
 
