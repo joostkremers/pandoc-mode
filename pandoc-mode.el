@@ -46,6 +46,7 @@
 (require 'dash)
 (require 'pandoc-mode-utils)
 (require 'cl-lib)
+(require 'thingatpt)
 
 (defvar-local pandoc--@-counter 0 "Counter for (@)-lists.")
 
@@ -1413,43 +1414,43 @@ _M_: Use current file as master file
 ;;; Jump to citation in a bibliography file.
 
 (defun pandoc-jump-to-reference ()
-  "Jump to bibtex reference for citation at point."
+  "Display the BibTeX reference for the citation key at point.
+Extract the key at point and pass it to the function in
+`pandoc-citation-jump-function', together with a list of the
+current buffer's BibTeX files."
   (interactive)
-  (let
-      ((biblist (pandoc--get 'bibliography)))
-   (if biblist
-	(pandoc-citation-at-point biblist)
+  (let ((biblist (pandoc--get 'bibliography)))
+    (if biblist
+        (cond
+         ((thing-at-point-looking-at pandoc-regex-in-text-citation)
+          (funcall pandoc-citation-jump-function (match-string-no-properties 4) biblist))
+         ((thing-at-point-looking-at pandoc-regex-in-text-citation-2)
+          (funcall pandoc-citation-jump-function (match-string-no-properties 2) biblist))
+         ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-single)
+          (funcall pandoc-citation-jump-function (match-string-no-properties 3) biblist))
+         ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-multiple)
+          (funcall pandoc-citation-jump-function (match-string-no-properties 4) biblist))
+         (t (error "No citation at point")))
       (error "No bibliography selected"))))
 
-(defun pandoc-citation-at-point (biblist)
-  "Retrieve citation key at point, if any, and pass it, along with BIBLIST, to the display function stored in the variable `pandoc-citation-jump-function'."
-  (cond
-   ((thing-at-point-looking-at pandoc-regex-in-text-citation)
-     (funcall pandoc-citation-jump-function biblist (match-string-no-properties 4)))
-   ((thing-at-point-looking-at pandoc-regex-in-text-citation-2)
-    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 2)))
-   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-single)
-    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 3)))
-   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-multiple)
-    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 4)))
-   (t (error "No citation at point"))))
-	
-(defun pandoc-goto-citation-reference (biblist key)
-  "Jump to a citation's reference, by searching the files in BIBLIST for the KEY.  Once KEY is found, this function relies on `switch-to-buffer-other-window', if a buffer containing the relevant bibliography file is already open.  If no buffer is found, it will open one with `find-file-other-window'."
-  (loop for bibfile in biblist
-	if (with-temp-buffer
-	     (insert-file-contents bibfile)
-	     (re-search-forward
-	      (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t))
-	finally do (let ((buf (get-file-buffer bibfile)))
-		  (if buf
-		      (switch-to-buffer-other-window buf)
-		    (find-file-other-window bibfile)))
-	(with-current-buffer (get-file-buffer bibfile))
-	(goto-char (point-min))
-	(re-search-forward
-	 (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t)))
+(defun pandoc-goto-citation-reference (key biblist)
+  "Open the BibTeX file containing the entry for KEY.
+BIBLIST is a list of BibTeX files in which to search for KEY.
+The first file in which KEY is found is opened in a new
+window (using `find-file-other-window').
 
+This function is the default value of `pandoc-citation-jump-function'."
+  (let* ((key-regexp (concat "@[a-zA-Z]*[[:space:]]*[{(][[:space:]]*" key))
+         (bibfile (cl-loop for file in biblist
+                           if (with-temp-buffer
+                                (insert-file-contents file)
+                                (re-search-forward key-regexp nil t))
+                           return file)))
+    (if (not bibfile)
+        (error "Key '%s' not found" key)
+      (find-file-other-window bibfile)
+      (goto-char (point-min))
+      (re-search-forward key-regexp nil t))))
 
 (provide 'pandoc-mode)
 

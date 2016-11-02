@@ -122,8 +122,8 @@ list, not if it appears higher on the list."
 
 This function is given two arguments:
 
-1) A list of BIBLIOGRAPHY files
-2) The string that matches the citation KEY at point
+1) The string that matches the citation KEY at point
+2) A list of BIBLIOGRAPHY files
 
 It should direct the user to a bibliographic reference that
 matches KEY.
