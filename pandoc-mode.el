@@ -1409,6 +1409,48 @@ _M_: Use current file as master file
     (with-no-warnings
       (font-lock-fontify-buffer))))
 
+;;; Citation jumping:
+;;; Jump to citation in a bibliography file.
+
+(defun pandoc-jump-to-reference ()
+  "Jump to bibtex reference for citation at point."
+  (interactive)
+  (let
+      ((biblist (pandoc--get 'bibliography)))
+   (if biblist
+	(pandoc-citation-at-point biblist)
+      (error "No bibliography selected"))))
+
+(defun pandoc-citation-at-point (biblist)
+  "Retrieve citation key at point, if any, and pass it, along with BIBLIST, to the display function stored in the variable `pandoc-citation-jump-function'."
+  (cond
+   ((thing-at-point-looking-at pandoc-regex-in-text-citation)
+     (funcall pandoc-citation-jump-function biblist (match-string-no-properties 4)))
+   ((thing-at-point-looking-at pandoc-regex-in-text-citation-2)
+    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 2)))
+   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-single)
+    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 3)))
+   ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-multiple)
+    (funcall pandoc-citation-jump-function biblist (match-string-no-properties 4)))
+   (t (error "No citation at point"))))
+	
+(defun pandoc-goto-citation-reference (biblist key)
+  "Jump to a citation's reference, by searching the files in BIBLIST for the KEY.  Once KEY is found, this function relies on `switch-to-buffer-other-window', if a buffer containing the relevant bibliography file is already open.  If no buffer is found, it will open one with `find-file-other-window'."
+  (loop for bibfile in biblist
+	if (with-temp-buffer
+	     (insert-file-contents bibfile)
+	     (re-search-forward
+	      (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t))
+	finally do (let ((buf (get-file-buffer bibfile)))
+		  (if buf
+		      (switch-to-buffer-other-window buf)
+		    (find-file-other-window bibfile)))
+	(with-current-buffer (get-file-buffer bibfile))
+	(goto-char (point-min))
+	(re-search-forward
+	 (concat "@[a-zA-Z]*[{(][[:space:]]*" key) nil t)))
+
+
 (provide 'pandoc-mode)
 
 ;;; pandoc-mode.el ends here

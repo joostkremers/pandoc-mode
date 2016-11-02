@@ -419,6 +419,24 @@ instead by customising ‘pandoc-process-connection-type’.  Alternatively,
 you can use a synchronous process by unsetting the user option
 ‘pandoc-use-async’.
 
+3.8 Citation Jumping
+====================
+
+Pandoc-mode provides the function ‘pandoc-jump-to-reference‘ that
+locates a reference within external bibliography files indicated by
+the ‘bibliography‘ user option. Note that entries to the
+‘bibliography‘ user option list must have a valid path
+(i.e. "./Bibliography.bib" rather than "Bibliography.bib"). This
+feature may be bound to a key combination as follows:
+
+(define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
+
+The jump behavior may be customized:
+
+(setq pandoc-citation-jump-function 'my-pandoc-jump-function)
+
+The default behavior is to open (or locate) the appropriate .bib file in another window and position the cursor at the indicated bibliographic key.
+
 
 File: pandoc-mode.info,  Node: Font lock,  Next: Settings Files,  Prev: Usage,  Up: Top
 
