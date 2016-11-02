@@ -1,5 +1,9 @@
-This is pandoc-mode.info, produced by makeinfo version 5.2 from
+This is pandoc-mode.info, produced by makeinfo version 6.1 from
 pandoc-mode.texi.
+
+INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
+(pandoc-mode).  Minor mode for interacting with Pandoc.
+END-INFO-DIR-ENTRY
 
 INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
 (pandoc-mode).  Minor mode for interacting with Pandoc.
@@ -145,6 +149,7 @@ below.)
 * Setting an output file::
 * Creating a pdf::
 * Connection Type::
+* Citation Jumping::
 
 
 File: pandoc-mode.info,  Node: Input and output formats,  Next: The options menu,  Up: Usage
@@ -408,7 +413,7 @@ file is found, Emacs calls Pandoc with only the input and output
 formats.
 
 
-File: pandoc-mode.info,  Node: Connection Type,  Prev: Creating a pdf,  Up: Usage
+File: pandoc-mode.info,  Node: Connection Type,  Next: Citation Jumping,  Prev: Creating a pdf,  Up: Usage
 
 3.7 Connection Type
 ===================
@@ -419,23 +424,33 @@ instead by customising ‘pandoc-process-connection-type’.  Alternatively,
 you can use a synchronous process by unsetting the user option
 ‘pandoc-use-async’.
 
+
+File: pandoc-mode.info,  Node: Citation Jumping,  Prev: Connection Type,  Up: Usage
+
 3.8 Citation Jumping
 ====================
 
-Pandoc-mode provides the function ‘pandoc-jump-to-reference‘ that
-locates a reference within external bibliography files indicated by
-the ‘bibliography‘ user option. Note that entries to the
-‘bibliography‘ user option list must have a valid path
-(i.e. "./Bibliography.bib" rather than "Bibliography.bib"). This
-feature may be bound to a key combination as follows:
+‘pandoc-mode’ provides the function ‘pandoc-jump-to-reference’ that
+locates a reference within external bibliography files indicated by the
+‘bibliography’ user option.  Note that entries to the ‘bibliography’
+user option list must have an absolute path for this option to work
+properly (i.e.  ‘"./Bibliography.bib"’ rather than
+‘"Bibliography.bib"’).  This feature is not bound to any key by default,
+but may of course be bound to a key combination as follows:
 
 (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
-The jump behavior may be customized:
+The jump behaviour can be customised by changing the option
+‘pandoc-citation-jump-function’.  Its default value is
+‘pandoc-goto-citation-reference’, which opens the relevant BibTeX file
+in a new window and moves point to the entry.  Two alternative functions
+have been defined: ‘pandoc-open-in-ebib’, which opens the relevant entry
+in Ebib, and ‘pandoc-show-entry-as-help’, which shows the entry in a
+‘*Help*’ buffer, but does not open the corresponding BibTeX file.
 
-(setq pandoc-citation-jump-function 'my-pandoc-jump-function)
-
-The default behavior is to open (or locate) the appropriate .bib file in another window and position the cursor at the indicated bibliographic key.
+Alternatively, you may also define your own function, which should take
+two arguments: the key of the entry to be displayed and a list of BibTeX
+files.
 
 
 File: pandoc-mode.info,  Node: Font lock,  Next: Settings Files,  Prev: Usage,  Up: Top
@@ -606,7 +621,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 27 Oct 2016".
+‘@@date{Cologne}’ to get "Cologne, 02 Nov 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -765,47 +780,49 @@ than ‘toc’).
 
 
 Tag Table:
-Node: Top353
-Node: Introduction657
-Ref: #introduction778
-Node: Installation1635
-Ref: #installation1758
-Node: OS X3338
-Ref: #os-x3415
-Node: Usage4006
-Ref: #usage4112
-Node: Input and output formats5928
-Ref: #input-and-output-formats6083
-Node: The options menu9019
-Ref: #the-options-menu9198
-Node: Template variables and metadata13893
-Ref: #template-variables-and-metadata14092
-Node: Running Pandoc14667
-Ref: #running-pandoc14838
-Node: Setting an output file16939
-Ref: #setting-an-output-file17109
-Node: Creating a pdf18803
-Ref: #creating-a-pdf18958
-Node: Connection Type19803
-Ref: #connection-type19929
-Node: Font lock20239
-Ref: #font-lock20355
-Node: Settings Files20519
-Ref: #settings-files20660
-Node: File-local variables23061
-Ref: #file-local-variables23231
-Node: Managing numbered examples24791
-Ref: #managing-numbered-examples24978
-Node: Using @@-directives26288
-Ref: #using--directives26465
-Node: Master file30688
-Ref: #master-file30824
-Node: Defining @@-directives32346
-Ref: #defining--directives32528
-Node: Directive hooks34106
-Ref: #directive-hooks34254
-Node: Disabling the hydra menu34591
-Ref: #disabling-the-hydra-menu34743
+Node: Top488
+Node: Introduction792
+Ref: #introduction913
+Node: Installation1770
+Ref: #installation1893
+Node: OS X3473
+Ref: #os-x3550
+Node: Usage4141
+Ref: #usage4247
+Node: Input and output formats6084
+Ref: #input-and-output-formats6239
+Node: The options menu9175
+Ref: #the-options-menu9354
+Node: Template variables and metadata14049
+Ref: #template-variables-and-metadata14248
+Node: Running Pandoc14823
+Ref: #running-pandoc14994
+Node: Setting an output file17095
+Ref: #setting-an-output-file17265
+Node: Creating a pdf18959
+Ref: #creating-a-pdf19114
+Node: Connection Type19959
+Ref: #connection-type20110
+Node: Citation Jumping20420
+Ref: #citation-jumping20550
+Node: Font lock21749
+Ref: #font-lock21865
+Node: Settings Files22029
+Ref: #settings-files22170
+Node: File-local variables24571
+Ref: #file-local-variables24741
+Node: Managing numbered examples26301
+Ref: #managing-numbered-examples26488
+Node: Using @@-directives27798
+Ref: #using--directives27975
+Node: Master file32198
+Ref: #master-file32334
+Node: Defining @@-directives33856
+Ref: #defining--directives34038
+Node: Directive hooks35616
+Ref: #directive-hooks35764
+Node: Disabling the hydra menu36101
+Ref: #disabling-the-hydra-menu36253
 
 End Tag Table
 
