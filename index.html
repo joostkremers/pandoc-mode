@@ -145,6 +145,18 @@
 
 <p>By default, Emacs starts <code>pandoc</code> as an asynchronous process using a tty. If this causes problems for some reason, you can try using a pipe instead by customising <code>pandoc-process-connection-type</code>. Alternatively, you can use a synchronous process by unsetting the user option <code>pandoc-use-async</code>.</p>
 
+<h2>
+<a id="citation-jumping" class="anchor" href="#citation-jumping" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Citation Jumping</h2>
+
+<p><code>pandoc-mode</code> provides the function <code>pandoc-jump-to-reference</code> that locates a reference within external bibliography files indicated by the <code>bibliography</code> user option. Note that entries to the <code>bibliography</code> user option list must have an absolute path for this option to work properly (i.e. <code>"./Bibliography.bib"</code> rather than <code>"Bibliography.bib"</code>). This feature is not bound to any key by default, but may of course be bound to a key combination as follows:</p>
+
+<pre><code>(define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
+</code></pre>
+
+<p>The jump behaviour can be customised by changing the option <code>pandoc-citation-jump-function</code>. Its default value is <code>pandoc-goto-citation-reference</code>, which opens the relevant BibTeX file in a new window and moves point to the entry. Two alternative functions have been defined: <code>pandoc-open-in-ebib</code>, which opens the relevant entry in Ebib, and <code>pandoc-show-entry-as-help</code>, which shows the entry in a <code>*Help*</code> buffer, but does not open the corresponding BibTeX file.</p>
+
+<p>Alternatively, you may also define your own function, which should take two arguments: the key of the entry to be displayed and a list of BibTeX files.</p>
+
 <h1>
 <a id="font-lock" class="anchor" href="#font-lock" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Font lock</h1>
 
@@ -213,7 +225,7 @@
                  (format-time-string "%d %b %Y")))
 </code></pre>
 
-<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 27 Oct 2016".</p>
+<p>This way, you could write <code>@@date</code> to get just the date, and <code>@@date{Cologne}</code> to get "Cologne, 02 Nov 2016".</p>
 
 <p>Two directives have been predefined: <code>@@lisp</code> and <code>@@include</code>. Both of these take an argument. <code>@@lisp</code> can be used to include Elisp code in the document which is then executed and replaced by the result (which should be a string). For example, another way to put the current date in your document, without defining a special function for it, is to write the following:</p>
 
