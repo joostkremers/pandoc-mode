@@ -224,17 +224,14 @@ FORMAT is the output format to use."
 (defun pandoc--format-all-options (input-file &optional pdf)
   "Create a list of strings with pandoc options for the current buffer.
 INPUT-FILE is the name of the input file.  If PDF is non-nil, an
-output file is always set, derived either from the input file or
-from the output file set for the \"latex\" output profile, and
-gets the suffix `.pdf'.  If the output format is \"odt\", \"epub\"
-or \"docx\" but no output file is specified, one will be created,
-since pandoc does not support output to stdout for those two
-formats."
+output file is always set, which gets the suffix `.pdf'.  If the
+output format is \"odt\", \"epub\" or \"docx\" but no output file
+is specified, one will be created."
   (let ((read (format "--read=%s%s%s" (pandoc--get 'read) (if (pandoc--get 'read-lhs) "+lhs" "")
                       (pandoc--format-extensions (pandoc--get 'read-extensions))))
         (write (if pdf
-                   (if (string= (pandoc--get 'write) "beamer")
-                       "--write=beamer"
+                   (if (member (pandoc--get 'write) pandoc--pdf-able-formats)
+                       (format "--write=%s" (pandoc--get 'write))
                      "--write=latex")
                  (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
                          (pandoc--format-extensions (pandoc--get 'write-extensions)))))
@@ -258,6 +255,7 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
                  ""))
              extensions
              ""))
+
 (defun pandoc--format-output-option (input-file pdf)
   "Create the output option for calling Pandoc.
 INPUT-FILE is the name of the input file.  PDF is t if the output
@@ -400,7 +398,7 @@ local options.  The contents of the current buffer is copied into
 the temporary buffer, the @@-directives are processed, after
 which pandoc is called.
 
-OUTPUT-FORMAT is the format to use.  If nil, the current buffer's
+OUTPUT-FORMAT is the format to use.  If t, the current buffer's
 output format is used.  If PDF is non-nil, a pdf file is created.
 REGION is a cons cell specifying the beginning and end of the
 region to be sent to pandoc.
@@ -436,7 +434,7 @@ also ignored in this case."
       (with-temp-buffer
         (cond
          ;; if an output format was provided, try and load a settings file for it
-         (output-format
+         ((stringp output-format)
           (unless (and filename
                        (pandoc--load-settings-for-file (expand-file-name filename) output-format t))
             ;; if no settings file was found, unset all options except input and output format
@@ -445,8 +443,9 @@ also ignored in this case."
             (pandoc--set 'read (pandoc--get 'read buffer))))
          ;; if no output format was provided, we use BUFFER's options,
          ;; except the output format, which we take from ORIG-BUFFER:
-         (t (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
-            (pandoc--set 'write (pandoc--get 'write orig-buffer))))
+         ((eq output-format t)
+          (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
+          (pandoc--set 'write (pandoc--get 'write orig-buffer))))
         ;; copy any local `pandoc/' variables from `orig-buffer' or
         ;; `buffer' (the values in `orig-buffer' take precedence):
         (mapc (lambda (option)
@@ -458,9 +457,7 @@ also ignored in this case."
               pandoc--options)
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-          (message "Running %s on %s"
-                   (file-name-nondirectory pandoc--local-binary)
-                   display-name)
+          (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
           (pandoc-process-directives (pandoc--get 'write))
           (with-current-buffer (get-buffer-create pandoc--output-buffer)
             (erase-buffer))
@@ -506,29 +503,46 @@ the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
                        (completing-read "Output format to use: " pandoc--output-formats nil t)
-                     nil)
+                     t)
                    nil
                    (if (use-region-p)
                        (cons (region-beginning) (region-end)))))
 
+(defvar-local pandoc--output-format-for-pdf nil
+  "Output format used to for pdf conversion.
+  Set the first time the user converts to pdf.  Unset when the
+user changes output format.")
+
 (defun pandoc-convert-to-pdf (prefix)
   "Convert the current document to pdf.
-If the output format of the current buffer is set to \"latex\" or
-\"beamer\", the buffer's options are used.  If called with a
-PREFIX argument, or if the current buffer's output format is not
-\"latex\" or \"beamer\", a LaTeX settings file is searched for
-and loaded when found.  If no such settings file is found, all
-options are unset except for the input and output formats.
+If the output format of the current buffer can be used to create
+a pdf (latex, context, or html5), the buffer's options are used.
+If not, the user is asked to supply a format.  If a settings file
+for the user-supplied format exists, the settings from this file
+are used for conversion.  If no such settings file exists, only
+the input and output format are set, all other options are unset.
+This user-supplied output format is persistent: the next pdf
+conversion uses the same format.
+
+If called with a PREFIX argument \\[universal-argument], always ask the user for a
+pdf-able format.
+
+Note that if the user changes the output format for the buffer,
+the format for pdf conversion is unset.
 
 If the region is active, pandoc is run on the region instead of
-the buffer."
+the buffer (except when a master file is set, in which case
+pandoc is always run on the master file)."
+  ;; TODO When the region is active, it might be nice to run pandoc on the
+  ;; region but use the master file's settings.
   (interactive "P")
-  (pandoc--call-external (if (or prefix (not (member (pandoc--get 'write) '("latex" "beamer"))))
-                       "latex"
-                     nil)
-                   t
-                   (if (use-region-p)
-                       (cons (region-beginning) (region-end)))))
+  (cond
+   ((member (pandoc--get 'write) pandoc--pdf-able-formats)
+    (setq pandoc--output-format-for-pdf t))
+   ((or (not pandoc--output-format-for-pdf)
+        (and (listp prefix) (eq (car prefix) 4)))
+    (setq pandoc--output-format-for-pdf (completing-read "Specify output format for pdf creation: " pandoc--pdf-able-formats nil t nil nil (car pandoc--pdf-able-formats)))))
+  (pandoc--call-external pandoc--output-format-for-pdf t (when (use-region-p) (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
@@ -794,6 +808,7 @@ format)."
     (pandoc--set 'write format)
     (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes))))
   (setq pandoc--settings-modified-flag nil)
+  (setq pandoc--output-format-for-pdf nil)
   (message "Output format set to `%s'" format))
 
 (defun pandoc-set-read (format)

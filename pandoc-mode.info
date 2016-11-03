@@ -398,19 +398,29 @@ File: pandoc-mode.info,  Node: Creating a pdf,  Next: Connection Type,  Prev: Se
 ==================
 
 The second item in the main menu is "Create PDF" (invoked with ‘C-c /
-p’).  This option calls Pandoc with an output file with the extention
-‘.pdf’, causing Pandoc to create a pdf file by first converting to
-‘.tex’ and then calling LaTeX on it.  Like ‘C-c / r’, this command
-operates on the region if it is active.
+p’).  This option calls Pandoc with a PDF file as output file.  In order
+for Pandoc to create a PDF, the output format must be ‘latex’, ‘context’
+or ‘html5’ (in which case ‘wkhtmltopdf’ is used to create the PDF file).
+If the current buffer’s output format is one of these, ‘C-c / p’ creates
+the PDF using that format.
 
-If you choose this option, Emacs checks if your current output format is
-‘latex’.  If it is, Emacs calls Pandoc with the buffer’s settings.  If
-the output format is something other than ‘latex’, Emacs checks if you
-have a settings file for LaTeX output and uses those settings.  This
-allows you to create a pdf without having to switch the output format to
-LaTeX. If your current output format is not LaTeX and no LaTeX settings
-file is found, Emacs calls Pandoc with only the input and output
-formats.
+If the current output format is set to something else, Emacs asks you
+which output format to use.  If there is a settings file for the output
+format you specify, it is used to create the PDF. (The current buffer’s
+settings aren’t changed, however.)  If there is no settings file, Pandoc
+is called with only the input and output formats and the output file.
+
+The format you choose is remembered (at least until you close the buffer
+or change the output format), so that the next time you convert the
+buffer to PDF, you are not asked for the format again.  If you wish to
+use a different format for PDF creation, use a prefix argument ‘C-u’.
+(That is, the key sequence to type is ‘C-c / C-u p’.)
+
+This setup means that you do not need to switch the output format to
+‘latex’, ‘context’ or ‘html5’ in order to create a PDF, which can be
+practical if you’re also converting to another format.  However, if you
+wish to change settings for PDF output, you *do* need to switch to the
+relevant output format.
 
 
 File: pandoc-mode.info,  Node: Connection Type,  Next: Citation Jumping,  Prev: Creating a pdf,  Up: Usage
@@ -621,7 +631,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 02 Nov 2016".
+‘@@date{Cologne}’ to get "Cologne, 03 Nov 2016".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -801,28 +811,28 @@ Node: Setting an output file17095
 Ref: #setting-an-output-file17265
 Node: Creating a pdf18959
 Ref: #creating-a-pdf19114
-Node: Connection Type19959
-Ref: #connection-type20110
-Node: Citation Jumping20420
-Ref: #citation-jumping20550
-Node: Font lock21749
-Ref: #font-lock21865
-Node: Settings Files22029
-Ref: #settings-files22170
-Node: File-local variables24571
-Ref: #file-local-variables24741
-Node: Managing numbered examples26301
-Ref: #managing-numbered-examples26488
-Node: Using @@-directives27798
-Ref: #using--directives27975
-Node: Master file32198
-Ref: #master-file32334
-Node: Defining @@-directives33856
-Ref: #defining--directives34038
-Node: Directive hooks35616
-Ref: #directive-hooks35764
-Node: Disabling the hydra menu36101
-Ref: #disabling-the-hydra-menu36253
+Node: Connection Type20557
+Ref: #connection-type20708
+Node: Citation Jumping21018
+Ref: #citation-jumping21148
+Node: Font lock22347
+Ref: #font-lock22463
+Node: Settings Files22627
+Ref: #settings-files22768
+Node: File-local variables25169
+Ref: #file-local-variables25339
+Node: Managing numbered examples26899
+Ref: #managing-numbered-examples27086
+Node: Using @@-directives28396
+Ref: #using--directives28573
+Node: Master file32796
+Ref: #master-file32932
+Node: Defining @@-directives34454
+Ref: #defining--directives34636
+Node: Directive hooks36214
+Ref: #directive-hooks36362
+Node: Disabling the hydra menu36699
+Ref: #disabling-the-hydra-menu36851
 
 End Tag Table
 
