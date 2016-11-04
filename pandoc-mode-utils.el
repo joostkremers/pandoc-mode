@@ -430,6 +430,7 @@ Any other value just logs the message, adding an empty line after
 it.  The arguments FORMAT-STRING and ARGS function as with
 `message'."
   (with-current-buffer (get-buffer-create pandoc--log-buffer)
+    (goto-char (point-max))
     (insert (apply #'format format-string args) "\n\n"))
   (when (eq type 'message)
     (apply #'message format-string args)))
