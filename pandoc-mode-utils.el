@@ -394,8 +394,8 @@ with the default value NIL.")
 
 (defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
-(defvar pandoc--output-buffer (get-buffer-create " *Pandoc output*"))
-(defvar pandoc--log-buffer (get-buffer-create " *Pandoc log*"))
+(defvar pandoc--output-buffer-name " *Pandoc output*")
+(defvar pandoc--log-buffer-name " *Pandoc log*")
 
 (defvar pandoc--options-menu nil
   "Auxiliary variable for creating the options menu.")
@@ -429,7 +429,7 @@ If TYPE is `message', also display the message in the echo area.
 Any other value just logs the message, adding an empty line after
 it.  The arguments FORMAT-STRING and ARGS function as with
 `message'."
-  (with-current-buffer (get-buffer-create pandoc--log-buffer)
+  (with-current-buffer (get-buffer-create pandoc--log-buffer-name)
     (goto-char (point-max))
     (insert (apply #'format format-string args) "\n\n"))
   (when (eq type 'message)

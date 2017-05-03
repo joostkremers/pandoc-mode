@@ -157,8 +157,8 @@
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc--settings-modified-flag nil)
-    (or (buffer-live-p pandoc--output-buffer)
-        (setq pandoc--output-buffer (get-buffer-create " *Pandoc output*")))
+    ;; Make sure the output buffer exists.
+    (get-buffer-create pandoc--output-buffer-name)
     (pandoc-faces-load))
    ((not pandoc-mode)    ; pandoc-mode is turned off
     (setq pandoc--local-settings nil
@@ -459,7 +459,7 @@ also ignored in this case."
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
           (pandoc-process-directives (pandoc--get 'write))
-          (with-current-buffer (get-buffer-create pandoc--output-buffer)
+          (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
             (erase-buffer))
           (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
           (pandoc--log 'log "Calling %s with:\n\n%s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
@@ -476,21 +476,21 @@ also ignored in this case."
             (cond
              (pandoc-use-async
               (let* ((process-connection-type pandoc-process-connection-type)
-                     (process (apply #'start-process "pandoc-process" pandoc--output-buffer pandoc--local-binary option-list)))
+                     (process (apply #'start-process "pandoc-process" (get-buffer-create pandoc--output-buffer-name) pandoc--local-binary option-list)))
                 (set-process-sentinel process (lambda (_ e)
                                                 (cond
                                                  ((string-equal e "finished\n")
                                                   (funcall log-success display-name pandoc--local-binary)
                                                   (run-hooks 'pandoc-async-success-hook))
                                                  (t (funcall log-failure display-name pandoc--local-binary)
-                                                    (display-buffer pandoc--output-buffer)))))
+                                                    (display-buffer pandoc--output-buffer-name)))))
                 (process-send-region process (point-min) (point-max))
                 (process-send-eof process)))
              ((not pandoc-use-async)
-              (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil pandoc--output-buffer t option-list))
+              (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil (get-buffer-create pandoc--output-buffer-name) t option-list))
                   (funcall log-success display-name pandoc--local-binary)
                 (funcall log-failure display-name pandoc--local-binary)
-                (display-buffer pandoc--output-buffer))))))))))
+                (display-buffer pandoc--output-buffer-name))))))))))
 
 (defun pandoc-run-pandoc (prefix)
   "Run pandoc on the current document.
@@ -726,7 +726,7 @@ options and their values."
 (defun pandoc-view-output ()
   "Displays the *Pandoc output* buffer."
   (interactive)
-  (display-buffer pandoc--output-buffer))
+  (display-buffer pandoc--output-buffer-name))
 
 (defun pandoc-view-settings ()
   "Displays the settings file in a *Help* buffer."
@@ -754,7 +754,7 @@ options and their values."
 (defun pandoc-view-log ()
   "Display the log buffer in a temporary window."
   (interactive)
-  (display-buffer pandoc--log-buffer))
+  (display-buffer (get-buffer-create pandoc--log-buffer-name)))
 
 (defun pandoc-insert-@ ()
   "Insert a new labeled (@) list marker at point."
