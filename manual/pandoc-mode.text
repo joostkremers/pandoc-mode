@@ -141,7 +141,7 @@ By default, Emacs starts `pandoc` as an asynchronous process using a tty. If thi
 
     (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
-The jump behaviour can be customised by changing the option `pandoc-citation-jump-function`. Its default value is `pandoc-goto-citation-reference`, which opens the relevant BibTeX file in a new window and moves point to the entry. Two alternative functions have been defined: `pandoc-open-in-ebib`, which opens the relevant entry in Ebib, and `pandoc-citation-entry-as-help`, which shows the entry in a `*Help*` buffer, but does not open the corresponding BibTeX file.
+The jump behaviour can be customised by changing the option `pandoc-citation-jump-function`. Its default value is `pandoc-goto-citation-reference`, which opens the relevant BibTeX file in a new window and moves point to the entry. Two alternative functions have been defined: `pandoc-open-in-ebib`, which opens the relevant entry in Ebib, and `pandoc-show-citation-as-help`, which shows the entry in a `*Help*` buffer, but does not open the corresponding BibTeX file.
 
 Alternatively, you may also define your own function, which should take two arguments: the key of the entry to be displayed and a list of BibTeX files.
 

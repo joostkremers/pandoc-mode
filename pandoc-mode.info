@@ -1,16 +1,14 @@
 This is pandoc-mode.info, produced by makeinfo version 6.1 from
 pandoc-mode.texi.
 
-INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
-(pandoc-mode).  Minor mode for interacting with Pandoc.
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Pandoc-mode: (pandoc-mode).        Minor mode for interacting with Pandoc.
 END-INFO-DIR-ENTRY
 
-INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
-(pandoc-mode).  Minor mode for interacting with Pandoc.
-END-INFO-DIR-ENTRY
-
-INFO-DIR-SECTION Emacs START-INFO-DIR-ENTRY * Pandoc-mode:
-(pandoc-mode).  Minor mode for interacting with Pandoc.
+INFO-DIR-SECTION Emacs
+START-INFO-DIR-ENTRY
+* Pandoc-mode: (pandoc-mode).        Minor mode for interacting with Pandoc.
 END-INFO-DIR-ENTRY
 
 
@@ -455,7 +453,7 @@ The jump behaviour can be customised by changing the option
 ‘pandoc-goto-citation-reference’, which opens the relevant BibTeX file
 in a new window and moves point to the entry.  Two alternative functions
 have been defined: ‘pandoc-open-in-ebib’, which opens the relevant entry
-in Ebib, and ‘pandoc-show-entry-as-help’, which shows the entry in a
+in Ebib, and ‘pandoc-show-citation-as-help’, which shows the entry in a
 ‘*Help*’ buffer, but does not open the corresponding BibTeX file.
 
 Alternatively, you may also define your own function, which should take
@@ -631,7 +629,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 03 Nov 2016".
+‘@@date{Cologne}’ to get "Cologne, 03 May 2017".
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -790,49 +788,49 @@ than ‘toc’).
 
 
 Tag Table:
-Node: Top488
-Node: Introduction792
-Ref: #introduction913
-Node: Installation1770
-Ref: #installation1893
-Node: OS X3473
-Ref: #os-x3550
-Node: Usage4141
-Ref: #usage4247
-Node: Input and output formats6084
-Ref: #input-and-output-formats6239
-Node: The options menu9175
-Ref: #the-options-menu9354
-Node: Template variables and metadata14049
-Ref: #template-variables-and-metadata14248
-Node: Running Pandoc14823
-Ref: #running-pandoc14994
-Node: Setting an output file17095
-Ref: #setting-an-output-file17265
-Node: Creating a pdf18959
-Ref: #creating-a-pdf19114
-Node: Connection Type20557
-Ref: #connection-type20708
-Node: Citation Jumping21018
-Ref: #citation-jumping21148
-Node: Font lock22347
-Ref: #font-lock22463
-Node: Settings Files22627
-Ref: #settings-files22768
-Node: File-local variables25169
-Ref: #file-local-variables25339
-Node: Managing numbered examples26899
-Ref: #managing-numbered-examples27086
-Node: Using @@-directives28396
-Ref: #using--directives28573
-Node: Master file32796
-Ref: #master-file32932
-Node: Defining @@-directives34454
-Ref: #defining--directives34636
-Node: Directive hooks36214
-Ref: #directive-hooks36362
-Node: Disabling the hydra menu36699
-Ref: #disabling-the-hydra-menu36851
+Node: Top365
+Node: Introduction669
+Ref: #introduction790
+Node: Installation1647
+Ref: #installation1770
+Node: OS X3350
+Ref: #os-x3427
+Node: Usage4018
+Ref: #usage4124
+Node: Input and output formats5961
+Ref: #input-and-output-formats6116
+Node: The options menu9052
+Ref: #the-options-menu9231
+Node: Template variables and metadata13926
+Ref: #template-variables-and-metadata14125
+Node: Running Pandoc14700
+Ref: #running-pandoc14871
+Node: Setting an output file16972
+Ref: #setting-an-output-file17142
+Node: Creating a pdf18836
+Ref: #creating-a-pdf18991
+Node: Connection Type20434
+Ref: #connection-type20585
+Node: Citation Jumping20895
+Ref: #citation-jumping21025
+Node: Font lock22227
+Ref: #font-lock22343
+Node: Settings Files22507
+Ref: #settings-files22648
+Node: File-local variables25049
+Ref: #file-local-variables25219
+Node: Managing numbered examples26779
+Ref: #managing-numbered-examples26966
+Node: Using @@-directives28276
+Ref: #using--directives28453
+Node: Master file32676
+Ref: #master-file32812
+Node: Defining @@-directives34334
+Ref: #defining--directives34516
+Node: Directive hooks36094
+Ref: #directive-hooks36242
+Node: Disabling the hydra menu36579
+Ref: #disabling-the-hydra-menu36731
 
 End Tag Table
 

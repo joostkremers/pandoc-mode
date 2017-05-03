@@ -1482,7 +1482,7 @@ This function is for use in `pandoc-citation-jump-function'."
         (ebib bibfile key)
       (error "Key '%s' not found" key))))
 
-(defun pandoc-citation-entry-as-help (key biblist)
+(defun pandoc-show-citation-as-help (key biblist)
   "Show the BibTeX item KEY in a *Help* buffer.
 BIBLIST is a list of BibTeX files in which to search for KEY.
 

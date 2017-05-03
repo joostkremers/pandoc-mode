@@ -135,7 +135,7 @@ matches KEY."
   :group 'pandoc
   :type '(choice (const :tag "Open BibTeX file" pandoc-goto-citation-reference)
                  (const :tag "Open Ebib" pandoc-open-in-ebib)
-                 (const :tag "Show entry in *Help* buffer" pandoc-citation-entry-as-help)
+                 (const :tag "Show entry in *Help* buffer" pandoc-show-citation-as-help)
                  (function :tag "Use a custom function")))
 
 (defcustom pandoc-major-modes
