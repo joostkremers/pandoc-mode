@@ -492,7 +492,7 @@ also ignored in this case."
                 (funcall log-failure display-name pandoc--local-binary)
                 (display-buffer pandoc--output-buffer-name))))))))))
 
-(defun pandoc-run-pandoc (prefix)
+(defun pandoc-run-pandoc (&optional prefix)
   "Run pandoc on the current document.
 If called with a PREFIX argument, the user is asked for an output
 format.  Otherwise, the output format currently set in the buffer
@@ -513,7 +513,7 @@ the buffer."
   Set the first time the user converts to pdf.  Unset when the
 user changes output format.")
 
-(defun pandoc-convert-to-pdf (prefix)
+(defun pandoc-convert-to-pdf (&optional prefix)
   "Convert the current document to pdf.
 If the output format of the current buffer can be used to create
 a pdf (latex, context, or html5), the buffer's options are used.
