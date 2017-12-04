@@ -1066,12 +1066,15 @@ evaluated."
 ;; Note that the options are added to the menus and hydras in reverse order.
 
 ;;; Reader options
+(define-pandoc-file-option   abbreviations           (reader "a" "%-23s")      "Abbreviations File")
+(define-pandoc-switch        strip-empty-paragraphs  (reader "e" "%-23s")      "Strip Empty Paragraphs")
 (define-pandoc-choice-option track-changes           (reader "T" "%-23s")      "Track Changes" ("accept" "reject" "all") ("docx"))
 (define-pandoc-number-option tab-stop                (reader "t" "%-23s")      "Tab Stop Width")
 (define-pandoc-switch        preserve-tabs           (reader "p" "%-23s")      "Preserve Tabs")
 (define-pandoc-switch        normalize               (reader "n" "%-23s")      "Normalize Document")
 (define-pandoc-alist-option  metadata                (reader "m" "%-23s")      "Metadata" "Metadata item")
 (define-pandoc-list-option   filter                  (reader "f" "%-23s") file "Filters" "Filter")
+(define-pandoc-list-option   lua-filter              (reader "l" "%-23s") file "Lua Filters" "Lua Filter")
 (define-pandoc-string-option default-image-extension (reader "i" "%-23s")      "Default Image Extension")
 (define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")      "Indented Code Classes")
 (define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level")
@@ -1084,10 +1087,14 @@ evaluated."
 
 
 ;;; General writer options
+(define-pandoc-switch        strip-comments      (writer "C" "%-19s") "Strip Comments")
 (define-pandoc-switch        verbose             (writer "V" "%-19s") "Verbose output") ; Pandoc's README places this in the general options
+(define-pandoc-string-option resource-path       (writer "r" "%-19s") "Resource Path")
+(define-pandoc-alist-option  request-header      (writer "R" "%-19s") "HTTP Request Header" "Request Header")
 (define-pandoc-file-option   include-after-body  (writer "A" "%-19s") "Include After Body")
 (define-pandoc-file-option   include-before-body (writer "B" "%-19s") "Include Before Body")
 (define-pandoc-file-option   include-in-header   (writer "H" "%-19s") "Include Header")
+(define-pandoc-file-option   syntax-definition   (writer "y" "%-19s") "Syntax Definition File")
 (define-pandoc-string-option highlight-style     (writer "S" "%-19s") "Highlighting Style")
 (define-pandoc-switch        no-highlight        (writer "h" "%-19s") "No Highlighting")
 (define-pandoc-number-option toc-depth           (writer "D" "%-19s") "TOC Depth")
@@ -1095,25 +1102,34 @@ evaluated."
 (define-pandoc-number-option columns             (writer "c" "%-19s") "Column Width")
 (define-pandoc-switch        no-wrap             (writer "W" "%-19s") "No Wrap")
 (define-pandoc-choice-option wrap                (writer "w" "%-19s") "Wrap"                ("auto" "none" "preserve"))
+(define-pandoc-choice-option eol                 (writer "e" "%-19s") "Line Endings Style"  ("crlf" "lf" "native"))
 (define-pandoc-number-option dpi                 (writer "d" "%-19s") "DPI")
 (define-pandoc-alist-option  variable            (writer "v" "%-19s") "Variables"           "Variable")
 (define-pandoc-file-option   template            (writer "t" "%-19s") "Template File")
 (define-pandoc-switch        standalone          (writer "s" "%-19s") "Standalone")
-;; print-default-template ; not actually included
+;; print-default-template : not actually included
+;; print-default-data-file : not actually included
+;; print-highlight-style : not actually included
 
 
 ;;; Options affecting specific writers
 
 ;; general
-(define-pandoc-file-option   reference-docx     (specific "d" "%-21s") "Reference docx File")
-(define-pandoc-file-option   reference-odt      (specific "o" "%-21s") "Reference ODT File")
-(define-pandoc-number-option slide-level        (specific "h" "%-21s") "Slide Level Header")
-(define-pandoc-switch        incremental        (specific "i" "%-21s") "Incremental")
-(define-pandoc-switch        number-sections    (specific "n" "%-21s") "Number Sections")
-(define-pandoc-switch        atx-headers        (specific "a" "%-21s") "Use ATX-style Headers")
-(define-pandoc-switch        reference-links    (specific "r" "%-21s") "Reference Links")
-(define-pandoc-choice-option reference-location (specific "l" "%-21s") "Reference Location" ("block" "section" "document") ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-choice-option top-level-division (specific "t" "%-21s") "Top Level Division" ("section" "part" "chapter")   ("latex" "context" "docbook" "docbook5" "tei"))
+(define-pandoc-list-option   pdf-engine-opt     (specific "o" "%-21s") string "PDF Options" "PDF Option")
+(define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine" ("pdflatex" "xelatex" "lualatex")
+  ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff") )
+(define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Style Reference Document")
+(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ; Pandoc 1
+(define-pandoc-file-option   reference-odt      (specific "o" "%-21s")        "Reference ODT File*") ; Pandoc 1
+(define-pandoc-number-option slide-level        (specific "h" "%-21s")        "Slide Level Header")
+(define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
+(define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
+(define-pandoc-switch        atx-headers        (specific "a" "%-21s")        "Use ATX-style Headers")
+(define-pandoc-switch        reference-links    (specific "r" "%-21s")        "Reference Links")
+(define-pandoc-choice-option reference-location (specific "l" "%-21s")        "Reference Location" ("block" "section" "document")
+  ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
+(define-pandoc-choice-option top-level-division (specific "t" "%-21s")        "Top Level Division" ("section" "part" "chapter")
+  ("latex" "context" "docbook" "docbook5" "tei"))
 
 ;; html-based
 (define-pandoc-list-option   css               (html "c" "%-31s") file "CSS Style Sheet" "CSS")
@@ -1127,13 +1143,14 @@ evaluated."
 (define-pandoc-switch        self-contained    (html "s" "%-31s")      "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options" "LaTeX Option")
-(define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context"))
+(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options*" "LaTeX Option") ; Pandoc 1
+(define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine*" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context")) ; Pandoc 1
 (define-pandoc-switch        listings         (tex "L" "%-30s")        "Use LaTeX listings Package")
 (define-pandoc-switch        no-tex-ligatures (tex "l" "%-30s")        "Do Not Use TeX Ligatures")
 (define-pandoc-switch        chapters         (tex "c" "%-30s")        "Top-level Headers Are Chapters")
 
 ;; epub
+(define-pandoc-file-option   epub-directory     (epub "d" "%-18s")      "EPub Subdirectory")
 (define-pandoc-number-option epub-chapter-level (epub "c" "%-18s")      "EPub Chapter Level")
 (define-pandoc-list-option   epub-embed-font    (epub "f" "%-18s") file "EPUB Fonts"         "EPUB Embedded Font")
 (define-pandoc-file-option   epub-metadata      (epub "m" "%-18s")      "EPUB Metadata File")
@@ -1157,7 +1174,7 @@ evaluated."
 (define-pandoc-switch        gladtex          (math "g" "%-18s") "gladTeX")
 (define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"        'default)
 (define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL"         'default)
-(define-pandoc-string-option mathml           (math "m" "%-18s") "MathML URL"         'default)
+(define-pandoc-switch        mathml           (math "m" "%-18s") "MathML URL")
 (define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL"    'default)
 
 (provide 'pandoc-mode-utils)
