@@ -1116,8 +1116,8 @@ evaluated."
 
 ;; general
 (define-pandoc-list-option   pdf-engine-opt     (specific "o" "%-21s") string "PDF Options" "PDF Option")
-(define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine" ("pdflatex" "xelatex" "lualatex")
-  ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff") )
+(define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine"
+  ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff"))
 (define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Style Reference Document")
 (define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ; Pandoc 1
 (define-pandoc-file-option   reference-odt      (specific "o" "%-21s")        "Reference ODT File*") ; Pandoc 1
