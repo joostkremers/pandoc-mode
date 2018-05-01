@@ -1120,8 +1120,8 @@ evaluated."
 (define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine"
   ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff"))
 (define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Reference Doc")
-(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ; Pandoc 1
-(define-pandoc-file-option   reference-odt      (specific "o" "%-21s")        "Reference ODT File*") ; Pandoc 1
+(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
+(define-pandoc-file-option   reference-odt      (specific "o" "%-21s")        "Reference ODT File*") ;obsolete
 (define-pandoc-number-option slide-level        (specific "h" "%-21s")        "Slide Level Header")
 (define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
 (define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
@@ -1144,8 +1144,8 @@ evaluated."
 (define-pandoc-switch        self-contained    (html "s" "%-31s")      "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options*" "LaTeX Option") ; Pandoc 1
-(define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine*" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context")) ; Pandoc 1
+(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options*" "LaTeX Option") ;obsolete
+(define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine*" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context")) ; obsolete
 (define-pandoc-switch        listings         (tex "L" "%-30s")        "Use LaTeX listings Package")
 (define-pandoc-switch        no-tex-ligatures (tex "l" "%-30s")        "Do Not Use TeX Ligatures")
 (define-pandoc-switch        chapters         (tex "c" "%-30s")        "Top-level Headers Are Chapters")
