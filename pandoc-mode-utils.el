@@ -332,6 +332,7 @@ possible to customize the extensions."
     ("raw_tex"                             ("markdown" "markdown_mmd"))
     ("shortcut_reference_links"            ("markdown" "markdown_strict" "markdown_github" "markdown_phpextra" "markdown_mmd"))
     ("simple_tables"                       ("markdown"))
+    ("smart"                               ("markdown"))
     ("startnum"                            ("markdown"))
     ("strikeout"                           ("markdown" "markdown_github"))
     ("subscript"                           ("markdown"))
@@ -1079,8 +1080,8 @@ evaluated."
 (define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")      "Indented Code Classes")
 (define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level")
 (define-pandoc-switch        old-dashes              (reader "o" "%-23s")      "Use Old-style Dashes")
-(define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart")
-(define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw")
+(define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart*") ; obsolete
+(define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw*") ; obsolete
 ;; extract-media
 
 ;; TODO for data-dir, output-dir and extract-media, a macro define-pandoc-dir-option might be useful.
