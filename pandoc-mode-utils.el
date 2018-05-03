@@ -1,6 +1,6 @@
 ;;; pandoc-mode-utils.el --- Part of `pandoc-mode'  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2009-2016 Joost Kremers
+;; Copyright (c) 2009-2018 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
@@ -154,83 +154,105 @@ matches KEY."
   :group 'pandoc
   :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
 
-(defvar pandoc--input-formats
-  '(("commonmark"        "CommonMark"               "C")
-    ("docbook"           "DocBook XML"              "D")
-    ("docx"              "MS Word (docx)"           "d")
-    ("epub"              "EPUB E-Book"              "e")
-    ("haddock"           "Haddock Markup"           "k")
-    ("html"              "HTML"                     "h")
-    ("json"              "JSON"                     "j")
-    ("latex"             "LaTeX"                    "l")
-    ("markdown"          "Markdown"                 "m")
-    ("markdown_github"   "Markdown (Github)"        "G")
-    ("markdown_mmd"      "Markdown (MMD)"           "M")
-    ("markdown_phpextra" "Markdown (PHPExtra)"      "P")
-    ("markdown_strict"   "Markdown (Strict)"        "S")
-    ("mediawiki"         "MediaWiki"                "w")
-    ("native"            "Native Haskell"           "N")
-    ("odt"               "OpenOffice Text Document" "L")
-    ("opml"              "OPML"                     "O")
-    ("org"               "Orgmode"                  "o")
-    ("rst"               "reStructuredText"         "r")
-    ("t2t"               "Txt2Tags"                 "x")
-    ("textile"           "Textile"                  "T")
-    ("twiki"             "Twiki"                    "t"))
-  "List of pandoc input formats.")
+;; The formats known to Pandoc are defined in `pandoc--formats'.  They are divided
+;; into different categories.  From this list, the input and output format menus
+;; are created, which both consist of a main menu listing the categories and
+;; submenus for each category.
+;;
+;; Note: the keys "b" and "q" cannot be used, because they are used in the
+;; hydras for returning to the higher level menu and for quiting, respectively.
+
+(defvar pandoc--formats
+  '(("markdown" "Markdown Formats" "m"
+     ("markdown"             "Pandoc Markdown"           "m" both)
+     ("markdown_github"      "Markdown (Github)"         "G" both)
+     ("markdown_mmd"         "Markdown (MMD)"            "M" both)
+     ("markdown_phpextra"    "Markdown (PHPExtra)"       "P" both)
+     ("markdown_strict"      "Markdown (Strict)"         "S" both)
+     ("commonmark"           "CommonMark"                "C" both)
+     ("gfm"                  "GitHub-flavoured Markdown" "g" both))
+
+    ("html" "HTML Formats" "h"
+     ("html"                 "HTML (default)"            "h" both)
+     ("html4"                "HTML4"                     "t" output)
+     ("html5"                "HTML5"                     "H" output))
+
+    ("slide-show" "Slide Show Formats" "s"
+     ("beamer"               "Beamer Slide Show"         "B" output) ; Also under TeX
+     ("dzslides"             "DZSlides Slide Show"       "d" output)
+     ("revealjs"             "RevealJS Slide Show"       "j" output)
+     ("s5"                   "S5 HTML/JS Slide Show"     "s" output)
+     ("slideous"             "Slideous Slide Show"       "u" output)
+     ("slidy"                "Slidy Slide Show"          "y" output))
+
+    ("wiki" "Wiki Formats" "w"
+     ("creole"               "Creole 1.0"                "c" both)
+     ("dokuwiki"             "DokuWiki"                  "d" output)
+     ("mediawiki"            "MediaWiki"                 "m" both)
+     ("tikiwiki"             "TikiWiki"                  "t" both)
+     ("twiki"                "Twiki"                     "T" input)
+     ("vimwiki"              "Vimwiki"                   "v" both)
+     ("zimwiki"              "ZimWiki"                   "z" both))
+
+    ("wordprocessor" "Wordprocessor Formats" "W"
+     ("docx"                 "MS Word (docx)"            "d" both)
+     ("icml"                 "InDesign ICML"             "i" output)
+     ("odt"                  "LibreOffice Text Document" "l" both)
+     ("opendocument"         "OpenDocument XML"          "o" output)
+     ("rtf"                  "Rich Text Format"          "r" output))
+
+    ("tex" "TeX-based Formats" "t"
+     ("beamer"               "Beamer Slide Show"         "B" output) ; Also under Slide Shows Formats.
+     ("context"              "ConTeXt"                   "c" output)
+     ("latex"                "LaTeX"                     "l" both)
+     ("texinfo"              "TeXinfo"                   "i" output)) ; Also under Documentation Formats.
+
+    ("ebook" "E-Book Formats" "e"
+     ("epub"                 "EPUB (default)"            "e" both)
+     ("epub2"                "EPUB2 E-Book"              "p" output)
+     ("epub3"                "EPUB3 E-Book"              "E" output)
+     ("fb2"                  "FictionBook2"              "f" both))
+
+    ("text" "Text-Based Formats" "T"
+     ("asciidoc"             "AsciiDoc"                  "a" output)
+     ("plain"                "Plain Text"                "p" output)
+     ("rst"                  "reStructuredText"          "r" both)
+     ("textile"              "Textile"                   "t" both)
+     ("t2t"                  "txt2tags"                  "T" both))
+
+    ("documentation" "Documentation Formats" "d"
+     ("docbook"              "DocBook XML"               "d" input) ; docbook and docbook4 share the same key.
+     ("docbook4"             "DocBook XML v.4"           "d" output) ; They won't appear in the same menu anyway.
+     ("docbook5"             "DocBook XML v.5"           "D" output)
+     ("haddock"              "Haddock"                   "h" both)
+     ("man"                  "Man Page"                  "m" output)
+     ("ms"                   "Groff MS"                  "g" output)
+     ("tei"                  "TEI"                       "t" output)
+     ("texinfo"              "TeXinfo"                   "i" output)) ; Also under TeX Formats.
+
+    ("emacs" "Emacs-based Formats" "E"
+     ("muse"                 "Muse"                      "m" both)
+     ("org"                  "Org-mode"                  "o" both))
+
+    ("misc" "Miscellaneous Formats" "v"
+     ("jats"                 "JATS XML"                  "J" both)
+     ("json"                 "JSON"                      "j" both)
+     ("native"               "Native Haskell"            "n" both)
+     ("opml"                 "OPML"                      "o" both)))
+  "List of Pandoc formats, their descriptions and hydra shortcut keys.")
+
+(defun pandoc--extract-formats (io)
+  "Extract the input or output formats in `pandoc--formats'.
+IO is a symbol, either `input' or `output'.  Return a list of formats."
+  (-flatten-n 1 (-map (-lambda ((_name _descr _key . formats))
+                        (--filter (memq (-last-item it) `(,io both)) formats))
+                      pandoc--formats)))
 
 (defvar pandoc--input-formats-menu
   (mapcar (lambda (f)
             (cons (cadr f) (car f)))
-          pandoc--input-formats)
+          (pandoc--extract-formats 'input))
   "List of items in pandoc-mode's input format menu.")
-
-(defvar pandoc--output-formats
-  ;; used shortcut keys:
-  ;; A B C D E   G H I J K L M N O P R S T   W   Z
-  ;; a   c d e f   h i j k l m n o p r s t u w y z
-  '(("asciidoc"          "AsciiDoc"                 "a")
-    ("beamer"            "Beamer Slide Show"        "B")
-    ("commonmark"        "CommonMark"               "C")
-    ("context"           "ConTeXt"                  "c")
-    ("docbook"           "DocBook XML"              "D")
-    ("docbook5"          "DocBook XML v. 5"         "K") ; not really an appropriate shortcut key
-    ("docx"              "MS Word (docx)"           "d")
-    ("dokuwiki"          "DokuWiki"                 "W")
-    ("dzslides"          "DZSlides Slide Show"      "z") ; not really an appropriate shortcut key
-    ("epub"              "EPUB E-Book"              "e")
-    ("epub3"             "EPUB3 E-Book"             "E")
-    ("fb2"               "FictionBook2"             "f")
-    ("haddock"           "Haddock"                  "k")
-    ("html"              "HTML"                     "h")
-    ("html5"             "HTML5"                    "H")
-    ("icml"              "InDesign ICML"            "I")
-    ("json"              "JSON"                     "j")
-    ("latex"             "LaTeX"                    "l")
-    ("man"               "Man Page"                 "n")
-    ("markdown"          "Markdown"                 "m")
-    ("markdown_github"   "Markdown (Github)"        "G")
-    ("markdown_mmd"      "Markdown (MMD)"           "M")
-    ("markdown_phpextra" "Markdown (PHPExtra)"      "P")
-    ("markdown_strict"   "Markdown (Strict)"        "S")
-    ("mediawiki"         "MediaWiki"                "w")
-    ("native"            "Native Haskell"           "N")
-    ("opendocument"      "OpenDocument XML"         "p")
-    ("odt"               "OpenOffice Text Document" "L")
-    ("opml"              "OPML"                     "O")
-    ("org"               "Org-mode"                 "o")
-    ("plain"             "Plain Text"               "t")
-    ("rst"               "reStructuredText"         "r")
-    ("revealjs"          "RevealJS Slide Show"      "J")
-    ("rtf"               "Rich Text Format"         "R")
-    ("s5"                "S5 HTML/JS Slide Show"    "s")
-    ("slideous"          "Slideous Slide Show"      "u")
-    ("slidy"             "Slidy Slide Show"         "y")
-    ("tei"               "TEI"                      "A") ; not an appropriate shortcut key
-    ("texinfo"           "TeXinfo"                  "i")
-    ("textile"           "Textile"                  "T")
-    ("zimwiki"           "ZimWiki"                  "Z"))
-  "List of Pandoc output formats, their descriptions and hydra shortcut keys.")
 
 (defcustom pandoc-output-format-extensions
   '(("asciidoc"          ".txt")
@@ -1040,16 +1062,6 @@ insert."
                                  (replace-regexp-in-string "_" " " it))
                          extensions)))
     (pandoc--tabulate strings (+ 5 colwidth) nil "%s" nil 'trim)))
-
-(defun pandoc--tabulate-input-formats ()
-  "Tabulate input formats for `pandoc-input-format-hydra'."
-  (let ((strings (--map (concat "_" (cl-caddr it) "_: " (cadr it)) pandoc--input-formats)))
-    (pandoc--tabulate strings nil 70 nil nil 'trim)))
-
-(defun pandoc--tabulate-output-formats ()
-  "Tabulate output formats for `pandoc-output-format-hydra'."
-  (let ((strings (--map (concat "_" (cl-caddr it) "_: " (cadr it)) pandoc--output-formats)))
-    (pandoc--tabulate strings nil 150 nil nil 'trim)))
 
 (defmacro define-pandoc-hydra (name body docstring hexpr &rest extra-heads)
   "Define a pandoc-mode hydra.

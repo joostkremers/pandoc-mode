@@ -1,6 +1,6 @@
 ;;; pandoc-mode.el --- Minor mode for interacting with Pandoc  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2009-2016 Joost Kremers
+;; Copyright (c) 2009-2018 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
@@ -148,6 +148,10 @@
     map)
   "Keymap for pandoc-mode.")
 
+(defvar pandoc--initialized nil
+  "Flag indicating whether pandoc-mode was initialized.
+If this is set to t, the pandoc-mode hydras aren't redefined.")
+
 ;;;###autoload
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
@@ -159,7 +163,10 @@
     (setq pandoc--settings-modified-flag nil)
     ;; Make sure the output buffer exists.
     (get-buffer-create pandoc--output-buffer-name)
-    (pandoc-faces-load))
+    (pandoc-faces-load)
+    ;; Create the input and output hydras
+    (unless pandoc--initialized
+      (pandoc-init)))
    ((not pandoc-mode)    ; pandoc-mode is turned off
     (setq pandoc--local-settings nil
           pandoc--settings-modified-flag nil)
@@ -502,7 +509,9 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
-                       (completing-read "Output format to use: " pandoc--output-formats nil t)
+                       (completing-read "Output format to use: "
+                                        (pandoc--extract-formats 'output)
+                                        nil t)
                      t)
                    nil
                    (if (use-region-p)
@@ -799,7 +808,9 @@ options and their values."
 If a settings and/or project file exists for FORMAT, they are
 loaded.  If none exists, all options are unset (except the input
 format)."
-  (interactive (list (completing-read "Set output format to: " pandoc--output-formats nil t)))
+  (interactive (list (completing-read "Set output format to: "
+                                      (pandoc--extract-formats 'output)
+                                      nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get 'write))))
     (pandoc--save-settings 'local (pandoc--get 'write) t))
@@ -813,7 +824,9 @@ format)."
 
 (defun pandoc-set-read (format)
   "Set the input format to FORMAT."
-  (interactive (list (completing-read "Set input format to: " pandoc--input-formats nil t)))
+  (interactive (list (completing-read "Set input format to: "
+                                      (pandoc--extract-formats 'input)
+                                      nil t)))
   (pandoc--set 'read format)
   (message "Input format set to `%s'" format))
 
@@ -956,7 +969,7 @@ argument, the option is toggled."
                                      :style 'radio
                                      :selected `(string= (pandoc--get 'write)
                                                          ,(car option))))
-                           pandoc--output-formats))
+                           (pandoc--extract-formats 'output)))
              (list ["Literal Haskell" (pandoc--toggle 'write-lhs)
                     :active (member (pandoc--get 'write)
                                     '("markdown" "rst" "latex" "beamer" "html" "html5"))
@@ -1061,31 +1074,73 @@ _o_: Options
   ("o" pandoc-options-hydra/body)
   ("q" nil "Quit"))
 
-(define-pandoc-hydra pandoc-input-format-hydra (:foreign-keys warn :exit t :hint nil)
-  (concat "Input format: %s(pandoc--get 'read)\n\n"
-          (pandoc--tabulate-input-formats)
-          "\n"
-          (make-string 50 ?-)
-          "\n"
-          "_X_: Extensions\n\n")
-  (--map (list (cl-caddr it) (list 'pandoc-set-read (car it)))
-         pandoc--input-formats)
-  ("X" pandoc-read-exts-hydra/body)
-  ("q" nil "Quit")
-  ("b" pandoc-main-hydra/body "Back"))
+;; Input and Output formats hydras
+(defun pandoc-init ()
+  "Define some of pandoc-mode's hydras."
+  (let (input-formats-hydra
+        output-formats-hydra)
+    ;; Four helper functions take apart the description of the formats and/or the
+    ;; categories as defined in `pandoc--formats' and return a docstring or a hydra
+    ;; head.
+    (cl-flet ((make-format-docstring ((_format descr key _mode))
+                                     (format "_%s_: %s" key descr))
+              (make-format-head ((format _descr key _mode))
+                                (list key `(pandoc-set-write ,format)))
+              (make-main-docstring ((_command descr key))
+                                   (format "_%s_: %s" key descr))
+              (make-main-head ((command _descr key))
+                              (list key command)))
 
-(define-pandoc-hydra pandoc-output-format-hydra (:foreign-keys warn :hint nil)
-  (concat "Output format: %s(pandoc--get 'write)\n\n"
-          (pandoc--tabulate-output-formats)
-          "\n"
-          (make-string 50 ?-)
-          "\n"
-          "_X_: Extensions\n\n")
-  (--map (list (cl-caddr it) (list 'pandoc-set-write (car it)))
-         pandoc--output-formats)
-  ("X" pandoc-write-exts-hydra/body :exit t)
-  ("q" nil "Quit")
-  ("b" pandoc-main-hydra/body "Back" :exit t))
+      ;; Define hydras for each category and collect everything needed to construct
+      ;; the output format menu.
+      (mapc (lambda (submenu)
+              (-let [(name description key . formats) submenu]
+                ;; First the input formats in this category.
+                (-when-let (input-formats (--filter (memq (-last-item it) '(input both)) formats))
+                  (let ((input-name (concat "pandoc-input-format-" name "-hydra")))
+                    (push (list (intern (concat input-name "/body")) description key) input-formats-hydra)
+                    (let ((docstring (concat (--reduce-from (concat acc "\n" (make-format-docstring it))
+                                                            (concat "\n" description "\n\n")
+                                                            input-formats)
+                                             "\n\n"))
+                          (heads (--map (make-format-head it) input-formats)))
+                      (eval `(defhydra ,(intern input-name) (:foreign-keys warn :hint nil)
+                               ,docstring
+                               ,@(append heads '(("q" nil "Quit") ("b" pandoc-input-format-hydra/body "Back" :exit t))))))))
+
+                ;; Then the output formats in this category.
+                (-when-let (output-formats (--filter (memq (-last-item it) '(output both)) formats))
+                  (let ((output-name (concat "pandoc-output-format-" name "-hydra")))
+                    (push (list (intern (concat output-name "/body")) description key) output-formats-hydra)
+                    (let ((docstring (concat (--reduce-from (concat acc "\n" (make-format-docstring it))
+                                                            (concat "\n" description "\n\n")
+                                                            output-formats)
+                                             "\n\n"))
+                          (heads (--map (make-format-head it) output-formats)))
+                      (eval `(defhydra ,(intern output-name) (:foreign-keys warn :hint nil)
+                               ,docstring
+                               ,@(append heads '(("q" nil "Quit") ("b" pandoc-output-format-hydra/body "Back" :exit t))))))))))
+            pandoc--formats)
+
+      ;; Now create the main input and output format hydras.
+      (let ((docstring (concat (--reduce-from (concat acc "\n" (make-main-docstring it))
+                                              (concat "\n" "Current input format: %s(pandoc--get 'read)\n")
+                                              (reverse input-formats-hydra))
+                               "\n\n_X_: Extensions\n\n"))
+            (heads (--map (make-main-head it) input-formats-hydra)))
+        (eval `(defhydra pandoc-input-format-hydra (:foreign-keys warn :exit t :hint nil)
+                 ,docstring
+                 ,@(append heads '(("X" pandoc-read-exts-hydra/body) ("q" nil "Quit") ("b" pandoc-main-hydra/body "Back"))))))
+
+      (let ((docstring (concat (--reduce-from (concat acc "\n" (make-main-docstring it))
+                                              (concat "\n" "Current output format: %s(pandoc--get 'write)\n")
+                                              (reverse output-formats-hydra))
+                               "\n\n_X_: Extensions\n\n"))
+            (heads (--map (make-main-head it) output-formats-hydra)))
+        (eval `(defhydra pandoc-output-format-hydra (:foreign-keys warn :exit t :hint nil)
+                 ,docstring
+                 ,@(append heads '(("X" pandoc-write-exts-hydra/body) ("q" nil "Quit") ("b" pandoc-main-hydra/body "Back"))))))))
+  (setq pandoc--initialized t))
 
 (defhydra pandoc-settings-file-hydra (:foreign-keys warn :hint nil)
   "
