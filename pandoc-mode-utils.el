@@ -1181,15 +1181,15 @@ evaluated."
 
 
 ;;; Math rendering in HTML
-(define-pandoc-string-option katex-stylesheet (math "K" "%-18s") "KaTeX Stylesheet"   'default)
-(define-pandoc-string-option katex            (math "k" "%-18s") "KaTeX URL"          'default)
-(define-pandoc-string-option webtex           (math "w" "%-18s") "WebTeX URL"         'default)
-(define-pandoc-string-option mimetex          (math "m" "%-18s") "MimeTeX CGI Script" 'default)
-(define-pandoc-switch        gladtex          (math "g" "%-18s") "gladTeX")
-(define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"        'default)
-(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL"         'default)
+(define-pandoc-string-option katex-stylesheet (math "K" "%-18s") "KaTeX Stylesheet"    'default)
+(define-pandoc-string-option katex            (math "k" "%-18s") "KaTeX URL"           'default)
+(define-pandoc-string-option webtex           (math "w" "%-18s") "WebTeX URL"          'default)
+(define-pandoc-string-option mimetex          (math "m" "%-18s") "MimeTeX CGI Script*" 'default)
+(define-pandoc-switch        gladtex          (math "g" "%-18s") "gladTeX*")
+(define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"         'default)
+(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL*"         'default)
 (define-pandoc-switch        mathml           (math "m" "%-18s") "MathML URL")
-(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL"    'default)
+(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL*"    'default)
 
 (provide 'pandoc-mode-utils)
 
