@@ -178,12 +178,13 @@ matches KEY."
      ("html5"                "HTML5"                     "H" output))
 
     ("slide-show" "Slide Show Formats" "s"
-     ("beamer"               "Beamer Slide Show"         "B" output) ; Also under TeX
-     ("dzslides"             "DZSlides Slide Show"       "d" output)
-     ("revealjs"             "RevealJS Slide Show"       "j" output)
-     ("s5"                   "S5 HTML/JS Slide Show"     "s" output)
-     ("slideous"             "Slideous Slide Show"       "u" output)
-     ("slidy"                "Slidy Slide Show"          "y" output))
+     ("beamer"               "Beamer"                    "B" output) ; Also under TeX
+     ("dzslides"             "DZSlides"                  "d" output)
+     ("revealjs"             "RevealJS"                  "j" output)
+     ("powerpoint"           "MS PowerPoint"             "p" output)
+     ("s5"                   "S5 HTML/JS"                "s" output)
+     ("slideous"             "Slideous"                  "u" output)
+     ("slidy"                "Slidy"                     "y" output))
 
     ("wiki" "Wiki Formats" "w"
      ("creole"               "Creole 1.0"                "c" both)
