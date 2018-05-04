@@ -1164,7 +1164,7 @@ evaluated."
 (define-pandoc-switch        chapters         (tex "c" "%-30s")        "Top-level Headers Are Chapters")
 
 ;; epub
-(define-pandoc-file-option   epub-directory     (epub "d" "%-18s")      "EPub Subdirectory")
+(define-pandoc-file-option   epub-subdirectory  (epub "d" "%-18s")      "EPub Subdirectory")
 (define-pandoc-number-option epub-chapter-level (epub "c" "%-18s")      "EPub Chapter Level")
 (define-pandoc-list-option   epub-embed-font    (epub "f" "%-18s") file "EPUB Fonts"         "EPUB Embedded Font")
 (define-pandoc-file-option   epub-metadata      (epub "m" "%-18s")      "EPUB Metadata File")
