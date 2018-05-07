@@ -6,7 +6,7 @@
 
 `pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://pandoc.org/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.20 and is compatible with Pandoc version 1.18.
+The current version of `pandoc-mode` is 2.24 and is compatible with Pandoc 1.18 and Pandoc 2.2.
 
 
 # Installation #
@@ -63,7 +63,7 @@ The major modes for which `pandoc-mode` selects an input format automatically ca
 
 The options menu has a number of submenus, each related to a specific type of options: file options, reader options, writer options (general and specific), citations and math rendering. The file options menu contains options for the output file, output directory, data directory, the directory to extract media files to, and the master file. Only two of these (the data directory and the extract media directory) correspond directly to a Pandoc option. The output file and output directory options are combined to form Pandoc’s `--output` option, while the master file option is only used by `pandoc-mode`. These options are discussed in the sections ['Setting an output file'](#setting-an-output-file) and [’Master file’](#master-file), respectively.
 
-Note that the subdivision in the options menu is based on the subdivision in the Pandoc README and the user guide on [Pandoc.org](http://pandoc.org/README.html), which should make it easier to find the relevant options in the menus.
+Note that the subdivision in the options menu is based on the subdivision in the Pandoc README and the user guide on [Pandoc.org](http://pandoc.org/README.html), which should make it easier to find the relevant options in the menus. `pandoc-mode` supports Pandoc version 1.x and version 2.x: options that are only valid in Pandoc 1.x are marked with an asterisk. (Options that only exist in Pandoc 2.x aren't marked.)
 
 One nice thing about the hydra menus is that the value of an option is displayed beside it. Pandoc’s options come in several different kinds. Switches, (boolean options that do not take a value), are toggled when you select them, and their value is displayed as either “yes” or “no”. If you select another kind of option, you are asked to provide a value in the minibuffer. For template variables and metadata items, you are asked both a variable / metadata name and a value.
 
@@ -75,7 +75,7 @@ However, if for some reason you need to store an absolute path for an option, yo
 
 File options may have a default value (although currently, this is only the case for `--epub-stylesheet`). Such options can be specified on the `pandoc` command line without naming a file. To select such a default value for a file option, use a numeric prefix argument, which in the hydra menu is obtained by pressing a number without the meta key. That is, to select the default EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press `1 s`.
 
-Options that are not files or numbers are “string options”, which include options that specify a URL. These may also have a default value, which can be set in the same way as with file options. Note, though, that this does not apply to options that only have a limited set of possible values (e.g., `--email-obfuscation`, `--latex-engine`). These can be set or unset, you cannot explicitly request their default value. (`pandoc' uses their default values even if they are not specified on the command line, unlike string options.)
+Options that are not files or numbers are “string options”, which include options that specify a URL. These may also have a default value, which can be set in the same way as with file options. Note, though, that this does not apply to options that only have a limited set of possible values (e.g., `--email-obfuscation`, `--pdf-engine`). These can be set or unset, you cannot explicitly request their default value. (`pandoc' uses their default values even if they are not specified on the command line, unlike string options.)
 
 To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (`C-c / S`). This displays all settings in a `*Help*` buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this:
 
