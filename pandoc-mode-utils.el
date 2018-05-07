@@ -151,7 +151,6 @@ matches KEY."
     (rst-mode       . "rst")
     (text-mode      . "plain")
     (textile-mode   . "textile"))
-le"))
   "List of major modes and their default pandoc input formats."
   :group 'pandoc
   :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
