@@ -182,7 +182,7 @@ matches KEY."
      ("beamer"               "Beamer"                    "B" output) ; Also under TeX
      ("dzslides"             "DZSlides"                  "d" output)
      ("revealjs"             "RevealJS"                  "j" output)
-     ("powerpoint"           "MS PowerPoint"             "p" output)
+     ("pptx"                 "MS PowerPoint"             "p" output)
      ("s5"                   "S5 HTML/JS"                "s" output)
      ("slideous"             "Slideous"                  "u" output)
      ("slidy"                "Slidy"                     "y" output))
