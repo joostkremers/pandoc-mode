@@ -1,5 +1,4 @@
-Introduction
-============
+# Introduction
 
 `pandoc-mode` is an Emacs mode for interacting with
 [Pandoc](http://pandoc.org/). Pandoc is a program (plus libraries)
@@ -16,8 +15,7 @@ Texinfo for reading in Emacs, all with just a few keystrokes.
 The current version of `pandoc-mode` is 2.24 and is compatible with
 Pandoc 1.18 and Pandoc 2.2.
 
-Installation
-============
+# Installation
 
 The easiest way to install `pandoc-mode` is to use the
 [Melpa](http://melpa.org/) package repository. Alternatively, you can
@@ -51,8 +49,7 @@ The function `pandoc-load-default-settings` checks if a default settings
 file exists for the file being loaded and reads its settings if it finds
 one.
 
-OS X
-----
+## OS X
 
 `pandoc-mode` expects that the `pandoc` binary can be found in your
 system’s `$PATH` and that the contents of `$PATH` is available to Emacs.
@@ -63,8 +60,7 @@ your system. A more elegant solution is to install the
 package. This package makes sure that the contents of your system’s
 `$PATH` variable is visible to Emacs, allowing Emacs to find `pandoc`.
 
-Usage
-=====
+# Usage
 
 `pandoc-mode` uses the [hydra](https://github.com/abo-abo/hydra) package
 to create a keyboard-driven menu interface to all options and settings.
@@ -93,8 +89,7 @@ the output format, all settings are reset to their default values.
 (There are ways to make settings more permanent, of course, as discussed
 below.)
 
-Input and output formats
-------------------------
+## Input and output formats
 
 The most important settings are the input and output formats. The input
 format is set automatically by Emacs on the basis of the major mode of
@@ -146,8 +141,7 @@ can add major modes or remove those that you don’t use. Similarly, you
 can customise the file extensions for each output format
 (`pandoc-output-format-extensions`).
 
-The options menu
-----------------
+## The options menu
 
 The options menu has a number of submenus, each related to a specific
 type of options: file options, reader options, writer options (general
@@ -234,8 +228,7 @@ manual look like this:
      (output . t)
      (include-before-body . "~/src/pandoc-mode/manual/texi-before-body"))
 
-Template variables and metadata
--------------------------------
+## Template variables and metadata
 
 `pandoc-mode` allows you to set or change template variables through the
 menu. The variables are in the general writer options menu, the metadata
@@ -248,8 +241,7 @@ Deleting a template variable or metadata item can be done by prefixing
 the menu key with `-`. Emacs will ask you for the variable name (TAB
 completion works here, too) and removes it from the list.
 
-Running Pandoc
---------------
+## Running Pandoc
 
 The first item in the menu is “Run Pandoc” (accessible with `C-c / r`),
 which, as the name suggests, runs Pandoc on the document, passing all
@@ -288,8 +280,7 @@ output profile used for calling Pandoc. This can be useful if you use
 different output formats but don’t want to keep switching between
 profiles when creating the different output files.
 
-Setting an output file
-----------------------
+## Setting an output file
 
 If you want to save the output to a file rather than have it appear in
 the output buffer, you can set an explicit output file. Note that
@@ -321,16 +312,13 @@ for the output directory and output file. If you don’t specify any
 output directory, the output file will be written to the same directory
 that the input file is in.
 
-Creating a pdf
---------------
+## Creating a pdf
 
-The second item in the main menu is “Create PDF” (invoked with
-`C-c / p`). This option calls Pandoc with a PDF file as output file. In
-order for Pandoc to create a PDF, the output format must be `latex`,
-`context`, `beamer`, `html` (in which case `wkhtmltopdf` is used to
-create the PDF file), or `ms` (which uses `pdfroff`). If the current
-buffer’s output format is one of these, `C-c / p` creates the PDF using
-that format.
+The second item in the main menu is “Create PDF” (invoked with `C-c /
+p`). This option calls Pandoc with a PDF file as output file. In order
+for Pandoc to create a PDF, the output format must be `latex`,
+`context`, `beamer`, `html`, or `ms`. If the current buffer’s output
+format is one of these, `C-c / p` creates the PDF using that format.
 
 If the current output format is set to something else, Emacs asks you
 which output format to use. If there is a settings file for the output
@@ -350,8 +338,13 @@ practical if you’re also converting to another format. However, if you
 wish to change settings for PDF output, you **do** need to switch to the
 relevant output format.
 
-Connection Type
----------------
+Note that for `latex`, `beamer` and `html`, you can use different pdf
+engines. For `latex` and `beamer`, these are `pdflatex` (the default),
+`xelatex` and `lualatex`, for `html` there are `wkhtmltopdf` (the
+default), `weasyprint` and `prince`. If you wish to use a pdf engine
+other than the default, you need to set the option `pdf-engine`.
+
+## Connection Type
 
 By default, Emacs starts `pandoc` as an asynchronous process using a
 tty. If this causes problems for some reason, you can try using a pipe
@@ -359,8 +352,7 @@ instead by customising `pandoc-process-connection-type`. Alternatively,
 you can use a synchronous process by unsetting the user option
 `pandoc-use-async`.
 
-Citation Jumping
-----------------
+## Citation Jumping
 
 `pandoc-mode` provides the function `pandoc-jump-to-reference` that
 locates a reference within external bibliography files indicated by the
@@ -368,7 +360,8 @@ locates a reference within external bibliography files indicated by the
 option list must have an absolute path for this option to work properly
 (i.e. `"./Bibliography.bib"` rather than `"Bibliography.bib"`). This
 feature is not bound to any key by default, but may of course be bound
-to a key combination as follows:
+to a key combination as
+    follows:
 
     (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
@@ -384,15 +377,13 @@ Alternatively, you may also define your own function, which should take
 two arguments: the key of the entry to be displayed and a list of BibTeX
 files.
 
-Font lock
-=========
+# Font lock
 
 `pandoc-mode` adds font lock keywords for citations and numbered example
 lists. The relevant faces can be customised in the customisation group
 `pandoc`.
 
-Settings Files
-==============
+# Settings Files
 
 Apart from settings files for individual files (which are called *local
 settings files*), `pandoc-mode` supports two other types of settings
@@ -433,8 +424,7 @@ written in a Lisp format (as demonstrated above). Old-style settings
 files continue to be read, so there is no need to change anything, but
 if you change any settings and save them, the file is converted.
 
-File-local variables
-====================
+# File-local variables
 
 `pandoc-mode` also allows options to be set as file-local variables,
 which gives you the ability to keep the settings for a file in the file
@@ -448,11 +438,11 @@ to the local variable block:
 
     pandoc/bibliography: "~/path/to/mybib.bib"
 
-The easiest way to add a file-local variable is to use the command
-`M-x add-file-local-variable`. This will put the variable at the end of
-the file and add the correct comment syntax. Note that the values are
-Lisp expressions, which means that strings need to be surrounded with
-double quotes. Symbols do not need to be quoted, however.
+The easiest way to add a file-local variable is to use the command `M-x
+add-file-local-variable`. This will put the variable at the end of the
+file and add the correct comment syntax. Note that the values are Lisp
+expressions, which means that strings need to be surrounded with double
+quotes. Symbols do not need to be quoted, however.
 
 Settings specified as file-local variables are kept separate from other
 settings: they cannot be set through the menu, they are *never* saved to
@@ -468,23 +458,22 @@ in quotes:
 
     pandoc-binary: "/path/to/alternate/pandoc“
 
-Managing numbered examples
-==========================
+# Managing numbered examples
 
 Pandoc provides a method for creating examples that are numbered
 sequentially throughout the document (see [Numbered example
 lists](http://pandoc.org/README.html#numbered-example-lists) in the
 Pandoc documentation). `pandoc-mode` makes it easier to manage such
-lists. First, by going to “Example Lists \| Insert New Example”
-(`C-c / e i`), you can insert a new example list item with a numeric
-label: the first example you insert will be numbered `(@1)`, the second
-`(@2)`, and so on. Before inserting the first example item, Emacs will
-search the document for any existing definitions and number the new
-items sequentially, so that the numeric label will always be unique.
+lists. First, by going to “Example Lists | Insert New Example” (`C-c / e
+i`), you can insert a new example list item with a numeric label: the
+first example you insert will be numbered `(@1)`, the second `(@2)`, and
+so on. Before inserting the first example item, Emacs will search the
+document for any existing definitions and number the new items
+sequentially, so that the numeric label will always be unique.
 
 Pandoc allows you to refer to such labeled example items in the text by
 writing `(@1)` and `pandoc-mode` provides a facility to make this
-easier. If you select the menu item “Example Lists \| Select And Insert
+easier. If you select the menu item “Example Lists | Select And Insert
 Example Label” (`C-c / e s`) Emacs displays a list of all the
 `(@)`-definitions in your document. You can select one with the up or
 down keys (you can also use `j` and `k` or `n` and `p`) and then hit
@@ -492,8 +481,7 @@ down keys (you can also use `j` and `k` or `n` and `p`) and then hit
 mind, you can leave the selection buffer with `q` without inserting
 anything into your document.
 
-Using @@-directives
-===================
+# Using @@-directives
 
 `pandoc-mode` includes a facility to make specific, automatic changes to
 the text before sending it to Pandoc. This is done with so-called
@@ -579,8 +567,7 @@ the inserted text. That means that if an `@@include` directive produces
 another `@@include` directive, the newly inserted `@@include` directive
 gets processed as well.
 
-Master file
------------
+## Master file
 
 If you have a master file with one or more `@@include` directives and
 you’re editing one of the included files, running Pandoc from that
@@ -609,8 +596,7 @@ the current output format. This is a quick way to set the master file
 for all files in a directory, since the project settings will apply to
 all files in the directory.
 
-Defining @@-directives
-----------------------
+## Defining @@-directives
 
 Defining `@@`-directives yourself is done in two steps. First, you need
 to define the function that the directive will call. This function must
@@ -638,8 +624,7 @@ exactly your directives produce before the resulting text is sent to
 pandoc. The changes can of course be undone with `M-x undo` (usually
 bound to `C-/`).
 
-Directive hooks
----------------
+## Directive hooks
 
 There is another customisable variable related to `@@`-directives:
 `pandoc-directives-hook`. This is a list of functions that are executed
@@ -647,8 +632,7 @@ There is another customisable variable related to `@@`-directives:
 to change anything in the buffer, they are intended for setting up
 things that the directive functions might need.
 
-Disabling the hydra menu
-========================
+# Disabling the hydra menu
 
 The hydra package provides a nice way to control `pandoc-mode` and to
 set all the options that Pandoc provides. However, if for some reason

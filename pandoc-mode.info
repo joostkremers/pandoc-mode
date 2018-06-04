@@ -396,10 +396,8 @@ File: pandoc-mode.info,  Node: Creating a pdf,  Next: Connection Type,  Prev: Se
 The second item in the main menu is “Create PDF” (invoked with ‘C-c /
 p’).  This option calls Pandoc with a PDF file as output file.  In order
 for Pandoc to create a PDF, the output format must be ‘latex’,
-‘context’, ‘beamer’, ‘html’ (in which case ‘wkhtmltopdf’ is used to
-create the PDF file), or ‘ms’ (which uses ‘pdfroff’).  If the current
-buffer’s output format is one of these, ‘C-c / p’ creates the PDF using
-that format.
+‘context’, ‘beamer’, ‘html’, or ‘ms’.  If the current buffer’s output
+format is one of these, ‘C-c / p’ creates the PDF using that format.
 
 If the current output format is set to something else, Emacs asks you
 which output format to use.  If there is a settings file for the output
@@ -418,6 +416,12 @@ This setup means that you do not need to switch the output format to
 practical if you’re also converting to another format.  However, if you
 wish to change settings for PDF output, you *do* need to switch to the
 relevant output format.
+
+Note that for ‘latex’, ‘beamer’ and ‘html’, you can use different pdf
+engines.  For ‘latex’ and ‘beamer’, these are ‘pdflatex’ (the default),
+‘xelatex’ and ‘lualatex’, for ‘html’ there are ‘wkhtmltopdf’ (the
+default), ‘weasyprint’ and ‘prince’.  If you wish to use a pdf engine
+other than the default, you need to set the option ‘pdf-engine’.
 
 
 File: pandoc-mode.info,  Node: Connection Type,  Next: Citation Jumping,  Prev: Creating a pdf,  Up: Usage
@@ -808,28 +812,28 @@ Node: Setting an output file17053
 Ref: #setting-an-output-file17223
 Node: Creating a pdf18921
 Ref: #creating-a-pdf19076
-Node: Connection Type20575
-Ref: #connection-type20726
-Node: Citation Jumping21036
-Ref: #citation-jumping21166
-Node: Font lock22368
-Ref: #font-lock22484
-Node: Settings Files22648
-Ref: #settings-files22789
-Node: File-local variables25194
-Ref: #file-local-variables25364
-Node: Managing numbered examples26924
-Ref: #managing-numbered-examples27111
-Node: Using @@-directives28429
-Ref: #using--directives28606
-Node: Master file32833
-Ref: #master-file32969
-Node: Defining @@-directives34491
-Ref: #defining--directives34673
-Node: Directive hooks36255
-Ref: #directive-hooks36403
-Node: Disabling the hydra menu36740
-Ref: #disabling-the-hydra-menu36892
+Node: Connection Type20879
+Ref: #connection-type21030
+Node: Citation Jumping21340
+Ref: #citation-jumping21470
+Node: Font lock22672
+Ref: #font-lock22788
+Node: Settings Files22952
+Ref: #settings-files23093
+Node: File-local variables25498
+Ref: #file-local-variables25668
+Node: Managing numbered examples27228
+Ref: #managing-numbered-examples27415
+Node: Using @@-directives28733
+Ref: #using--directives28910
+Node: Master file33137
+Ref: #master-file33273
+Node: Defining @@-directives34795
+Ref: #defining--directives34977
+Node: Directive hooks36559
+Ref: #directive-hooks36707
+Node: Disabling the hydra menu37044
+Ref: #disabling-the-hydra-menu37196
 
 End Tag Table
 
