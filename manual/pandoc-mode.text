@@ -121,7 +121,7 @@ The output file you set is always just the base filename, it does not specify a 
 
 ## Creating a pdf ##
 
-The second item in the main menu is "Create PDF" (invoked with `C-c / p`). This option calls Pandoc with a PDF file as output file. In order for Pandoc to create a PDF, the output format must be `latex`, `context` or `html5` (in which case `wkhtmltopdf` is used to create the PDF file). If the current buffer's output format is one of these, `C-c / p` creates the PDF using that format.
+The second item in the main menu is "Create PDF" (invoked with `C-c / p`). This option calls Pandoc with a PDF file as output file. In order for Pandoc to create a PDF, the output format must be `latex`, `context`, `beamer`, `html` (in which case `wkhtmltopdf` is used to create the PDF file), or `ms` (which uses `pdfroff`). If the current buffer's output format is one of these, `C-c / p` creates the PDF using that format.
 
 If the current output format is set to something else, Emacs asks you which output format to use. If there is a settings file for the output format you specify, it is used to create the PDF. (The current buffer's settings aren't changed, however.) If there is no settings file, Pandoc is called with only the input and output formats and the output file.
 

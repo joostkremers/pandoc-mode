@@ -315,7 +315,7 @@ possible to customize the extensions."
   :group 'pandoc
   :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension"))))
 
-(defvar pandoc--pdf-able-formats '("latex" "context" "html5")
+(defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms")
   "List of output formats that can be used to generate pdf output.")
 
 (defvar pandoc--extensions

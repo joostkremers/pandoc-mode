@@ -6,11 +6,6 @@ START-INFO-DIR-ENTRY
 * Pandoc-mode: (pandoc-mode).        Minor mode for interacting with Pandoc.
 END-INFO-DIR-ENTRY
 
-INFO-DIR-SECTION Emacs
-START-INFO-DIR-ENTRY
-* Pandoc-mode: (pandoc-mode).        Minor mode for interacting with Pandoc.
-END-INFO-DIR-ENTRY
-
 
 File: pandoc-mode.info,  Node: Top,  Next: Introduction,  Up: (dir)
 
@@ -47,8 +42,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.20 and is compatible with
-Pandoc version 1.18.
+The current version of ‘pandoc-mode’ is 2.24 and is compatible with
+Pandoc 1.18 and Pandoc 2.2.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -76,7 +71,7 @@ on a Markdown document, you can use a different function in
 ‘conditionally-turn-on-pandoc’.  This function checks if a default
 settings file exists for the file you’re opening and only turns on
 ‘pandoc-mode’ if it finds one.  (For more info on the settings file, see
-the section *note ’Settings Files’: #settings-files.)
+the section *note ‘Settings Files’: #settings-files.)
 
 Additionally, if you want to automatically load the default
 ‘pandoc-mode’ settings file for the file you’re opening, you can add the
@@ -158,7 +153,7 @@ File: pandoc-mode.info,  Node: Input and output formats,  Next: The options menu
 The most important settings are the input and output formats.  The input
 format is set automatically by Emacs on the basis of the major mode of
 the input file, but you can change it if you need to.  The output format
-defaults to "Native Haskell", so most likely you will want to set it to
+defaults to “Native Haskell”, so most likely you will want to set it to
 something else before you run Pandoc.  The input and output format menus
 also provide access to a submenu with the Markdown extensions that
 Pandoc supports.
@@ -173,7 +168,7 @@ saves these settings to a hidden file in the same directory as the file
 you’re editing, under a name composed of the input file, appended with
 the name of the output format and the string ‘.pandoc’.  So if your
 input file is called ‘mytext.md’, the ‘html’ settings file will be
-called ‘.mytext.md.html.pandoc’.  (See the section *note ’Settings
+called ‘.mytext.md.html.pandoc’.  (See the section *note ‘Settings
 Files’: #settings-files. for details.)
 
 A single document can have a separate settings file for each output
@@ -196,7 +191,7 @@ to automatically load a specific settings file when ‘pandoc-mode’ is
 invoked, as described above.
 
 Note that the current output format is always visible in the mode line:
-the "lighter" for ‘pandoc-mode’ in the mode line has the form
+the “lighter” for ‘pandoc-mode’ in the mode line has the form
 ‘Pandoc/<format>’, where ‘<format>’ is the current output format.
 
 The major modes for which ‘pandoc-mode’ selects an input format
@@ -220,14 +215,17 @@ of these (the data directory and the extract media directory) correspond
 directly to a Pandoc option.  The output file and output directory
 options are combined to form Pandoc’s ‘--output’ option, while the
 master file option is only used by ‘pandoc-mode’.  These options are
-discussed in the sections *note ’Setting an output file’:
+discussed in the sections *note ‘Setting an output file’:
 #setting-an-output-file. and *note ’Master file’: #master-file,
 respectively.
 
 Note that the subdivision in the options menu is based on the
 subdivision in the Pandoc README and the user guide on Pandoc.org
 (http://pandoc.org/README.html), which should make it easier to find the
-relevant options in the menus.
+relevant options in the menus.  ‘pandoc-mode’ supports Pandoc version
+1.x and version 2.x: options that are only valid in Pandoc 1.x are
+marked with an asterisk.  (Options that only exist in Pandoc 2.x aren’t
+marked.)
 
 One nice thing about the hydra menus is that the value of an option is
 displayed beside it.  Pandoc’s options come in several different kinds.
@@ -276,7 +274,7 @@ Options that are not files or numbers are “string options”, which
 include options that specify a URL. These may also have a default value,
 which can be set in the same way as with file options.  Note, though,
 that this does not apply to options that only have a limited set of
-possible values (e.g., ‘--email-obfuscation’, ‘--latex-engine’).  These
+possible values (e.g., ‘--email-obfuscation’, ‘--pdf-engine’).  These
 can be set or unset, you cannot explicitly request their default value.
 (‘pandoc’ uses their default values even if they are not specified on
 the command line, unlike string options.)
@@ -316,10 +314,10 @@ File: pandoc-mode.info,  Node: Running Pandoc,  Next: Setting an output file,  P
 3.4 Running Pandoc
 ==================
 
-The first item in the menu is "Run Pandoc" (accessible with ‘C-c / r’),
+The first item in the menu is “Run Pandoc” (accessible with ‘C-c / r’),
 which, as the name suggests, runs Pandoc on the document, passing all
 options you have set.  By default, Pandoc sends the output to stdout
-(except when the output format is "odt", "epub" or "docx", in which case
+(except when the output format is “odt”, “epub” or “docx”, in which case
 output is always sent to a file.).  Emacs captures this output and
 redirects it to the buffer ‘*Pandoc output*’.  The output buffer is not
 normally shown, but you can make it visible through the menu or by
@@ -383,7 +381,7 @@ yourself.
 
 The output file you set is always just the base filename, it does not
 specify a directory.  Which directory the output file is written to
-depends on the setting "Output Directory" (which is not actually a
+depends on the setting “Output Directory” (which is not actually a
 Pandoc option).  Emacs creates an output destination out of the settings
 for the output directory and output file.  If you don’t specify any
 output directory, the output file will be written to the same directory
@@ -395,12 +393,13 @@ File: pandoc-mode.info,  Node: Creating a pdf,  Next: Connection Type,  Prev: Se
 3.6 Creating a pdf
 ==================
 
-The second item in the main menu is "Create PDF" (invoked with ‘C-c /
+The second item in the main menu is “Create PDF” (invoked with ‘C-c /
 p’).  This option calls Pandoc with a PDF file as output file.  In order
-for Pandoc to create a PDF, the output format must be ‘latex’, ‘context’
-or ‘html5’ (in which case ‘wkhtmltopdf’ is used to create the PDF file).
-If the current buffer’s output format is one of these, ‘C-c / p’ creates
-the PDF using that format.
+for Pandoc to create a PDF, the output format must be ‘latex’,
+‘context’, ‘beamer’, ‘html’ (in which case ‘wkhtmltopdf’ is used to
+create the PDF file), or ‘ms’ (which uses ‘pdfroff’).  If the current
+buffer’s output format is one of these, ‘C-c / p’ creates the PDF using
+that format.
 
 If the current output format is set to something else, Emacs asks you
 which output format to use.  If there is a settings file for the output
@@ -498,7 +497,7 @@ local settings file exists, _all_ settings are read from this file.  Any
 project file or global file for the relevant output format is ignored.
 
 You can create a project or global settings file through the menu in the
-submenu "Settings Files".  This simply saves all settings for the
+submenu “Settings Files”.  This simply saves all settings for the
 current buffer to a project or global settings file.  (Any local
 settings file for the file in the current buffer will be kept.  You’ll
 need to delete it manually if you no longer need it.)
@@ -563,7 +562,7 @@ Pandoc provides a method for creating examples that are numbered
 sequentially throughout the document (see Numbered example lists
 (http://pandoc.org/README.html#numbered-example-lists) in the Pandoc
 documentation).  ‘pandoc-mode’ makes it easier to manage such lists.
-First, by going to "Example Lists | Insert New Example" (‘C-c / e i’),
+First, by going to “Example Lists | Insert New Example” (‘C-c / e i’),
 you can insert a new example list item with a numeric label: the first
 example you insert will be numbered ‘(@1)’, the second ‘(@2)’, and so
 on.  Before inserting the first example item, Emacs will search the
@@ -572,8 +571,8 @@ sequentially, so that the numeric label will always be unique.
 
 Pandoc allows you to refer to such labeled example items in the text by
 writing ‘(@1)’ and ‘pandoc-mode’ provides a facility to make this
-easier.  If you select the menu item "Example Lists | Select And Insert
-Example Label" (‘C-c / e s’) Emacs displays a list of all the
+easier.  If you select the menu item “Example Lists | Select And Insert
+Example Label” (‘C-c / e s’) Emacs displays a list of all the
 ‘(@)’-definitions in your document.  You can select one with the up or
 down keys (you can also use ‘j’ and ‘k’ or ‘n’ and ‘p’) and then hit
 ‘return’ to insert the label into your document.  If you change your
@@ -629,7 +628,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get "Cologne, 03 May 2017".
+‘@@date{Cologne}’ to get “Cologne, 04 Jun 2018”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -729,7 +728,7 @@ case sensitive, so ‘@@Date’ is not the same as ‘@@date’.
 
 Passing more than one argument to an ‘@@’-directive is not supported.
 However, if you really want to, you could use ‘split-string’ to split
-the argument of the ‘@@’-directive and "fake" multiple arguments that
+the argument of the ‘@@’-directive and “fake” multiple arguments that
 way.
 
 A final note: the function that processes the ‘@@’-directives is called
@@ -788,49 +787,49 @@ than ‘toc’).
 
 
 Tag Table:
-Node: Top365
-Node: Introduction669
-Ref: #introduction790
-Node: Installation1647
-Ref: #installation1770
-Node: OS X3350
-Ref: #os-x3427
-Node: Usage4018
-Ref: #usage4124
-Node: Input and output formats5961
-Ref: #input-and-output-formats6116
-Node: The options menu9052
-Ref: #the-options-menu9231
-Node: Template variables and metadata13926
-Ref: #template-variables-and-metadata14125
-Node: Running Pandoc14700
-Ref: #running-pandoc14871
-Node: Setting an output file16972
-Ref: #setting-an-output-file17142
-Node: Creating a pdf18836
-Ref: #creating-a-pdf18991
-Node: Connection Type20434
-Ref: #connection-type20585
-Node: Citation Jumping20895
-Ref: #citation-jumping21025
-Node: Font lock22227
-Ref: #font-lock22343
-Node: Settings Files22507
-Ref: #settings-files22648
-Node: File-local variables25049
-Ref: #file-local-variables25219
-Node: Managing numbered examples26779
-Ref: #managing-numbered-examples26966
-Node: Using @@-directives28276
-Ref: #using--directives28453
-Node: Master file32676
-Ref: #master-file32812
-Node: Defining @@-directives34334
-Ref: #defining--directives34516
-Node: Directive hooks36094
-Ref: #directive-hooks36242
-Node: Disabling the hydra menu36579
-Ref: #disabling-the-hydra-menu36731
+Node: Top224
+Node: Introduction528
+Ref: #introduction649
+Node: Installation1513
+Ref: #installation1636
+Node: OS X3216
+Ref: #os-x3293
+Node: Usage3884
+Ref: #usage3990
+Node: Input and output formats5827
+Ref: #input-and-output-formats5982
+Node: The options menu8926
+Ref: #the-options-menu9105
+Node: Template variables and metadata13991
+Ref: #template-variables-and-metadata14190
+Node: Running Pandoc14765
+Ref: #running-pandoc14936
+Node: Setting an output file17053
+Ref: #setting-an-output-file17223
+Node: Creating a pdf18921
+Ref: #creating-a-pdf19076
+Node: Connection Type20575
+Ref: #connection-type20726
+Node: Citation Jumping21036
+Ref: #citation-jumping21166
+Node: Font lock22368
+Ref: #font-lock22484
+Node: Settings Files22648
+Ref: #settings-files22789
+Node: File-local variables25194
+Ref: #file-local-variables25364
+Node: Managing numbered examples26924
+Ref: #managing-numbered-examples27111
+Node: Using @@-directives28429
+Ref: #using--directives28606
+Node: Master file32833
+Ref: #master-file32969
+Node: Defining @@-directives34491
+Ref: #defining--directives34673
+Node: Directive hooks36255
+Ref: #directive-hooks36403
+Node: Disabling the hydra menu36740
+Ref: #disabling-the-hydra-menu36892
 
 End Tag Table
 
