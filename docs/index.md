@@ -327,9 +327,10 @@ Creating a pdf
 The second item in the main menu is “Create PDF” (invoked with
 `C-c / p`). This option calls Pandoc with a PDF file as output file. In
 order for Pandoc to create a PDF, the output format must be `latex`,
-`context` or `html5` (in which case `wkhtmltopdf` is used to create the
-PDF file). If the current buffer’s output format is one of these,
-`C-c / p` creates the PDF using that format.
+`context`, `beamer`, `html` (in which case `wkhtmltopdf` is used to
+create the PDF file), or `ms` (which uses `pdfroff`). If the current
+buffer’s output format is one of these, `C-c / p` creates the PDF using
+that format.
 
 If the current output format is set to something else, Emacs asks you
 which output format to use. If there is a settings file for the output
@@ -537,7 +538,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 07 May 2018”.
+`@@date{Cologne}` to get “Cologne, 04 Jun 2018”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in
