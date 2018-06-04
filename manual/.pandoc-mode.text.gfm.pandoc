@@ -78,7 +78,7 @@
   ("tex_math_double_backslash")
   ("tex_math_single_backslash")
   ("yaml_metadata_block"))
- (write . "markdown_github")
+ (write . "gfm")
  (write-lhs)
  (write-extensions
   ("abbreviations")
