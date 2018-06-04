@@ -2,7 +2,7 @@ title: Pandoc-mode
 description: An Emacs mode for interacting with Pandoc
 google_analytics: 
 show_downloads: true
-theme: jekyll-theme-midnight
+theme: jekyll-theme-time-machine
 
 gems:
   - jekyll-mentions
