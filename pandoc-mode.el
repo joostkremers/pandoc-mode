@@ -457,6 +457,7 @@ also ignored in this case."
               pandoc--options)
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
+          (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it'll hang forever.
           (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
           (pandoc-process-directives (pandoc--get 'write))
           (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
