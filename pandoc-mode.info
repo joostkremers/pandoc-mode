@@ -547,7 +547,7 @@ settings: they cannot be set through the menu, they are _never_ saved to
 a settings file, and they are not shown when you call
 ‘pandoc-view-settings’ (‘C-c / S’).  A source file can both have a
 settings file and specify settings in file-local variables.  If this
-happens, the latter override the former
+happens, the latter override the former.
 
 Note that it is also possible to specify the customisation option
 ‘pandoc-binary’ as a file-local variable.  It does not require the
@@ -632,7 +632,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 04 Jun 2018”.
+‘@@date{Cologne}’ to get “Cologne, 09 Jul 2018”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -822,18 +822,18 @@ Node: Settings Files22952
 Ref: #settings-files23093
 Node: File-local variables25498
 Ref: #file-local-variables25668
-Node: Managing numbered examples27228
-Ref: #managing-numbered-examples27415
-Node: Using @@-directives28733
-Ref: #using--directives28910
-Node: Master file33137
-Ref: #master-file33273
-Node: Defining @@-directives34795
-Ref: #defining--directives34977
-Node: Directive hooks36559
-Ref: #directive-hooks36707
-Node: Disabling the hydra menu37044
-Ref: #disabling-the-hydra-menu37196
+Node: Managing numbered examples27229
+Ref: #managing-numbered-examples27416
+Node: Using @@-directives28734
+Ref: #using--directives28911
+Node: Master file33138
+Ref: #master-file33274
+Node: Defining @@-directives34796
+Ref: #defining--directives34978
+Node: Directive hooks36560
+Ref: #directive-hooks36708
+Node: Disabling the hydra menu37045
+Ref: #disabling-the-hydra-menu37197
 
 End Tag Table
 

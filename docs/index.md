@@ -449,7 +449,7 @@ settings: they cannot be set through the menu, they are *never* saved to
 a settings file, and they are not shown when you call
 `pandoc-view-settings` (`C-c / S`). A source file can both have a
 settings file and specify settings in file-local variables. If this
-happens, the latter override the former
+happens, the latter override the former.
 
 Note that it is also possible to specify the customisation option
 `pandoc-binary` as a file-local variable. It does not require the
@@ -526,7 +526,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 04 Jun 2018”.
+`@@date{Cologne}` to get “Cologne, 09 Jul 2018”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in
