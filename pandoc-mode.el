@@ -379,6 +379,23 @@ INCLUDE-FILE is the argument of the @@include directive."
     (insert-file-contents include-file)
     (buffer-string)))
 
+(defun pandoc--get-file-local-options (buffers)
+  "Return all pandoc related file-local variables and their values.
+These are file local variables beginning with `pandoc/'.  Return
+value is an alist of (var . value) pairs.  The values are
+searched in BUFFERS, which is a list of buffers.  The first value
+found for a particular value is the one returned.  In other
+words, a value from a buffer earlier in BUFFERS overrides the
+value of a later buffer."
+  (delq nil (mapcar (lambda (option)
+                      (let ((var (intern (concat "pandoc/" (symbol-name (car option)))))
+                            (bs buffers))
+                        (while (and bs (not (local-variable-p var (car bs))))
+                          (setq bs (cdr bs)))
+                        (when bs
+                          (cons var (buffer-local-value var (car bs))))))
+                    pandoc--options)))
+
 ;; `pandoc-call-external' sets up a process sentinel that needs to refer to
 ;; `pandoc-binary' to provide an informative message. We want to allow a
 ;; buffer-local value of `pandoc-binary', but the process sentinel doesn't
@@ -448,13 +465,8 @@ also ignored in this case."
           (pandoc--set 'write (pandoc--get 'write orig-buffer))))
         ;; copy any local `pandoc/' variables from `orig-buffer' or
         ;; `buffer' (the values in `orig-buffer' take precedence):
-        (mapc (lambda (option)
-                (let ((var (intern (concat "pandoc/" (symbol-name (car option))))))
-                  (if (local-variable-p var orig-buffer)
-                      (set (make-local-variable var) (buffer-local-value var orig-buffer))
-                    (if (local-variable-p var buffer)
-                        (set (make-local-variable var) (buffer-local-value var buffer))))))
-              pandoc--options)
+        (dolist (option (pandoc--get-file-local-options (list orig-buffer buffer)))
+          (set (make-local-variable (car option)) (cdr option)))
         (let ((option-list (pandoc--format-all-options filename pdf)))
           (insert-buffer-substring-no-properties buffer (car region) (cdr region))
           (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it'll hang forever.
@@ -742,7 +754,11 @@ options and their values."
                                               alist))))
          (settings (copy-tree pandoc--local-settings))
          (read-extensions (assq 'read-extensions settings))
-         (write-extensions (assq 'write-extensions settings)))
+         (write-extensions (assq 'write-extensions settings))
+         (buffers (list (current-buffer)
+                        (if (pandoc--get 'master-file)
+                            (find-file-noselect (pandoc--get 'master-file)))))
+         (file-locals (pandoc--get-file-local-options buffers)))
     (when read-extensions
       (setcdr read-extensions (funcall remove-defaults (cdr read-extensions))))
     (when write-extensions
@@ -752,7 +768,11 @@ options and their values."
       (let ((print-length nil)
             (print-level nil)
             (print-circle nil))
-        (pp settings)))))
+        (princ "Current settings:\n\n")
+        (pp settings)
+        (when file-locals
+          (princ "\n\nFile-local settings:\n\n")
+          (pp file-locals))))))
 
 (defun pandoc-view-log ()
   "Display the log buffer in a temporary window."

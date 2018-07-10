@@ -445,9 +445,9 @@ expressions, which means that strings need to be surrounded with double
 quotes. Symbols do not need to be quoted, however.
 
 Settings specified as file-local variables are kept separate from other
-settings: they cannot be set through the menu, they are *never* saved to
-a settings file, and they are not shown when you call
-`pandoc-view-settings` (`C-c / S`). A source file can both have a
+settings: they cannot be set through the menu and they are *never* saved
+to a settings file. When you call `pandoc-view-settings` (`C-c / S`),
+they are shown in a separate section. A source file can both have a
 settings file and specify settings in file-local variables. If this
 happens, the latter override the former.
 
@@ -526,7 +526,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 09 Jul 2018”.
+`@@date{Cologne}` to get “Cologne, 10 Jul 2018”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in

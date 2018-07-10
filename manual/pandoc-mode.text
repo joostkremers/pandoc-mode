@@ -178,7 +178,7 @@ pandoc/bibliography: "~/path/to/mybib.bib"
 
 The easiest way to add a file-local variable is to use the command `M-x add-file-local-variable`. This will put the variable at the end of the file and add the correct comment syntax. Note that the values are Lisp expressions, which means that strings need to be surrounded with double quotes. Symbols do not need to be quoted, however.
 
-Settings specified as file-local variables are kept separate from other settings: they cannot be set through the menu, they are *never* saved to a settings file, and they are not shown when you call `pandoc-view-settings` (`C-c / S`). A source file can both have a settings file and specify settings in file-local variables. If this happens, the latter override the former.
+Settings specified as file-local variables are kept separate from other settings: they cannot be set through the menu and they are *never* saved to a settings file. When you call `pandoc-view-settings` (`C-c / S`), they are shown in a separate section. A source file can both have a settings file and specify settings in file-local variables. If this happens, the latter override the former.
 
 Note that it is also possible to specify the customisation option `pandoc-binary` as a file-local variable. It does not require the `pandoc/` prefix, but since its value is a string, it must be enclosed in quotes:
 
