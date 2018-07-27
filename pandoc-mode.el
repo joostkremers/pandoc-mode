@@ -1091,13 +1091,15 @@ _o_: Options
 ;; Input and Output formats hydras
 (let (input-formats-hydra
       output-formats-hydra)
-  ;; Four helper functions take apart the description of the formats and/or the
+  ;; Five helper functions take apart the description of the formats and/or the
   ;; categories as defined in `pandoc--formats' and return a docstring or a hydra
   ;; head.
   (cl-flet ((make-format-docstring ((_format descr key _mode))
                                    (format "_%s_: %s" key descr))
-            (make-format-head ((format _descr key _mode))
-                              (list key `(pandoc-set-write ,format)))
+            (make-input-format-head ((format _descr key _mode))
+                                    (list key `(pandoc-set-read ,format)))
+            (make-output-format-head ((format _descr key _mode))
+                                     (list key `(pandoc-set-write ,format)))
             (make-main-docstring ((_command descr key))
                                  (format "_%s_: %s" key descr))
             (make-main-head ((command _descr key))
@@ -1115,7 +1117,7 @@ _o_: Options
                                                           (concat "\n" description "\n\n")
                                                           input-formats)
                                            "\n\n"))
-                        (heads (--map (make-format-head it) input-formats)))
+                        (heads (--map (make-input-format-head it) input-formats)))
                     (eval `(defhydra ,(intern input-name) (:foreign-keys warn :hint nil)
                              ,docstring
                              ,@(append heads '(("q" nil "Quit") ("b" pandoc-input-format-hydra/body "Back" :exit t))))))))
@@ -1128,7 +1130,7 @@ _o_: Options
                                                           (concat "\n" description "\n\n")
                                                           output-formats)
                                            "\n\n"))
-                        (heads (--map (make-format-head it) output-formats)))
+                        (heads (--map (make-output-format-head it) output-formats)))
                     (eval `(defhydra ,(intern output-name) (:foreign-keys warn :hint nil)
                              ,docstring
                              ,@(append heads '(("q" nil "Quit") ("b" pandoc-output-format-hydra/body "Back" :exit t))))))))))
