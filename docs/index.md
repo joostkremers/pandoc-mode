@@ -12,8 +12,8 @@ file, so that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.24 and is compatible with
-Pandoc 1.18 and Pandoc 2.2.
+The current version of `pandoc-mode` is 2.26 and is compatible with
+Pandoc 2.3.
 
 # Installation
 
@@ -526,7 +526,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 10 Jul 2018”.
+`@@date{Cologne}` to get “Cologne, 17 Sep 2018”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in

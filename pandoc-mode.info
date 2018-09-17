@@ -42,8 +42,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.24 and is compatible with
-Pandoc 1.18 and Pandoc 2.2.
+The current version of ‘pandoc-mode’ is 2.26 and is compatible with
+Pandoc 2.3.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -632,7 +632,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 10 Jul 2018”.
+‘@@date{Cologne}’ to get “Cologne, 17 Sep 2018”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -794,46 +794,46 @@ Tag Table:
 Node: Top224
 Node: Introduction528
 Ref: #introduction649
-Node: Installation1513
-Ref: #installation1636
-Node: OS X3216
-Ref: #os-x3293
-Node: Usage3884
-Ref: #usage3990
-Node: Input and output formats5827
-Ref: #input-and-output-formats5982
-Node: The options menu8926
-Ref: #the-options-menu9105
-Node: Template variables and metadata13991
-Ref: #template-variables-and-metadata14190
-Node: Running Pandoc14765
-Ref: #running-pandoc14936
-Node: Setting an output file17053
-Ref: #setting-an-output-file17223
-Node: Creating a pdf18921
-Ref: #creating-a-pdf19076
-Node: Connection Type20879
-Ref: #connection-type21030
-Node: Citation Jumping21340
-Ref: #citation-jumping21470
-Node: Font lock22672
-Ref: #font-lock22788
-Node: Settings Files22952
-Ref: #settings-files23093
-Node: File-local variables25498
-Ref: #file-local-variables25668
-Node: Managing numbered examples27248
-Ref: #managing-numbered-examples27435
-Node: Using @@-directives28753
-Ref: #using--directives28930
-Node: Master file33157
-Ref: #master-file33293
-Node: Defining @@-directives34815
-Ref: #defining--directives34997
-Node: Directive hooks36579
-Ref: #directive-hooks36727
-Node: Disabling the hydra menu37064
-Ref: #disabling-the-hydra-menu37216
+Node: Installation1497
+Ref: #installation1620
+Node: OS X3200
+Ref: #os-x3277
+Node: Usage3868
+Ref: #usage3974
+Node: Input and output formats5811
+Ref: #input-and-output-formats5966
+Node: The options menu8910
+Ref: #the-options-menu9089
+Node: Template variables and metadata13975
+Ref: #template-variables-and-metadata14174
+Node: Running Pandoc14749
+Ref: #running-pandoc14920
+Node: Setting an output file17037
+Ref: #setting-an-output-file17207
+Node: Creating a pdf18905
+Ref: #creating-a-pdf19060
+Node: Connection Type20863
+Ref: #connection-type21014
+Node: Citation Jumping21324
+Ref: #citation-jumping21454
+Node: Font lock22656
+Ref: #font-lock22772
+Node: Settings Files22936
+Ref: #settings-files23077
+Node: File-local variables25482
+Ref: #file-local-variables25652
+Node: Managing numbered examples27232
+Ref: #managing-numbered-examples27419
+Node: Using @@-directives28737
+Ref: #using--directives28914
+Node: Master file33141
+Ref: #master-file33277
+Node: Defining @@-directives34799
+Ref: #defining--directives34981
+Node: Directive hooks36563
+Ref: #directive-hooks36711
+Node: Disabling the hydra menu37048
+Ref: #disabling-the-hydra-menu37200
 
 End Tag Table
 
