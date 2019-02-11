@@ -12,8 +12,8 @@ file, so that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.26 and is compatible with
-Pandoc 2.3.
+The current version of `pandoc-mode` is 2.27 and is compatible with
+Pandoc 2.6.
 
 # Installation
 
@@ -358,7 +358,7 @@ you can use a synchronous process by unsetting the user option
 locates a reference within external bibliography files indicated by the
 `bibliography` user option. Note that entries to the `bibliography` user
 option list must have an absolute path for this option to work properly
-(i.e. `"./Bibliography.bib"` rather than `"Bibliography.bib"`). This
+(i.e. `"./Bibliography.bib"` rather than `"Bibliography.bib"`). This
 feature is not bound to any key by default, but may of course be bound
 to a key combination as
     follows:
@@ -526,7 +526,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 17 Sep 2018”.
+`@@date{Cologne}` to get “Cologne, 11 Feb 2019”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in

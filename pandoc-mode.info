@@ -1,4 +1,4 @@
-This is pandoc-mode.info, produced by makeinfo version 6.1 from
+This is pandoc-mode.info, produced by makeinfo version 6.5 from
 pandoc-mode.texi.
 
 INFO-DIR-SECTION Emacs
@@ -42,8 +42,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.26 and is compatible with
-Pandoc 2.3.
+The current version of ‘pandoc-mode’ is 2.27 and is compatible with
+Pandoc 2.6.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -82,6 +82,7 @@ following to your init file:
 The function ‘pandoc-load-default-settings’ checks if a default settings
 file exists for the file being loaded and reads its settings if it finds
 one.
+
 * Menu:
 
 * OS X::
@@ -133,6 +134,7 @@ current output format.  When you open another file, or when you change
 the output format, all settings are reset to their default values.
 (There are ways to make settings more permanent, of course, as discussed
 below.)
+
 * Menu:
 
 * Input and output formats::
@@ -445,9 +447,9 @@ File: pandoc-mode.info,  Node: Citation Jumping,  Prev: Connection Type,  Up: Us
 locates a reference within external bibliography files indicated by the
 ‘bibliography’ user option.  Note that entries to the ‘bibliography’
 user option list must have an absolute path for this option to work
-properly (i.e.  ‘"./Bibliography.bib"’ rather than
-‘"Bibliography.bib"’).  This feature is not bound to any key by default,
-but may of course be bound to a key combination as follows:
+properly (i.e. ‘"./Bibliography.bib"’ rather than ‘"Bibliography.bib"’).
+This feature is not bound to any key by default, but may of course be
+bound to a key combination as follows:
 
 (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
@@ -632,7 +634,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 17 Sep 2018”.
+‘@@date{Cologne}’ to get “Cologne, 11 Feb 2019”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -672,6 +674,7 @@ in the buffer, processing of directives is resumed from the _start_ of
 the inserted text.  That means that if an ‘@@include’ directive produces
 another ‘@@include’ directive, the newly inserted ‘@@include’ directive
 gets processed as well.
+
 * Menu:
 
 * Master file::
@@ -796,26 +799,26 @@ Node: Introduction528
 Ref: #introduction649
 Node: Installation1497
 Ref: #installation1620
-Node: OS X3200
-Ref: #os-x3277
-Node: Usage3868
-Ref: #usage3974
-Node: Input and output formats5811
-Ref: #input-and-output-formats5966
-Node: The options menu8910
-Ref: #the-options-menu9089
-Node: Template variables and metadata13975
-Ref: #template-variables-and-metadata14174
-Node: Running Pandoc14749
-Ref: #running-pandoc14920
-Node: Setting an output file17037
-Ref: #setting-an-output-file17207
-Node: Creating a pdf18905
-Ref: #creating-a-pdf19060
-Node: Connection Type20863
-Ref: #connection-type21014
-Node: Citation Jumping21324
-Ref: #citation-jumping21454
+Node: OS X3201
+Ref: #os-x3278
+Node: Usage3869
+Ref: #usage3975
+Node: Input and output formats5813
+Ref: #input-and-output-formats5968
+Node: The options menu8912
+Ref: #the-options-menu9091
+Node: Template variables and metadata13977
+Ref: #template-variables-and-metadata14176
+Node: Running Pandoc14751
+Ref: #running-pandoc14922
+Node: Setting an output file17039
+Ref: #setting-an-output-file17209
+Node: Creating a pdf18907
+Ref: #creating-a-pdf19062
+Node: Connection Type20865
+Ref: #connection-type21016
+Node: Citation Jumping21326
+Ref: #citation-jumping21456
 Node: Font lock22656
 Ref: #font-lock22772
 Node: Settings Files22936
@@ -826,14 +829,14 @@ Node: Managing numbered examples27232
 Ref: #managing-numbered-examples27419
 Node: Using @@-directives28737
 Ref: #using--directives28914
-Node: Master file33141
-Ref: #master-file33277
-Node: Defining @@-directives34799
-Ref: #defining--directives34981
-Node: Directive hooks36563
-Ref: #directive-hooks36711
-Node: Disabling the hydra menu37048
-Ref: #disabling-the-hydra-menu37200
+Node: Master file33142
+Ref: #master-file33278
+Node: Defining @@-directives34800
+Ref: #defining--directives34982
+Node: Directive hooks36564
+Ref: #directive-hooks36712
+Node: Disabling the hydra menu37049
+Ref: #disabling-the-hydra-menu37201
 
 End Tag Table
 

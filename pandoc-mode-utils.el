@@ -1,11 +1,11 @@
 ;;; pandoc-mode-utils.el --- Part of `pandoc-mode'  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2009-2018 Joost Kremers
+;; Copyright (c) 2009-2019 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.26
+;; Version: 2.27
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -189,7 +189,7 @@ matches KEY."
 
     ("wiki" "Wiki Formats" "w"
      ("creole"               "Creole 1.0"                "c" both)
-     ("dokuwiki"             "DokuWiki"                  "d" output)
+     ("dokuwiki"             "DokuWiki"                  "d" both)
      ("mediawiki"            "MediaWiki"                 "m" both)
      ("tikiwiki"             "TikiWiki"                  "t" both)
      ("twiki"                "Twiki"                     "T" input)
@@ -237,6 +237,7 @@ matches KEY."
      ("org"                  "Org-mode"                  "o" both))
 
     ("misc" "Miscellaneous Formats" "v"
+     ("ipynb"                "Jupyter Notebook"          "p" both)
      ("jats"                 "JATS XML"                  "J" both)
      ("json"                 "JSON"                      "j" both)
      ("native"               "Native Haskell"            "n" both)
@@ -277,6 +278,7 @@ IO is a symbol, either `input' or `output'.  Return a list of formats."
     ("html4"             ".html")
     ("html5"             ".html")
     ("icml"              ".icml")
+    ("ipynb"             ".ipynb")
     ("jats"              ".xml")
     ("json"              ".json")
     ("latex"             ".tex")
@@ -386,6 +388,7 @@ possible to customize the extensions."
     ("superscript"                         ("markdown"))
     ("styles"                              ())
     ("table_captions"                      ("markdown"))
+    ("task_lists"                          ("markdown" "gfm"))
     ("tex_math_dollars"                    ("markdown" "html"))
     ("tex_math_double_backslash"           ("markdown_mmd" "html"))
     ("tex_math_single_backslash"           ("markdown_github" "html"))
@@ -721,11 +724,11 @@ or T and indicates whether the option can have a default value."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                          (cond
-                           ((eq prefix '-) nil) ; C-u - or M--
-                           ((listp prefix) ; no prefix or C-u
-                            (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
-                           (t ,default))))))) ; any other prefix
+                    (cond
+                     ((eq prefix '-) nil) ; C-u - or M--
+                     ((listp prefix) ; no prefix or C-u
+                      (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
+                     (t ,default))))))) ; any other prefix
 
 (defmacro define-pandoc-number-option (option hydra prompt)
   "Define OPTION as a numeric option.
@@ -775,9 +778,9 @@ formulated in such a way that the strings \"Default \" and \"Set
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                          (if (eq prefix '-)
-                              nil
-                            (string-to-number (read-string ,(concat prompt ": ")))))))))
+                    (if (eq prefix '-)
+                        nil
+                      (string-to-number (read-string ,(concat prompt ": ")))))))))
 
 (defmacro define-pandoc-string-option (option hydra prompt &optional default)
   "Define OPTION as a string option.
@@ -834,10 +837,10 @@ or T and indicates whether the option can have a default value."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                          (cond
-                           ((eq prefix '-) nil)
-                           ((null prefix) (read-string ,(concat prompt ": ")))
-                           (t ,default)))))))
+                    (cond
+                     ((eq prefix '-) nil)
+                     ((null prefix) (read-string ,(concat prompt ": ")))
+                     (t ,default)))))))
 
 (defmacro define-pandoc-list-option (option hydra type description prompt)
   "Define OPTION as a list option.
@@ -1011,13 +1014,13 @@ menu."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                          (if (eq prefix '-)
-                              nil
-                            (let ((value (completing-read ,(format "Set %s: " prompt) (quote ,choices) nil t)))
-                              (if (or (not value)
-                                      (member value '("" (car ,choices))))
-                                  nil
-                                value))))))))
+                    (if (eq prefix '-)
+                        nil
+                      (let ((value (completing-read ,(format "Set %s: " prompt) (quote ,choices) nil t)))
+                        (if (or (not value)
+                                (member value '("" (car ,choices))))
+                            nil
+                          value))))))))
 
 (defun pandoc--trim-right-padding (strings)
   "Trim right padding in STRINGS.
@@ -1131,9 +1134,9 @@ evaluated."
 (define-pandoc-switch        verbose             (writer "V" "%-19s") "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-string-option resource-path       (writer "r" "%-19s") "Resource Path")
 (define-pandoc-alist-option  request-header      (writer "R" "%-19s") "HTTP Request Header" "Request Header")
-(define-pandoc-file-option   include-after-body  (writer "A" "%-19s") "Include After Body")
-(define-pandoc-file-option   include-before-body (writer "B" "%-19s") "Include Before Body")
-(define-pandoc-file-option   include-in-header   (writer "H" "%-19s") "Include Header")
+(define-pandoc-file-option   include-after-body  (writer "A" "%-19s") "Include After Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-before-body (writer "B" "%-19s") "Include Before Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-in-header   (writer "H" "%-19s") "Include Header") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   syntax-definition   (writer "y" "%-19s") "Syntax Definition File")
 (define-pandoc-string-option highlight-style     (writer "S" "%-19s") "Highlighting Style")
 (define-pandoc-switch        no-highlight        (writer "h" "%-19s") "No Highlighting")
