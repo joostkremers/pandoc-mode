@@ -12,8 +12,8 @@ file, so that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.27 and is compatible with
-Pandoc 2.6.
+The current version of `pandoc-mode` is 2.28 and is compatible with
+Pandoc 2.7.
 
 # Installation
 
@@ -360,8 +360,7 @@ locates a reference within external bibliography files indicated by the
 option list must have an absolute path for this option to work properly
 (i.e. `"./Bibliography.bib"` rather than `"Bibliography.bib"`). This
 feature is not bound to any key by default, but may of course be bound
-to a key combination as
-    follows:
+to a key combination as follows:
 
     (define-key markdown-mode-map (kbd "C-c j") 'pandoc-jump-to-reference)
 
@@ -526,7 +525,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 11 Feb 2019”.
+`@@date{Cologne}` to get “Cologne, 13 Jun 2019”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in
