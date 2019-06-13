@@ -390,7 +390,7 @@ possible to customize the extensions."
     ("styles"                              ())
     ("table_captions"                      ("markdown"))
     ("task_lists"                          ("markdown" "gfm"))
-    ("tex_math_dollars"                    ("markdown" "html"))
+    ("tex_math_dollars"                    ("markdown" "markdown_mmd" "html"))
     ("tex_math_double_backslash"           ("markdown_mmd" "html"))
     ("tex_math_single_backslash"           ("markdown_github" "html"))
     ("yaml_metadata_block"                 ("markdown")))
