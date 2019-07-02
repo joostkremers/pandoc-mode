@@ -1131,26 +1131,26 @@ evaluated."
 
 
 ;;; General writer options
-(define-pandoc-switch        strip-comments      (writer "C" "%-19s") "Strip Comments")
-(define-pandoc-switch        verbose             (writer "V" "%-19s") "Verbose output") ; Pandoc's README places this in the general options
-(define-pandoc-string-option resource-path       (writer "r" "%-19s") "Resource Path")
-(define-pandoc-alist-option  request-header      (writer "R" "%-19s") "HTTP Request Header" "Request Header")
-(define-pandoc-file-option   include-after-body  (writer "A" "%-19s") "Include After Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-before-body (writer "B" "%-19s") "Include Before Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-in-header   (writer "H" "%-19s") "Include Header") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   syntax-definition   (writer "y" "%-19s") "Syntax Definition File")
-(define-pandoc-string-option highlight-style     (writer "S" "%-19s") "Highlighting Style")
-(define-pandoc-switch        no-highlight        (writer "h" "%-19s") "No Highlighting")
-(define-pandoc-number-option toc-depth           (writer "D" "%-19s") "TOC Depth")
-(define-pandoc-switch        table-of-contents   (writer "T" "%-19s") "Table of Contents")
-(define-pandoc-number-option columns             (writer "c" "%-19s") "Column Width")
-(define-pandoc-switch        no-wrap             (writer "W" "%-19s") "No Wrap")
-(define-pandoc-choice-option wrap                (writer "w" "%-19s") "Wrap"                ("auto" "none" "preserve"))
-(define-pandoc-choice-option eol                 (writer "e" "%-19s") "Line Endings Style"  ("crlf" "lf" "native"))
-(define-pandoc-number-option dpi                 (writer "d" "%-19s") "DPI")
-(define-pandoc-alist-option  variable            (writer "v" "%-19s") "Variables"           "Variable")
-(define-pandoc-file-option   template            (writer "t" "%-19s") "Template File")
-(define-pandoc-switch        standalone          (writer "s" "%-19s") "Standalone")
+(define-pandoc-switch        strip-comments      (writer "C" "%-22s") "Strip Comments")
+(define-pandoc-switch        verbose             (writer "V" "%-22s") "Verbose output") ; Pandoc's README places this in the general options
+(define-pandoc-string-option resource-path       (writer "r" "%-22s") "Resource Path")
+(define-pandoc-alist-option  request-header      (writer "R" "%-22s") "HTTP Request Header" "Request Header")
+(define-pandoc-file-option   include-after-body  (writer "A" "%-22s") "Include After Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-before-body (writer "B" "%-22s") "Include Before Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-in-header   (writer "H" "%-22s") "Include Header") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   syntax-definition   (writer "y" "%-22s") "Syntax Definition File")
+(define-pandoc-string-option highlight-style     (writer "S" "%-22s") "Highlighting Style")
+(define-pandoc-switch        no-highlight        (writer "h" "%-22s") "No Highlighting")
+(define-pandoc-number-option toc-depth           (writer "D" "%-22s") "TOC Depth")
+(define-pandoc-switch        table-of-contents   (writer "T" "%-22s") "Table of Contents")
+(define-pandoc-number-option columns             (writer "c" "%-22s") "Column Width")
+(define-pandoc-switch        no-wrap             (writer "W" "%-22s") "No Wrap")
+(define-pandoc-choice-option wrap                (writer "w" "%-22s") "Wrap"                ("auto" "none" "preserve"))
+(define-pandoc-choice-option eol                 (writer "e" "%-22s") "Line Endings Style"  ("crlf" "lf" "native"))
+(define-pandoc-number-option dpi                 (writer "d" "%-22s") "DPI")
+(define-pandoc-alist-option  variable            (writer "v" "%-22s") "Variables"           "Variable")
+(define-pandoc-file-option   template            (writer "t" "%-22s") "Template File")
+(define-pandoc-switch        standalone          (writer "s" "%-22s") "Standalone")
 ;; print-default-template : not actually included
 ;; print-default-data-file : not actually included
 ;; print-highlight-style : not actually included
