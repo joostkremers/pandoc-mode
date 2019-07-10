@@ -18,16 +18,11 @@ Pandoc 2.7.
 # Installation
 
 The easiest way to install `pandoc-mode` is to use the
-[Melpa](http://melpa.org/) package repository. Alternatively, you can
-install it manually: download `pandoc-mode.el` and
-`pandoc-mode-utils.el`, put them into Emacs’ loadpath (byte-compiling is
-recommended) and add the line `(load "pandoc-mode")` to your init file.
+[Melpa](http://melpa.org/) package repository.
 
-Either installation method allows Emacs to load `pandoc-mode`, but they
-do not activate it. In order to activate `pandoc-mode` in a buffer, you
-need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically
-when you load e.g., a Markdown file, you can add a hook to your init
-file:
+In order to activate `pandoc-mode` in a buffer, you need to type `M-x
+pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a
+Markdown file, you can add a hook to your init file:
 
     (add-hook 'markdown-mode-hook 'pandoc-mode)
 
@@ -69,16 +64,16 @@ should be self-explanatory. From the main menu, you can run `pandoc` on
 the buffer, view the output buffer and the current settings, set the
 input and output formats, and you can go to the options menu.
 
-Note that if `menu-bar-mode` is active, `pandoc-mode` also provides a
-menu in the menu bar. It has the same structure as the hydra menu and it
-has the advantage that options that do not apply to the current file
-(due to its input or output format), are generally greyed out. On the
-other hand, the hydra menu shows the value of the options and allows you
-to change more than one option without having to keep reopening the
-menu. The menu bar menu disappears when you select an option, the hydra
-menu (generally) does not. Instead, it can be dismissed with `q`. Below,
-I talk about the hydra menu specifically, but most of what is said
-applies to the menu bar menu as well.
+Note that if the menu bar is active, `pandoc-mode` also provides a menu
+in the menu bar. It has the same structure as the hydra menu and it has
+the advantage that options that do not apply to the current file (due to
+its input or output format), are generally greyed out. On the other
+hand, the hydra menu shows the value of the options and allows you to
+change more than one option without having to keep reopening the menu.
+The menu bar menu disappears when you select an option, the hydra menu
+(generally) does not. Instead, it can be dismissed with `q`. Below, I
+talk about the hydra menu specifically, but most of what is said applies
+to the menu bar menu as well.
 
 In the options menu, you can set options for running `pandoc` on your
 input file. All Pandoc options can be set from the menu (except for one
@@ -199,13 +194,18 @@ This makes it easier to share settings files between computers with
 different OSes (for example, Linux expands `~` to `/home/<user>`, while
 on OS X it becomes `/Users/<user>`).
 
-File options may have a default value (although currently, this is only
-the case for `--epub-stylesheet`). Such options can be specified on the
-`pandoc` command line without naming a file. To select such a default
-value for a file option, use a numeric prefix argument, which in the
-hydra menu is obtained by pressing a number without the meta key. That
-is, to select the default EPUB style sheet, go to the EPUB options menu
-(`C-/ o s E`) and press `1 s`.
+Note that if you use a minibuffer completion framework (such as
+[Ivy](https://github.com/abo-abo/swiper) or
+[Helm](https://github.com/emacs-helm/helm)), file name completion may
+work differently. Ivy, for example, always expands file names.
+
+Some file options (such as `--epub-stylesheet`) may have a default
+value. Such options can be specified on the `pandoc` command line
+without naming a file. To select such a default value for a file option,
+use a numeric prefix argument, which in the hydra menu is obtained by
+pressing a number without the meta key. That is, to select the default
+EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press `1
+s`.
 
 Options that are not files or numbers are “string options”, which
 include options that specify a URL. These may also have a default value,
@@ -315,16 +315,22 @@ that the input file is in.
 ## Creating a pdf
 
 The second item in the main menu is “Create PDF” (invoked with `C-c /
-p`). This option calls Pandoc with a PDF file as output file. In order
-for Pandoc to create a PDF, the output format must be `latex`,
-`context`, `beamer`, `html`, or `ms`. If the current buffer’s output
-format is one of these, `C-c / p` creates the PDF using that format.
+p`). This option calls Pandoc with a PDF file as output file. Pandoc
+offers different ways of creating a PDF file: you can use LaTeX, an
+HTML-to-PDF converter, or groff. Which method is used depends on the
+output format you specify, because Pandoc creates a PDF file by first
+converting your input file to the specified output format and then
+calling the pdf converter on the output file.
 
-If the current output format is set to something else, Emacs asks you
-which output format to use. If there is a settings file for the output
-format you specify, it is used to create the PDF. (The current buffer’s
-settings aren’t changed, however.) If there is no settings file, Pandoc
-is called with only the input and output formats and the output file.
+When creating a PDF using `pandoc-mode`, Emacs first checks if the
+output format of the current buffer is set to `latex`, `context`,
+`beamer`, `html`, or `ms`. If it is, `C-c / p` creates the PDF using
+that format. If the current output format is set to something else,
+Emacs asks you which output format to use. If there is a settings file
+for the output format you specify, it is used to create the PDF. (The
+current buffer’s settings aren’t changed, however.) If there is no
+settings file, Pandoc is called with only the input and output formats
+and the output file.
 
 The format you choose is remembered (at least until you close the buffer
 or change the output format), so that the next time you convert the
@@ -525,7 +531,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 13 Jun 2019”.
+`@@date{Cologne}` to get “Cologne, 10 Jul 2019”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in
