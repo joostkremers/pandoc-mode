@@ -551,12 +551,14 @@ pandoc is always run on the master file)."
   ;; TODO When the region is active, it might be nice to run pandoc on the
   ;; region but use the master file's settings.
   (interactive "P")
-  (cond
-   ((member (pandoc--get 'write) pandoc--pdf-able-formats)
-    (setq pandoc--output-format-for-pdf t))
-   ((or (not pandoc--output-format-for-pdf)
-        (and (listp prefix) (eq (car prefix) 4)))
-    (setq pandoc--output-format-for-pdf (completing-read "Specify output format for pdf creation: " pandoc--pdf-able-formats nil t nil nil (car pandoc--pdf-able-formats)))))
+  (let ((ask (and (listp prefix) (eq (car prefix) 4))))
+    (cond
+     ((and (not ask)
+           (member (pandoc--get 'write) pandoc--pdf-able-formats))
+      (setq pandoc--output-format-for-pdf t)) ; Use buffer's output format and settings.
+     ((or ask
+          (not pandoc--output-format-for-pdf))
+      (setq pandoc--output-format-for-pdf (completing-read "Specify output format for pdf creation: " pandoc--pdf-able-formats nil t nil nil (car pandoc--pdf-able-formats))))))
   (pandoc--call-external pandoc--output-format-for-pdf t (when (use-region-p) (cons (region-beginning) (region-end)))))
 
 (defun pandoc-set-default-format ()
