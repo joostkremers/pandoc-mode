@@ -325,29 +325,32 @@ calling the pdf converter on the output file.
 When creating a PDF using `pandoc-mode`, Emacs first checks if the
 output format of the current buffer is set to `latex`, `context`,
 `beamer`, `html`, or `ms`. If it is, `C-c / p` creates the PDF using
-that format. If the current output format is set to something else,
-Emacs asks you which output format to use. If there is a settings file
-for the output format you specify, it is used to create the PDF. (The
-current buffer’s settings aren’t changed, however.) If there is no
+that format. If you want to bypass this automatic detection, use a
+prefix argument `C-u` (i.e., type `C-c / C-u p`). Emacs will then ask
+you for the output format to use.
+
+If the buffer’s current output format does not allow for PDF creation,
+Emacs will ask you which output format to use. If there is a settings
+file for the output format you specify, it is used to create the PDF.
+(The current buffer’s settings aren’t changed, however.) If there is no
 settings file, Pandoc is called with only the input and output formats
 and the output file.
 
 The format you choose is remembered (at least until you close the buffer
 or change the output format), so that the next time you convert the
-buffer to PDF, you are not asked for the format again. If you wish to
-use a different format for PDF creation, use a prefix argument `C-u`.
-(That is, the key sequence to type is `C-c / C-u p`.)
+buffer to PDF, you are not asked for the format again. If you want to
+use a different format, use the prefix argument `C-u`.
 
 This setup means that you do not need to switch the output format to
-`latex`, `context` or `html5` in order to create a PDF, which can be
-practical if you’re also converting to another format. However, if you
-wish to change settings for PDF output, you **do** need to switch to the
-relevant output format.
+`latex`, `context` or `html5` every time you wish to create a PDF, which
+can be practical if you’re also converting to another format. However,
+if you wish to change settings for PDF output, you **do** need to switch
+to the relevant output format.
 
-Note that for `latex`, `beamer` and `html`, you can use different pdf
+Note that for `latex`, `beamer` and `html`, you can use different PDF
 engines. For `latex` and `beamer`, these are `pdflatex` (the default),
 `xelatex` and `lualatex`, for `html` there are `wkhtmltopdf` (the
-default), `weasyprint` and `prince`. If you wish to use a pdf engine
+default), `weasyprint` and `prince`. If you wish to use a PDF engine
 other than the default, you need to set the option `pdf-engine`.
 
 ## Connection Type
@@ -531,7 +534,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 10 Jul 2019”.
+`@@date{Cologne}` to get “Cologne, 11 Jul 2019”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in

@@ -125,13 +125,15 @@ The output file you set is always just the base filename, it does not specify a 
 
 The second item in the main menu is "Create PDF" (invoked with `C-c / p`). This option calls Pandoc with a PDF file as output file. Pandoc offers different ways of creating a PDF file: you can use LaTeX, an HTML-to-PDF converter, or groff. Which method is used depends on the output format you specify, because Pandoc creates a PDF file by first converting your input file to the specified output format and then calling the pdf converter on the output file.
 
-When creating a PDF using `pandoc-mode`, Emacs first checks if the output format of the current buffer is set to `latex`, `context`, `beamer`, `html`, or `ms`. If it is, `C-c / p` creates the PDF using that format. If the current output format is set to something else, Emacs asks you which output format to use. If there is a settings file for the output format you specify, it is used to create the PDF. (The current buffer's settings aren't changed, however.) If there is no settings file, Pandoc is called with only the input and output formats and the output file.
+When creating a PDF using `pandoc-mode`, Emacs first checks if the output format of the current buffer is set to `latex`, `context`, `beamer`, `html`, or `ms`. If it is, `C-c / p` creates the PDF using that format. If you want to bypass this automatic detection, use a prefix argument `C-u` (i.e., type `C-c / C-u p`). Emacs will then ask you for the output format to use.
 
-The format you choose is remembered (at least until you close the buffer or change the output format), so that the next time you convert the buffer to PDF, you are not asked for the format again. If you wish to use a different format for PDF creation, use a prefix argument `C-u`. (That is, the key sequence to type is `C-c / C-u p`.)
+If the buffer's current output format does not allow for PDF creation, Emacs will ask you which output format to use. If there is a settings file for the output format you specify, it is used to create the PDF. (The current buffer's settings aren't changed, however.) If there is no settings file, Pandoc is called with only the input and output formats and the output file.
 
-This setup means that you do not need to switch the output format to `latex`, `context` or `html5` in order to create a PDF, which can be practical if you're also converting to another format. However, if you wish to change settings for PDF output, you **do** need to switch to the relevant output format.
+The format you choose is remembered (at least until you close the buffer or change the output format), so that the next time you convert the buffer to PDF, you are not asked for the format again. If you want to use a different format, use the prefix argument `C-u`.
 
-Note that for `latex`, `beamer` and `html`, you can use different pdf engines. For `latex` and `beamer`, these are `pdflatex` (the default), `xelatex` and `lualatex`, for `html` there are `wkhtmltopdf` (the default), `weasyprint` and `prince`. If you wish to use a pdf engine other than the default, you need to set the option `pdf-engine`.
+This setup means that you do not need to switch the output format to `latex`, `context` or `html5` every time you wish to create a PDF, which can be practical if you're also converting to another format. However, if you wish to change settings for PDF output, you **do** need to switch to the relevant output format.
+
+Note that for `latex`, `beamer` and `html`, you can use different PDF engines. For `latex` and `beamer`, these are `pdflatex` (the default), `xelatex` and `lualatex`, for `html` there are `wkhtmltopdf` (the default), `weasyprint` and `prince`. If you wish to use a PDF engine other than the default, you need to set the option `pdf-engine`.
 
 
 ## Connection Type ##
