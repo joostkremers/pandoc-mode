@@ -1199,7 +1199,7 @@ evaluated."
 (define-pandoc-list-option   epub-embed-font    (epub "f" "%-18s") file "EPUB Fonts"         "EPUB Embedded Font")
 (define-pandoc-file-option   epub-metadata      (epub "m" "%-18s")      "EPUB Metadata File")
 (define-pandoc-file-option   epub-cover-image   (epub "C" "%-18s")      "EPUB Cover Image")
-(define-pandoc-file-option   epub-stylesheet    (epub "s" "%-18s")      "EPUB Style Sheet" 'default)
+(define-pandoc-file-option   epub-stylesheet    (epub "s" "%-18s")      "EPUB Style Sheet" t)
 
 
 ;;; Citation rendering
@@ -1211,15 +1211,15 @@ evaluated."
 
 
 ;;; Math rendering in HTML
-(define-pandoc-string-option katex-stylesheet (math "K" "%-18s") "KaTeX Stylesheet"    'default)
-(define-pandoc-string-option katex            (math "k" "%-18s") "KaTeX URL"           'default)
-(define-pandoc-string-option webtex           (math "w" "%-18s") "WebTeX URL"          'default)
-(define-pandoc-string-option mimetex          (math "M" "%-18s") "MimeTeX CGI Script*" 'default)
+(define-pandoc-string-option katex-stylesheet (math "K" "%-18s") "KaTeX Stylesheet"    t)
+(define-pandoc-string-option katex            (math "k" "%-18s") "KaTeX URL"           t)
+(define-pandoc-string-option webtex           (math "w" "%-18s") "WebTeX URL"          t)
+(define-pandoc-string-option mimetex          (math "M" "%-18s") "MimeTeX CGI Script*" t)
 (define-pandoc-switch        gladtex          (math "g" "%-18s") "gladTeX")
-(define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"         'default)
-(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL*"         'default)
+(define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"         t)
+(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL*"         t)
 (define-pandoc-switch        mathml           (math "m" "%-18s") "MathML URL")
-(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL*"    'default)
+(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL*"    t)
 
 (provide 'pandoc-mode-utils)
 
