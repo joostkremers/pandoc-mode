@@ -480,12 +480,12 @@ also ignored in this case."
                 (coding-system-for-write 'utf-8)
                 (log-success (lambda (file binary)
                                (pandoc--log 'message "%s: %s finished successfully"
-                                      (file-name-nondirectory file)
-                                      (file-name-nondirectory binary))))
+                                            (file-name-nondirectory file)
+                                            (file-name-nondirectory binary))))
                 (log-failure (lambda (file binary)
                                (pandoc--log 'message "%s: Error in %s process"
-                                      (file-name-nondirectory file)
-                                      (file-name-nondirectory binary)))))
+                                            (file-name-nondirectory file)
+                                            (file-name-nondirectory binary)))))
             (cond
              (pandoc-use-async
               (let* ((process-connection-type pandoc-process-connection-type)
@@ -515,13 +515,13 @@ If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
-                       (completing-read "Output format to use: "
-                                        (pandoc--extract-formats 'output)
-                                        nil t)
-                     t)
-                   nil
-                   (if (use-region-p)
-                       (cons (region-beginning) (region-end)))))
+                             (completing-read "Output format to use: "
+                                              (pandoc--extract-formats 'output)
+                                              nil t)
+                           t)
+                         nil
+                         (if (use-region-p)
+                             (cons (region-beginning) (region-end)))))
 
 (defvar-local pandoc--output-format-for-pdf nil
   "Output format used to for pdf conversion.
@@ -570,10 +570,10 @@ files.  (Therefore, this function is not available on Windows.)"
       (message "This option is not available on MS Windows")
     (let ((current-settings-file
            (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
-                                                               (pandoc--get 'write))))
+                                                                     (pandoc--get 'write))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
-                                                               (pandoc--get 'write)))))
+                                                                     (pandoc--get 'write)))))
       (when (not (file-exists-p current-settings-file))
         (pandoc--save-settings 'local (pandoc--get 'write)))
       (make-symbolic-link current-settings-file
@@ -656,9 +656,9 @@ This function is for use in `pandoc-mode-hook'."
 If NO-CONFIRM is t, no confirmation is asked if the current
 settings have not been saved."
   (pandoc--load-settings-for-file (when (buffer-file-name)
-                              (expand-file-name (buffer-file-name)))
-                            format
-                            no-confirm))
+                                    (expand-file-name (buffer-file-name)))
+                                  format
+                                  no-confirm))
 
 (defun pandoc--load-settings-for-file (file format &optional no-confirm)
   "Load the settings file of FILE for FORMAT.
@@ -854,10 +854,10 @@ with any other prefix argument, the output file is created on the
 basis of the input file and the output format."
   (interactive "P")
   (pandoc--set 'output
-         (cond
-          ((eq prefix '-) nil)
-          ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
-          (t t))))
+               (cond
+                ((eq prefix '-) nil)
+                ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
+                (t t))))
 
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
@@ -866,9 +866,9 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 means use $HOME/.pandoc."
   (interactive "P")
   (pandoc--set 'data-dir
-         (if (eq prefix '-)
-             nil
-           (read-directory-name "Data directory: " nil nil t))))
+               (if (eq prefix '-)
+                   nil
+                 (read-directory-name "Data directory: " nil nil t))))
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
@@ -877,9 +877,9 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 which means use the directory of the input file."
   (interactive "P")
   (pandoc--set 'output-dir
-         (if (eq prefix '-)
-             nil
-           (read-directory-name "Output directory: " nil nil t))))
+               (if (eq prefix '-)
+                   nil
+                 (read-directory-name "Output directory: " nil nil t))))
 
 (defun pandoc-set-extract-media (prefix)
   "Set the option `Extract media'.
@@ -887,9 +887,9 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 `\\[negative-argument]'), no media files are extracted."
   (interactive "P")
   (pandoc--set 'extract-media
-         (if (eq prefix '-)
-             nil
-           (read-directory-name "Extract media files to directory: " nil nil t))))
+               (if (eq prefix '-)
+                   nil
+                 (read-directory-name "Extract media files to directory: " nil nil t))))
 
 (defun pandoc-set-file-scope (prefix)
   "Set the option `File scope'.
@@ -905,8 +905,8 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 means the current file is the master file."
   (interactive "P")
   (pandoc--set 'master-file (cond
-                       ((eq prefix '-) nil)
-                       (t (pandoc--read-file-name "Master file: " default-directory (not prefix))))))
+                             ((eq prefix '-) nil)
+                             (t (pandoc--read-file-name "Master file: " default-directory (not prefix))))))
 
 (defun pandoc-set-this-file-as-master ()
   "Set the current file as master file.
@@ -931,12 +931,12 @@ argument, the option is toggled."
                                                                      (t "Set")))
                                               pandoc--switches nil t) pandoc--switches))))
     (pandoc--set option (cond
-                   ((eq prefix '-) nil)
-                   ((null prefix) (not (pandoc--get option)))
-                   (t t)))
+                         ((eq prefix '-) nil)
+                         ((null prefix) (not (pandoc--get option)))
+                         (t t)))
     (message "Option `%s' %s." (car (rassq option pandoc--switches)) (if (pandoc--get option)
-                                                                   "set"
-                                                                 "unset"))))
+                                                                         "set"
+                                                                       "unset"))))
 
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
   `("Pandoc"

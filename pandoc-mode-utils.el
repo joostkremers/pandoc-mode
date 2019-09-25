@@ -725,11 +725,11 @@ or T and indicates whether the option can have a default value."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                    (cond
-                     ((eq prefix '-) nil) ; C-u - or M--
-                     ((listp prefix) ; no prefix or C-u
-                      (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
-                     (t ,default))))))) ; any other prefix
+                          (cond
+                           ((eq prefix '-) nil) ; C-u - or M--
+                           ((listp prefix) ; no prefix or C-u
+                            (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
+                           (t ,default))))))) ; any other prefix
 
 (defmacro define-pandoc-number-option (option hydra prompt)
   "Define OPTION as a numeric option.
@@ -779,9 +779,9 @@ formulated in such a way that the strings \"Default \" and \"Set
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                    (if (eq prefix '-)
-                        nil
-                      (string-to-number (read-string ,(concat prompt ": ")))))))))
+                          (if (eq prefix '-)
+                              nil
+                            (string-to-number (read-string ,(concat prompt ": ")))))))))
 
 (defmacro define-pandoc-string-option (option hydra prompt &optional default)
   "Define OPTION as a string option.
@@ -838,10 +838,10 @@ or T and indicates whether the option can have a default value."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                    (cond
-                     ((eq prefix '-) nil)
-                     ((null prefix) (read-string ,(concat prompt ": ")))
-                     (t ,default)))))))
+                          (cond
+                           ((eq prefix '-) nil)
+                           ((null prefix) (read-string ,(concat prompt ": ")))
+                           (t ,default)))))))
 
 (defmacro define-pandoc-list-option (option hydra type description prompt)
   "Define OPTION as a list option.
@@ -1015,13 +1015,13 @@ menu."
            (lambda (prefix)
              (interactive "P")
              (pandoc--set (quote ,option)
-                    (if (eq prefix '-)
-                        nil
-                      (let ((value (completing-read ,(format "Set %s: " prompt) (quote ,choices) nil t)))
-                        (if (or (not value)
-                                (member value '("" (car ,choices))))
-                            nil
-                          value))))))))
+                          (if (eq prefix '-)
+                              nil
+                            (let ((value (completing-read ,(format "Set %s: " prompt) (quote ,choices) nil t)))
+                              (if (or (not value)
+                                      (member value '("" (car ,choices))))
+                                  nil
+                                value))))))))
 
 (defun pandoc--trim-right-padding (strings)
   "Trim right padding in STRINGS.
