@@ -740,7 +740,7 @@ options and their values."
           options)
     pandoc--local-settings))
 
-(defun pandoc-view-output ()
+(defun pandoc-view-output-buffer ()
   "Displays the *Pandoc output* buffer."
   (interactive)
   (display-buffer pandoc--output-buffer-name))
@@ -942,7 +942,7 @@ argument, the option is toggled."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
-    ["View Output Buffer" pandoc-view-output :active t]
+    ["View Output Buffer" pandoc-view-output-buffer :active t]
     ["View Log Buffer" pandoc-view-log :active t]
     ("Settings Files"
      ["Save File Settings" pandoc-save-settings-file :active t]
@@ -1080,7 +1080,7 @@ _o_: Options
 "
   ("r" pandoc-run-pandoc)
   ("p" pandoc-convert-to-pdf)
-  ("V" pandoc-view-output)
+  ("V" pandoc-view-output-buffer)
   ("S" pandoc-view-settings)
   ("L" pandoc-view-log)
   ("I" pandoc-input-format-hydra/body)

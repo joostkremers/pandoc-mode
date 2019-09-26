@@ -643,7 +643,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 11 Jul 2019”.
+‘@@date{Cologne}’ to get “Cologne, 26 Sep 2019”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -787,7 +787,7 @@ following in your init file:
   (define-key 'pandoc-mode-map "C-c / f" #'pandoc-set-master-file)
   (define-key 'pandoc-mode-map "C-c / m" #'pandoc-set-metadata)
   (define-key 'pandoc-mode-map "C-c / v" #'pandoc-set-variable)
-  (define-key 'pandoc-mode-map "C-c / V" #'pandoc-view-output)
+  (define-key 'pandoc-mode-map "C-c / V" #'pandoc-view-output-buffer)
   (define-key 'pandoc-mode-map "C-c / S" #'pandoc-view-settings)
   (define-key 'pandoc-mode-map "C-c / c" #'pandoc-insert-@)
   (define-key 'pandoc-mode-map "C-c / C" #'pandoc-select-@))

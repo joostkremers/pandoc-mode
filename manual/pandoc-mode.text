@@ -286,7 +286,7 @@ The hydra package provides a nice way to control `pandoc-mode` and to set all th
   (define-key 'pandoc-mode-map "C-c / f" #'pandoc-set-master-file)
   (define-key 'pandoc-mode-map "C-c / m" #'pandoc-set-metadata)
   (define-key 'pandoc-mode-map "C-c / v" #'pandoc-set-variable)
-  (define-key 'pandoc-mode-map "C-c / V" #'pandoc-view-output)
+  (define-key 'pandoc-mode-map "C-c / V" #'pandoc-view-output-buffer)
   (define-key 'pandoc-mode-map "C-c / S" #'pandoc-view-settings)
   (define-key 'pandoc-mode-map "C-c / c" #'pandoc-insert-@)
   (define-key 'pandoc-mode-map "C-c / C" #'pandoc-select-@))
