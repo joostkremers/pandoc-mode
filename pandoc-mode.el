@@ -929,7 +929,8 @@ argument, the option is toggled."
                                                                      ((eq prefix '-) "Unset")
                                                                      ((null prefix) "Toggle")
                                                                      (t "Set")))
-                                              pandoc--switches nil t) pandoc--switches))))
+                                              pandoc--switches nil t)
+                             pandoc--switches))))
     (pandoc--set option (cond
                          ((eq prefix '-) nil)
                          ((null prefix) (not (pandoc--get option)))
