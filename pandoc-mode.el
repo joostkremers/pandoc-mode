@@ -438,19 +438,19 @@ also ignored in this case."
       (setq filename (concat "./" (cl-remove-if-not (lambda (c)
                                                       (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
                                                     (buffer-name)))))
-    ;; if there's a master file, ignore the region
+    ;; If there's a master file, ignore the region.
     (if (pandoc--get 'master-file)
         (setq region nil))
     ;; keep track of the buffer-local value of `pandoc-binary', if there is one
     (setq pandoc--local-binary (buffer-local-value 'pandoc-binary buffer))
     (with-current-buffer buffer
-      ;; we use with-current-buffer so that we can work on the master file
-      ;; if there is one. we then change to a temp buffer, so we can
+      ;; We use with-current-buffer so that we can work on the master file
+      ;; if there is one. We then change to a temp buffer, so we can
       ;; process @@-directives without having to undo them and set the
       ;; options independently of the original buffer.
       (with-temp-buffer
         (cond
-         ;; if an output format was provided, try and load a settings file for it
+         ;; If an output format was provided, try and load a settings file for it.
          ((stringp output-format)
           (unless (and filename
                        (pandoc--load-settings-for-file (expand-file-name filename) output-format t))
@@ -458,12 +458,12 @@ also ignored in this case."
             (setq pandoc--local-settings (copy-tree pandoc--options))
             (pandoc--set 'write output-format)
             (pandoc--set 'read (pandoc--get 'read buffer))))
-         ;; if no output format was provided, we use BUFFER's options,
+         ;; If no output format was provided, we use BUFFER's options,
          ;; except the output format, which we take from ORIG-BUFFER:
          ((eq output-format t)
           (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
           (pandoc--set 'write (pandoc--get 'write orig-buffer))))
-        ;; copy any local `pandoc/' variables from `orig-buffer' or
+        ;; Copy any local `pandoc/' variables from `orig-buffer' or
         ;; `buffer' (the values in `orig-buffer' take precedence):
         (dolist (option (pandoc--get-file-local-options (list orig-buffer buffer)))
           (set (make-local-variable (car option)) (cdr option)))
