@@ -441,7 +441,7 @@ List of options and their default values.  For each buffer in
 which pandoc-mode is activated, a buffer-local copy of this list
 is made that stores the local values of the options.  The
 `define-pandoc-*-option' functions add their options to this list
-with the default value NIL.")
+with the default value nil.")
 
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
