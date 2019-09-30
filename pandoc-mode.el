@@ -260,25 +260,49 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
   "Create the output option for calling Pandoc.
 INPUT-FILE is the name of the input file.  PDF is t if the output
 file is a pdf file.  Return a string that can be added to the
-call to Pandoc."
+call to Pandoc.  If the buffer's current settings do not define
+at output file, return nil."
+  (let ((output-file (pandoc--compose-output-file-name pdf input-file)))
+    (when output-file
+      (concat "--output=" output-file))))
+
+(defun pandoc--compose-output-file-name (&optional pdf input-file)
+  "Create an output file name for the current buffer based on INPUT-FILE.
+If INPUT-FILE is non-nil, use the file the current buffer is
+visiting.  If the current buffer's output file is set to t, or if
+the target format is odt, epub or docx, create an output file
+name based on INPUT-FILE.  If an output directory is set, use
+this directory, otherwise use the directory of INPUT-FILE (which
+should be a fully qualified file path).
+
+If an explicit output file is set, use that file, combined with
+the output directory, if given.  If an output file name is set
+but no output directory, use the directory of INPUT-FILE.
+
+If PDF is non-nil, use `pdf' as the extension.
+
+If the current buffer's settings do not specify an output
+file (i.e., if the output file is set to nil), return nil."
+  (or input-file
+      (setq input-file (expand-file-name (buffer-file-name))))
   (cond
-   ((or (eq (pandoc--get 'output) t) ; if the user set the output file to T
+   ((or (eq (pandoc--get 'output) t) ; If the user set the output file to T
         (and (null (pandoc--get 'output)) ; or if the user set no output file but either
-             (or pdf                    ; (i) we're converting to pdf, or
+             (or pdf            ; (i) we're converting to pdf, or
                  (member (pandoc--get 'write) ; (ii) the output format is odt, epub or docx
                          '("odt" "epub" "docx")))))
-    (format "--output=%s/%s%s"          ; we create an output file name.
+    (format "%s/%s%s"  ; we create an output file name.
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
             (file-name-sans-extension (file-name-nondirectory input-file))
             (if pdf
                 ".pdf"
               (cadr (assoc (pandoc--get 'write) pandoc-output-format-extensions)))))
-   ((stringp (pandoc--get 'output)) ; if the user set an output file,
-    (format "--output=%s/%s"      ; we combine it with the output directory
+   ((stringp (pandoc--get 'output)) ; If the user set an output file,
+    (format "%s/%s"   ; we combine it with the output directory
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
-            (if pdf                  ; and check if we're converting to pdf
+            (if pdf             ; and check if we're converting to pdf.
                 (concat (file-name-sans-extension (pandoc--get 'output)) ".pdf")
               (pandoc--get 'output))))
    (t nil)))
@@ -424,6 +448,7 @@ If the current buffer's \"master file\" option is set, that file
 is processed instead.  The output format is taken from the current
 buffer, however, unless one is provided specifically.  REGION is
 also ignored in this case."
+  (setq pandoc--last-run-was-pdf pdf)
   (let* ((orig-buffer (current-buffer))
          (buffer (if (pandoc--get 'master-file)
                      (find-file-noselect (pandoc--get 'master-file))
@@ -745,6 +770,29 @@ options and their values."
   (interactive)
   (display-buffer pandoc--output-buffer-name))
 
+(defun pandoc-view-output-file (&optional arg)
+  "Display the output file.
+Try to display the output file defined by the current buffer's
+`output' and `output-dir' options.  If the most recent call to
+Pandoc created a pdf, or if ARG is non-nil (i.e., when called
+with a prefix argument), try to display a pdf output file."
+  (interactive "P")
+  (let ((file (pandoc--compose-output-file-name (or arg pandoc--last-run-was-pdf))))
+    (if file
+        (let ((handler (cadr (assoc-string (pandoc--get 'write) pandoc-viewers))))
+          (cond
+           ((stringp handler)
+            (start-process "pandoc-viewer" pandoc--viewer-buffer-name handler file))
+           ((eq handler 'emacs)
+            (let ((buffer (find-file-noselect file)))
+              (if buffer
+                  (display-buffer buffer)
+                (error "Could not open %s" file))))
+           ((functionp handler)
+            (funcall handler file))
+           (t (error "No viewer defined for output format %s" (pandoc--get 'write)))))
+      (error "No output file defined"))))
+
 (defun pandoc-view-settings ()
   "Displays the settings file in a *Help* buffer."
   (interactive)
@@ -943,6 +991,7 @@ argument, the option is toggled."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
+    ["View Output File" pandoc-view-output-file :active t]
     ["View Output Buffer" pandoc-view-output-buffer :active t]
     ["View Log Buffer" pandoc-view-log :active t]
     ("Settings Files"
@@ -1071,24 +1120,25 @@ argument, the option is toggled."
   "
 Main menu
 
-_r_: Run Pandoc               _I_: Input format
-_p_: Convert to pdf           _O_: Output format
+_r_: Run Pandoc               _o_: Options
+_p_: Convert to pdf           _I_: Input format
+_v_: View output file         _O_: Output format
 _V_: View output buffer       _s_: Settings files
 _S_: View current settings    _e_: Example lists
 _L_: View log buffer
-_o_: Options
 
 "
   ("r" pandoc-run-pandoc)
   ("p" pandoc-convert-to-pdf)
+  ("v" pandoc-view-output-file)
   ("V" pandoc-view-output-buffer)
   ("S" pandoc-view-settings)
   ("L" pandoc-view-log)
+  ("o" pandoc-options-hydra/body)
   ("I" pandoc-input-format-hydra/body)
   ("O" pandoc-output-format-hydra/body)
   ("s" pandoc-settings-file-hydra/body)
   ("e" pandoc-@-hydra/body)
-  ("o" pandoc-options-hydra/body)
   ("q" nil "Quit"))
 
 ;; Input and Output formats hydras

@@ -318,6 +318,83 @@ possible to customize the extensions."
   :group 'pandoc
   :type '(repeat :tag "Output Format" (list (string :tag "Format") (string :tag "Extension"))))
 
+(defcustom pandoc-viewers
+  '(("asciidoc"          emacs)
+    ("beamer"            emacs)
+    ("commonmark"        emacs)
+    ("context"           emacs)
+    ("docbook"           nil)
+    ("docbook4"          nil)
+    ("docbook5"          nil)
+    ("docx"              "libreoffice")
+    ("dokuwiki"          emacs)
+    ("dzslides"          browe-url)
+    ("epub"              nil)
+    ("epub2"             nil)
+    ("epub3"             nil)
+    ("fb2"               nil)
+    ("gfm"               emacs)
+    ("haddock"           emacs)
+    ("html"              browse-url)
+    ("html4"             browse-url)
+    ("html5"             browse-url)
+    ("icml"              nil)
+    ("ipynb"             nil)
+    ("jats"              nil)
+    ("json"              emacs)
+    ("latex"             emacs)
+    ("man"               emacs)
+    ("markdown"          emacs)
+    ("markdown_github"   emacs)
+    ("markdown_mmd"      emacs)
+    ("markdown_phpextra" emacs)
+    ("markdown_strict"   emacs)
+    ("mediawiki"         emacs)
+    ("ms"                emacs)
+    ("muse"              emacs)
+    ("native"            emacs)
+    ("odt"               "libreoffice")
+    ("opendocument"      "liberoffice")
+    ("opml"              nil)
+    ("org"               emacs)
+    ("plain"             emacs)
+    ("pptx"              "libreoffice")
+    ("revealjs"          browse-url)
+    ("rst"               emacs)
+    ("rtf"               "libreoffice")
+    ("s5"                browse-url)
+    ("slideous"          browse-url)
+    ("slidy"             browse-url)
+    ("tei"               nil)
+    ("texinfo"           emacs)
+    ("textile"           emacs)
+    ("zimwiki"           emacs))
+  "List of Pandoc output formats and their associated file viewers.
+This option defines the viewers used in
+`pandoc-view-output-file'.  The viewer can be a string, in which
+case it is assumed to be a shell command, which is executed
+through `start-process'.  The viewer can also be an Emacs
+function, which is passed the full file name of the output file.
+Lastly, the viewer can be the symbol `emacs', in which case the
+output file is opened in Emacs with `find-file-noselect' and
+displayed with `display-buffer'."
+  :group 'pandoc
+  :type '(repeat :tag "File viewers" (list (string :tag "Format") (choice (const :tag "No viewer defined" nil)
+                                                                          (string :tag "External viewer")
+                                                                          (const :tag "Use Emacs" emacs)
+                                                                          (function :tag "Use a specific function")))))
+
+(defcustom pandoc-pdf-viewer 'emacs
+  "Viewer for pdf files.
+This can be the symbol `emacs', in which case the pdf file is
+opened with `find-file-noselect' and displayed with
+`display-buffer'.  The value can also be a string, in which case
+it is assumed to be an external viewer, which is called with
+`start-process'."
+  :group 'pandoc
+  :type '(choice (const :tag "Use Emacs" emacs)
+                 (string :tag "Use external viewer")))
+
 (defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms")
   "List of output formats that can be used to generate pdf output.")
 
@@ -447,8 +524,13 @@ with the default value nil.")
 
 (defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
+(defvar-local pandoc--last-run-was-pdf nil "Flag indicating whether the most recent call to Pandoc created a pdf file.
+This is used in `pandoc-view-output-file' to determine whether to
+show the pdf file or a non-pdf output file.")
+
 (defvar pandoc--output-buffer-name " *Pandoc output*")
 (defvar pandoc--log-buffer-name " *Pandoc log*")
+(defvar pandoc--viewer-buffer-name " *Pandoc viewer*")
 
 (defvar pandoc--options-menu nil
   "Auxiliary variable for creating the options menu.")
