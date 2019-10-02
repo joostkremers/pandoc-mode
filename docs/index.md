@@ -416,7 +416,7 @@ show the `*Pandoc output*` buffer, which is where the output of the call
 to Pandoc is captured.
 
 If the most recent Pandoc run returned an error, trying to view the
-output file will result in an error, unless you provide a prefix
+output file will result in an error as well, unless you provide a prefix
 argument (`C-c / C-u v`), in which case Emacs will try to display the
 output file defined by the `output directory` and `output file`
 settings.

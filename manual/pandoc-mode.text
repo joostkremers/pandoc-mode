@@ -152,7 +152,7 @@ If you want to open the output file automatically after conversion, you can add 
 
 If you try to view an output file before calling Pandoc (e.g., after reopening the input file), Emacs will try to display the output file defined by the `output directory` and `output file` settings. If no output file is defined at all (which means that Pandoc does not create an output file but instead sends its output to standard out), Emacs will show the `*Pandoc output*` buffer, which is where the output of the call to Pandoc is captured.
 
-If the most recent Pandoc run returned an error, trying to view the output file will result in an error, unless you provide a prefix argument (`C-c / C-u v`), in which case Emacs will try to display the output file defined by the `output directory` and `output file` settings.
+If the most recent Pandoc run returned an error, trying to view the output file will result in an error as well, unless you provide a prefix argument (`C-c / C-u v`), in which case Emacs will try to display the output file defined by the `output directory` and `output file` settings.
 
 
 ## Connection Type ##

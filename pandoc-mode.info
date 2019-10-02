@@ -138,6 +138,7 @@ below.)
 * Running Pandoc::
 * Setting an output file::
 * Creating a pdf::
+* Viewing the output::
 * Connection Type::
 * Citation Jumping::
 
@@ -390,7 +391,7 @@ output directory, the output file will be written to the same directory
 that the input file is in.
 
 
-File: pandoc-mode.info,  Node: Creating a pdf,  Next: Connection Type,  Prev: Setting an output file,  Up: Usage
+File: pandoc-mode.info,  Node: Creating a pdf,  Next: Viewing the output,  Prev: Setting an output file,  Up: Usage
 
 3.6 Creating a pdf
 ==================
@@ -435,9 +436,81 @@ default), ‘weasyprint’ and ‘prince’.  If you wish to use a PDF engine
 other than the default, you need to set the option ‘pdf-engine’.
 
 
-File: pandoc-mode.info,  Node: Connection Type,  Next: Citation Jumping,  Prev: Creating a pdf,  Up: Usage
+File: pandoc-mode.info,  Node: Viewing the output,  Next: Connection Type,  Prev: Creating a pdf,  Up: Usage
 
-3.7 Connection Type
+3.7 Viewing the output
+======================
+
+After running Pandoc, you can view the output file with the option ‘View
+output file’ in the menu (or ‘C-c / v’).  Emacs will try to display the
+file created during the most recent Pandoc run.  Which viewer is used to
+display the output file depends on the output format.  (And not on the
+output file’s extension, so that you can use different viewers for
+different output formats, even if their file extensions are identical.
+For example, ‘docbook’, ‘jats’and ‘tei’ all use ‘xml’ as the file
+extension, but you may not want to use the same viewer for all of them).
+
+Viewers are defined in the customisation option ‘pandoc-viewers’.  There
+are three types of viewers: you can choose to use Emacs itself as the
+file viewer, in which case the output file is opened in Emacs and
+displayed using ‘display-buffer’.  It is also possible to define an
+external viewer, which should then be a program that takes a file
+argument on the command line.  For example, word processor formats
+(‘odt’, ‘docx’) and Powerpoint presentations (‘pptx’) are by default
+opened in LibreOffice, which can be called with the shell command
+‘libreoffice <filename>’.
+
+Lastly, it is also possible to specify a specific Emacs function to
+handle the file.  This should be a function that takes a file name as
+argument.  The function can pass on the file to an external program
+(HTML-based formats, for example, are by default handled by the function
+‘browse-url’, which sends the file to a suitable browser), or it can
+arrange to open the file in Emacs, if the standard ‘find-file-noselect’
+is not suitable.  Note, though, that if you choose this method, you
+should also make sure that your function not only opens the file but
+also displays its buffer (e.g., using ‘display-buffer’).
+
+If the most recent call to Pandoc created a pdf file (i.e, the option
+“Convert to pdf” was called), Emacs will display the pdf file instead of
+the output file defined by the output file/directory options.  The
+viewer to use in this case is defined by the option ‘pandoc-pdf-viewer’,
+which can be Emacs (which will then use ‘doc-view-mode, or’pdf-tools‘ if
+installed) or an external program.
+
+Note that this functionality is not as full-featured as with e.g.,
+AUCTeX and SyncTeX. There is no forward or backward search and what
+happens when you view a file when an earlier version of that file is
+already open in some application is up to that application.  Emacs will
+usually notice that the file has changed on disk and will ask you if you
+want to reload it.  Pdf viewers will generally behave correctly (that
+includes ‘pdf-tools’ in Emacs) and simply reload the file without
+asking.
+
+If you want to open the output file automatically after conversion, you
+can add the function ‘pandoc-view-output’ to
+‘pandoc-async-success-hook’.  As the name of the hook implies, this only
+works if you call Pandoc asynchronously —cf. the option
+‘pandoc-use-async’— but this is the default and there is usually little
+reason to change it.
+
+If you try to view an output file before calling Pandoc (e.g., after
+reopening the input file), Emacs will try to display the output file
+defined by the ‘output directory’ and ‘output file’ settings.  If no
+output file is defined at all (which means that Pandoc does not create
+an output file but instead sends its output to standard out), Emacs will
+show the ‘*Pandoc output*’ buffer, which is where the output of the call
+to Pandoc is captured.
+
+If the most recent Pandoc run returned an error, trying to view the
+output file will result in an error as well, unless you provide a prefix
+argument (‘C-c / C-u v’), in which case Emacs will try to display the
+output file defined by the ‘output directory’ and ‘output file’
+settings.
+
+
+File: pandoc-mode.info,  Node: Connection Type,  Next: Citation Jumping,  Prev: Viewing the output,  Up: Usage
+
+3.8 Connection Type
 ===================
 
 By default, Emacs starts ‘pandoc’ as an asynchronous process using a
@@ -449,7 +522,7 @@ you can use a synchronous process by unsetting the user option
 
 File: pandoc-mode.info,  Node: Citation Jumping,  Prev: Connection Type,  Up: Usage
 
-3.8 Citation Jumping
+3.9 Citation Jumping
 ====================
 
 ‘pandoc-mode’ provides the function ‘pandoc-jump-to-reference’ that
@@ -643,7 +716,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 26 Sep 2019”.
+‘@@date{Cologne}’ to get “Cologne, 02 Oct 2019”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -812,40 +885,42 @@ Node: OS X2870
 Ref: #os-x2947
 Node: Usage3538
 Ref: #usage3644
-Node: Input and output formats5475
-Ref: #input-and-output-formats5630
-Node: The options menu8574
-Ref: #the-options-menu8753
-Node: Template variables and metadata13847
-Ref: #template-variables-and-metadata14046
-Node: Running Pandoc14621
-Ref: #running-pandoc14792
-Node: Setting an output file16909
-Ref: #setting-an-output-file17079
-Node: Creating a pdf18777
-Ref: #creating-a-pdf18932
-Node: Connection Type21199
-Ref: #connection-type21350
-Node: Citation Jumping21660
-Ref: #citation-jumping21790
-Node: Font lock22990
-Ref: #font-lock23106
-Node: Settings Files23270
-Ref: #settings-files23411
-Node: File-local variables25816
-Ref: #file-local-variables25986
-Node: Managing numbered examples27566
-Ref: #managing-numbered-examples27753
-Node: Using @@-directives29071
-Ref: #using--directives29248
-Node: Master file33476
-Ref: #master-file33612
-Node: Defining @@-directives35134
-Ref: #defining--directives35316
-Node: Directive hooks36898
-Ref: #directive-hooks37046
-Node: Disabling the hydra menu37383
-Ref: #disabling-the-hydra-menu37535
+Node: Input and output formats5498
+Ref: #input-and-output-formats5653
+Node: The options menu8597
+Ref: #the-options-menu8776
+Node: Template variables and metadata13870
+Ref: #template-variables-and-metadata14069
+Node: Running Pandoc14644
+Ref: #running-pandoc14815
+Node: Setting an output file16932
+Ref: #setting-an-output-file17102
+Node: Creating a pdf18800
+Ref: #creating-a-pdf18958
+Node: Viewing the output21225
+Ref: #viewing-the-output21384
+Node: Connection Type25218
+Ref: #connection-type25373
+Node: Citation Jumping25683
+Ref: #citation-jumping25813
+Node: Font lock27013
+Ref: #font-lock27129
+Node: Settings Files27293
+Ref: #settings-files27434
+Node: File-local variables29839
+Ref: #file-local-variables30009
+Node: Managing numbered examples31589
+Ref: #managing-numbered-examples31776
+Node: Using @@-directives33094
+Ref: #using--directives33271
+Node: Master file37499
+Ref: #master-file37635
+Node: Defining @@-directives39157
+Ref: #defining--directives39339
+Node: Directive hooks40921
+Ref: #directive-hooks41069
+Node: Disabling the hydra menu41406
+Ref: #disabling-the-hydra-menu41558
 
 End Tag Table
 
