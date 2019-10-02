@@ -247,14 +247,14 @@ The first item in the menu is “Run Pandoc” (accessible with `C-c / r`),
 which, as the name suggests, runs Pandoc on the document, passing all
 options you have set. By default, Pandoc sends the output to stdout
 (except when the output format is “odt”, “epub” or “docx”, in which case
-output is always sent to a file.). Emacs captures this output and
+output is always sent to a file). Emacs captures this output and
 redirects it to the buffer `*Pandoc output*`. The output buffer is not
 normally shown, but you can make it visible through the menu or by
 typing `C-c / V`. Error messages from Pandoc are also displayed in this
 buffer.
 
 When you run Pandoc, `pandoc-mode` also generates a few messages, which
-are logged in a buffer calles `*Pandoc log*`. You will rarely need to
+are logged in a buffer called `*Pandoc log*`. You will rarely need to
 see this, since `pandoc-mode` displays a message telling you whether
 Pandoc finished successfully or not. In the latter case, the output
 buffer is displayed, so you can see the error that Pandoc reported.
@@ -358,11 +358,11 @@ other than the default, you need to set the option `pdf-engine`.
 After running Pandoc, you can view the output file with the option `View
 output file` in the menu (or `C-c / v`). Emacs will try to display the
 file created during the most recent Pandoc run. Which viewer is used to
-display the output file depends on the output format. (And not on the
-output file’s extension, so that you can use different viewers for
-different output formats, even if their file extensions are identical.
-For example, `docbook`, `jats`and `tei` all use `xml` as the file
-extension, but you may not want to use the same viewer for all of them).
+display the output file depends on the output format (not on the output
+file’s extension, so that you can use different viewers for different
+output formats, even if their file extensions are identical. For
+example, `docbook`, `jats`and `tei` all use `xml` as the file extension,
+but you may not want to use the same viewer for all of them).
 
 Viewers are defined in the customisation option `pandoc-viewers`. There
 are three types of viewers: you can choose to use Emacs itself as the
@@ -602,7 +602,7 @@ as follows:
                      (format-time-string "%d %b %Y")))
 
 This way, you could write `@@date` to get just the date, and
-`@@date{Cologne}` to get “Cologne, 02 Oct 2019”.
+`@@date{Cologne}` to get “Cologne, 03 Oct 2019”.
 
 Two directives have been predefined: `@@lisp` and `@@include`. Both of
 these take an argument. `@@lisp` can be used to include Elisp code in

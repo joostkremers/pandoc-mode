@@ -321,14 +321,14 @@ The first item in the menu is “Run Pandoc” (accessible with ‘C-c / r’),
 which, as the name suggests, runs Pandoc on the document, passing all
 options you have set.  By default, Pandoc sends the output to stdout
 (except when the output format is “odt”, “epub” or “docx”, in which case
-output is always sent to a file.).  Emacs captures this output and
+output is always sent to a file).  Emacs captures this output and
 redirects it to the buffer ‘*Pandoc output*’.  The output buffer is not
 normally shown, but you can make it visible through the menu or by
 typing ‘C-c / V’.  Error messages from Pandoc are also displayed in this
 buffer.
 
 When you run Pandoc, ‘pandoc-mode’ also generates a few messages, which
-are logged in a buffer calles ‘*Pandoc log*’.  You will rarely need to
+are logged in a buffer called ‘*Pandoc log*’.  You will rarely need to
 see this, since ‘pandoc-mode’ displays a message telling you whether
 Pandoc finished successfully or not.  In the latter case, the output
 buffer is displayed, so you can see the error that Pandoc reported.
@@ -444,11 +444,11 @@ File: pandoc-mode.info,  Node: Viewing the output,  Next: Connection Type,  Prev
 After running Pandoc, you can view the output file with the option ‘View
 output file’ in the menu (or ‘C-c / v’).  Emacs will try to display the
 file created during the most recent Pandoc run.  Which viewer is used to
-display the output file depends on the output format.  (And not on the
-output file’s extension, so that you can use different viewers for
-different output formats, even if their file extensions are identical.
-For example, ‘docbook’, ‘jats’and ‘tei’ all use ‘xml’ as the file
-extension, but you may not want to use the same viewer for all of them).
+display the output file depends on the output format (not on the output
+file’s extension, so that you can use different viewers for different
+output formats, even if their file extensions are identical.  For
+example, ‘docbook’, ‘jats’and ‘tei’ all use ‘xml’ as the file extension,
+but you may not want to use the same viewer for all of them).
 
 Viewers are defined in the customisation option ‘pandoc-viewers’.  There
 are three types of viewers: you can choose to use Emacs itself as the
@@ -716,7 +716,7 @@ as follows:
                  (format-time-string "%d %b %Y")))
 
 This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 02 Oct 2019”.
+‘@@date{Cologne}’ to get “Cologne, 03 Oct 2019”.
 
 Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
 these take an argument.  ‘@@lisp’ can be used to include Elisp code in
@@ -893,34 +893,34 @@ Node: Template variables and metadata13870
 Ref: #template-variables-and-metadata14069
 Node: Running Pandoc14644
 Ref: #running-pandoc14815
-Node: Setting an output file16932
-Ref: #setting-an-output-file17102
-Node: Creating a pdf18800
-Ref: #creating-a-pdf18958
-Node: Viewing the output21225
-Ref: #viewing-the-output21384
-Node: Connection Type25218
-Ref: #connection-type25373
-Node: Citation Jumping25683
-Ref: #citation-jumping25813
-Node: Font lock27013
-Ref: #font-lock27129
-Node: Settings Files27293
-Ref: #settings-files27434
-Node: File-local variables29839
-Ref: #file-local-variables30009
-Node: Managing numbered examples31589
-Ref: #managing-numbered-examples31776
-Node: Using @@-directives33094
-Ref: #using--directives33271
-Node: Master file37499
-Ref: #master-file37635
-Node: Defining @@-directives39157
-Ref: #defining--directives39339
-Node: Directive hooks40921
-Ref: #directive-hooks41069
-Node: Disabling the hydra menu41406
-Ref: #disabling-the-hydra-menu41558
+Node: Setting an output file16931
+Ref: #setting-an-output-file17101
+Node: Creating a pdf18799
+Ref: #creating-a-pdf18957
+Node: Viewing the output21224
+Ref: #viewing-the-output21383
+Node: Connection Type25212
+Ref: #connection-type25367
+Node: Citation Jumping25677
+Ref: #citation-jumping25807
+Node: Font lock27007
+Ref: #font-lock27123
+Node: Settings Files27287
+Ref: #settings-files27428
+Node: File-local variables29833
+Ref: #file-local-variables30003
+Node: Managing numbered examples31583
+Ref: #managing-numbered-examples31770
+Node: Using @@-directives33088
+Ref: #using--directives33265
+Node: Master file37493
+Ref: #master-file37629
+Node: Defining @@-directives39151
+Ref: #defining--directives39333
+Node: Directive hooks40915
+Ref: #directive-hooks41063
+Node: Disabling the hydra menu41400
+Ref: #disabling-the-hydra-menu41552
 
 End Tag Table
 
