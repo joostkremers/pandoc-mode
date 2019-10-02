@@ -221,51 +221,6 @@ filename."
 FORMAT is the output format to use."
   (concat (file-name-as-directory pandoc-data-dir) format ".pandoc"))
 
-(defun pandoc--format-all-options (input-file &optional pdf)
-  "Create a list of strings with pandoc options for the current buffer.
-INPUT-FILE is the name of the input file.  If PDF is non-nil, an
-output file is always set, which gets the suffix `.pdf'.  If the
-output format is \"odt\", \"epub\" or \"docx\" but no output file
-is specified, one will be created."
-  (let ((read (format "--read=%s%s%s" (pandoc--get 'read) (if (pandoc--get 'read-lhs) "+lhs" "")
-                      (pandoc--format-extensions (pandoc--get 'read-extensions))))
-        (write (if pdf
-                   (if (member (pandoc--get 'write) pandoc--pdf-able-formats)
-                       (format "--write=%s" (pandoc--get 'write))
-                     "--write=latex")
-                 (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
-                         (pandoc--format-extensions (pandoc--get 'write-extensions)))))
-        (output (pandoc--format-output-option input-file pdf))
-        (list-options (mapcar (lambda (option)
-                                (pandoc--format-list-options option (pandoc--get option)))
-                              pandoc--list-options))
-        (alist-options (mapcar (lambda (option)
-                                 (pandoc--format-alist-options option (pandoc--get option)))
-                               pandoc--alist-options))
-        (cli-options (pandoc--format-cli-options)))
-    ;; Note: list-options and alist-options are both lists of lists, so we need to flatten them first.
-    (delq nil (append (list read write output) cli-options (apply #'append list-options) (apply #'append alist-options)))))
-
-(defun pandoc--format-extensions (extensions)
-  "Create a string of extensions to be added to the Pandoc command line.
-EXTENSIONS is an alist of (<extension> . <value>) pairs."
-  (mapconcat (lambda (elt)
-               (if (cdr elt)
-                   (format "%s%s" (cdr elt) (car elt))
-                 ""))
-             extensions
-             ""))
-
-(defun pandoc--format-output-option (input-file pdf)
-  "Create the output option for calling Pandoc.
-INPUT-FILE is the name of the input file.  PDF is t if the output
-file is a pdf file.  Return a string that can be added to the
-call to Pandoc.  If the buffer's current settings do not define
-at output file, return nil."
-  (let ((output-file (pandoc--compose-output-file-name pdf input-file)))
-    (when output-file
-      (concat "--output=" output-file))))
-
 (defun pandoc--compose-output-file-name (&optional pdf input-file)
   "Create an output file name for the current buffer based on INPUT-FILE.
 If INPUT-FILE is non-nil, use the file the current buffer is
@@ -306,6 +261,41 @@ file (i.e., if the output file is set to nil), return nil."
                 (concat (file-name-sans-extension (pandoc--get 'output)) ".pdf")
               (pandoc--get 'output))))
    (t nil)))
+
+(defun pandoc--format-all-options (output-file &optional pdf)
+  "Create a list of strings with pandoc options for the current buffer.
+OUTPUT-FILE the name of the output file.  If PDF is non-nil, an
+output file is always set, which gets the suffix `.pdf'.  If the
+output format is \"odt\", \"epub\" or \"docx\" but no output file
+is specified, one will be created."
+  (let ((read (format "--read=%s%s%s" (pandoc--get 'read) (if (pandoc--get 'read-lhs) "+lhs" "")
+                      (pandoc--format-extensions (pandoc--get 'read-extensions))))
+        (write (if pdf
+                   (if (member (pandoc--get 'write) pandoc--pdf-able-formats)
+                       (format "--write=%s" (pandoc--get 'write))
+                     "--write=latex")
+                 (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
+                         (pandoc--format-extensions (pandoc--get 'write-extensions)))))
+        (output (when output-file (format "--output=%s" output-file)))
+        (list-options (mapcar (lambda (option)
+                                (pandoc--format-list-options option (pandoc--get option)))
+                              pandoc--list-options))
+        (alist-options (mapcar (lambda (option)
+                                 (pandoc--format-alist-options option (pandoc--get option)))
+                               pandoc--alist-options))
+        (cli-options (pandoc--format-cli-options)))
+    ;; Note: list-options and alist-options are both lists of lists, so we need to flatten them first.
+    (delq nil (append (list read write output) cli-options (apply #'append list-options) (apply #'append alist-options)))))
+
+(defun pandoc--format-extensions (extensions)
+  "Create a string of extensions to be added to the Pandoc command line.
+EXTENSIONS is an alist of (<extension> . <value>) pairs."
+  (mapconcat (lambda (elt)
+               (if (cdr elt)
+                   (format "%s%s" (cdr elt) (car elt))
+                 ""))
+             extensions
+             ""))
 
 (defun pandoc--format-list-options (option values)
   "Create a list of cli options for OPTION from the values in VALUES."
@@ -448,87 +438,98 @@ If the current buffer's \"master file\" option is set, that file
 is processed instead.  The output format is taken from the current
 buffer, however, unless one is provided specifically.  REGION is
 also ignored in this case."
-  (setq pandoc--last-run-was-pdf pdf)
   (let* ((orig-buffer (current-buffer))
          (buffer (if (pandoc--get 'master-file)
                      (find-file-noselect (pandoc--get 'master-file))
                    (current-buffer)))
-         (filename (buffer-file-name buffer))
+         (input-file (buffer-file-name buffer))
+         output-file
          (display-name (buffer-name)))
+
     ;; If the buffer is visiting a file, we want to display the file name in
     ;; messages. If the buffer is not visiting a file, we create a file name in
-    ;; case we need one, but we display the buffer name in messages.
-    (if filename
-        (setq display-name (file-name-nondirectory filename))
-      (setq filename (concat "./" (cl-remove-if-not (lambda (c)
-                                                      (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
-                                                    (buffer-name)))))
+    ;; case we need one, but we display the buffer name in messages.  Then
+    ;; create the output file name.
+    (if input-file
+        (setq display-name (file-name-nondirectory input-file))
+      (setq input-file (expand-file-name (concat "./" (pandoc--create-file-name-from-buffer (buffer-name))))))
+
     ;; If there's a master file, ignore the region.
     (if (pandoc--get 'master-file)
         (setq region nil))
-    ;; keep track of the buffer-local value of `pandoc-binary', if there is one
+
+    ;; Keep track of the buffer-local value of `pandoc-binary', if there is one.
     (setq pandoc--local-binary (buffer-local-value 'pandoc-binary buffer))
-    (with-current-buffer buffer
-      ;; We use with-current-buffer so that we can work on the master file
-      ;; if there is one. We then change to a temp buffer, so we can
-      ;; process @@-directives without having to undo them and set the
-      ;; options independently of the original buffer.
-      (with-temp-buffer
-        (cond
-         ;; If an output format was provided, try and load a settings file for it.
-         ((stringp output-format)
-          (unless (and filename
-                       (pandoc--load-settings-for-file (expand-file-name filename) output-format t))
-            ;; if no settings file was found, unset all options except input and output format
-            (setq pandoc--local-settings (copy-tree pandoc--options))
-            (pandoc--set 'write output-format)
-            (pandoc--set 'read (pandoc--get 'read buffer))))
-         ;; If no output format was provided, we use BUFFER's options,
-         ;; except the output format, which we take from ORIG-BUFFER:
-         ((eq output-format t)
-          (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
-          (pandoc--set 'write (pandoc--get 'write orig-buffer))))
-        ;; Copy any local `pandoc/' variables from `orig-buffer' or
-        ;; `buffer' (the values in `orig-buffer' take precedence):
-        (dolist (option (pandoc--get-file-local-options (list orig-buffer buffer)))
-          (set (make-local-variable (car option)) (cdr option)))
-        (let ((option-list (pandoc--format-all-options filename pdf)))
-          (insert-buffer-substring-no-properties buffer (car region) (cdr region))
-          (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it'll hang forever.
-          (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
-          (pandoc-process-directives (pandoc--get 'write))
-          (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
-            (erase-buffer))
-          (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
-          (pandoc--log 'log "Calling %s with:\n\n%s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
-	  (let ((coding-system-for-read 'utf-8)
-                (coding-system-for-write 'utf-8)
-                (log-success (lambda (file binary)
-                               (pandoc--log 'message "%s: %s finished successfully"
-                                            (file-name-nondirectory file)
-                                            (file-name-nondirectory binary))))
-                (log-failure (lambda (file binary)
-                               (pandoc--log 'message "%s: Error in %s process"
-                                            (file-name-nondirectory file)
-                                            (file-name-nondirectory binary)))))
-            (cond
-             (pandoc-use-async
-              (let* ((process-connection-type pandoc-process-connection-type)
-                     (process (apply #'start-process "pandoc-process" (get-buffer-create pandoc--output-buffer-name) pandoc--local-binary option-list)))
-                (set-process-sentinel process (lambda (_ e)
-                                                (cond
-                                                 ((string-equal e "finished\n")
-                                                  (funcall log-success display-name pandoc--local-binary)
-                                                  (run-hooks 'pandoc-async-success-hook))
-                                                 (t (funcall log-failure display-name pandoc--local-binary)
-                                                    (display-buffer pandoc--output-buffer-name)))))
-                (process-send-region process (point-min) (point-max))
-                (process-send-eof process)))
-             ((not pandoc-use-async)
-              (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil (get-buffer-create pandoc--output-buffer-name) t option-list))
-                  (funcall log-success display-name pandoc--local-binary)
-                (funcall log-failure display-name pandoc--local-binary)
-                (display-buffer pandoc--output-buffer-name))))))))))
+
+    ;; We use a temp buffer, so we can process @@-directives without having to
+    ;; undo them and set the options independently of the original buffer.
+    (with-temp-buffer
+      (cond
+       ;; If an output format was provided, try and load a settings file for it.
+       ((stringp output-format)
+        (unless (and input-file
+                     (pandoc--load-settings-for-file (expand-file-name input-file) output-format t))
+          ;; If no settings file was found, unset all options except input and output format.
+          (setq pandoc--local-settings (copy-tree pandoc--options))
+          (pandoc--set 'write output-format)
+          (pandoc--set 'read (pandoc--get 'read buffer))))
+
+       ;; If no output format was provided, we use BUFFER's options, except the
+       ;; output format, which we take from ORIG-BUFFER.  We also set the local
+       ;; variable `output-format' to this format, so that the value of
+       ;; `pandoc--latest-run' is set correctly beloww.
+       ((eq output-format t)
+        (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
+        (pandoc--set 'write (setq output-format (pandoc--get 'write orig-buffer)))))
+
+      ;; Set the name of the output file.
+      (setq output-file (pandoc--compose-output-file-name pdf input-file))
+
+      ;; Copy any local `pandoc/' variables from `orig-buffer' or
+      ;; `buffer' (the values in `orig-buffer' take precedence):
+      (dolist (option (pandoc--get-file-local-options (list orig-buffer buffer)))
+        (set (make-local-variable (car option)) (cdr option)))
+      (let ((option-list (pandoc--format-all-options output-file pdf)))
+        (insert-buffer-substring-no-properties buffer (car region) (cdr region))
+        (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it will hang forever.
+        (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
+        (pandoc-process-directives (pandoc--get 'write))
+        (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
+          (erase-buffer))
+        (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
+        (pandoc--log 'log "Calling %s with:\n\n%s %s" (file-name-nondirectory pandoc--local-binary) pandoc--local-binary (mapconcat #'identity option-list " "))
+
+        (let ((coding-system-for-read 'utf-8)
+              (coding-system-for-write 'utf-8)
+              (log-success (lambda (file binary)
+                             (pandoc--log 'message "%s: %s finished successfully"
+                                          (file-name-nondirectory file)
+                                          (file-name-nondirectory binary))
+                             (setq pandoc--latest-run (cons output-format output-file))))
+              (log-failure (lambda (file binary)
+                             (pandoc--log 'message "%s: Error in %s process"
+                                          (file-name-nondirectory file)
+                                          (file-name-nondirectory binary))
+                             (setq pandoc--latest-run nil))))
+
+          (cond
+           (pandoc-use-async
+            (let* ((process-connection-type pandoc-process-connection-type)
+                   (process (apply #'start-process "pandoc-process" (get-buffer-create pandoc--output-buffer-name) pandoc--local-binary option-list)))
+              (set-process-sentinel process (lambda (_ e)
+                                              (cond
+                                               ((string-equal e "finished\n")
+                                                (funcall log-success display-name pandoc--local-binary)
+                                                (run-hooks 'pandoc-async-success-hook))
+                                               (t (funcall log-failure display-name pandoc--local-binary)
+                                                  (display-buffer pandoc--output-buffer-name)))))
+              (process-send-region process (point-min) (point-max))
+              (process-send-eof process)))
+           ((not pandoc-use-async)
+            (if (= 0 (apply #'call-process-region (point-min) (point-max) pandoc--local-binary nil (get-buffer-create pandoc--output-buffer-name) t option-list))
+                (funcall log-success display-name pandoc--local-binary)
+              (funcall log-failure display-name pandoc--local-binary)
+              (display-buffer pandoc--output-buffer-name)))))))))
 
 (defun pandoc-run-pandoc (&optional prefix)
   "Run pandoc on the current document.
@@ -765,33 +766,45 @@ options and their values."
           options)
     pandoc--local-settings))
 
+(defun pandoc-view-output (&optional arg)
+  "Display the output file.
+Try to display the output file generated in the most recent call
+to Pandoc.  If no output file was produced or Pandoc has not been
+called yet, try to open the output file as defined by the current
+settings.  If the latest Pandoc run produced an error, display an
+error message, unless ARG is non-nil, in which case try to open
+the output file defined by the current settings.  If no output
+file exists, display the *Pandoc output* buffer."
+  (interactive "P")
+  (when (and (eq pandoc--latest-run 'error) (not arg))
+    (error "No output file created on most recent call to `pandoc'"))
+  (let ((format (or (car pandoc--latest-run)
+                    (pandoc--get 'write)))
+        (file (or (cdr pandoc--latest-run)
+                  (pandoc--compose-output-file-name arg))))
+    (if file
+        (if (file-readable-p file)
+            (let ((handler (if (cl-equalp (file-name-extension file) "pdf")
+                               pandoc-pdf-viewer
+                             (cadr (assoc-string format pandoc-viewers)))))
+              (cond
+               ((stringp handler)
+                (start-process "pandoc-viewer" pandoc--viewer-buffer-name handler file))
+               ((eq handler 'emacs)
+                (let ((buffer (find-file-noselect file)))
+                  (if buffer
+                      (display-buffer buffer)
+                    (error "Could not open %s" file))))
+               ((functionp handler)
+                (funcall handler file))
+               (t (error "No viewer defined for output format `%s'" format))))
+          (error "`%s' is not readable" file))
+      (pandoc-view-output-buffer))))
+
 (defun pandoc-view-output-buffer ()
   "Displays the *Pandoc output* buffer."
   (interactive)
   (display-buffer pandoc--output-buffer-name))
-
-(defun pandoc-view-output-file (&optional arg)
-  "Display the output file.
-Try to display the output file defined by the current buffer's
-`output' and `output-dir' options.  If the most recent call to
-Pandoc created a pdf, or if ARG is non-nil (i.e., when called
-with a prefix argument), try to display a pdf output file."
-  (interactive "P")
-  (let ((file (pandoc--compose-output-file-name (or arg pandoc--last-run-was-pdf))))
-    (if file
-        (let ((handler (cadr (assoc-string (pandoc--get 'write) pandoc-viewers))))
-          (cond
-           ((stringp handler)
-            (start-process "pandoc-viewer" pandoc--viewer-buffer-name handler file))
-           ((eq handler 'emacs)
-            (let ((buffer (find-file-noselect file)))
-              (if buffer
-                  (display-buffer buffer)
-                (error "Could not open %s" file))))
-           ((functionp handler)
-            (funcall handler file))
-           (t (error "No viewer defined for output format %s" (pandoc--get 'write)))))
-      (error "No output file defined"))))
 
 (defun pandoc-view-settings ()
   "Displays the settings file in a *Help* buffer."
@@ -991,7 +1004,7 @@ argument, the option is toggled."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
-    ["View Output File" pandoc-view-output-file :active t]
+    ["View Output File" pandoc-view-output :active t]
     ["View Output Buffer" pandoc-view-output-buffer :active t]
     ["View Log Buffer" pandoc-view-log :active t]
     ("Settings Files"
@@ -1130,7 +1143,7 @@ _L_: View log buffer
 "
   ("r" pandoc-run-pandoc)
   ("p" pandoc-convert-to-pdf)
-  ("v" pandoc-view-output-file)
+  ("v" pandoc-view-output)
   ("V" pandoc-view-output-buffer)
   ("S" pandoc-view-settings)
   ("L" pandoc-view-log)

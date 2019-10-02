@@ -370,17 +370,16 @@ possible to customize the extensions."
     ("textile"           emacs)
     ("zimwiki"           emacs))
   "List of Pandoc output formats and their associated file viewers.
-This option defines the viewers used in
-`pandoc-view-output-file'.  The viewer can be a string, in which
-case it is assumed to be a shell command, which is executed
-through `start-process'.  The viewer can also be an Emacs
-function, which is passed the full file name of the output file.
-Lastly, the viewer can be the symbol `emacs', in which case the
-output file is opened in Emacs with `find-file-noselect' and
-displayed with `display-buffer'."
+This option defines the viewers used in `pandoc-view-output'.
+The viewer can be a string, in which case it is assumed to be a
+shell command, which is executed through `start-process'.  The
+viewer can also be an Emacs function, which is passed the full
+file name of the output file.  Lastly, the viewer can be the
+symbol `emacs', in which case the output file is opened in Emacs
+with `find-file-noselect' and displayed with `display-buffer'."
   :group 'pandoc
   :type '(repeat :tag "File viewers" (list (string :tag "Format") (choice (const :tag "No viewer defined" nil)
-                                                                          (string :tag "External viewer")
+                                                                          (string :tag "Use External viewer")
                                                                           (const :tag "Use Emacs" emacs)
                                                                           (function :tag "Use a specific function")))))
 
@@ -524,9 +523,7 @@ with the default value nil.")
 
 (defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
-(defvar-local pandoc--last-run-was-pdf nil "Flag indicating whether the most recent call to Pandoc created a pdf file.
-This is used in `pandoc-view-output-file' to determine whether to
-show the pdf file or a non-pdf output file.")
+(defvar-local pandoc--latest-run nil "Cons of the output format and the output file created during the most recent call to Pandoc.")
 
 (defvar pandoc--output-buffer-name " *Pandoc output*")
 (defvar pandoc--log-buffer-name " *Pandoc log*")
@@ -557,6 +554,17 @@ If FILENAME is a relative path, return it unchanged."
   (if (file-name-absolute-p filename)
       (expand-file-name filename)
     filename))
+
+(defun pandoc--create-file-name-from-buffer (buffer-name)
+  "Create a file name from BUFFER-NAME.
+The file name is formed from BUFFER-NAME by removing any
+characters that might be problematic in a file name.  Characters
+that are retained are alphabetic characters, digits and the
+characters `+' (plus sign), `_' (underscore), `.' (dot) and
+`-' (minus sign).  All other characters are removed."
+  (cl-remove-if-not (lambda (c)
+                      (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
+                    buffer-name))
 
 (defun pandoc--log (type format-string &rest args)
   "Write a message to the *Pandoc log* buffer.
