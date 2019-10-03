@@ -505,12 +505,14 @@ also ignored in this case."
                              (pandoc--log 'message "%s: %s finished successfully"
                                           (file-name-nondirectory file)
                                           (file-name-nondirectory binary))
-                             (setq pandoc--latest-run (cons output-format output-file))))
+                             (with-current-buffer orig-buffer
+                               (setq pandoc--latest-run (cons output-format output-file)))))
               (log-failure (lambda (file binary)
                              (pandoc--log 'message "%s: Error in %s process"
                                           (file-name-nondirectory file)
                                           (file-name-nondirectory binary))
-                             (setq pandoc--latest-run nil))))
+                             (with-current-buffer orig-buffer
+                               (setq pandoc--latest-run 'error)))))
 
           (cond
            (pandoc-use-async
