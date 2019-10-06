@@ -142,7 +142,7 @@
  (csl)
  (citation-abbreviations)
  (include-in-header)
- (include-before-body . "~/src/pandoc-mode/manual/texi-before-body")
+ (include-before-body . "~/src/pandoc-mode/manual/before-body.texi")
  (include-after-body)
  (epub-embed-font)
  (filter)
