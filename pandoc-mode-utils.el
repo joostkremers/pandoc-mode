@@ -190,7 +190,7 @@ matches KEY."
     ("wiki" "Wiki Formats" "w"
      ("creole"               "Creole 1.0"                "c" both)
      ("dokuwiki"             "DokuWiki"                  "d" both)
-     ("jira"                 "JiraWiki"                  "j" output)
+     ("jira"                 "JiraWiki"                  "j" both)
      ("mediawiki"            "MediaWiki"                 "m" both)
      ("tikiwiki"             "TikiWiki"                  "t" both)
      ("twiki"                "Twiki"                     "T" input)
