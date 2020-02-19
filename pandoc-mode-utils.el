@@ -218,6 +218,7 @@ matches KEY."
 
     ("text" "Text-Based Formats" "T"
      ("asciidoc"             "AsciiDoc"                  "a" output)
+     ("csv"                  "CSV"                       "c" input)
      ("plain"                "Plain Text"                "p" output)
      ("rst"                  "reStructuredText"          "r" both)
      ("textile"              "Textile"                   "t" both)
