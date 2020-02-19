@@ -42,8 +42,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.28 and is compatible with
-Pandoc 2.7.
+The current version of ‘pandoc-mode’ is 2.29 and is compatible with
+Pandoc 2.9.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -688,8 +688,8 @@ So suppose you define (e.g., in ‘~/.emacs.d/init’) a function
 (defun my-pandoc-current-date (_)
   (format-time-string "%d %b %Y"))
 
-Now you can define a directive ‘@@date’ that calls this function.  The
-effect is that every time you write ‘@@date’ in your document, it is
+Now you can define a directive ‘\@@date’ that calls this function.  The
+effect is that every time you write ‘\@@date’ in your document, it is
 replaced with the current date.
 
 Note that the function that the directive calls must have one argument,
@@ -715,47 +715,47 @@ as follows:
   (format "%s%s" (if text (concat text ", ") "")
                  (format-time-string "%d %b %Y")))
 
-This way, you could write ‘@@date’ to get just the date, and
-‘@@date{Cologne}’ to get “Cologne, 03 Oct 2019”.
+This way, you could write ‘\@@date’ to get just the date, and
+‘\@@date{Cologne}’ to get “Cologne, @@date”.
 
-Two directives have been predefined: ‘@@lisp’ and ‘@@include’.  Both of
-these take an argument.  ‘@@lisp’ can be used to include Elisp code in
-the document which is then executed and replaced by the result (which
+Two directives have been predefined: ‘\@@lisp’ and ‘\@@include’.  Both
+of these take an argument.  ‘\@@lisp’ can be used to include Elisp code
+in the document which is then executed and replaced by the result (which
 should be a string).  For example, another way to put the current date
 in your document, without defining a special function for it, is to
 write the following:
 
-@@lisp{(format-time-string "%d %b %Y")}
+\@@lisp{(format-time-string "%d %b %Y")}
 
 Emacs takes the Elisp code between the curly braces, executes it, and
 replaces the directive with the result of the code.  Note that the code
 can be anything, and there is no check to see if it is “safe”.
 
-‘@@include’ can be used to include another file into the current
+‘\@@include’ can be used to include another file into the current
 document (which must of course have the same input format):
 
-@@include{copyright.text}
+\@@include{copyright.text}
 
 This directive reads the file ‘copyright.text’ and replaces the
-‘@@include’ directive with its contents.
+‘\@@include’ directive with its contents.
 
 Processing ‘@@’-directives works everywhere in the document, including
 in code and code blocks, and also in the %-header block.  So by putting
-the above ‘@@lisp’ directive in the third line of the %-header block,
+the above ‘\@@lisp’ directive in the third line of the %-header block,
 the meta data for your documents will always show the date on which the
 file was created by Pandoc.
 
-If it should ever happen that you need to write a literal ‘"@@lisp"’ in
+If it should ever happen that you need to write a literal ‘"\@@lisp"’ in
 your document, you can simply put a backslash \ before the first ‘@’:
-‘\@@lisp’.  Emacs removes the backslash (which is necessary in case the
-string ‘\@@lisp’ is contained in a code block) and then continues
+‘\\@@lisp’.  Emacs removes the backslash (which is necessary in case the
+string ‘\\@@lisp’ is contained in a code block) and then continues
 searching for the next directive.
 
 After Emacs has processed a directive and inserted the text it produced
 in the buffer, processing of directives is resumed from the _start_ of
-the inserted text.  That means that if an ‘@@include’ directive produces
-another ‘@@include’ directive, the newly inserted ‘@@include’ directive
-gets processed as well.
+the inserted text.  That means that if an ‘\@@include’ directive
+produces another ‘\@@include’ directive, the newly inserted ‘\@@include’
+directive gets processed as well.
 
 * Menu:
 
@@ -769,7 +769,7 @@ File: pandoc-mode.info,  Node: Master file,  Next: Defining @@-directives,  Up: 
 8.1 Master file
 ===============
 
-If you have a master file with one or more ‘@@include’ directives and
+If you have a master file with one or more ‘\@@include’ directives and
 you’re editing one of the included files, running Pandoc from that
 buffer will not produce the desired result, because it runs Pandoc on
 the included file.  To make working with included files easier, you can
@@ -813,7 +813,7 @@ directives and the functions that they are linked with.  You can add a
 directive by providing a name (without ‘@@’) and the function to call.
 Note that directive names may only consists of letters (‘a-z’, ‘A-Z’) or
 numbers (‘0-9’).  Other characters are not allowed.  Directive names are
-case sensitive, so ‘@@Date’ is not the same as ‘@@date’.
+case sensitive, so ‘@@Date’ is not the same as ‘\@@date’.
 
 Passing more than one argument to an ‘@@’-directive is not supported.
 However, if you really want to, you could use ‘split-string’ to split
@@ -913,14 +913,14 @@ Node: Managing numbered examples31583
 Ref: #managing-numbered-examples31770
 Node: Using @@-directives33088
 Ref: #using--directives33265
-Node: Master file37493
-Ref: #master-file37629
-Node: Defining @@-directives39151
-Ref: #defining--directives39333
-Node: Directive hooks40915
-Ref: #directive-hooks41063
-Node: Disabling the hydra menu41400
-Ref: #disabling-the-hydra-menu41552
+Node: Master file37506
+Ref: #master-file37642
+Node: Defining @@-directives39165
+Ref: #defining--directives39347
+Node: Directive hooks40930
+Ref: #directive-hooks41078
+Node: Disabling the hydra menu41415
+Ref: #disabling-the-hydra-menu41567
 
 End Tag Table
 
