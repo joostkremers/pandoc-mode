@@ -1212,7 +1212,7 @@ evaluated."
 (define-pandoc-number-option tab-stop                (reader "t" "%-23s")      "Tab Stop Width")
 (define-pandoc-switch        preserve-tabs           (reader "p" "%-23s")      "Preserve Tabs")
 (define-pandoc-switch        normalize               (reader "n" "%-23s")      "Normalize Document")
-(define-pandoc-list-option   metadata-file           (reader "M" "%-23s") file "Metadata File")
+(define-pandoc-list-option   metadata-file           (reader "M" "%-23s") file "Metadata File" "Metadata File")
 (define-pandoc-alist-option  metadata                (reader "m" "%-23s")      "Metadata" "Metadata item")
 (define-pandoc-list-option   filter                  (reader "f" "%-23s") file "Filters" "Filter")
 (define-pandoc-list-option   lua-filter              (reader "l" "%-23s") file "Lua Filters" "Lua Filter")
