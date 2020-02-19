@@ -1262,7 +1262,7 @@ evaluated."
   ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff"))
 (define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Reference Doc")
 (define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
-(define-pandoc-file-option   reference-odt      (specific "o" "%-21s")        "Reference ODT File*") ;obsolete
+(define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ;obsolete
 (define-pandoc-number-option slide-level        (specific "h" "%-21s")        "Slide Level Header")
 (define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
 (define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
