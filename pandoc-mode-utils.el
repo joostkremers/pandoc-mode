@@ -238,9 +238,14 @@ matches KEY."
      ("muse"                 "Muse"                      "m" both)
      ("org"                  "Org-mode"                  "o" both))
 
+    ("jats" "JATS formats" "j"
+     ("jats"                   "Archiving Tag Set"            "j" both)
+     ("jats_articleauthoring"  "Article Authoring Tag Set"    "a" both)
+     ("jats_publishing"        "Publishing Tag Set"           "p" both)
+     ("jats_archiving"         "Archiving Tag Set"            "x" both))
+
     ("misc" "Miscellaneous Formats" "v"
      ("ipynb"                "Jupyter Notebook"          "p" both)
-     ("jats"                 "JATS XML"                  "J" both)
      ("json"                 "JSON"                      "j" both)
      ("native"               "Native Haskell"            "n" both)
      ("opml"                 "OPML"                      "o" both)))
