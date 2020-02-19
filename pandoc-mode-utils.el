@@ -1218,7 +1218,8 @@ evaluated."
 (define-pandoc-list-option   lua-filter              (reader "l" "%-23s") file "Lua Filters" "Lua Filter")
 (define-pandoc-string-option default-image-extension (reader "i" "%-23s")      "Default Image Extension")
 (define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")      "Indented Code Classes")
-(define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level")
+(define-pandoc-number-option shift-heading-level-by  (reader "h" "%-23s")      "Header Level Shift")
+(define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level*")
 (define-pandoc-switch        old-dashes              (reader "o" "%-23s")      "Use Old-style Dashes")
 (define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart*") ; obsolete
 (define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw*") ; obsolete
