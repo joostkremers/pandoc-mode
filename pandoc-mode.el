@@ -933,6 +933,15 @@ means use $HOME/.pandoc."
                    nil
                  (read-directory-name "Data directory: " nil nil t))))
 
+(defun pandoc-set-defaults (prefix)
+  "Set the defaults file.
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), the defaults file is set to nil."
+  (interactive "P")
+  (pandoc--set 'defaults (cond
+                          ((eq prefix '-) nil)
+                          (t (pandoc--read-file-name "Defaults file: " default-directory (not prefix))))))
+
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the PREFIX argument `\\[universal-argument] -' (or
@@ -1311,7 +1320,8 @@ _M_: Use current file as master file
 "
   ("o" pandoc-set-output)
   ("O" pandoc-set-output-dir)
-  ("d" pandoc-set-data-dir)
+  ("d" pandoc-set-defaults)
+  ("D" pandoc-set-data-dir)
   ("e" pandoc-set-extract-media)
   ("f" pandoc-set-file-scope)
   ("m" pandoc-set-master-file)
