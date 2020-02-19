@@ -1257,6 +1257,7 @@ evaluated."
 ;;; Options affecting specific writers
 
 ;; general
+(define-pandoc-choice-option ipynb-output       (specific "p" "%-21s")        "Jupyter Output Cells" ("best" "all" "none"))
 (define-pandoc-list-option   pdf-engine-opt     (specific "o" "%-21s") string "PDF Options" "PDF Option")
 (define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine"
   ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff"))
