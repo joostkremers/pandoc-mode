@@ -7,6 +7,7 @@
 ;; Created: 31 Oct 2009
 ;; Version: 2.29
 ;; Keywords: text, pandoc
+;; URL: http://joostkremers.github.io/pandoc-mode/
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
 ;; Redistribution and use in source and binary forms, with or without
