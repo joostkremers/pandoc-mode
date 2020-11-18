@@ -42,8 +42,8 @@ that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of ‘pandoc-mode’ is 2.29 and is compatible with
-Pandoc 2.9.
+The current version of ‘pandoc-mode’ is 2.30 and is compatible with
+Pandoc 2.11.
 
 
 File: pandoc-mode.info,  Node: Installation,  Next: Usage,  Prev: Introduction,  Up: Top
@@ -879,48 +879,48 @@ Tag Table:
 Node: Top224
 Node: Introduction528
 Ref: #introduction649
-Node: Installation1497
-Ref: #installation1620
-Node: OS X2870
-Ref: #os-x2947
-Node: Usage3538
-Ref: #usage3644
-Node: Input and output formats5498
-Ref: #input-and-output-formats5653
-Node: The options menu8597
-Ref: #the-options-menu8776
-Node: Template variables and metadata13870
-Ref: #template-variables-and-metadata14069
-Node: Running Pandoc14644
-Ref: #running-pandoc14815
-Node: Setting an output file16931
-Ref: #setting-an-output-file17101
-Node: Creating a pdf18799
-Ref: #creating-a-pdf18957
-Node: Viewing the output21224
-Ref: #viewing-the-output21383
-Node: Connection Type25212
-Ref: #connection-type25367
-Node: Citation Jumping25677
-Ref: #citation-jumping25807
-Node: Font lock27007
-Ref: #font-lock27123
-Node: Settings Files27287
-Ref: #settings-files27428
-Node: File-local variables29833
-Ref: #file-local-variables30003
-Node: Managing numbered examples31583
-Ref: #managing-numbered-examples31770
-Node: Using @@-directives33088
-Ref: #using--directives33265
-Node: Master file37506
-Ref: #master-file37642
-Node: Defining @@-directives39165
-Ref: #defining--directives39347
-Node: Directive hooks40930
-Ref: #directive-hooks41078
-Node: Disabling the hydra menu41415
-Ref: #disabling-the-hydra-menu41567
+Node: Installation1498
+Ref: #installation1621
+Node: OS X2871
+Ref: #os-x2948
+Node: Usage3539
+Ref: #usage3645
+Node: Input and output formats5499
+Ref: #input-and-output-formats5654
+Node: The options menu8598
+Ref: #the-options-menu8777
+Node: Template variables and metadata13871
+Ref: #template-variables-and-metadata14070
+Node: Running Pandoc14645
+Ref: #running-pandoc14816
+Node: Setting an output file16932
+Ref: #setting-an-output-file17102
+Node: Creating a pdf18800
+Ref: #creating-a-pdf18958
+Node: Viewing the output21225
+Ref: #viewing-the-output21384
+Node: Connection Type25213
+Ref: #connection-type25368
+Node: Citation Jumping25678
+Ref: #citation-jumping25808
+Node: Font lock27008
+Ref: #font-lock27124
+Node: Settings Files27288
+Ref: #settings-files27429
+Node: File-local variables29834
+Ref: #file-local-variables30004
+Node: Managing numbered examples31584
+Ref: #managing-numbered-examples31771
+Node: Using @@-directives33089
+Ref: #using--directives33266
+Node: Master file37507
+Ref: #master-file37643
+Node: Defining @@-directives39166
+Ref: #defining--directives39348
+Node: Directive hooks40931
+Ref: #directive-hooks41079
+Node: Disabling the hydra menu41416
+Ref: #disabling-the-hydra-menu41568
 
 End Tag Table
 
