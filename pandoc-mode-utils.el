@@ -1265,10 +1265,12 @@ evaluated."
 (define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Reference Doc")
 (define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
 (define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ;obsolete
-(define-pandoc-number-option slide-level        (specific "h" "%-21s")        "Slide Level Header")
+(define-pandoc-number-option slide-level        (specific "H" "%-21s")        "Slide Level Header")
 (define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
 (define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
-(define-pandoc-switch        atx-headers        (specific "a" "%-21s")        "Use ATX-style Headers")
+(define-pandoc-switch        atx-headers        (specific "a" "%-21s")        "Use ATX-style Headers*")
+(define-pandoc-choice-option markdown-headings  (specific "h" "%-21s")        "Markdown Headings" ("atx" "setext")
+  ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
 (define-pandoc-switch        reference-links    (specific "r" "%-21s")        "Reference Links")
 (define-pandoc-choice-option reference-location (specific "l" "%-21s")        "Reference Location" ("block" "section" "document")
   ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
