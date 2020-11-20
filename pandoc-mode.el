@@ -1312,7 +1312,8 @@ File options
 
 _o_: Output file           [%s(pandoc--pp-option 'output)]
 _O_: Output directory      [%s(pandoc--pp-option 'output-dir)]
-_d_: Data directory        [%s(pandoc--pp-option 'data-dir)]
+_D_: Data directory        [%s(pandoc--pp-option 'data-dir)]
+_d_: Defaults file         [%s(pandoc--pp-option 'defaults)]
 _e_: Extract media files   [%s(pandoc--pp-option 'extract-media)]
 _f_: File Scope            [%s(pandoc--pp-option 'file-scope)]
 _m_: Master file           [%s(pandoc--pp-option 'master-file)]
