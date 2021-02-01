@@ -597,10 +597,13 @@ settings file, which is loaded by ‘pandoc-load-default-settings’ when no
 default local or project settings file is found.  In this way, you can
 override the default output format used for new files.
 
-Note that starting with version 2.5, ‘pandoc-mode’ settings files are
-written in a Lisp format (as demonstrated above).  Old-style settings
-files continue to be read, so there is no need to change anything, but
-if you change any settings and save them, the file is converted.
+One thing to keep in mind is that the method in which ‘pandoc-mode’
+saves settings and passes them to the ‘pandoc’ binary is not compatible
+with Pandoc’s YAML metadata blocks/files or with Pandoc’s defaults file.
+Since ‘pandoc-mode’ passes all settings to ‘pandoc’ as command-line
+options, they override settings in defaults files and in YAML metadata
+blocks or files.  You should generally stick to using one or the other
+method.
 
 
 File: pandoc-mode.info,  Node: File-local variables,  Next: Managing numbered examples,  Prev: Settings Files,  Up: Top
@@ -907,20 +910,20 @@ Node: Font lock27008
 Ref: #font-lock27124
 Node: Settings Files27288
 Ref: #settings-files27429
-Node: File-local variables29834
-Ref: #file-local-variables30004
-Node: Managing numbered examples31584
-Ref: #managing-numbered-examples31771
-Node: Using @@-directives33089
-Ref: #using--directives33266
-Node: Master file37507
-Ref: #master-file37643
-Node: Defining @@-directives39166
-Ref: #defining--directives39348
-Node: Directive hooks40931
-Ref: #directive-hooks41079
-Node: Disabling the hydra menu41416
-Ref: #disabling-the-hydra-menu41568
+Node: File-local variables30005
+Ref: #file-local-variables30175
+Node: Managing numbered examples31755
+Ref: #managing-numbered-examples31942
+Node: Using @@-directives33260
+Ref: #using--directives33437
+Node: Master file37678
+Ref: #master-file37814
+Node: Defining @@-directives39337
+Ref: #defining--directives39519
+Node: Directive hooks41102
+Ref: #directive-hooks41250
+Node: Disabling the hydra menu41587
+Ref: #disabling-the-hydra-menu41739
 
 End Tag Table
 

@@ -20,9 +20,9 @@ Pandoc 2.11.
 The easiest way to install `pandoc-mode` is to use the
 [Melpa](http://melpa.org/) package repository.
 
-In order to activate `pandoc-mode` in a buffer, you need to type `M-x
-pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a
-Markdown file, you can add a hook to your init file:
+In order to activate `pandoc-mode` in a buffer, you need to type
+`M-x pandoc-mode`. To start `pandoc-mode` automatically when you load
+e.g., a Markdown file, you can add a hook to your init file:
 
     (add-hook 'markdown-mode-hook 'pandoc-mode)
 
@@ -204,8 +204,8 @@ value. Such options can be specified on the `pandoc` command line
 without naming a file. To select such a default value for a file option,
 use a numeric prefix argument, which in the hydra menu is obtained by
 pressing a number without the meta key. That is, to select the default
-EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press `1
-s`.
+EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press
+`1 s`.
 
 Options that are not files or numbers are “string options”, which
 include options that specify a URL. These may also have a default value,
@@ -314,10 +314,10 @@ that the input file is in.
 
 ## Creating a pdf
 
-The second item in the main menu is “Create PDF” (invoked with `C-c /
-p`). This option calls Pandoc with a PDF file as output file. Pandoc
-offers different ways of creating a PDF file: you can use LaTeX, an
-HTML-to-PDF converter, or groff. Which method is used depends on the
+The second item in the main menu is “Create PDF” (invoked with
+`C-c / p`). This option calls Pandoc with a PDF file as output file.
+Pandoc offers different ways of creating a PDF file: you can use LaTeX,
+an HTML-to-PDF converter, or groff. Which method is used depends on the
 output format you specify, because Pandoc creates a PDF file by first
 converting your input file to the specified output format and then
 calling the pdf converter on the output file.
@@ -355,14 +355,14 @@ other than the default, you need to set the option `pdf-engine`.
 
 ## Viewing the output
 
-After running Pandoc, you can view the output file with the option `View
-output file` in the menu (or `C-c / v`). Emacs will try to display the
-file created during the most recent Pandoc run. Which viewer is used to
-display the output file depends on the output format (not on the output
-file’s extension, so that you can use different viewers for different
-output formats, even if their file extensions are identical. For
-example, `docbook`, `jats`and `tei` all use `xml` as the file extension,
-but you may not want to use the same viewer for all of them).
+After running Pandoc, you can view the output file with the option
+`View output file` in the menu (or `C-c / v`). Emacs will try to display
+the file created during the most recent Pandoc run. Which viewer is used
+to display the output file depends on the output format (not on the
+output file’s extension, so that you can use different viewers for
+different output formats, even if their file extensions are identical.
+For example, `docbook`, `jats`and `tei` all use `xml` as the file
+extension, but you may not want to use the same viewer for all of them).
 
 Viewers are defined in the customisation option `pandoc-viewers`. There
 are three types of viewers: you can choose to use Emacs itself as the
@@ -385,11 +385,11 @@ should also make sure that your function not only opens the file but
 also displays its buffer (e.g., using `display-buffer`).
 
 If the most recent call to Pandoc created a pdf file (i.e, the option
-“Convert to pdf” was called), Emacs will display the pdf file instead
-of the output file defined by the output file/directory options. The
-viewer to use in this case is defined by the option `pandoc-pdf-viewer`,
-which can be Emacs (which will then use `doc-view-mode, or`pdf-tools\`
-if installed) or an external program.
+“Convert to pdf” was called), Emacs will display the pdf file instead of
+the output file defined by the output file/directory options. The viewer
+to use in this case is defined by the option `pandoc-pdf-viewer`, which
+can be Emacs (which will then use `doc-view-mode, or`pdf-tools\` if
+installed) or an external program.
 
 Note that this functionality is not as full-featured as with e.g.,
 AUCTeX and SyncTeX. There is no forward or backward search and what
@@ -495,10 +495,13 @@ settings file, which is loaded by `pandoc-load-default-settings` when no
 default local or project settings file is found. In this way, you can
 override the default output format used for new files.
 
-Note that starting with version 2.5, `pandoc-mode` settings files are
-written in a Lisp format (as demonstrated above). Old-style settings
-files continue to be read, so there is no need to change anything, but
-if you change any settings and save them, the file is converted.
+One thing to keep in mind is that the method in which `pandoc-mode`
+saves settings and passes them to the `pandoc` binary is not compatible
+with Pandoc’s YAML metadata blocks/files or with Pandoc’s defaults file.
+Since `pandoc-mode` passes all settings to `pandoc` as command-line
+options, they override settings in defaults files and in YAML metadata
+blocks or files. You should generally stick to using one or the other
+method.
 
 # File-local variables
 
@@ -514,11 +517,11 @@ to the local variable block:
 
     pandoc/bibliography: "~/path/to/mybib.bib"
 
-The easiest way to add a file-local variable is to use the command `M-x
-add-file-local-variable`. This will put the variable at the end of the
-file and add the correct comment syntax. Note that the values are Lisp
-expressions, which means that strings need to be surrounded with double
-quotes. Symbols do not need to be quoted, however.
+The easiest way to add a file-local variable is to use the command
+`M-x add-file-local-variable`. This will put the variable at the end of
+the file and add the correct comment syntax. Note that the values are
+Lisp expressions, which means that strings need to be surrounded with
+double quotes. Symbols do not need to be quoted, however.
 
 Settings specified as file-local variables are kept separate from other
 settings: they cannot be set through the menu and they are *never* saved
@@ -540,16 +543,16 @@ Pandoc provides a method for creating examples that are numbered
 sequentially throughout the document (see [Numbered example
 lists](http://pandoc.org/README.html#numbered-example-lists) in the
 Pandoc documentation). `pandoc-mode` makes it easier to manage such
-lists. First, by going to “Example Lists | Insert New Example” (`C-c / e
-i`), you can insert a new example list item with a numeric label: the
-first example you insert will be numbered `(@1)`, the second `(@2)`, and
-so on. Before inserting the first example item, Emacs will search the
-document for any existing definitions and number the new items
-sequentially, so that the numeric label will always be unique.
+lists. First, by going to “Example Lists \| Insert New Example”
+(`C-c / e i`), you can insert a new example list item with a numeric
+label: the first example you insert will be numbered `(@1)`, the second
+`(@2)`, and so on. Before inserting the first example item, Emacs will
+search the document for any existing definitions and number the new
+items sequentially, so that the numeric label will always be unique.
 
 Pandoc allows you to refer to such labeled example items in the text by
 writing `(@1)` and `pandoc-mode` provides a facility to make this
-easier. If you select the menu item “Example Lists | Select And Insert
+easier. If you select the menu item “Example Lists \| Select And Insert
 Example Label” (`C-c / e s`) Emacs displays a list of all the
 `(@)`-definitions in your document. You can select one with the up or
 down keys (you can also use `j` and `k` or `n` and `p`) and then hit

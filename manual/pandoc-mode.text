@@ -186,7 +186,7 @@ You can create a project or global settings file through the menu in the submenu
 
 The name of a global settings file has the form `<format>.pandoc`, where `<format>` obviously specifies the output format. `<format>` can also be the string `"default“`, however, in which case it specifies a default settings file, which is loaded by `pandoc-load-default-settings` when no default local or project settings file is found. In this way, you can override the default output format used for new files.
 
-Note that starting with version 2.5, `pandoc-mode` settings files are written in a Lisp format (as demonstrated above). Old-style settings files continue to be read, so there is no need to change anything, but if you change any settings and save them, the file is converted.
+One thing to keep in mind is that the method in which `pandoc-mode` saves settings and passes them to the `pandoc` binary is not compatible with Pandoc's YAML metadata blocks/files or with Pandoc's defaults file. Since `pandoc-mode` passes all settings to `pandoc` as command-line options, they override settings in defaults files and in YAML metadata blocks or files. You should generally stick to using one or the other method.
 
 
 # File-local variables #
