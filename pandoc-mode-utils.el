@@ -644,7 +644,7 @@ If NEW-ELEM is nil, OPTION is unset entirely."
      ((and item (not value)) ; if <name> exists but we have no new value
       (setq items (delq item items))) ; remove <name>
      ((and (not item) value) ; if <name> does not exist
-      (setq items (cons new-elem items)))) ; add it
+      (setq items (append items (list new-elem))))) ; add it
     (setcdr (assoc option pandoc--local-settings) items)))
 
 (defun pandoc--set-list-option (option value)
@@ -653,7 +653,7 @@ If VALUE is nil, OPTION is unset entirely."
   (let* ((values (pandoc--get option)))
     (setcdr (assoc option pandoc--local-settings)
             (if value
-                (cons value values)
+                (append values (list value))
               nil)))) ; if VALUE was nil, we unset the option
 
 (defun pandoc--remove-from-list-option (option value)
