@@ -278,6 +278,8 @@ is specified, one will be created."
                  (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
                          (pandoc--format-extensions (pandoc--get 'write-extensions)))))
         (output (when output-file (format "--output=%s" output-file)))
+        ;; Filters are handled separately, because they sometimes need to be
+        ;; passed to `pandoc' before other options.
         (filters (pandoc--format-list-options 'filter (pandoc--get 'filter)))
         (list-options (mapcar (lambda (option)
                                 (pandoc--format-list-options option (pandoc--get option)))
