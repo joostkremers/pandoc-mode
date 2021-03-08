@@ -1,11 +1,11 @@
 ;;; pandoc-mode-utils.el --- Part of `pandoc-mode'  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2009-2020 Joost Kremers
+;; Copyright (c) 2009-2021 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.30
+;; Version: 2.31
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -471,7 +471,7 @@ it is assumed to be an external viewer, which is called with
     ("superscript"                         ("markdown"))
     ("styles"                              ())
     ("table_captions"                      ("markdown"))
-    ("task_lists"                          ("markdown" "gfm"))
+    ("task_lists"                          ("markdown" "gfm" "org"))
     ("tex_math_dollars"                    ("markdown" "markdown_mmd" "html"))
     ("tex_math_double_backslash"           ("markdown_mmd" "html"))
     ("tex_math_single_backslash"           ("markdown_github" "html"))
@@ -1229,27 +1229,27 @@ evaluated."
 
 
 ;;; General writer options
-(define-pandoc-switch        no-check-certificate  (writer "N" "%-24s") "Do Not Check Certificates")
-(define-pandoc-switch        strip-comments        (writer "C" "%-24s") "Strip Comments")
-(define-pandoc-switch        verbose               (writer "V" "%-24s") "Verbose output") ; Pandoc's README places this in the general options
-(define-pandoc-string-option resource-path         (writer "r" "%-24s") "Resource Path")
-(define-pandoc-alist-option  request-header        (writer "R" "%-24s") "HTTP Request Header" "Request Header")
-(define-pandoc-file-option   include-after-body    (writer "A" "%-24s") "Include After Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-before-body   (writer "B" "%-24s") "Include Before Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-in-header     (writer "H" "%-24s") "Include Header") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   syntax-definition     (writer "y" "%-24s") "Syntax Definition File")
-(define-pandoc-string-option highlight-style       (writer "S" "%-24s") "Highlighting Style")
-(define-pandoc-switch        no-highlight          (writer "h" "%-24s") "No Highlighting")
-(define-pandoc-number-option toc-depth             (writer "D" "%-24s") "TOC Depth")
-(define-pandoc-switch        table-of-contents     (writer "T" "%-24s") "Table of Contents")
-(define-pandoc-number-option columns               (writer "c" "%-24s") "Column Width")
-(define-pandoc-switch        no-wrap               (writer "W" "%-24s") "No Wrap")
-(define-pandoc-choice-option wrap                  (writer "w" "%-24s") "Wrap"                ("auto" "none" "preserve"))
-(define-pandoc-choice-option eol                   (writer "e" "%-24s") "Line Endings Style"  ("crlf" "lf" "native"))
-(define-pandoc-number-option dpi                   (writer "d" "%-24s") "DPI")
-(define-pandoc-alist-option  variable              (writer "v" "%-24s") "Variables"           "Variable")
-(define-pandoc-file-option   template              (writer "t" "%-24s") "Template File")
-(define-pandoc-switch        standalone            (writer "s" "%-24s") "Standalone")
+(define-pandoc-switch        no-check-certificate  (writer "N" "%-24s")        "Do Not Check Certificates")
+(define-pandoc-switch        strip-comments        (writer "C" "%-24s")        "Strip Comments")
+(define-pandoc-switch        verbose               (writer "V" "%-24s")        "Verbose output") ; Pandoc's README places this in the general options
+(define-pandoc-list-option   resource-path         (writer "r" "%-24s") string "Resource Path" "Resource Path")
+(define-pandoc-alist-option  request-header        (writer "R" "%-24s")        "HTTP Request Header" "Request Header")
+(define-pandoc-file-option   include-after-body    (writer "A" "%-24s")        "Include After Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-before-body   (writer "B" "%-24s")        "Include Before Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-in-header     (writer "H" "%-24s")        "Include Header") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   syntax-definition     (writer "y" "%-24s")        "Syntax Definition File")
+(define-pandoc-string-option highlight-style       (writer "S" "%-24s")        "Highlighting Style")
+(define-pandoc-switch        no-highlight          (writer "h" "%-24s")        "No Highlighting")
+(define-pandoc-number-option toc-depth             (writer "D" "%-24s")        "TOC Depth")
+(define-pandoc-switch        table-of-contents     (writer "T" "%-24s")        "Table of Contents")
+(define-pandoc-number-option columns               (writer "c" "%-24s")        "Column Width")
+(define-pandoc-switch        no-wrap               (writer "W" "%-24s")        "No Wrap")
+(define-pandoc-choice-option wrap                  (writer "w" "%-24s")        "Wrap"                ("auto" "none" "preserve"))
+(define-pandoc-choice-option eol                   (writer "e" "%-24s")        "Line Endings Style"  ("crlf" "lf" "native"))
+(define-pandoc-number-option dpi                   (writer "d" "%-24s")        "DPI")
+(define-pandoc-alist-option  variable              (writer "v" "%-24s")        "Variables"           "Variable")
+(define-pandoc-file-option   template              (writer "t" "%-24s")        "Template File")
+(define-pandoc-switch        standalone            (writer "s" "%-24s")        "Standalone")
 ;; print-default-template : not actually included
 ;; print-default-data-file : not actually included
 ;; print-highlight-style : not actually included

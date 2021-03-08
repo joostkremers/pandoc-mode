@@ -12,8 +12,8 @@ file, so that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.30 and is compatible with
-Pandoc 2.11.
+The current version of `pandoc-mode` is 2.31 and is compatible with
+Pandoc 2.12.
 
 # Installation
 
