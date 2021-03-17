@@ -1453,32 +1453,17 @@ _M_: Use current file as master file
 
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
-  "Base face for pandoc citations."
-  :group 'pandoc)
-
-(defface pandoc-citation-marker-face
-  '((t (:inherit font-lock-variable-name-face)))
-  "Base face for pandoc citation marker '@'."
-  :group 'pandoc)
-
-(defface pandoc-citation-extra-face
-  '((t (:inherit font-lock-variable-name-face)))
-  "Base face for page numbers and other pandoc citation notation."
-  :group 'pandoc)
-
-(defface pandoc-citation-brackets-face
-  '((t (:inherit font-lock-function-name-face)))
-  "Base face for pandoc citation brackets."
+  "Base face for the key of Pandoc citations."
   :group 'pandoc)
 
 (defface pandoc-strikethrough-text-face
   '((t (:strike-through t)))
-  "Base face for pandoc strikethrough text."
+  "Base face for Pandoc strikethrough text."
   :group 'pandoc)
 
 (defface pandoc-strikethrough-tilde-face
   '((t (:inherit font-lock-warning-face)))
-  "Base face for pandoc strikethrough delimiters."
+  "Base face for Pandoc strikethrough delimiters."
   :group 'pandoc)
 
 (defface pandoc-directive-@@-face
@@ -1501,21 +1486,9 @@ _M_: Use current file as master file
   "Base face for pandoc-mode @@directive type (include or lisp)."
   :group 'pandoc)
 
-(defconst pandoc-regex-parenthetical-citation-single
-  "\\(\\[\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]+\\)\\(\\]\\)"
-  "Regular expression for parenthetical citations with only one key.")
-
-(defconst pandoc-regex-parenthetical-citation-multiple
-  "\\(\\[\\)\\(.*?\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]+\\)\\(.*?\\)\\(\\]\\)"
-  "Regular expression for parenthetical citations with page numbers or multiple keys.")
-
-(defconst pandoc-regex-in-text-citation
-  "\\[\\{0\\}\\(-?@\\)\\([-a-zA-Z0-9_+:]+\\)\\s-\\(\\[\\)\\(.*?\\)\\(\\]\\)"
-  "Regular expression for stand-alone citation with anchor.")
-
-(defconst pandoc-regex-in-text-citation-2
-  "\\(?:[^[:alnum:]]\\|^\\)\\(-?@\\)\\([-a-zA-Z0-9_+:]+\\)"
-  "Regular expression for stand-alone citation with no anchor.")
+(defconst pandoc-regex-citation-key
+  "\\(-?@[[:alnum:]_][[:alnum:]_:.#$%&-+?<>~/]*\\)"
+  "Regular expression for a citation key.")
 
 (defconst pandoc-regex-strikethrough
   "\\(~\\{2\\}\\)\\([^~].*?\\)\\(~\\{2\\}\\)"
@@ -1533,27 +1506,8 @@ _M_: Use current file as master file
 	   (3 pandoc-directive-braces-face)
    	   (4 pandoc-directive-contents-face)
 	   (5 pandoc-directive-braces-face)))
-   (cons pandoc-regex-parenthetical-citation-single
-   	 '((1 pandoc-citation-brackets-face t)
-   	   (2 pandoc-citation-marker-face)
-   	   (3 pandoc-citation-key-face)
-   	   (4 pandoc-citation-brackets-face t)))
-   (cons pandoc-regex-in-text-citation-2
-   	 '((1 pandoc-citation-marker-face)
-   	   (2 pandoc-citation-key-face)))
-   (cons pandoc-regex-parenthetical-citation-multiple
-         '((1 pandoc-citation-brackets-face t)
-           (2 pandoc-citation-extra-face)
-           (3 pandoc-citation-marker-face)
-           (4 pandoc-citation-key-face)
-           (5 pandoc-citation-extra-face append)
-           (6 pandoc-citation-brackets-face t)))
-   (cons pandoc-regex-in-text-citation
-	 '((1 pandoc-citation-marker-face)
-	   (2 pandoc-citation-key-face)
-	   (3 pandoc-citation-brackets-face)
-	   (4 pandoc-citation-extra-face)
-	   (5 pandoc-citation-brackets-face)))
+   (cons pandoc-regex-citation-key
+   	 '((1 pandoc-citation-key-face)))
    (cons pandoc-regex-strikethrough
    	 '((1 pandoc-strikethrough-tilde-face)
    	   (2 pandoc-strikethrough-text-face )
@@ -1587,16 +1541,9 @@ current buffer's BibTeX files."
   (interactive)
   (let ((biblist (pandoc--get 'bibliography)))
     (if biblist
-        (cond
-         ((thing-at-point-looking-at pandoc-regex-in-text-citation)
-          (funcall pandoc-citation-jump-function (match-string-no-properties 4) biblist))
-         ((thing-at-point-looking-at pandoc-regex-in-text-citation-2)
-          (funcall pandoc-citation-jump-function (match-string-no-properties 2) biblist))
-         ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-single)
-          (funcall pandoc-citation-jump-function (match-string-no-properties 3) biblist))
-         ((thing-at-point-looking-at pandoc-regex-parenthetical-citation-multiple)
-          (funcall pandoc-citation-jump-function (match-string-no-properties 4) biblist))
-         (t (error "No citation at point")))
+        (if (thing-at-point-looking-at pandoc-regex-citation-key)
+            (funcall pandoc-citation-jump-function (match-string-no-properties 1) biblist)
+          (error "No citation at point"))
       (error "No bibliography selected"))))
 
 (defun pandoc-goto-citation-reference (key biblist)
