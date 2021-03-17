@@ -1487,7 +1487,7 @@ _M_: Use current file as master file
   :group 'pandoc)
 
 (defconst pandoc-regex-citation-key
-  "\\(-?@[[:alnum:]_][[:alnum:]_:.#$%&-+?<>~/]*\\)"
+  "\\(-?@[[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*\\)"
   "Regular expression for a citation key.")
 
 (defconst pandoc-regex-strikethrough
