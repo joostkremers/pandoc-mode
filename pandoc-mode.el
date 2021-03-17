@@ -1507,7 +1507,7 @@ _M_: Use current file as master file
    	   (4 pandoc-directive-contents-face)
 	   (5 pandoc-directive-braces-face)))
    (cons pandoc-regex-citation-key
-   	 '((1 pandoc-citation-key-face)))
+   	 '((1 pandoc-citation-key-face t)))
    (cons pandoc-regex-strikethrough
    	 '((1 pandoc-strikethrough-tilde-face)
    	   (2 pandoc-strikethrough-text-face )
@@ -1516,7 +1516,7 @@ _M_: Use current file as master file
 
 (defun pandoc-faces-load ()
   "Load pandoc-faces."
-  (font-lock-add-keywords nil pandoc-faces-keywords)
+  (font-lock-add-keywords nil pandoc-faces-keywords t)
   (if (fboundp 'font-lock-flush)
       (font-lock-flush)
     (with-no-warnings
