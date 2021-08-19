@@ -478,7 +478,7 @@ it is assumed to be an external viewer, which is called with
     ("yaml_metadata_block"                 ("markdown")))
   "List of Markdown extensions supported by Pandoc.")
 
-(defvar pandoc--cli-options nil
+(defvar pandoc--cli-options '(defaults)
   "List of Pandoc command line options that do not need special treatment.
 This includes all command line options except the list and alist
 options, because they need to be handled separately in
