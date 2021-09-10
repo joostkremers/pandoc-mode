@@ -1487,7 +1487,7 @@ _M_: Use current file as master file
   :group 'pandoc)
 
 (defconst pandoc-regex-citation-key
-  "\\(-?@[[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*\\)"
+  "\\(-?@\\([[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*\\)\\)"
   "Regular expression for a citation key.")
 
 (defconst pandoc-regex-strikethrough
@@ -1542,7 +1542,7 @@ current buffer's BibTeX files."
   (let ((biblist (pandoc--get 'bibliography)))
     (if biblist
         (if (thing-at-point-looking-at pandoc-regex-citation-key)
-            (funcall pandoc-citation-jump-function (match-string-no-properties 1) biblist)
+            (funcall pandoc-citation-jump-function (match-string-no-properties 2) biblist)
           (error "No citation at point"))
       (error "No bibliography selected"))))
 
