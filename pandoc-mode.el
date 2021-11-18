@@ -246,7 +246,7 @@ file (i.e., if the output file is set to nil), return nil."
         (and (null (pandoc--get 'output)) ; or if the user set no output file but either
              (or pdf            ; (i) we're converting to pdf, or
                  (member (pandoc--get 'write) ; (ii) the output format is odt, epub or docx
-                         '("odt" "epub" "docx")))))
+                         '("odt" "epub" "docx" "pptx")))))
     (format "%s/%s%s"  ; we create an output file name.
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
