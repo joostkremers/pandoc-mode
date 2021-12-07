@@ -1204,8 +1204,12 @@ evaluated."
 
 ;;; Defining the options
 ;; Note that the options are added to the menus and hydras in reverse order.
+;; For this reason, obsolete options appear first here, so that they appear last
+;; in their submenus.
 
 ;;; Reader options
+(define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart*") ; obsolete
+(define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw*") ; obsolete
 (define-pandoc-file-option   abbreviations           (reader "a" "%-23s")      "Abbreviations File")
 (define-pandoc-switch        strip-empty-paragraphs  (reader "e" "%-23s")      "Strip Empty Paragraphs")
 (define-pandoc-choice-option track-changes           (reader "T" "%-23s")      "Track Changes" ("accept" "reject" "all") ("docx"))
@@ -1221,8 +1225,6 @@ evaluated."
 (define-pandoc-number-option shift-heading-level-by  (reader "h" "%-23s")      "Header Level Shift")
 (define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level*")
 (define-pandoc-switch        old-dashes              (reader "o" "%-23s")      "Use Old-style Dashes")
-(define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart*") ; obsolete
-(define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw*") ; obsolete
 ;; extract-media
 
 ;; TODO for data-dir, output-dir and extract-media, a macro define-pandoc-dir-option might be useful.
@@ -1258,13 +1260,13 @@ evaluated."
 ;;; Options affecting specific writers
 
 ;; general
+(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
+(define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ;obsolete
 (define-pandoc-choice-option ipynb-output       (specific "p" "%-21s")        "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
 (define-pandoc-list-option   pdf-engine-opt     (specific "o" "%-21s") string "PDF Options" "PDF Option")
 (define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine"
   ("pdflatex" "lualatex" "xelatex" "wkhtmltopdf" "weasyprint" "prince" "context" "pdfroff"))
 (define-pandoc-file-option   reference-doc      (specific "R" "%-21s")        "Reference Doc")
-(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
-(define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ;obsolete
 (define-pandoc-number-option slide-level        (specific "H" "%-21s")        "Slide Level Header")
 (define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
 (define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
