@@ -1211,6 +1211,7 @@ evaluated."
 ;;; Reader options
 (define-pandoc-switch        smart                   (reader "s" "%-23s")      "Smart*") ; obsolete
 (define-pandoc-switch        parse-raw               (reader "r" "%-23s")      "Parse Raw*") ; obsolete
+(define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level*") ; obsolete
 (define-pandoc-file-option   abbreviations           (reader "a" "%-23s")      "Abbreviations File")
 (define-pandoc-switch        strip-empty-paragraphs  (reader "e" "%-23s")      "Strip Empty Paragraphs")
 (define-pandoc-choice-option track-changes           (reader "T" "%-23s")      "Track Changes" ("accept" "reject" "all") ("docx"))
@@ -1224,7 +1225,6 @@ evaluated."
 (define-pandoc-string-option default-image-extension (reader "i" "%-23s")      "Default Image Extension")
 (define-pandoc-string-option indented-code-classes   (reader "c" "%-23s")      "Indented Code Classes")
 (define-pandoc-number-option shift-heading-level-by  (reader "h" "%-23s")      "Header Level Shift")
-(define-pandoc-number-option base-header-level       (reader "h" "%-23s")      "Base Header Level*")
 (define-pandoc-switch        old-dashes              (reader "o" "%-23s")      "Use Old-style Dashes")
 ;; extract-media
 
@@ -1261,8 +1261,9 @@ evaluated."
 ;;; Options affecting specific writers
 
 ;; general
-(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ;obsolete
-(define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ;obsolete
+(define-pandoc-file-option   reference-docx     (specific "d" "%-21s")        "Reference docx File*") ; obsolete
+(define-pandoc-file-option   reference-odt      (specific "O" "%-21s")        "Reference ODT File*") ; obsolete
+(define-pandoc-switch        atx-headers        (specific "a" "%-21s")        "Use ATX-style Headers*") ; obsolete
 (define-pandoc-choice-option ipynb-output       (specific "p" "%-21s")        "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
 (define-pandoc-list-option   pdf-engine-opt     (specific "o" "%-21s") string "PDF Options" "PDF Option")
 (define-pandoc-choice-option pdf-engine         (specific "e" "%-21s")        "PDF Engine"
@@ -1271,7 +1272,6 @@ evaluated."
 (define-pandoc-number-option slide-level        (specific "H" "%-21s")        "Slide Level Header")
 (define-pandoc-switch        incremental        (specific "i" "%-21s")        "Incremental")
 (define-pandoc-switch        number-sections    (specific "n" "%-21s")        "Number Sections")
-(define-pandoc-switch        atx-headers        (specific "a" "%-21s")        "Use ATX-style Headers*")
 (define-pandoc-choice-option markdown-headings  (specific "h" "%-21s")        "Markdown Headings" ("atx" "setext")
   ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
 (define-pandoc-switch        reference-links    (specific "r" "%-21s")        "Reference Links")
@@ -1292,7 +1292,7 @@ evaluated."
 (define-pandoc-switch        self-contained    (html "s" "%-31s")      "Self-contained Document")
 
 ;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options*" "LaTeX Option") ;obsolete
+(define-pandoc-list-option   latex-engine-opt (tex "o" "%-30s") string "LaTeX Options*" "LaTeX Option") ; obsolete
 (define-pandoc-choice-option latex-engine     (tex "e" "%-30s")        "LaTeX Engine*" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context")) ; obsolete
 (define-pandoc-switch        listings         (tex "L" "%-30s")        "Use LaTeX listings Package")
 (define-pandoc-switch        no-tex-ligatures (tex "l" "%-30s")        "Do Not Use TeX Ligatures")
@@ -1316,15 +1316,15 @@ evaluated."
 (define-pandoc-switch      citeproc               (citations "c" "%-27s")      "Process Citations")
 
 ;;; Math rendering in HTML
+(define-pandoc-string-option mimetex          (math "M" "%-18s") "MimeTeX CGI Script*" t) ; obsolete
+(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL*"         t) ; obsolete
+(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL*"    t) ; obsolete
 (define-pandoc-string-option katex-stylesheet (math "K" "%-18s") "KaTeX Stylesheet"    t)
 (define-pandoc-string-option katex            (math "k" "%-18s") "KaTeX URL"           t)
 (define-pandoc-string-option webtex           (math "w" "%-18s") "WebTeX URL"          t)
-(define-pandoc-string-option mimetex          (math "M" "%-18s") "MimeTeX CGI Script*" t)
 (define-pandoc-switch        gladtex          (math "g" "%-18s") "gladTeX")
 (define-pandoc-string-option mathjax          (math "J" "%-18s") "MathJax URL"         t)
-(define-pandoc-string-option jsmath           (math "j" "%-18s") "jsMath URL*"         t)
 (define-pandoc-switch        mathml           (math "m" "%-18s") "MathML URL")
-(define-pandoc-string-option latexmathml      (math "L" "%-18s") "LaTeXMathML URL*"    t)
 
 (provide 'pandoc-mode-utils)
 
