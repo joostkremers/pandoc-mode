@@ -530,7 +530,8 @@ with the default value nil.")
 
 (defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
 
-(defvar-local pandoc--latest-run nil "Cons of the output format and the output file created during the most recent call to Pandoc.")
+(defvar-local pandoc--latest-run nil
+  "The output format and the output file created in the most recent call to Pandoc.")
 
 (defvar pandoc--output-buffer-name " *Pandoc output*")
 (defvar pandoc--log-buffer-name " *Pandoc log*")
