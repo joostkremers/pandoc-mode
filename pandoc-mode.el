@@ -49,6 +49,8 @@
 (require 'cl-lib)
 (require 'thingatpt)
 
+(declare-function ebib "ext:ebib.el" (&optional file key))
+
 (defvar-local pandoc--@-counter 0 "Counter for (@)-lists.")
 
 (defvar pandoc--window-config nil
