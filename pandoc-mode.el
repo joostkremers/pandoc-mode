@@ -1140,8 +1140,6 @@ argument, the option is toggled."
 ;;                      :selected `(pandoc--get (quote ,(cdr option)))))
 ;;            pandoc--switches))
 
-(easy-menu-add pandoc-mode-menu pandoc-mode-map)
-
 ;; hydras
 
 (defhydra pandoc-main-hydra (:foreign-keys warn :exit t :hint nil)
