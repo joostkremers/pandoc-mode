@@ -360,7 +360,7 @@ possible to customize the extensions."
     ("muse"              emacs)
     ("native"            emacs)
     ("odt"               "libreoffice")
-    ("opendocument"      "liberoffice")
+    ("opendocument"      "libreoffice")
     ("opml"              nil)
     ("org"               emacs)
     ("plain"             emacs)
