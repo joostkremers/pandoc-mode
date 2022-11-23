@@ -46,7 +46,9 @@
 (require 'dash)
 (require 'cl-lib)
 
-(defgroup pandoc nil "Minor mode for interacting with pandoc." :group 'wp)
+(defgroup pandoc nil
+  "Minor mode for interacting with pandoc."
+  :group 'text)
 
 (defcustom pandoc-binary "pandoc"
   "The name of the pandoc binary.
