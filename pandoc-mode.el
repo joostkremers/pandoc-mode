@@ -106,7 +106,7 @@
   (if (= (count-lines (point) (point-max)) 2)
       (beep)
     (forward-line 2)
-    (move-overlay pandoc--@-overlay (point) (point-at-eol))))
+    (move-overlay pandoc--@-overlay (point) (line-end-position))))
 
 (defun pandoc-prev-@ ()
   "Highlight previous (@)-definition."
@@ -114,20 +114,20 @@
   (if (= (point) (point-min))
       (beep)
     (forward-line -2)
-    (move-overlay pandoc--@-overlay (point) (point-at-eol))))
+    (move-overlay pandoc--@-overlay (point) (line-end-position))))
 
 (defun pandoc-goto-first-@ ()
   "Highlight the first (@)-definition."
   (interactive)
   (goto-char (point-min))
-  (move-overlay pandoc--@-overlay (point) (point-at-eol)))
+  (move-overlay pandoc--@-overlay (point) (line-end-position)))
 
 (defun pandoc-goto-last-@ ()
   "Highlight the last (@)-definition."
   (interactive)
   (goto-char (point-max))
   (forward-line -2)
-  (move-overlay pandoc--@-overlay (point) (point-at-eol)))
+  (move-overlay pandoc--@-overlay (point) (line-end-position)))
 
 (defun pandoc-select-current-@ ()
   "Leave pandoc--@-select-buffer and insert selected (@)-label at point."
@@ -880,7 +880,7 @@ file exists, display the *Pandoc output* buffer."
               (insert (concat " " definition "\n\n")))
             definitions)
       (goto-char (point-min))
-      (setq pandoc--@-overlay (make-overlay (point-min) (point-at-eol)))
+      (setq pandoc--@-overlay (make-overlay (point-min) (line-end-position)))
       (overlay-put pandoc--@-overlay 'face 'highlight))
     (select-window (display-buffer pandoc--@-buffer))))
 
