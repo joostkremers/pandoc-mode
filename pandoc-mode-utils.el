@@ -530,7 +530,7 @@ with the default value nil.")
 
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
-(defvar-local pandoc--settings-modified-flag nil "T if the current settings were modified and not saved.")
+(defvar-local pandoc--settings-modified-flag nil "Non-nil means the current settings were modified and not saved.")
 
 (defvar-local pandoc--latest-run nil
   "The output format and the output file created in the most recent call to Pandoc.")
@@ -681,7 +681,7 @@ If VALUE is nil, OPTION is unset entirely."
 
 (defun pandoc--extension-in-format-p (extension format &optional rw)
   "Check if EXTENSION is a default extension for FORMAT.
-RW must be either 'read or 'write, indicating whether FORMAT is
+RW must be either `read' or `write', indicating whether FORMAT is
 being considered as an input or an output format."
   (let ((formats (cadr (assoc extension pandoc--extensions))))
     (or (member format formats)
@@ -702,7 +702,7 @@ has activated it."
 
 (defun pandoc--set-extension (extension rw value)
   "Set the value of EXTENSION for RW to VALUE.
-RW is either 'read or 'write, indicating whether the read or
+RW is either `read' or `write', indicating whether the read or
 write extension is to be set."
   (setcdr (assoc extension (if (eq rw 'read)
                                (pandoc--get 'read-extensions)
@@ -711,7 +711,7 @@ write extension is to be set."
 
 (defun pandoc--get-extension (extension rw)
   "Return the value of EXTENSION for RW.
-RW is either 'read or 'write, indicating whether the read or
+RW is either `read' or `write', indicating whether the read or
 write extension is to be queried."
   (cdr (assoc extension (if (eq rw 'read)
                             (pandoc--get 'read-extensions)

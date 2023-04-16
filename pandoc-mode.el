@@ -207,7 +207,7 @@ N is the index of the extension in `pandoc--extensions'."
 
 (defun pandoc--create-settings-filename (type filename output-format)
   "Create a settings filename.
-TYPE is the type of settings file, either 'local or 'project.
+TYPE is the type of settings file, either `local' or `project'.
 FILENAME is name of the file for which the settings file is to be
 created, OUTPUT-FORMAT the output format of the settings file,
 which is recorded in its name.  The return value is an absolute
@@ -559,7 +559,7 @@ the buffer."
 
 (defvar-local pandoc--output-format-for-pdf nil
   "Output format used to for pdf conversion.
-  Set the first time the user converts to pdf.  Unset when the
+Set the first time the user converts to pdf.  Unset when the
 user changes output format.")
 
 (defun pandoc-convert-to-pdf (&optional prefix)
@@ -1017,7 +1017,7 @@ argument, the option is toggled."
                                                                          "set"
                                                                        "unset"))))
 
-(easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu"
+(easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
     ["Create PDF" pandoc-convert-to-pdf :active t]
