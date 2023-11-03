@@ -283,15 +283,17 @@ is specified, one will be created."
         ;; Filters are handled separately, because they sometimes need to be
         ;; passed to `pandoc' before other options.
         (filters (pandoc--format-list-options 'filter (pandoc--get 'filter)))
+        (lua-filters (pandoc--format-list-options 'lua-filter (pandoc--get 'lua-filter)))
         (list-options (mapcar (lambda (option)
                                 (pandoc--format-list-options option (pandoc--get option)))
-                              (remove 'filter pandoc--list-options)))
+                              (remove 'lua-filter
+                                      (remove 'filter pandoc--list-options))))
         (alist-options (mapcar (lambda (option)
                                  (pandoc--format-alist-options option (pandoc--get option)))
                                pandoc--alist-options))
         (cli-options (pandoc--format-cli-options)))
     ;; Note: list-options and alist-options are both lists of lists, so we need to flatten them first.
-    (delq nil (append (list read write output) filters cli-options (apply #'append list-options) (apply #'append alist-options)))))
+    (delq nil (append (list read write output) filters lua-filters cli-options (apply #'append list-options) (apply #'append alist-options)))))
 
 (defun pandoc--format-extensions (extensions)
   "Create a string of extensions to be added to the Pandoc command line.
