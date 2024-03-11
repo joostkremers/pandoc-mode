@@ -197,6 +197,7 @@ matches KEY."
      ("tikiwiki"               "TikiWiki"                     "t" both)
      ("twiki"                  "Twiki"                        "T" input)
      ("vimwiki"                "Vimwiki"                      "v" both)
+     ("xwiki"                  "Xwiki"                        "x" output)
      ("zimwiki"                "ZimWiki"                      "z" both))
 
     ("wordprocessor" "Wordprocessor Formats" "W"
