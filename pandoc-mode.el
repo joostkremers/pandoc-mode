@@ -660,7 +660,7 @@ without asking."
         (let ((print-length nil)
               (print-level nil)
               (print-circle nil))
-          (insert ";; -*- mode: emacs-lisp -*-\n\n"
+          (insert ";; -*- mode: lisp-data -*-\n\n"
                   (format ";; pandoc-mode %s settings file%s\n"
                           type
                           (if (eq type 'local)
