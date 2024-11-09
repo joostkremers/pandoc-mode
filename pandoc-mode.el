@@ -345,9 +345,11 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
                          (memq option pandoc--filepath-options))
                 (setq value (pandoc--expand-absolute-path value)))
               (cond
-               ((eq value t) (format "--%s" option))
+               ((eq value t)
+                (format "--%s" option))
                ((or (numberp value)
-                    (stringp value)) (format "--%s=%s" option value))
+                    (stringp value))
+                (format "--%s=%s" option value))
                (t nil))))
           pandoc--cli-options))
 
