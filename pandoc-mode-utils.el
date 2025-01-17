@@ -5,7 +5,7 @@
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
 ;; Created: 31 Oct 2009
-;; Version: 2.33
+;; Version: 2.34
 ;; Keywords: text, pandoc
 ;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
 
@@ -152,7 +152,8 @@ matches KEY."
     (org-mode       . "org")
     (rst-mode       . "rst")
     (text-mode      . "plain")
-    (textile-mode   . "textile"))
+    (textile-mode   . "textile")
+    (typst-ts-mode  . "typst"))
   "List of major modes and their default pandoc input formats."
   :group 'pandoc
   :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
@@ -207,11 +208,12 @@ matches KEY."
      ("opendocument"           "OpenDocument XML"             "o" output)
      ("rtf"                    "Rich Text Format"             "r" output))
 
-    ("tex" "TeX-based Formats" "t"
+    ("tex" "Typesetting Formats" "t"
+     ("latex"                  "LaTeX"                        "l" both)
      ("beamer"                 "Beamer Slide Show"            "B" output) ; Also under Slide Shows Formats.
      ("context"                "ConTeXt"                      "c" output)
-     ("latex"                  "LaTeX"                        "l" both)
-     ("texinfo"                "TeXinfo"                      "i" output)) ; Also under Documentation Formats.
+     ("texinfo"                "TeXinfo"                      "i" output) ; Also under Documentation Formats.
+     ("typst"                  "Typst"                        "y" both))
 
     ("ebook" "E-Book Formats" "e"
      ("epub"                   "EPUB (default)"               "e" both)
@@ -317,6 +319,7 @@ IO is a symbol, either `input' or `output'.  Return a list of formats."
     ("tei"               ".xml")
     ("texinfo"           ".texi")
     ("textile"           ".textile")
+    ("typst"             ".typ")
     ("zimwiki"           ".txt"))
   "List of Pandoc output formats and their associated file extensions.
 These extensions are used when pandoc-mode creates an output
