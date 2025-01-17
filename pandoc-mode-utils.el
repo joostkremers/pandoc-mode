@@ -421,7 +421,7 @@ it is assumed to be an external viewer, which is called with
     ("blank_before_blockquote"             ("markdown"))
     ("blank_before_header"                 ("markdown"))
     ("bracketed_spans"                     ("markdown"))
-    ("citations"                           ("markdown"))
+    ("citations"                           ("markdown" "typst"))
     ("compact_definition_lists"            ())
     ("definition_lists"                    ("markdown" "markdown_phpextra" "markdown_mmd"))
     ("east_asian_line_breaks"              ())
