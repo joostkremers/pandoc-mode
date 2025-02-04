@@ -1,6 +1,6 @@
 ;;; pandoc-mode.el --- Minor mode for interacting with Pandoc  -*- lexical-binding: t -*-
 
-;; Copyright (c) 2009-2022 Joost Kremers
+;; Copyright (c) 2009-2025 Joost Kremers
 
 ;; Author: Joost Kremers <joostkremers@fastmail.fm>
 ;; Maintainer: Joost Kremers <joostkremers@fastmail.fm>
