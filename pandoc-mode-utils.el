@@ -406,7 +406,7 @@ it is assumed to be an external viewer, which is called with
   :type '(choice (const :tag "Use Emacs" emacs)
                  (string :tag "Use external viewer")))
 
-(defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms")
+(defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms" "typst")
   "List of output formats that can be used to generate pdf output.")
 
 (defvar pandoc--extensions
