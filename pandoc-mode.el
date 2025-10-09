@@ -1153,8 +1153,8 @@ argument, the option is toggled."
 Main menu
 
 _r_: Run Pandoc               _o_: Options
-_p_: Convert to pdf           _I_: Input format
-_v_: View output file         _O_: Output format
+_p_: Convert to pdf           _I_: Input format    [%s(pandoc--get 'read)]
+_v_: View output file         _O_: Output format   [%s(pandoc--get 'write)]
 _V_: View output buffer       _s_: Settings files
 _S_: View current settings    _e_: Example lists
 _L_: View log buffer
