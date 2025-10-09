@@ -80,6 +80,13 @@ This hook is only run when `pandoc-use-async' is set to t."
   :group 'pandoc
   :type 'hook)
 
+(defcustom pandoc-project-file-name "Project"
+  "Base name of project defaults files.
+When creating a defaults file for a project, use this name as the base
+name."
+  :group 'pandoc
+  :type 'string)
+
 (defcustom pandoc-data-dir "~/.emacs.d/pandoc-mode/"
   "Default `pandoc-mode' data dir.
 This is where `pandoc-mode' looks for global settings files."
