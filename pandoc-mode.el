@@ -246,21 +246,21 @@ file (i.e., if the output file is set to nil), return nil."
   (cond
    ((or (eq (pandoc--get 'output) t) ; If the user set the output file to T
         (and (null (pandoc--get 'output)) ; or if the user set no output file but either
-             (or pdf            ; (i) we're converting to pdf, or
-                 (member (pandoc--get 'write) ; (ii) the output format is odt, epub or docx
+             (or pdf                      ; (i) we're converting to pdf, or
+                 (member (pandoc--get 'write) ; (ii) the output format is one of these:
                          '("odt" "epub" "docx" "pptx")))))
-    (format "%s/%s%s"  ; we create an output file name.
+    (format "%s/%s%s"                   ; we create an output file name.
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
             (file-name-sans-extension (file-name-nondirectory input-file))
             (if pdf
                 ".pdf"
               (cadr (assoc (pandoc--get 'write) pandoc-output-format-extensions)))))
-   ((stringp (pandoc--get 'output)) ; If the user set an output file,
-    (format "%s/%s"   ; we combine it with the output directory
+   ((stringp (pandoc--get 'output))     ; If the user set an output file,
+    (format "%s/%s"               ; we combine it with the output directory
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
-            (if pdf             ; and check if we're converting to pdf.
+            (if pdf                 ; and check if we're converting to pdf.
                 (concat (file-name-sans-extension (pandoc--get 'output)) ".pdf")
               (pandoc--get 'output))))
    (t nil)))
