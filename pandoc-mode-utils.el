@@ -7,7 +7,7 @@
 ;; Created: 31 Oct 2009
 ;; Version: 2.35
 ;; Keywords: text, pandoc
-;; Package-Requires: ((hydra "0.10.0") (dash "2.10.0"))
+;; Package-Requires: ((dash "2.10.0"))
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
