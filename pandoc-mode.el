@@ -1564,7 +1564,8 @@ argument, the option is toggled."
              'pandoc-reader-options-transient
              (list (vconcat (list "Reader options")
                             pandoc--reader-transient-list
-                            '(("b" "Back" transient-quit-one)
+                            '(" "
+                              ("b" "Back" transient-quit-one)
                               ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-writer-options-transient ()
@@ -1576,7 +1577,8 @@ argument, the option is toggled."
              'pandoc-writer-options-transient
              (list (vconcat  (list "General writer options")
                              pandoc--writer-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-specific-options-transient ()
@@ -1588,9 +1590,11 @@ argument, the option is toggled."
              'pandoc-specific-options-transient
              (list (vconcat  (list "Specific writer options")
                              pandoc--specific-transient-list
-                             '(("H" "HTML-based writers" pandoc-html-options-transient)
+                             '(" "
+                               ("H" "HTML-based writers" pandoc-html-options-transient)
                                ("T" "TeX-based writers" pandoc-tex-options-transient)
                                ("E" "EPUB" pandoc-epub-options-transient)
+                               " "
                                ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
@@ -1603,7 +1607,8 @@ argument, the option is toggled."
              'pandoc-html-options-transient
              (list (vconcat  (list "HTML-based writer options")
                              pandoc--html-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-tex-options-transient ()
@@ -1615,7 +1620,8 @@ argument, the option is toggled."
              'pandoc-tex-options-transient
              (list (vconcat  (list "TeX-based writer options")
                              pandoc--tex-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-epub-options-transient ()
@@ -1627,7 +1633,8 @@ argument, the option is toggled."
              'pandoc-epub-options-transient
              (list (vconcat  (list "TeX-based writer options")
                              pandoc--epub-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-citations-transient ()
@@ -1639,7 +1646,8 @@ argument, the option is toggled."
              'pandoc-citations-transient
              (list (vconcat  (list "Citations menu")
                              pandoc--citations-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-math-transient ()
@@ -1651,7 +1659,8 @@ argument, the option is toggled."
              'pandoc-math-transient
              (list (vconcat  (list "Math rendering")
                              pandoc--math-transient-list
-                             '(("b" "Back" transient-quit-one)
+                             '(" "
+                               ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
 ;;; Faces:
