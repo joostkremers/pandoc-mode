@@ -770,7 +770,8 @@ the option as it will appear in the menu."
      (push (quote ,(list key `(lambda () (interactive)
                                 (pandoc--toggle (quote ,option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,description (pandoc--pp-switch (quote ,option))))))
+                                         (format "%-25s[%s]" ,description (pandoc--pp-switch (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
 (defmacro define-pandoc-file-option (option menu key prompt &optional default)
@@ -820,7 +821,8 @@ or T and indicates whether the option can have a default value."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -870,7 +872,8 @@ formulated in such a way that the strings \"Default \" and \"Set
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -925,7 +928,8 @@ or T and indicates whether the option can have a default value."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -974,7 +978,8 @@ it."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -1029,7 +1034,8 @@ formulated in such a way that the strings \"Set/Change \" and
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -1090,7 +1096,8 @@ menu."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))))
+                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                         :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
      (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
@@ -1104,76 +1111,6 @@ menu."
                                       (member value '("" (car ,choices))))
                                   nil
                                 value))))))))
-
-(defun pandoc--trim-right-padding (strings)
-  "Trim right padding in STRINGS.
-STRINGS is a list of strings ending in one or more spaces.  The
-right padding of each string is trimmed to the longest string."
-  (let ((n (-min (--map (let ((idx (string-match-p " *\\'" it)))
-                          (length (substring it idx)))
-                        strings))))
-    (--map (substring it 0 (if (> n 0) (- n))) strings)))
-
-(defun pandoc--tabulate (strings &optional colwidth width fmt-str colsep trim)
-  "Tabulate STRINGS.
-STRINGS is a list of strings.  The return value is a string
-containing STRINGS tabulated top-to-bottom, left-to-right.
-COLWIDTH is the width of the columns of the table, which defaults
-to the width of the largest string in STRINGS.  Each string is
-right-padded with spaces to make it the length of COLWIDTH.  WIDTH
-is the width of the table, which defaults to the width of the
-current frame.  The number of rows and columns is calculated on
-the basis of COLWIDTH and WIDTH.
-
-FMT-STR is a format string that is used to format STRINGS.  It
-defaults to \"%-<n>s\", where <n> is colwidth.  FMT-STR must
-contain a \"%s\" specifier for the strings to be tabulated.  Note
-that if FMT-STR is provided, COLWIDTH is only used to calculate
-the number of rows and columns, not for padding the strings.  The
-calling function must then ensure that the strings are of
-equal length.
-
-COLSEP is the string placed between two columns.  It defaults to
-two spaces.  The length of this string is taken into account when
-calculating the number of columns.
-
-If TRIM is t, each row is trimmed to its widest member."
-
-  (or colwidth (setq colwidth (-max (--map (length it) strings))))
-  (or width (setq width (frame-width)))
-  (or fmt-str (setq fmt-str (format "%%-%ds" colwidth)))
-  (or colsep (setq colsep "  "))
-  (let* ((n-cols (/ width (+ (length colsep) colwidth)))
-         (n-rows (if (= n-cols 0) ; happens when `width' is too small to hold `strings'.
-                     (length strings)
-                   (ceiling (/ (length strings) (float n-cols)))))
-         (cols (-partition-all n-rows (--map (format fmt-str it) strings))))
-    (if trim
-        (setq cols (-map #'pandoc--trim-right-padding cols)))
-    (let ((rows (apply #'-zip-fill "" cols)))
-      (if (atom (cdar rows)) ; -zip-fill returns cons cells if it zips two lists
-          (setq rows (mapc (lambda (c)
-                             (setcdr c (list (cdr c))))
-                           rows)))
-      (mapconcat (lambda (line)
-                   (mapconcat #'identity line colsep))
-                 rows
-                 "\n"))))
-
-(defun pandoc--tabulate-extensions (rw)
-  "Tabulate extension strings as a new string.
-RW can be `read' or `write', indicating which extensions to
-insert."
-  (let* ((extensions (--map (car it) pandoc--extensions))
-         (colwidth (-max (-map #'length extensions)))
-         (fmt-str (format "%%2d %%%%s(pandoc--extension-active-marker \"%%s\" '%%s) %%-%ds" colwidth))
-         (strings (--map (format fmt-str
-                                 (1+ (-elem-index it extensions))
-                                 it
-                                 rw
-                                 (replace-regexp-in-string "_" " " it))
-                         extensions)))
-    (pandoc--tabulate strings (+ 5 colwidth) nil "%s" nil 'trim)))
 
 ;;; Defining the options
 ;; Note that the options are added to the menus and transients in reverse order.
