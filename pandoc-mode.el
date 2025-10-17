@@ -1484,6 +1484,7 @@ argument, the option is toggled."
    ("g" "Save global settings file"     pandoc-save-global-settings-file)
    ("d" "Set current format as default" pandoc-set-default-format)
    ("r" "Revert settings"               pandoc-revert-settings)
+   " "
    ("b" "Back"                          transient-quit-one)
    ("q" "Quit"                          transient-quit-all)])
 
@@ -1492,6 +1493,7 @@ argument, the option is toggled."
   ["Example lists"
    ("i" "Insert new example" pandoc-insert-@)
    ("s" "Select and insert example reference" pandoc-select-@)
+   " "
    ("b" "Back" transient-quit-one)
    ("q" "Quit" transient-quit-all)])
 
