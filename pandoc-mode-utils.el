@@ -7,7 +7,6 @@
 ;; Created: 31 Oct 2009
 ;; Version: 2.34
 ;; Keywords: text, pandoc
-;; Package-Requires: ((dash "2.10.0"))
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
@@ -43,7 +42,6 @@
 
 ;;; Code:
 
-(require 'dash)
 (require 'cl-lib)
 
 (defgroup pandoc nil
@@ -261,9 +259,11 @@ matches KEY."
 (defun pandoc--extract-formats (io)
   "Extract the input or output formats in `pandoc--formats'.
 IO is a symbol, either `input' or `output'.  Return a list of formats."
-  (-flatten-n 1 (-map (-lambda ((_name _descr _key . formats))
-                        (--filter (memq (-last-item it) `(,io both)) formats))
-                      pandoc--formats)))
+  (apply #'append (mapcar (lambda (formats)
+                            (seq-filter (lambda (it)
+                                          (memq (car (last it)) `(,io both)))
+                                        (seq-drop formats 3)))
+                          pandoc--formats)))
 
 (defvar pandoc--input-formats-menu
   (mapcar (lambda (f)
