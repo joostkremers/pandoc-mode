@@ -770,7 +770,7 @@ the option as it will appear in the menu."
      (push (quote ,(list key `(lambda () (interactive)
                                 (pandoc--toggle (quote ,option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,description (pandoc--pp-switch (quote ,option))))
+                                         (format "%-35s[%s]" ,description (pandoc--pp-switch (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
@@ -821,7 +821,7 @@ or T and indicates whether the option can have a default value."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
@@ -872,7 +872,7 @@ formulated in such a way that the strings \"Default \" and \"Set
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
@@ -928,7 +928,7 @@ or T and indicates whether the option can have a default value."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
@@ -978,7 +978,7 @@ it."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
@@ -1034,7 +1034,7 @@ formulated in such a way that the strings \"Set/Change \" and
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
@@ -1096,7 +1096,7 @@ menu."
 
      (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
                          :description `(lambda ()
-                                         (format "%-25s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
 
