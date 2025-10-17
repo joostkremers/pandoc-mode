@@ -892,6 +892,32 @@ file exists, display the *Pandoc output* buffer."
 ;; Functions to set specific options. ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun pandoc--read-completion-function (formats)
+  "Create a completion function for `pandoc-set-read' for FORMATS.
+Return a function that can be used in `completing-read' as the
+COLLECTION function, using TABLE as the completion table."
+  (lambda (str pred flag)
+    (pcase flag
+      ('nil (try-completion str formats pred))
+      ('lambda (test-completion str formats pred))
+      ;; The flag `boundaries' is ignored here.
+      ('metadata
+       `(metadata (annotation-function . ,(lambda (format)
+                                            (propertize (concat (make-string (- 30 (length format)) ?\s)
+                                                                (nth 1 (assoc format formats)))
+                                                        'face 'italic)))))
+      (_ (all-completions str formats pred)))))
+
+(defun pandoc-set-read (category)
+  "Set the input format.
+CATEGORY is a string naming a category of formats as listed in
+`pandoc--formats'.  Only formats from CATEGORY are offered as completion
+candidates."
+  (let* ((formats (seq-drop (assoc category pandoc--formats) 3))
+         (format (completing-read "Input format: " (pandoc--read-completion-function formats))))
+    (pandoc--set 'read format)
+    (message "Input format set to `%s'" format)))
+
 (defun pandoc-set-write (format)
   "Set the output format to FORMAT.
 If a settings and/or project file exists for FORMAT, they are
@@ -910,14 +936,6 @@ format)."
   (setq pandoc--settings-modified-flag nil)
   (setq pandoc--output-format-for-pdf nil)
   (message "Output format set to `%s'" format))
-
-(defun pandoc-set-read (format)
-  "Set the input format to FORMAT."
-  (interactive (list (completing-read "Set input format to: "
-                                      (pandoc--extract-formats 'input)
-                                      nil t)))
-  (pandoc--set 'read format)
-  (message "Input format set to `%s'" format))
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
@@ -1161,7 +1179,10 @@ argument, the option is toggled."
                  ("l" "View log buffer"       pandoc-view-log)]
                 ["Settings"
                  ("o" "Options"               pandoc-options-transient)
-                 ;; ("I" "Input format"          pandoc-input-formats-transient)
+                 ("I" "Input format"          (lambda ()
+                                                (interactive)
+                                                (pandoc-set-read "markdown"))
+                  :if-derived markdown-mode)
                  ("O" "Output format"         pandoc-output-formats-transient)
                  ("s" "Settings files"        pandoc-settings-file-transient)
                  ("e" "Example lists"         pandoc-@-transient)]])
