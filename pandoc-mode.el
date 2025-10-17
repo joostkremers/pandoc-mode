@@ -1207,6 +1207,8 @@ argument, the option is toggled."
                                         (seq-take elt 3))
                                       pandoc--formats))
                       (list " " ; empty line
+                            '("X" "Extensions" pandoc-write-exts-transient)
+                            " "
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
 
