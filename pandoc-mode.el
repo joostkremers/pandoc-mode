@@ -1168,24 +1168,27 @@ argument, the option is toggled."
 
 (transient-define-prefix pandoc-main-transient ()
   "Pandoc-mode main menu."
-  [:description (lambda ()
-                  (format "Pandoc   [in: %s out: %s]\n" (pandoc--get 'read) (pandoc--get 'write)))
-                ["Actions"
-                 ("r" "Run Pandoc"            pandoc-run-pandoc)
-                 ("p" "Convert to PDF"        pandoc-convert-to-pdf)
-                 ("v" "View output file"      pandoc-view-output)
-                 ("b" "View output buffer"    pandoc-view-output-buffer)
-                 ("S" "View current settings" pandoc-view-settings)
-                 ("l" "View log buffer"       pandoc-view-log)]
-                ["Settings"
-                 ("o" "Options"               pandoc-options-transient)
-                 ("I" "Input format"          (lambda ()
-                                                (interactive)
-                                                (pandoc-set-read "markdown"))
-                  :if-derived markdown-mode)
-                 ("O" "Output format"         pandoc-output-formats-transient)
-                 ("s" "Settings files"        pandoc-settings-file-transient)
-                 ("e" "Example lists"         pandoc-@-transient)]])
+  ["Pandoc\n"
+   ["Actions"
+    ("r" "Run Pandoc"            pandoc-run-pandoc)
+    ("p" "Convert to PDF"        pandoc-convert-to-pdf)
+    ("v" "View output file"      pandoc-view-output)
+    ("b" "View output buffer"    pandoc-view-output-buffer)
+    ("S" "View current settings" pandoc-view-settings)
+    ("l" "View log buffer"       pandoc-view-log)]
+   ["Settings"
+    ("o" "Options"               pandoc-options-transient)
+    ("I" (lambda ()
+           (interactive)
+           (pandoc-set-read "markdown"))
+     :description (lambda ()
+                    (format "Input format [%s]" (propertize (pandoc--get 'read) 'face 'warning)))
+     :if-derived markdown-mode)
+    ("O" pandoc-output-formats-transient
+     :description (lambda ()
+                    (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
+    ("s" "Settings files"        pandoc-settings-file-transient)
+    ("e" "Example lists"         pandoc-@-transient)]])
 
 (transient-define-prefix pandoc-output-formats-transient ()
   "Pandoc-mode main output formats menu."
