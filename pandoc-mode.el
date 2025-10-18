@@ -1576,6 +1576,7 @@ argument, the option is toggled."
    ("s" "Options for specific writers" pandoc-specific-options-transient)
    ("c" "Citations"                    pandoc-citations-transient)
    ("m" "Math rendering"               pandoc-math-transient)
+   " "
    ("b" "Back"                         transient-quit-one)
    ("q" "Quit"                         transient-quit-all)])
 
