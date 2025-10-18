@@ -275,7 +275,7 @@ IO is a symbol, either `input' or `output'.  Return a list of formats."
   (apply #'append (mapcar (lambda (formats)
                             (seq-filter (lambda (it)
                                           (memq (car (last it)) `(,io both)))
-                                        (seq-drop formats 3)))
+                                        (drop 3 formats)))
                           pandoc--formats)))
 
 (defvar pandoc--input-formats-menu
