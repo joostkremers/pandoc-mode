@@ -1198,6 +1198,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-output-formats-transient ()
   "Pandoc-mode main output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1220,6 +1221,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-markdown-output-formats-transient ()
   "Pandoc-mode markdown output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1242,6 +1244,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-html-output-formats-transient ()
   "Pandoc-mode html output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1264,6 +1267,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-slide-show-output-formats-transient ()
   "Pandoc-mode slide show output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1286,6 +1290,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-wiki-output-formats-transient ()
   "Pandoc-mode wiki output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1308,6 +1313,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-wordprocessor-output-formats-transient ()
   "Pandoc-mode wordprocessor output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1330,6 +1336,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-tex-output-formats-transient ()
   "Pandoc-mode TeX output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1352,6 +1359,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-ebook-output-formats-transient ()
   "Pandoc-mode e-book output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1374,6 +1382,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-text-output-formats-transient ()
   "Pandoc-mode text output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1396,6 +1405,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-documentation-output-formats-transient ()
   "Pandoc-mode documentation output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1418,6 +1428,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-emacs-output-formats-transient ()
   "Pandoc-mode Emacs-based output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1440,6 +1451,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-jats-output-formats-transient ()
   "Pandoc-mode jats output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1462,6 +1474,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-misc-output-formats-transient ()
   "Pandoc-mode misc output formats menu."
   [:class transient-column
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1591,6 +1604,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-reader-options-transient ()
   "Pandoc-mode reader options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1604,6 +1618,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-writer-options-transient ()
   "Pandoc-mode general writer options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1617,6 +1632,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-specific-options-transient ()
   "Pandoc-mode specific writer options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1634,6 +1650,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-html-options-transient ()
   "Pandoc-mode HTML options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1647,6 +1664,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-obsolete-options-transient ()
   "Pandoc-mode TeX options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1660,6 +1678,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-epub-options-transient ()
   "Pandoc-mode EPUB options menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1673,6 +1692,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-citations-transient ()
   "Pandoc-mode citations menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
@@ -1686,6 +1706,7 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-math-transient ()
   "Pandoc-mode math rendering menu."
   [:class transient-columns
+          :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
