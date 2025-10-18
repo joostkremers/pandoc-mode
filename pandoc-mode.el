@@ -1190,7 +1190,8 @@ argument, the option is toggled."
      :description (lambda ()
                     (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
     ("s" "Settings files"        pandoc-settings-file-transient)
-    ("e" "Example lists"         pandoc-@-transient)]])
+    ("e" "Example lists"         pandoc-@-transient)]]
+  [("q" "Quit" transient-quit-all)])
 
 ;;; Generate the main input & output format transients.
 (transient-define-prefix pandoc-input-formats-transient ()
