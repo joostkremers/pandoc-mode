@@ -174,12 +174,15 @@ matches KEY."
      ("commonmark"             "CommonMark"                    "C" both)
      ("commonmark_x"           "CommonMark with extensions"    "x" both)
      ("gfm"                    "GitHub-flavoured Markdown"     "g" both)
+     ("djot"                   "Djot"                          "d" both)
+     ("markua"                 "Markua"                        "u" output)
      ("markdown_github"        "Markdown (Github; obsolete)"   "G" both))
 
     ("html" "HTML Formats" "h"
      ("html"                   "HTML (default)"               "h" both)
      ("html4"                  "HTML4"                        "t" output)
-     ("html5"                  "HTML5"                        "H" output))
+     ("html5"                  "HTML5"                        "H" output)
+     ("chunkedhtml"            "Chunked HTML"                 "C" output))
 
     ("slide-show" "Slide Show Formats" "s"
      ("beamer"                 "Beamer"                       "B" output) ; Also under TeX
@@ -191,29 +194,32 @@ matches KEY."
      ("slidy"                  "Slidy"                        "y" output))
 
     ("wiki" "Wiki Formats" "w"
-     ("creole"                 "Creole 1.0"                   "c" both)
+     ("creole"                 "Creole 1.0"                   "c" input)
      ("dokuwiki"               "DokuWiki"                     "d" both)
      ("jira"                   "JiraWiki"                     "j" both)
      ("mediawiki"              "MediaWiki"                    "m" both)
-     ("tikiwiki"               "TikiWiki"                     "t" both)
+     ("tikiwiki"               "TikiWiki"                     "t" input)
      ("twiki"                  "Twiki"                        "T" input)
-     ("vimwiki"                "Vimwiki"                      "v" both)
+     ("vimwiki"                "Vimwiki"                      "v" input)
      ("xwiki"                  "Xwiki"                        "x" output)
-     ("zimwiki"                "ZimWiki"                      "z" both))
+     ("zimwiki"                "ZimWiki"                      "z" output))
 
     ("wordprocessor" "Wordprocessor Formats" "W"
      ("docx"                   "MS Word (docx)"               "d" both)
      ("icml"                   "InDesign ICML"                "i" output)
      ("odt"                    "LibreOffice Text Document"    "l" both)
      ("opendocument"           "OpenDocument XML"             "o" output)
-     ("rtf"                    "Rich Text Format"             "r" output))
+     ("rtf"                    "Rich Text Format"             "r" both)
+     ("endnotexml"             "EndNote XML"                  "e" input))
 
     ("tex" "Typesetting Formats" "t"
-     ("latex"                  "LaTeX"                        "l" both)
-     ("beamer"                 "Beamer Slide Show"            "B" output) ; Also under Slide Shows Formats.
-     ("context"                "ConTeXt"                      "c" output)
-     ("texinfo"                "TeXinfo"                      "i" output) ; Also under Documentation Formats.
-     ("typst"                  "Typst"                        "y" both))
+     ("latex"                  "LaTeX"                        "l"  both)
+     ("beamer"                 "Beamer Slide Show"            "s"  output) ; Also under Slide Shows Formats.
+     ("context"                "ConTeXt"                      "c"  output)
+     ("texinfo"                "TeXinfo"                      "i"  output) ; Also under Documentation Formats.
+     ("typst"                  "Typst"                        "y"  both)
+     ("bibtex"                 "BibTeX"                       "Bt" both)
+     ("biblatex"               "Biblatex"                     "Bl" both))
 
     ("ebook" "E-Book Formats" "e"
      ("epub"                   "EPUB (default)"               "e" both)
@@ -223,19 +229,23 @@ matches KEY."
 
     ("text" "Text-Based Formats" "T"
      ("asciidoc"               "AsciiDoc"                     "a" output)
+     ("asciidoc_legacy"        "AsciiDoc (lecagy)"            "A" output)
      ("csv"                    "CSV"                          "c" input)
+     ("tsv"                    "TSV"                          "t" input)
      ("plain"                  "Plain Text"                   "p" output)
+     ("ansi"                   "Plain Text with ANSI codes"   "P" output)
      ("rst"                    "reStructuredText"             "r" both)
-     ("textile"                "Textile"                      "t" both)
-     ("t2t"                    "txt2tags"                     "T" both))
+     ("textile"                "Textile"                      "T" both)
+     ("t2t"                    "txt2tags"                     "2" input))
 
     ("documentation" "Documentation Formats" "d"
      ("docbook"                "DocBook XML"                  "d" input) ; docbook and docbook4 share the same key.
      ("docbook4"               "DocBook XML v.4"              "d" output) ; They won't appear in the same menu anyway.
      ("docbook5"               "DocBook XML v.5"              "D" output)
      ("haddock"                "Haddock"                      "h" both)
-     ("man"                    "Man Page"                     "m" output)
+     ("man"                    "Man Page"                     "m" both)
      ("ms"                     "Groff MS"                     "g" output)
+     ("pdf"                    "PDF"                          "p" output)
      ("tei"                    "TEI"                          "t" output)
      ("texinfo"                "TeXinfo"                      "i" output)) ; Also under TeX Formats.
 
@@ -245,15 +255,18 @@ matches KEY."
 
     ("jats" "JATS formats" "j"
      ("jats"                   "Archiving Tag Set"            "j" both)
-     ("jats_articleauthoring"  "Article Authoring Tag Set"    "a" both)
-     ("jats_publishing"        "Publishing Tag Set"           "p" both)
-     ("jats_archiving"         "Archiving Tag Set"            "x" both))
+     ("jats_articleauthoring"  "Article Authoring Tag Set"    "a" output)
+     ("jats_publishing"        "Publishing Tag Set"           "p" output)
+     ("jats_archiving"         "Archiving Tag Set"            "x" output)
+     ("bits"                   "BITS XML"                     "b" input))
 
-    ("misc" "Miscellaneous Formats" "v"
+    ("misc" "Miscellaneous Formats" "M"
      ("ipynb"                  "Jupyter Notebook"             "p" both)
      ("json"                   "JSON"                         "j" both)
+     ("csljson"                "CSL-JSON"                     "c" both)
      ("native"                 "Native Haskell"               "n" both)
-     ("opml"                   "OPML"                         "o" both)))
+     ("opml"                   "OPML"                         "o" both)
+     ("ris"                    "RIS bibliography"             "r" input)))
   "List of Pandoc formats, their descriptions and transient shortcut keys.")
 
 (defun pandoc--extract-formats (io)
