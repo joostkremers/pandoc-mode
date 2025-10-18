@@ -514,7 +514,8 @@ For relative paths, the file's working directory is used as base
 directory.  Two options are preset, others are added by
 `define-pandoc-file-option'.")
 
-(defvar pandoc--switches '(("Use File Scope" . file-scope))
+(defvar pandoc--switches '(("Use File Scope" . file-scope)
+                           ("Run In Sandbox" . sandbox))
   "List of binary options.
 These are set by `define-pandoc-switch'.")
 
@@ -749,8 +750,8 @@ write extension is to be queried."
 (defvar pandoc--writer-transient-list nil)
 (defvar pandoc--specific-transient-list nil)
 (defvar pandoc--html-transient-list nil)
-(defvar pandoc--tex-transient-list nil)
 (defvar pandoc--epub-transient-list nil)
+(defvar pandoc--obsolete-transient-list nil)
 (defvar pandoc--citations-transient-list nil)
 (defvar pandoc--math-transient-list nil)
 
@@ -759,8 +760,8 @@ write extension is to be queried."
 (defvar pandoc--writer-menu-list nil)
 (defvar pandoc--specific-menu-list nil)
 (defvar pandoc--html-menu-list nil)
-(defvar pandoc--tex-menu-list nil)
 (defvar pandoc--epub-menu-list nil)
+(defvar pandoc--obsolete-menu-list nil)
 (defvar pandoc--citations-menu-list nil)
 (defvar pandoc--math-menu-list nil)
 
@@ -1132,15 +1133,12 @@ menu."
 ;; in their submenus.
 
 ;;; Reader options
-(define-pandoc-switch        smart                   reader "s"      "Smart*") ; obsolete
-(define-pandoc-switch        parse-raw               reader "r"      "Parse Raw*") ; obsolete
 (define-pandoc-number-option base-header-level       reader "h"      "Base Header Level*") ; obsolete
 (define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
 (define-pandoc-switch        strip-empty-paragraphs  reader "e"      "Strip Empty Paragraphs")
 (define-pandoc-choice-option track-changes           reader "T"      "Track Changes" ("accept" "reject" "all") ("docx"))
 (define-pandoc-number-option tab-stop                reader "t"      "Tab Stop Width")
 (define-pandoc-switch        preserve-tabs           reader "p"      "Preserve Tabs")
-(define-pandoc-switch        normalize               reader "n"      "Normalize Document")
 (define-pandoc-list-option   metadata-file           reader "M" file "Metadata File" "Metadata File")
 (define-pandoc-alist-option  metadata                reader "m"      "Metadata" "Metadata item")
 (define-pandoc-list-option   filter                  reader "f" file "Filters" "Filter")
@@ -1148,24 +1146,26 @@ menu."
 (define-pandoc-string-option default-image-extension reader "i"      "Default Image Extension")
 (define-pandoc-string-option indented-code-classes   reader "c"      "Indented Code Classes")
 (define-pandoc-number-option shift-heading-level-by  reader "h"      "Header Level Shift")
-(define-pandoc-switch        old-dashes              reader "o"      "Use Old-style Dashes")
 ;; extract-media
 
 ;; TODO for data-dir, output-dir and extract-media, a macro define-pandoc-dir-option might be useful.
 
 
 ;;; General writer options
+(define-pandoc-string-option highlight-style       writer "xs"        "Highlighting Style*")
+(define-pandoc-switch        no-highlight          writer "xn"        "No Highlighting*")
 (define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
-(define-pandoc-switch        strip-comments        writer "C"         "Strip Comments")
 (define-pandoc-switch        verbose               writer "V"         "Verbose output") ; Pandoc's README places this in the general options
-(define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
 (define-pandoc-alist-option  request-header        writer "R"         "HTTP Request Header" "Request Header")
+(define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
 (define-pandoc-file-option   include-after-body    writer "A"         "Include After Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-before-body   writer "B"         "Include Before Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-in-header     writer "H"         "Include Header") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   syntax-definition     writer "y"         "Syntax Definition File")
-(define-pandoc-string-option highlight-style       writer "S"         "Highlighting Style")
-(define-pandoc-switch        no-highlight          writer "h"         "No Highlighting")
+(define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
+(define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
+(define-pandoc-switch        list-of-tables        writer "lt"        "List of Tables")
+(define-pandoc-switch        list-of-figures       writer "lf"        "List of Figures")
 (define-pandoc-number-option toc-depth             writer "D"         "TOC Depth")
 (define-pandoc-switch        table-of-contents     writer "T"         "Table of Contents")
 (define-pandoc-number-option columns               writer "c"         "Column Width")
@@ -1173,6 +1173,7 @@ menu."
 (define-pandoc-choice-option wrap                  writer "w"         "Wrap"                ("auto" "none" "preserve"))
 (define-pandoc-choice-option eol                   writer "e"         "Line Endings Style"  ("crlf" "lf" "native"))
 (define-pandoc-number-option dpi                   writer "d"         "DPI")
+(define-pandoc-alist-option  variable-json         writer "j"         "JSON Variables"      "Variable")
 (define-pandoc-alist-option  variable              writer "v"         "Variables"           "Variable")
 (define-pandoc-file-option   template              writer "t"         "Template File")
 (define-pandoc-switch        standalone            writer "s"         "Standalone")
@@ -1184,23 +1185,25 @@ menu."
 ;;; Options affecting specific writers
 
 ;; general
-(define-pandoc-file-option   reference-docx     specific "d"         "Reference docx File*") ; obsolete
-(define-pandoc-file-option   reference-odt      specific "O"         "Reference ODT File*") ; obsolete
-(define-pandoc-switch        atx-headers        specific "a"         "Use ATX-style Headers*") ; obsolete
-(define-pandoc-choice-option ipynb-output       specific "p"         "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
-(define-pandoc-list-option   pdf-engine-opt     specific "o"  string "PDF Options" "PDF Option")
-(define-pandoc-choice-option pdf-engine         specific "e"         "PDF Engine"
+(define-pandoc-switch        ascii              specific      "a"         "Use Only ASCII")
+(define-pandoc-switch        link-images        specific      "I"         "Include Links to Images")
+(define-pandoc-choice-option ipynb-output       specific      "p"         "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
+(define-pandoc-list-option   pdf-engine-opt     specific      "o"  string "PDF Options" "PDF Option")
+(define-pandoc-choice-option pdf-engine         specific      "e"         "PDF Engine"
   ("pdflatex" "lualatex" "xelatex" "tectonic" "latexmk" "wkhtmltopdf" "weasyprint" "prince" "pagedjs-cli" "context" "pdfroff"))
-(define-pandoc-file-option   reference-doc      specific "R"         "Reference Doc")
-(define-pandoc-number-option slide-level        specific "H"         "Slide Level Header")
-(define-pandoc-switch        incremental        specific "i"         "Incremental")
-(define-pandoc-switch        number-sections    specific "n"         "Number Sections")
-(define-pandoc-choice-option markdown-headings  specific "h"         "Markdown Headings" ("atx" "setext")
-  ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-switch        reference-links    specific "r"         "Reference Links")
-(define-pandoc-choice-option reference-location specific "l"         "Reference Location" ("block" "section" "document")
+(define-pandoc-file-option   reference-doc      specific      "R"         "Reference Doc")
+(define-pandoc-number-option slide-level        specific      "H"         "Slide Level Header")
+(define-pandoc-switch        incremental        specific      "i"         "Incremental")
+(define-pandoc-switch        number-sections    specific      "n"         "Number Sections")
+(define-pandoc-switch        list-tables        specific      "L"         "Render tables as list tables")
+(define-pandoc-choice-option markdown-headings  specific      "h"         "Markdown Headings" ("atx" "setext")
                              ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-choice-option top-level-division specific "t"         "Top Level Division" ("section" "part" "chapter")
+(define-pandoc-choice-option table-caption-position specific  "t"         "Position of figure captions" ("above" "below"))
+(define-pandoc-choice-option figure-caption-position specific "f"         "Position of figure captions" ("above" "below"))
+(define-pandoc-switch        reference-links    specific      "r"         "Reference Links")
+(define-pandoc-choice-option reference-location specific      "l"         "Reference Location" ("block" "section" "document")
+                             ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
+(define-pandoc-choice-option top-level-division specific      "T"         "Top Level Division" ("section" "part" "chapter")
                              ("latex" "context" "docbook" "docbook5" "tei"))
 
 ;; html-based
@@ -1210,24 +1213,23 @@ menu."
 (define-pandoc-choice-option email-obfuscation html "e"       "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
 (define-pandoc-switch        section-divs      html "d"       "Wrap Sections in <div> Tags")
 (define-pandoc-string-option number-offset     html "o"       "Number Offsets")
-(define-pandoc-switch        ascii             html "a"       "Use Only ASCII")
 (define-pandoc-switch        html-q-tags       html "Q"       "Use <q> Tags for Quotes in HTML")
-(define-pandoc-switch        self-contained    html "s"       "Self-contained Document")
-
-;; TeX-based (LaTeX, ConTeXt)
-(define-pandoc-list-option   latex-engine-opt tex "o"  string "LaTeX Options*" "LaTeX Option") ; obsolete
-(define-pandoc-choice-option latex-engine     tex "e"         "LaTeX Engine*" ("pdflatex" "xelatex" "lualatex") ("latex" "beamer" "context")) ; obsolete
-(define-pandoc-switch        listings         tex "L"         "Use LaTeX listings Package")
-(define-pandoc-switch        no-tex-ligatures tex "l"         "Do Not Use TeX Ligatures")
-(define-pandoc-switch        chapters         tex "c"         "Top-level Headers Are Chapters")
+(define-pandoc-switch        embed-resources   html "E"       "Embed All Resources")
 
 ;; epub
-(define-pandoc-file-option   epub-subdirectory  epub "d"       "EPub Subdirectory")
-(define-pandoc-number-option epub-chapter-level epub "c"       "EPub Chapter Level")
+(define-pandoc-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
 (define-pandoc-list-option   epub-embed-font    epub "f"  file "EPUB Fonts"         "EPUB Embedded Font")
 (define-pandoc-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
-(define-pandoc-file-option   epub-cover-image   epub "C"       "EPUB Cover Image")
+(define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB title page")
+(define-pandoc-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
 (define-pandoc-file-option   epub-stylesheet    epub "s"       "EPUB Style Sheet" t)
+(define-pandoc-string-option chunk-template     epub "C"       "Template for chunk filenames")
+(define-pandoc-number-option split-level        epub "l"       "Split at heading level")
+
+;; obsolete
+(define-pandoc-switch        self-contained     obsolete "s"       "Self-contained Document*")
+(define-pandoc-number-option epub-chapter-level obsolete "c"       "EPUB Chapter Level*")
+(define-pandoc-switch        listings           obsolete "l"       "Use LaTeX listings Package*")
 
 ;;; Citation rendering
 (define-pandoc-switch      biblatex               citations "l"       "Use BibLaTeX")
@@ -1238,10 +1240,6 @@ menu."
 (define-pandoc-switch      citeproc               citations "c"       "Process Citations")
 
 ;;; Math rendering in HTML
-(define-pandoc-string-option mimetex          math "M"  "MimeTeX CGI Script*" t) ; obsolete
-(define-pandoc-string-option jsmath           math "j"  "jsMath URL*"         t) ; obsolete
-(define-pandoc-string-option latexmathml      math "L"  "LaTeXMathML URL*"    t) ; obsolete
-(define-pandoc-string-option katex-stylesheet math "K"  "KaTeX Stylesheet"    t)
 (define-pandoc-string-option katex            math "k"  "KaTeX URL"           t)
 (define-pandoc-string-option webtex           math "w"  "WebTeX URL"          t)
 (define-pandoc-switch        gladtex          math "g"  "gladTeX")
