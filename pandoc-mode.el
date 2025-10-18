@@ -1183,17 +1183,38 @@ argument, the option is toggled."
     ("l" "View log buffer"       pandoc-view-log)]
    ["Settings"
     ("o" "Options"               pandoc-options-transient)
-    ("I" (lambda ()
-           (interactive)
-           (pandoc-set-read "markdown"))
+    ("I" pandoc-input-formats-transient
      :description (lambda ()
-                    (format "Input format [%s]" (propertize (pandoc--get 'read) 'face 'warning)))
-     :if-derived markdown-mode)
+                    (format "Input format [%s]" (propertize (pandoc--get 'read) 'face 'warning))))
     ("O" pandoc-output-formats-transient
      :description (lambda ()
                     (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
     ("s" "Settings files"        pandoc-settings-file-transient)
     ("e" "Example lists"         pandoc-@-transient)]])
+
+;;; Generate the main input & output format transients.
+(transient-define-prefix pandoc-input-formats-transient ()
+  "Pandoc-mode main input formats menu."
+  [:class transient-column
+          :pad-keys t
+          :setup-children
+          (lambda (_)
+            (transient-parse-suffixes
+             'pandoc-input-formats-transient
+             (vconcat (list "Input formats")
+                      (mapcar (lambda (format)
+                                (let ((submenu (nth 0 format))
+                                      (description (nth 1 format))
+                                      (key (nth 2 format)))
+                                  (list key description (intern (format "pandoc-%s-input-formats-transient" submenu)))))
+                              (mapcar (lambda (elt)
+                                        (take 3 elt))
+                                      pandoc--formats))
+                      (list " "         ; empty line
+                            '("X" "Extensions" pandoc-read-exts-transient)
+                            " "
+                            '("b" "Back" transient-quit-one)
+                            '("q" "Quit" transient-quit-all)))))])
 
 (transient-define-prefix pandoc-output-formats-transient ()
   "Pandoc-mode main output formats menu."
@@ -1212,287 +1233,68 @@ argument, the option is toggled."
                               (mapcar (lambda (elt)
                                         (take 3 elt))
                                       pandoc--formats))
-                      (list " " ; empty line
+                      (list " "         ; empty line
                             '("X" "Extensions" pandoc-write-exts-transient)
                             " "
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
 
-(transient-define-prefix pandoc-markdown-output-formats-transient ()
-  "Pandoc-mode markdown output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-markdown-output-formats-transient
-             (vconcat (list "Markdown input formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "markdown" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
+;;; Generate the specific input & output format transients.
+(mapc (lambda (group)
+        (let* ((category (car group))
+               (group-description (nth 1 group))
+               (transient-name (intern (format "pandoc-%s-input-formats-transient" category))))
+          (eval `(transient-define-prefix ,transient-name ()
+                   ,(format "Pandoc-mode %s input formats menu." category)
+                   [:class transient-column
+                           :pad-keys t
+                           :setup-children
+                           (lambda (_)
+                             (transient-parse-suffixes
+                              (quote ,transient-name)
+                              (vconcat (list ,group-description)
+                                       (mapcar ,(lambda (format-spec)
+                                                  (let ((format-name (nth 0 format-spec))
+                                                        (description (nth 1 format-spec))
+                                                        (key (nth 2 format-spec)))
+                                                    (list key description (lambda ()
+                                                                            (interactive)
+                                                                            (pandoc-set-read format-name)))))
+                                               (seq-filter (lambda (elt)
+                                                             (not (eq (nth 3 elt) 'output)))
+                                                           (drop 3 (quote ,group))))
+                                       (list " " ; empty line
+                                             '("b" "Back" transient-quit-one)
+                                             '("q" "Quit" transient-quit-all)))))]))))
+      pandoc--formats)
 
-(transient-define-prefix pandoc-html-output-formats-transient ()
-  "Pandoc-mode html output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-html-output-formats-transient
-             (vconcat (list "HTML output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "html" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-slide-show-output-formats-transient ()
-  "Pandoc-mode slide show output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-markdown-output-formats-transient
-             (vconcat (list "Slide show output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "slide-show" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-wiki-output-formats-transient ()
-  "Pandoc-mode wiki output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-wiki-output-formats-transient
-             (vconcat (list "Wiki input formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "wiki" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-wordprocessor-output-formats-transient ()
-  "Pandoc-mode wordprocessor output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-wordprocessor-output-formats-transient
-             (vconcat (list "Wordprocessor output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "wordprocessor" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-tex-output-formats-transient ()
-  "Pandoc-mode TeX output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-tex-output-formats-transient
-             (vconcat (list "Typesetting output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "tex" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-ebook-output-formats-transient ()
-  "Pandoc-mode e-book output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-ebook-output-formats-transient
-             (vconcat (list "E-book output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "markdown" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-text-output-formats-transient ()
-  "Pandoc-mode text output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-text-output-formats-transient
-             (vconcat (list "Text output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "text" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-documentation-output-formats-transient ()
-  "Pandoc-mode documentation output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-documentation-output-formats-transient
-             (vconcat (list "Documentation output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "documentation" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-emacs-output-formats-transient ()
-  "Pandoc-mode Emacs-based output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-emacs-output-formats-transient
-             (vconcat (list "Emacs-based output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "emacs" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-jats-output-formats-transient ()
-  "Pandoc-mode jats output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-jats-output-formats-transient
-             (vconcat (list "JATS output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "jats" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
-
-(transient-define-prefix pandoc-misc-output-formats-transient ()
-  "Pandoc-mode misc output formats menu."
-  [:class transient-column
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-misc-output-formats-transient
-             (vconcat (list "Miscellaneous output formats")
-                      (mapcar (lambda (format-spec)
-                                (let ((format (nth 0 format-spec))
-                                      (description (nth 1 format-spec))
-                                      (key (nth 2 format-spec)))
-                                  (list key description (lambda ()
-                                                          (interactive)
-                                                          (pandoc-set-write format)))))
-                              (seq-filter (lambda (elt)
-                                            (not (eq (nth 3 elt) 'input)))
-                                          (drop 3 (assoc "misc" pandoc--formats))))
-                      (list " " ; empty line
-                            '("b" "Back" transient-quit-one)
-                            '("q" "Quit" transient-quit-all)))))])
+(mapc (lambda (group)
+        (let* ((category (car group))
+               (group-description (nth 1 group))
+               (transient-name (intern (format "pandoc-%s-output-formats-transient" category))))
+          (eval `(transient-define-prefix ,transient-name ()
+                   ,(format "Pandoc-mode %s output formats menu." category)
+                   [:class transient-column
+                           :pad-keys t
+                           :setup-children
+                           (lambda (_)
+                             (transient-parse-suffixes
+                              (quote ,transient-name)
+                              (vconcat (list ,group-description)
+                                       (mapcar ,(lambda (format-spec)
+                                                  (let ((format-name (nth 0 format-spec))
+                                                        (description (nth 1 format-spec))
+                                                        (key (nth 2 format-spec)))
+                                                    (list key description (lambda ()
+                                                                            (interactive)
+                                                                            (pandoc-set-write format-name)))))
+                                               (seq-filter (lambda (elt)
+                                                             (not (eq (nth 3 elt) 'input)))
+                                                           (drop 3 (quote ,group))))
+                                       (list " " ; empty line
+                                             '("b" "Back" transient-quit-one)
+                                             '("q" "Quit" transient-quit-all)))))]))))
+      pandoc--formats)
 
 (transient-define-prefix pandoc-settings-file-transient ()
   "Transient for settings files."
