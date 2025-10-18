@@ -996,6 +996,13 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
   (interactive "P")
   (pandoc--set 'file-scope (if (eq prefix '-) nil t)))
 
+(defun pandoc-set-sandbox (prefix)
+  "Set the option `Sandbox'.
+If called with the PREFIX argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), no sandbox is used."
+  (interactive "P")
+  (pandoc--set 'sandbox (if (eq prefix '-) nil t)))
+
 (defun pandoc-set-master-file (prefix)
   "Set the master file.
 If called with the PREFIX argument `\\[universal-argument] -' (or
@@ -1142,10 +1149,10 @@ argument, the option is toggled."
      "--"
      ("HTML-Based Formats"
       ,@pandoc--html-menu-list)
-     ("TeX-Based Formats"
-      ,@pandoc--tex-menu-list)
      ("EPUB"
-      ,@pandoc--epub-menu-list))
+      ,@pandoc--epub-menu-list)
+     ("Obsolete options"
+      ,@pandoc--obsolete-menu-list))
     ("Citations"
      ,@pandoc--citations-menu-list)
     ("Math Rendering"
@@ -1618,8 +1625,8 @@ argument, the option is toggled."
                              pandoc--specific-transient-list
                              '(" "
                                ("H" "HTML-based writers" pandoc-html-options-transient)
-                               ("T" "TeX-based writers" pandoc-tex-options-transient)
                                ("E" "EPUB" pandoc-epub-options-transient)
+                               ("O" "Obsolete options" pandoc-obsolete-options-transient)
                                " "
                                ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
@@ -1637,15 +1644,15 @@ argument, the option is toggled."
                                ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
 
-(transient-define-prefix pandoc-tex-options-transient ()
+(transient-define-prefix pandoc-obsolete-options-transient ()
   "Pandoc-mode TeX options menu."
   [:class transient-columns
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
-             'pandoc-tex-options-transient
+             'pandoc-obsolete-options-transient
              (list (vconcat  (list "TeX-based writer options")
-                             pandoc--tex-transient-list
+                             pandoc--obsolete-transient-list
                              '(" "
                                ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
