@@ -911,7 +911,7 @@ COLLECTION function, using TABLE as the completion table."
 CATEGORY is a string naming a category of formats as listed in
 `pandoc--formats'.  Only formats from CATEGORY are offered as completion
 candidates."
-  (let* ((formats (seq-drop (assoc category pandoc--formats) 3))
+  (let* ((formats (drop 3 (assoc category pandoc--formats)))
          (format (completing-read "Input format: " (pandoc--read-completion-function formats))))
     (pandoc--set 'read format)
     (message "Input format set to `%s'" format)))
@@ -1209,7 +1209,7 @@ argument, the option is toggled."
                                       (key (nth 2 format)))
                                   (list key description (intern (format "pandoc-%s-output-formats-transient" submenu)))))
                               (mapcar (lambda (elt)
-                                        (seq-take elt 3))
+                                        (take 3 elt))
                                       pandoc--formats))
                       (list " " ; empty line
                             '("X" "Extensions" pandoc-write-exts-transient)
@@ -1234,7 +1234,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "markdown" pandoc--formats) 3)))
+                                          (drop 3 (assoc "markdown" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1256,7 +1256,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "html" pandoc--formats) 3)))
+                                          (drop 3 (assoc "html" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1278,7 +1278,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "slide-show" pandoc--formats) 3)))
+                                          (drop 3 (assoc "slide-show" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1300,7 +1300,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "wiki" pandoc--formats) 3)))
+                                          (drop 3 (assoc "wiki" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1322,7 +1322,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "wordprocessor" pandoc--formats) 3)))
+                                          (drop 3 (assoc "wordprocessor" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1344,7 +1344,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "tex" pandoc--formats) 3)))
+                                          (drop 3 (assoc "tex" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1366,7 +1366,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "markdown" pandoc--formats) 3)))
+                                          (drop 3 (assoc "markdown" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1388,7 +1388,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "text" pandoc--formats) 3)))
+                                          (drop 3 (assoc "text" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1410,7 +1410,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "documentation" pandoc--formats) 3)))
+                                          (drop 3 (assoc "documentation" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1432,7 +1432,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "emacs" pandoc--formats) 3)))
+                                          (drop 3 (assoc "emacs" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1454,7 +1454,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "jats" pandoc--formats) 3)))
+                                          (drop 3 (assoc "jats" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
@@ -1476,7 +1476,7 @@ argument, the option is toggled."
                                                           (pandoc-set-write format)))))
                               (seq-filter (lambda (elt)
                                             (not (eq (nth 3 elt) 'input)))
-                                          (seq-drop (assoc "misc" pandoc--formats) 3)))
+                                          (drop 3 (assoc "misc" pandoc--formats))))
                       (list " " ; empty line
                             '("b" "Back" transient-quit-one)
                             '("q" "Quit" transient-quit-all)))))])
