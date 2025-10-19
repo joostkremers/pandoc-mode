@@ -1158,9 +1158,9 @@ menu."
 (define-pandoc-switch        verbose               writer "V"         "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-alist-option  request-header        writer "R"         "HTTP Request Header" "Request Header")
 (define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
-(define-pandoc-file-option   include-after-body    writer "A"         "Include After Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-before-body   writer "B"         "Include Before Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-in-header     writer "H"         "Include Header") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-before-body   writer "ib"        "Include Before Body") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-file-option   include-in-header     writer "ih"        "Include Header") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   syntax-definition     writer "y"         "Syntax Definition File")
 (define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
 (define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
