@@ -210,7 +210,7 @@ Settings specified as file-local variables are kept separate from other settings
 Note that it is also possible to specify the customisation option `pandoc-binary` as a file-local variable. It does not require the `pandoc/` prefix, but since its value is a string, it must be enclosed in quotes:
 
 ```
-pandoc-binary: "/path/to/alternate/pandoc“
+pandoc-binary: "/path/to/alternate/pandoc"
 ```
 
 
