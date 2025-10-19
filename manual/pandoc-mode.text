@@ -221,7 +221,11 @@ Pandoc provides a method for creating examples that are numbered sequentially th
 Pandoc allows you to refer to such labeled example items in the text by writing `(@1)` and `pandoc-mode` provides a facility to make this easier. If you select the menu item "Example Lists | Select And Insert Example Label" (`C-c / e s`) Emacs displays a list of all the `(@)`-definitions in your document. You can select one with the up or down keys (you can also use `j` and `k` or `n` and `p`) and then hit `return` to insert the label into your document. If you change your mind, you can leave the selection buffer with `q` without inserting anything into your document.
 
 
-# Using @@-directives #
+# Using @@-directives (deprecated) #
+
+::: {.note}
+The use of `@@-directives` is deprecated as of `pandoc-mode` 3.0. Given that Pandoc now comes with a Lua interpreter built-in, it is possible to use [Lua filters](https://pandoc.org/lua-filters.html) to do what `@@-directives` were meant to do, without having to depend on Emacs. For this reason, `@@-directives` are no longer actively maintained and will probably be removed from `pandoc-mode` some time in the future.
+:::
 
 `pandoc-mode` includes a facility to make specific, automatic changes to the text before sending it to Pandoc. This is done with so-called `@@`-directives, which trigger an Elisp function and are then replaced with the output of that function. A `@@`-directive takes the form `@@directive`, where `directive` can be any user-defined string (see [How to define directive strings](#defining--directives)). Before Pandoc is called, Emacs searches the text for these directives and replaces them with the output of the functions they call.
 
