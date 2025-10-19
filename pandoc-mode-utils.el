@@ -1173,7 +1173,7 @@ menu."
 (define-pandoc-choice-option wrap                  writer "w"         "Wrap"                ("auto" "none" "preserve"))
 (define-pandoc-choice-option eol                   writer "e"         "Line Endings Style"  ("crlf" "lf" "native"))
 (define-pandoc-number-option dpi                   writer "d"         "DPI")
-(define-pandoc-alist-option  variable-json         writer "j"         "JSON Variables"      "Variable")
+(define-pandoc-alist-option  variable-json         writer "j"         "JSON Variables"      "JSON Variable")
 (define-pandoc-alist-option  variable              writer "v"         "Variables"           "Variable")
 (define-pandoc-file-option   template              writer "t"         "Template File")
 (define-pandoc-switch        standalone            writer "s"         "Standalone")
