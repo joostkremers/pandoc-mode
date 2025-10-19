@@ -1020,15 +1020,10 @@ it."
 
 (defmacro define-pandoc-alist-option (option menu key description prompt)
   "Define OPTION as an alist option.
-The option is added to `pandoc--options' and `pandoc--alist-options'.
-Furthermore, a menu entry is created and a function to set the
-option.  This function can also be called with the prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]') to remove an item from the list,
-or with the prefix argument `\\[universal-argument] \\[universal-argument]' to clear the entire list.
-
-MENU is a symbol naming the menu to which the option must be added.  KEY
-is a string of one character, the key by which the option will be
-available in the transient.
+The option is added to `pandoc--options' and `pandoc--alist-options',
+and a menu entry is created under MENU, a symbol naming the menu to
+which the option must be added.  KEY is a string of one character, the
+key by which the option will be available in the transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  DESCRIPTION is the
@@ -1036,43 +1031,68 @@ description for the option's submenu.  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"Set/Change \" and
 \"Unset \" can be added before it."
-
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--alist-options)
+     ;; Menu
      (push (list ,description
-                 ,(vector (concat "Set/Change " prompt) (intern (concat "pandoc-set-" (symbol-name option)))
+                 ,(vector (concat "Set/Change " prompt) (lambda () (interactive) (pandoc-set-alist-option nil option description prompt))
                           :active t)
-                 ,(vector (concat "Unset " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
+                 ,(vector (concat "Unset " prompt) (lambda () (interactive) (pandoc-set-alist-option '- option description prompt))
                           :active t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     ;; Transient
+     (push (quote ,(list key (lambda (pfx)
+                               (interactive "P")
+                               (pandoc-set-alist-option pfx option description prompt))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (if (and (listp prefix)
-                      (eq (car prefix) 16)) ; C-u C-u
-                 (progn
-                   (pandoc--set (quote ,option) nil)
-                   (message ,(concat description " removed")))
-               ;; for prefix argument - or no prefix argument
-               (let ((var (completing-read (concat ,prompt ": ") (pandoc--get (quote ,option)))))
-                 (when (and var (not (string= "" var)))
-                   (let ((value (if (eq prefix '-)
-                                    nil
-                                  (read-string "Value: " nil nil (cdr (assq var (pandoc--get (quote ,option))))))))
-                     (when (string= value "") ;; strings may be empty (which corresponds to boolean True in Pandoc)
-                       (setq value t))
-                     (pandoc--set (quote ,option) (cons var value))
-                     (message ,(concat prompt " `%s' \"%s\".") var (if value
-                                                                       (format "added with value `%s'" value)
-                                                                     "removed"))))))))))
+(defun pandoc--completing-read-alist-option (option)
+  "Return a collection function for pandoc-mode alist OPTION."
+  (let ((variables (pandoc--get option)))
+    (lambda (str pred flag)
+      (if (eq flag 'metadata)
+          ;; We add a category, so that Marginalia won't add its own annotation.
+          `(metadata . ((category . pandoc-option)
+                        (annotation-function . ,(lambda (key)
+                                                  (propertize (concat (make-string (- 30 (length key)) ?\s)
+                                                                      (cdr (assoc key variables)))
+                                                              'face 'warning)))))
+        (complete-with-action flag variables str pred)))))
+
+(defun pandoc-set-alist-option (prefix option description prompt)
+  "Set alist option OPTION interactively.
+Ask the user for a single item of OPTION and possibly a value, and
+add/update the value of the alist option.
+
+This function is meant to be called from an interactive function to do
+the actual work.  PREFIX is the raw prefix argument from the calling
+function.  If it is nil, a new key:value item is added to the list.  If
+it is the negative prefix argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), an item is removed from the list.  If it is
+`\\[universal-argument] \\[universal-argument]' the entire list is
+cleared."
+  (if (and (listp prefix)
+           (eq (car prefix) 16)) ; C-u C-u
+      (progn
+        (pandoc--set option nil)
+        (message (concat description " removed")))
+    ;; Negative prefix argument M-- or no prefix argument.
+    (let ((var (completing-read (format "%s %s: " (if (eq prefix '-) "Remove" "Add/update") prompt)
+                                (pandoc--completing-read-alist-option option))))
+      (when (and var (not (string= "" var)))
+        (let ((value (if (eq prefix '-)
+                         nil
+                       (read-string "Value: " nil nil (cdr (assq var (pandoc--get option)))))))
+          (when (string= value "") ;; Strings may be empty, corresponding to boolean True in Pandoc.
+            (setq value t))
+          (pandoc--set option (cons var value))
+          (message (concat prompt " `%s' \"%s\".") var (if value
+                                                           (format "added with value `%s'" value)
+                                                         "removed")))))))
 
 (defmacro define-pandoc-choice-option (option menu key prompt choices &optional output-formats)
   "Define OPTION as a choice option.
