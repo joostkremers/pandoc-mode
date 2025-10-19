@@ -189,7 +189,11 @@ The name of a global settings file has the form `<format>.pandoc`, where `<forma
 One thing to keep in mind is that the method in which `pandoc-mode` saves settings and passes them to the `pandoc` binary is not compatible with Pandoc's YAML metadata blocks/files or with Pandoc's defaults file. Since `pandoc-mode` passes all settings to `pandoc` as command-line options, they override settings in defaults files and in YAML metadata blocks or files. You should generally stick to using one or the other method.
 
 
-# File-local variables #
+# File-local variables (deprecated) #
+
+::: {.note}
+The possibility to use file-local variables to set Pandoc options is deprecated. Pandoc now has the ability to use a [defaults file](https://pandoc.org/MANUAL.html#defaults-files) to set options for a document. While not contained in the same file, they offer a more portable way (i.e., not depending on Emacs) to keep settings and documents together. For this reason, the use of file-local variables is no longer supported and may be removed from a future version of `pandoc-mode`.
+:::
 
 `pandoc-mode` also allows options to be set as file-local variables, which gives you the ability to keep the settings for a file in the file itself. To specify an option in this way, use the long form of the option as a variable name, prefixed with `pandoc/` (note the slash; use `pandoc/read` and `pandoc/write` for the input and output formats, and `pandoc/table-of-contents` for the TOC).
 
