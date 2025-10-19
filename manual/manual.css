@@ -76,6 +76,11 @@ img {
     color: #ffdf20;
 }
 
+.note {
+  background-color: #ffdddd;
+  border-left: 6px solid #f44336;
+}
+
 .bottom-dweller {
     width: 100%;
     position: absolute;
