@@ -895,16 +895,12 @@ file exists, display the *Pandoc output* buffer."
 Return a function that can be used in `completing-read' as the
 COLLECTION function, using TABLE as the completion table."
   (lambda (str pred flag)
-    (pcase flag
-      ('nil (try-completion str formats pred))
-      ('lambda (test-completion str formats pred))
-      ;; The flag `boundaries' is ignored here.
-      ('metadata
-       `(metadata (annotation-function . ,(lambda (format)
-                                            (propertize (concat (make-string (- 30 (length format)) ?\s)
-                                                                (nth 1 (assoc format formats)))
-                                                        'face 'italic)))))
-      (_ (all-completions str formats pred)))))
+    (if (eq flag 'metadata)
+        `(metadata (annotation-function . ,(lambda (format)
+                                             (propertize (concat (make-string (- 30 (length format)) ?\s)
+                                                                 (nth 1 (assoc format formats)))
+                                                         'face 'italic))))
+      (complete-with-action flag formats str pred))))
 
 (defun pandoc-set-read (category)
   "Set the input format.
