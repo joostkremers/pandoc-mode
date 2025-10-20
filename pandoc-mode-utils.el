@@ -1050,7 +1050,7 @@ formulated in such a way that the strings \"Set/Change \" and
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-(defun pandoc--completing-read-alist-option (option)
+(defun pandoc--alist-option-completion (option)
   "Return a collection function for pandoc-mode alist OPTION."
   (let ((variables (pandoc--get option)))
     (lambda (str pred flag)
@@ -1071,10 +1071,8 @@ add/update the value of the alist option.
 This function is meant to be called from an interactive function to do
 the actual work.  PREFIX is the raw prefix argument from the calling
 function.  If it is nil, a new key:value item is added to the list.  If
-it is the negative prefix argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), an item is removed from the list.  If it is
-`\\[universal-argument] \\[universal-argument]' the entire list is
-cleared."
+it is the negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is
+ removed from the list.  If it is`\\[universal-argument] \\[universal-argument]', the entire list is cleared."
   (if (and (listp prefix)
            (eq (car prefix) 16)) ; C-u C-u
       (progn
@@ -1082,7 +1080,7 @@ cleared."
         (message (concat description " removed")))
     ;; Negative prefix argument M-- or no prefix argument.
     (let ((var (completing-read (format "%s %s: " (if (eq prefix '-) "Remove" "Add/update") prompt)
-                                (pandoc--completing-read-alist-option option))))
+                                (pandoc--alist-option-completion option))))
       (when (and var (not (string= "" var)))
         (let ((value (if (eq prefix '-)
                          nil
