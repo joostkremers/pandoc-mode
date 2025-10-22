@@ -1462,14 +1462,14 @@ argument, the option is toggled."
                                ("q" "Quit" transient-quit-all))))))])
 
 (transient-define-prefix pandoc-obsolete-options-transient ()
-  "Pandoc-mode TeX options menu."
+  "Pandoc-mode obsolete options menu."
   [:class transient-columns
           :pad-keys t
           :setup-children
           (lambda (_)
             (transient-parse-suffixes
              'pandoc-obsolete-options-transient
-             (list (vconcat  (list "TeX-based writer options")
+             (list (vconcat  (list "Obsolete options")
                              pandoc--obsolete-transient-list
                              '(" "
                                ("b" "Back" transient-quit-one)
