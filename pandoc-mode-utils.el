@@ -769,9 +769,10 @@ write extension is to be queried."
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of the
 pandoc option (without dashes).  MENU is a symbol naming the menu to
-which the switch should be added.  KEY is the key by which the option
-will be available in the transient.  DESCRIPTION is the description of
-the option as it will appear in the menu."
+which the switch should be added.  KEY is a string of one or two
+characters, the key by which the option will be available in the
+transient.  DESCRIPTION is the description of the option as it will
+appear in the menu."
   (declare (indent defun))
   `(progn
      (push ,(vector description `(pandoc--toggle (quote ,option))
@@ -789,87 +790,78 @@ the option as it will appear in the menu."
                          :transient t))
            ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-(defmacro define-pandoc-file-option (option menu key prompt &optional default)
+(defmacro define-pandoc-file-option (option menu key prompt)
   "Define OPTION as a file option.
-The option is added to `pandoc--options', `pandoc--cli-options',
-and to `pandoc--filepath-options'.  Furthermore, a menu entry is
-created and a function to set/unset the option.
-
-The function to set the option can be called with the prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]')
-to unset the option.  It can also be called with the prefix
-argument \\[universal-argument], in which case the file's full
-path is stored.
-
-MENU is a symbol naming the menu to which the option should be added.
-KEY is a string of one character, the key by which the option will be
-available in the transient.
+The option is added to `pandoc--options', `pandoc--cli-options', and to
+`pandoc--filepath-options'.  Furthermore, a menu entry is created under
+MENU, which is a symbol naming the menu to which the option should be
+added.  KEY is a string of one or two characters, the key by which the
+option will be available in the transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"No \", \"Set \" and
-\"Default \" can be added before it.  DEFAULT must be either NIL
-or T and indicates whether the option can have a default value."
+\"Default \" can be added before it.  DEFAULT must be either nil
+or t and indicates whether the option can have a default value."
   (declare (indent defun))
   `(progn
      (push (quote ,option) pandoc--filepath-options)
      (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) pandoc--options)
-     (push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
-                         (list prompt
-                               (vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
-                                       :active t
-                                       :style 'radio
-                                       :selected `(null (pandoc--get (quote ,option))))
-                               (when default
-                                 (vector (concat "Default " prompt) `(pandoc--set (quote ,option) t)
-                                         :active t
-                                         :style 'radio
-                                         :selected `(eq (pandoc--get (quote ,option)) t)))
-                               (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-"
-                                                                                    (symbol-name option)))
-                                       :active t
-                                       :style 'radio
-                                       :selected `(stringp (pandoc--get (quote ,option)))))))
+     (push (list ,prompt
+                 ,(vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
+                          :active t
+                          :style 'radio
+                          :selected `(null (pandoc--get (quote ,option))))
+                 ,(vector (concat "Set " prompt "...") (lambda ()
+                                                         (interactive)
+                                                         (pandoc-set-file-option nil option prompt))
+                          :active t
+                          :style 'radio
+                          :selected `(stringp (pandoc--get (quote ,option)))))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     (push (quote ,(list key (lambda (prefix)
+                               (interactive "P")
+                               (pandoc-set-file-option prefix option prompt))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (pandoc--set (quote ,option)
-                          (cond
-                           ((eq prefix '-) nil) ; C-u - or M--
-                           ((listp prefix) ; no prefix or C-u
-                            (pandoc--read-file-name (concat ,prompt ": ") default-directory (not prefix)))
-                           (t ,default))))))) ; any other prefix
+(defun pandoc-set-file-option (prefix option prompt)
+  "Set file option OPTION interactively.
+This function is meant to be called from an interactive function to do
+the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
+prefix argument from the calling function.  If it is nil, ask the user
+for a file name.  If PREFIX is the negative prefix argument `\\[universal-argument] -' (or
+`\\[negative-argument]'), unset the option.  If PREFIX is \\[universal-argument], store the file's full
+path.  If PREFIX is \\[universal-argument] \\[universal-argument], read a string from the user without
+completion.  This is useful for file options that can also have a URL
+as argument."
+  (pandoc--set option
+               (cond
+                ((eq prefix '-)     ; C-u - or M--
+                 nil)
+                ((and (listp prefix)
+                      (= (car prefix) 16)) ; C-u C-u
+                 (read-string (concat prompt ": ")))
+                ;; otherwise no prefix or C-u
+                (t (pandoc--read-file-name (concat prompt ": ") default-directory (not prefix))))))
 
 (defmacro define-pandoc-number-option (option menu key prompt)
   "Define OPTION as a numeric option.
-The option is added to `pandoc--options' and to
-`pandoc--cli-options'.  Furthermore, a menu entry is created and
-a function to set/unset the option.
-
-The function to set the option can be called with the prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]')
-to unset the option.  If no prefix argument is given, the user is
-prompted for a value.
-
-MENU is a symbol naming the menu to which the option must be added.  KEY
-is a string of one character, the key by which the option will be
-available in the transient.
+The option is added to `pandoc--options' and to `pandoc--cli-options'.
+Furthermore, a menu entry is created under MENU, a symbol naming the
+menu to which the option must be added.  KEY is a string of one or two
+characters, the key by which the option will be available in the
+transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
-formulated in such a way that the strings \"Default \" and \"Set
-\" can be added before it."
+formulated in such a way that the strings \"Default \" and \"Set \"
+can be added before it."
   (declare (indent defun))
   `(progn
      (push (list (quote ,option)) pandoc--options)
@@ -879,41 +871,40 @@ formulated in such a way that the strings \"Default \" and \"Set
                           :active t
                           :style 'radio
                           :selected `(null (pandoc--get (quote ,option))))
-                 ,(vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+                 ,(vector (concat "Set " prompt "...") (lambda ()
+                                                         (interactive)
+                                                         (pandoc-set-number-option nil option prompt))
                           :active t
                           :style 'radio
                           :selected `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
 
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     (push (quote ,(list key (lambda (prefix) (interactive "P")
+                               (pandoc-set-number-option prefix option prompt))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (pandoc--set (quote ,option)
-                          (if (eq prefix '-)
-                              nil
-                            (string-to-number (read-string ,(concat prompt ": ")))))))))
+(defun pandoc-set-number-option (prefix option prompt)
+  "Set number option OPTION interactively.
+This function is meant to be called from an interactive function to do
+the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
+prefix argument from the calling function.  If PREFIX is `\\[universal-argument] -' (or
+`\\[negative-argument]'), unset the option.  If PREFIX is nil, the user is prompted
+for a value."
+  (pandoc--set option
+               (if (eq prefix '-)
+                   nil
+                 (string-to-number (read-string (concat prompt ": "))))))
 
 (defmacro define-pandoc-string-option (option menu key prompt &optional default)
   "Define OPTION as a string option.
-The option is added to `pandoc--options' and to
-`pandoc--cli-options'.  Furthermore, a menu entry is created and a
-function to set the option.
-
-The function to set the option can be called with the prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]')
-to unset the option.  A default value (if any) can be set by
-calling the function with any other prefix argument.  If no
-prefix argument is given, the user is prompted for a value.
-
-MENU is a symbol naming the menu to which the option must be added.  KEY
-is a string of one character, the key by which the option will be
-available in the transient.
+The option is added to `pandoc--options' and to `pandoc--cli-options'.
+Furthermore, a menu entry is created under MENU, a symbol naming the
+menu to which the option must be added.  KEY is a string of one or two
+characters, the key by which the option will be available in the
+transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
@@ -935,41 +926,46 @@ or T and indicates whether the option can have a default value."
                                          :active t
                                          :style 'radio
                                          :selected `(eq (pandoc--get (quote ,option)) t)))
-                               (vector (concat "Set " prompt "...") (intern (concat "pandoc-set-" (symbol-name option)))
+                               (vector (concat "Set " prompt "...") (lambda ()
+                                                                      (interactive)
+                                                                      (pandoc-set-string-option nil option prompt default))
                                        :active t
                                        :style 'radio
                                        :selected `(stringp (pandoc--get (quote ,option)))))))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     (push (quote ,(list key (lambda (prefix)
+                               (interactive)
+                               (pandoc-set-string-option prefix option prompt default))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (pandoc--set (quote ,option)
-                          (cond
-                           ((eq prefix '-) nil)
-                           ((null prefix) (read-string ,(concat prompt ": ")))
-                           (t ,default)))))))
+(defun pandoc-set-string-option (prefix option prompt default)
+  "Set number option OPTION interactively.
+This function is meant to be called from an interactive function to do
+the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
+prefix argument from the calling function.  If PREFIX is `\\[universal-argument] -' (or
+`\\[negative-argument]'), unset the option.  If PREFIX is nil, the user is prompted
+for a value.  With any other PREFIX argument, use the option's default
+value, if it has one, otherwise unset it."
+  ;; DEFAULT is either nil or t; if t, it just signals that the option
+  ;; should be passed to Pandoc without a value.  Note that if DEFAULT is
+  ;; nil, calling this function with a prefix argument other than `C-u -'
+  ;; just sets the option to nil, which is the same as unsetting it.
+  (pandoc--set option
+               (cond
+                ((eq prefix '-) nil)
+                ((null prefix) (read-string (concat prompt ": ")))
+                (t default))))
 
 (defmacro define-pandoc-list-option (option menu key type description prompt)
   "Define OPTION as a list option.
 The option is added to `pandoc--options' and `pandoc--list-options'.
-
-Furthermore, a menu entry is created and a function to set the
-option.  This function can also be called with the prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]') to remove an item from the list,
-or with the prefix argument `\\[universal-argument] \\[universal-argument]' to clear the entire list.
-If the list is a list of files, the function can also be called
-with the prefix argument `\\[universal-argument]' to store the full path.
-
-MENU is a symbol naming the menu to which the option must be added.  KEY
-is a string of one character, the key by which the option will be
-available in the transient.
+Furthermore, a menu entry is created under MENU, a symbol naming the
+menu to which the option must be added.  KEY is a string of one
+character, the key by which the option will be available in the
+transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  TYPE specifies the kind of
@@ -985,38 +981,55 @@ it."
      (push (quote ,option) pandoc--list-options)
      (put (quote ,option) (quote pandoc-list-type) (quote ,type))
      (push (list ,description
-                 ,(vector (concat "Add " prompt) (intern (concat "pandoc-set-" (symbol-name option)))
+                 ,(vector (concat "Add " prompt) (lambda ()
+                                                   (interactive)
+                                                   (pandoc-set-list-option nil option prompt description type))
                           :active t)
                  ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
                           :active `(pandoc--get (quote ,option))))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     (push (quote ,(list key (lambda (prefix)
+                               (interactive "P")
+                               (pandoc-set-list-option prefix option prompt description type))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (cond
-              ((and (listp prefix)
-                    (eq (car prefix) 16)) ; C-u C-u
-               (pandoc--set (quote ,option) nil)
-               (message ,(concat description " removed.")))
-              ((listp prefix) ; C-u or no prefix arg
-               (let ((value ,(cond
-                              ((eq type 'string)
-                               `(read-string "Add value: " nil nil (pandoc--get (quote ,option))))
-                              ((eq type 'file)
-                               `(pandoc--read-file-name "Add file: " default-directory (not prefix))))))
-                 (pandoc--set (quote ,option) value)
-                 (message ,(concat prompt " \"%s\" added.") value)))
-              ((eq prefix '-)
-               (let ((value (completing-read "Remove item: " (pandoc--get (quote ,option)) nil t)))
-                 (pandoc--remove-from-list-option (quote ,option) value)
-                 (message ,(concat prompt " \"%s\" removed.") value))))))))
+(defun pandoc-set-list-option (prefix option prompt description type)
+  "Set list option OPTION interactively.
+Ask the user for a single item of OPTION and add/update the value of the
+alist option.
+
+This function is meant to be called from an interactive function to do
+the actual work.  PROMPT is used to prompt the user, DESCRIPTION is used
+to inform the user.  TYPE indicates the type of option, currently only
+the symbols `string' and `file' are distinguished.
+
+PREFIX is the raw prefix argument from the calling function.  If it is
+nil, a new item is added to the list.  If it is the negative prefix
+argument `\\[universal-argument] -' (or `\\[negative-argument]'), an
+item is removed from the list.  If it is `\\[universal-argument]
+\\[universal-argument]', the entire list is cleared.  If the list is a
+list of files, the function can also be called with the prefix argument
+`\\[universal-argument]' to store the full path."
+  (cond
+   ((and (listp prefix)
+         (= (car prefix) 16))          ; C-u C-u
+    (pandoc--set option nil)
+    (message (concat description " removed.")))
+   ((listp prefix)                      ; C-u or no prefix arg
+    (let ((value (cond
+                  ((eq type 'string)
+                   (read-string "Add value: " nil nil (pandoc--get option)))
+                  ((eq type 'file)
+                   (pandoc--read-file-name "Add file: " default-directory (not prefix))))))
+      (pandoc--set option value)
+      (message (concat prompt " \"%s\" added.") value)))
+   ((eq prefix '-)
+    (let ((value (completing-read "Remove item: " (pandoc--get option) nil t)))
+      (pandoc--remove-from-list-option option value)
+      (message (concat prompt " \"%s\" removed.") value))))  )
 
 (defmacro define-pandoc-alist-option (option menu key description prompt)
   "Define OPTION as an alist option.
@@ -1126,24 +1139,31 @@ menu."
                                      :selected `(string= (pandoc--get (quote ,option)) ,choice)))
                            (cdr choices)))
            ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (intern (concat "pandoc-set-" (symbol-name option)))
+     (push (quote ,(list key (lambda (prefix)
+                               (interactive "P")
+                               (pandoc-set-choice-option prefix option prompt choices))
                          :description `(lambda ()
                                          (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
                          :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))
+           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
 
-     (fset (quote ,(intern (concat "pandoc-set-" (symbol-name option))))
-           (lambda (prefix)
-             (interactive "P")
-             (pandoc--set (quote ,option)
-                          (if (eq prefix '-)
-                              nil
-                            (let ((value (completing-read ,(format "Set %s: " prompt) (quote ,choices) nil t)))
-                              (if (or (not value)
-                                      (member value '("" (car ,choices))))
-                                  nil
-                                value))))))))
+(defun pandoc-set-choice-option (prefix option prompt choices)
+  "Set number option OPTION interactively.
+This function is meant to be called from an interactive function to do
+the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
+prefix argument from the calling function.  If PREFIX is
+`\\[universal-argument] -' (or `\\[negative-argument]'), unset the
+option.  If PREFIX is nil, the user is prompted for a value.  CHOICES is
+a list of possible values for OPTION, the first of which is the default
+value."
+  (pandoc--set option
+               (if (eq prefix '-)
+                   nil
+                 (let ((value (completing-read (format "Set %s: " prompt) choices nil t)))
+                   (if (or (not value)
+                           (member value '("" (car choices)))) ; `(car choices)' is the default value.
+                       nil
+                     value)))))
 
 ;;; Defining the options
 ;; Note that the options are added to the menus and transients in reverse order.
