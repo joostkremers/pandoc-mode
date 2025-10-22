@@ -1146,13 +1146,13 @@ argument, the option is toggled."
      ("HTML-Based Formats"
       ,@pandoc--html-menu-list)
      ("EPUB"
-      ,@pandoc--epub-menu-list)
-     ("Obsolete options"
-      ,@pandoc--obsolete-menu-list))
+      ,@pandoc--epub-menu-list))
     ("Citations"
      ,@pandoc--citations-menu-list)
     ("Math Rendering"
-     ,@pandoc--math-menu-list)))
+     ,@pandoc--math-menu-list)
+    ("Obsolete options"
+     ,@pandoc--obsolete-menu-list)))
 
 ;; ("Options"
 ;;  ,@pandoc--options-menu)
@@ -1375,6 +1375,7 @@ argument, the option is toggled."
    ("s" "Options for specific writers" pandoc-specific-options-transient)
    ("c" "Citations"                    pandoc-citations-transient)
    ("m" "Math rendering"               pandoc-math-transient)
+   ("O" "Obsolete options"             pandoc-obsolete-options-transient)
    " "
    ("b" "Back"                         transient-quit-one)
    ("q" "Quit"                         transient-quit-all)])
@@ -1442,7 +1443,6 @@ argument, the option is toggled."
                              '(" "
                                ("H" "HTML-based writers" pandoc-html-options-transient)
                                ("E" "EPUB" pandoc-epub-options-transient)
-                               ("O" "Obsolete options" pandoc-obsolete-options-transient)
                                " "
                                ("b" "Back" transient-quit-one)
                                ("q" "Quit" transient-quit-all))))))])
