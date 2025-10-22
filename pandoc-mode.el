@@ -896,7 +896,8 @@ Return a function that can be used in `completing-read' as the
 COLLECTION function, using TABLE as the completion table."
   (lambda (str pred flag)
     (if (eq flag 'metadata)
-        `(metadata (annotation-function . ,(lambda (format)
+        `(metadata (category . pandoc-format)
+                   (annotation-function . ,(lambda (format)
                                              (propertize (concat (make-string (- 30 (length format)) ?\s)
                                                                  (nth 1 (assoc format formats)))
                                                          'face 'italic))))
