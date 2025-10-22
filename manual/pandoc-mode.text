@@ -75,9 +75,11 @@ However, if for some reason you need to store an absolute path for an option, yo
 
 Note that if you use a minibuffer completion framework (such as   [Ivy](https://github.com/abo-abo/swiper) or [Helm](https://github.com/emacs-helm/helm)), file name completion may work differently. Ivy, for example, always expands file names.
 
-Some file options (such as `--epub-stylesheet`) may have a default value. Such options can be specified on the `pandoc` command line without naming a file. To select such a default value for a file option, use a numeric prefix argument, which is obtained by pressing `M-1` (or any other number, the number is not relevant) in the transient menu. That is, to select the default EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press `M-1 s`.
+Some of Pandoc's file options also allow a URL to be passed instead. Since `pandoc-mode` uses file-name completion for file options, passing a URL can be problematic. You can bypass file-name completion, however, using a double prefix argument, i.e., `C-u C-u`, before setting the option. `pandoc-mode` then just reads a string without any kind of completion.
 
-Options that are not files or numbers are “string options”, which include options that specify a URL. These may also have a default value, which can be set in the same way as with file options. Note, though, that this does not apply to options that only have a limited set of possible values (e.g., `--email-obfuscation`, `--pdf-engine`). These can be set or unset, you cannot explicitly request their default value. (`pandoc' uses their default values even if they are not specified on the command line, unlike string options.)
+Options that are not files or numbers are “string options”, which include options that specify a URL. Some of these can have a default value (i.e., they can be passed to Pandoc without specifying a string or URL), which can be set in the transient menu using a numeric prefix argument. (Any number will do.)
+
+Lastly, there are options that can only have a limited set of possible values (e.g., `--email-obfuscation`, `--pdf-engine`). These can be set, in which case you are asked for the value, or unset using the negative prefix argument.
 
 To get an overview of all the settings for the current file and output format, you can use the option “View current settings” in the main menu (`C-c / S`). This displays all settings in a `*Help*` buffer in a Lisp-like format. For example, the settings for TeXinfo output of this manual look like this:
 
