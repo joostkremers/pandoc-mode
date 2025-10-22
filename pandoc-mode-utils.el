@@ -1151,7 +1151,6 @@ menu."
 ;; in their submenus.
 
 ;;; Reader options
-(define-pandoc-number-option base-header-level       reader "h"      "Base Header Level*") ; obsolete
 (define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
 (define-pandoc-switch        strip-empty-paragraphs  reader "e"      "Strip Empty Paragraphs")
 (define-pandoc-choice-option track-changes           reader "T"      "Track Changes" ("accept" "reject" "all") ("docx"))
@@ -1170,8 +1169,6 @@ menu."
 
 
 ;;; General writer options
-(define-pandoc-string-option highlight-style       writer "xs"        "Highlighting Style*")
-(define-pandoc-switch        no-highlight          writer "xn"        "No Highlighting*")
 (define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
 (define-pandoc-switch        verbose               writer "V"         "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-alist-option  request-header        writer "R"         "HTTP Request Header" "Request Header")
@@ -1245,9 +1242,12 @@ menu."
 (define-pandoc-number-option split-level        epub "l"       "Split at heading level")
 
 ;; obsolete
-(define-pandoc-switch        self-contained     obsolete "s"       "Self-contained Document*")
-(define-pandoc-number-option epub-chapter-level obsolete "c"       "EPUB Chapter Level*")
-(define-pandoc-switch        listings           obsolete "l"       "Use LaTeX listings Package*")
+(define-pandoc-string-option highlight-style    obsolete "s" "Highlighting Style")
+(define-pandoc-switch        no-highlight       obsolete "n" "No Highlighting")
+(define-pandoc-switch        self-contained     obsolete "s" "Self-contained Document")
+(define-pandoc-number-option epub-chapter-level obsolete "e" "EPUB Chapter Level")
+(define-pandoc-switch        listings           obsolete "l" "Use LaTeX listings Package")
+(define-pandoc-number-option base-header-level  obsolete "h" "Base Header Level")
 
 ;;; Citation rendering
 (define-pandoc-switch      biblatex               citations "l"       "Use BibLaTeX")
