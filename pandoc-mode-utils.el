@@ -1233,7 +1233,7 @@ value."
 (define-pandoc-switch        list-tables        specific      "L"         "Render tables as list tables")
 (define-pandoc-choice-option markdown-headings  specific      "h"         "Markdown Headings" ("atx" "setext")
                              ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-choice-option table-caption-position specific  "t"         "Position of figure captions" ("above" "below"))
+(define-pandoc-choice-option table-caption-position specific  "t"         "Position of table captions" ("above" "below"))
 (define-pandoc-choice-option figure-caption-position specific "f"         "Position of figure captions" ("above" "below"))
 (define-pandoc-switch        reference-links    specific      "r"         "Reference Links")
 (define-pandoc-choice-option reference-location specific      "l"         "Reference Location" ("block" "section" "document")
