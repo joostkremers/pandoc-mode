@@ -1257,7 +1257,6 @@ value."
 (define-pandoc-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
 (define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB title page")
 (define-pandoc-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
-(define-pandoc-file-option   epub-stylesheet    epub "s"       "EPUB Style Sheet" t)
 (define-pandoc-string-option chunk-template     epub "C"       "Template for chunk filenames")
 (define-pandoc-number-option split-level        epub "l"       "Split at heading level")
 
