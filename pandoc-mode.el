@@ -401,23 +401,6 @@ INCLUDE-FILE is the argument of the @@include directive."
     (insert-file-contents include-file)
     (buffer-string)))
 
-(defun pandoc--get-file-local-options (buffers)
-  "Return all pandoc related file-local variables and their values.
-These are file local variables beginning with `pandoc/'.  Return
-value is an alist of (var . value) pairs.  The values are
-searched in BUFFERS, which is a list of buffers.  The first value
-found for a particular value is the one returned.  In other
-words, a value from a buffer earlier in BUFFERS overrides the
-value of a later buffer."
-  (delq nil (mapcar (lambda (option)
-                      (let ((var (intern (concat "pandoc/" (symbol-name (car option)))))
-                            (bs buffers))
-                        (while (and bs (not (local-variable-p var (car bs))))
-                          (setq bs (cdr bs)))
-                        (when bs
-                          (cons var (buffer-local-value var (car bs))))))
-                    pandoc--options)))
-
 ;; `pandoc-call-external' sets up a process sentinel that needs to refer to
 ;; `pandoc-binary' to provide an informative message. We want to allow a
 ;; buffer-local value of `pandoc-binary', but the process sentinel doesn't
