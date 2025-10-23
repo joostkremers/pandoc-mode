@@ -820,23 +820,11 @@ file exists, display the *Pandoc output* buffer."
   "Displays the settings file in a *Help* buffer."
   (interactive)
   ;; remove all options that do not have a value.
-  (let* ((remove-defaults (lambda (alist)
-                            (delq nil (mapcar (lambda (option)
-                                                (if (cdr option)
-                                                    option))
-                                              alist))))
-         (settings (copy-tree pandoc--local-settings))
-         (read-extensions (assq 'read-extensions settings))
-         (write-extensions (assq 'write-extensions settings))
+  (let* ((settings (pandoc--current-settings))
          (buffers (list (current-buffer)
                         (if (pandoc--get 'master-file)
                             (find-file-noselect (pandoc--get 'master-file)))))
          (file-locals (pandoc--get-file-local-options buffers)))
-    (when read-extensions
-      (setcdr read-extensions (funcall remove-defaults (cdr read-extensions))))
-    (when write-extensions
-      (setcdr write-extensions (funcall remove-defaults (cdr write-extensions))))
-    (setq settings (funcall remove-defaults settings))
     (with-help-window " *Pandoc Help*"
       (let ((print-length nil)
             (print-level nil)
