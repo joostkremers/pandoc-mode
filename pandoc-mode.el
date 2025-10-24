@@ -168,10 +168,10 @@
 
 ;;;###autoload
 (defun conditionally-turn-on-pandoc ()
-  "Turn on pandoc-mode if a pandoc settings file exists.
+  "Turn on pandoc-mode if a Pandoc defaults file exists.
 This is for use in major mode hooks."
   (when (and (buffer-file-name)
-             (file-exists-p (pandoc--create-settings-filename 'local (buffer-file-name) "default")))
+             (file-exists-p (pandoc--create-defaults-filename 'local (buffer-file-name) "default")))
     (pandoc-mode 1)))
 
 (defun pandoc-toggle-extension (extension rw)
@@ -203,11 +203,11 @@ N is the index of the extension in `pandoc--extensions'."
   (let* ((ext (caar (nthcdr (1- n) pandoc--extensions))))
     (pandoc-toggle-extension ext 'write)))
 
-(defun pandoc--create-settings-filename (type filename output-format)
-  "Create a settings filename.
-TYPE is the type of settings file, either `local' or `project'.
-FILENAME is name of the file for which the settings file is to be
-created, OUTPUT-FORMAT the output format of the settings file,
+(defun pandoc--create-defaults-filename (type filename output-format)
+  "Create a defaults filename.
+TYPE is the type of defaults file, either `local' or `project'.
+FILENAME is name of the file for which the defaults file is to be
+created, OUTPUT-FORMAT the output format of the defaults file,
 which is recorded in its name.  The return value is an absolute
 filename."
   (setq filename (expand-file-name filename))
@@ -217,8 +217,8 @@ filename."
    ((eq type 'project)
     (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
 
-(defun pandoc--create-global-settings-filename (format)
-  "Create a global settings filename.
+(defun pandoc--create-global-defaults-filename (format)
+  "Create a global defaults filename.
 FORMAT is the output format to use."
   (concat (file-name-as-directory pandoc-data-dir) format ".pandoc"))
 
@@ -454,11 +454,11 @@ also ignored in this case."
     ;; undo them and set the options independently of the original buffer.
     (with-temp-buffer
       (cond
-       ;; If an output format was provided, try and load a settings file for it.
+       ;; If an output format was provided, try and load a defaults file for it.
        ((stringp output-format)
         (unless (and input-file
                      (pandoc--load-settings-for-file (expand-file-name input-file) output-format t))
-          ;; If no settings file was found, unset all options except input and output format.
+          ;; If no defaults file was found, unset all options except input and output format.
           (setq pandoc--local-settings (copy-tree pandoc--options))
           (pandoc--set 'write output-format)
           (pandoc--set 'read (pandoc--get 'read buffer))))
@@ -549,9 +549,9 @@ user changes output format.")
   "Convert the current document to pdf.
 If the output format of the current buffer can be used to create
 a pdf (latex, context, or html5), the buffer's options are used.
-If not, the user is asked to supply a format.  If a settings file
+If not, the user is asked to supply a format.  If a defaults file
 for the user-supplied format exists, the settings from this file
-are used for conversion.  If no such settings file exists, only
+are used for conversion.  If no such defaults file exists, only
 the input and output format are set, all other options are unset.
 This user-supplied output format is persistent: the next pdf
 conversion uses the same format.
@@ -580,39 +580,39 @@ pandoc is always run on the master file)."
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
-This is done by creating a symbolic link to the relevant settings
+This is done by creating a symbolic link to the relevant defaults
 files.  (Therefore, this function is not available on Windows.)"
   (interactive)
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
-    (let ((current-settings-file
-           (file-name-nondirectory (pandoc--create-settings-filename 'local (buffer-file-name)
+    (let ((current-defaults-file
+           (file-name-nondirectory (pandoc--create-defaults-filename 'local (buffer-file-name)
                                                                      (pandoc--get 'write))))
           (current-project-file
-           (file-name-nondirectory (pandoc--create-settings-filename 'project (buffer-file-name)
+           (file-name-nondirectory (pandoc--create-defaults-filename 'project (buffer-file-name)
                                                                      (pandoc--get 'write)))))
-      (when (not (file-exists-p current-settings-file))
+      (when (not (file-exists-p current-defaults-file))
         (pandoc--save-settings 'local (pandoc--get 'write)))
-      (make-symbolic-link current-settings-file
-                          (pandoc--create-settings-filename 'local (buffer-file-name) "default") t)
+      (make-symbolic-link current-defaults-file
+                          (pandoc--create-defaults-filename 'local (buffer-file-name) "default") t)
       (when (file-exists-p current-project-file)
         (make-symbolic-link current-project-file
-                            (pandoc--create-settings-filename 'project (buffer-file-name) "default") t))
+                            (pandoc--create-defaults-filename 'project (buffer-file-name) "default") t))
       (message "`%s' set as default output format." (pandoc--get 'write)))))
 
-(defun pandoc-save-settings-file ()
+(defun pandoc-save-settings ()
   "Save the settings of the current buffer.
 This function just calls pandoc--save-settings with the
 appropriate output format."
   (interactive)
   (pandoc--save-settings 'local (pandoc--get 'write)))
 
-(defun pandoc-save-project-file ()
+(defun pandoc-save-project-settings ()
   "Save the current settings as a project file."
   (interactive)
   (pandoc--save-settings 'project (pandoc--get 'write)))
 
-(defun pandoc-save-global-settings-file ()
+(defun pandoc-save-global-settings ()
   "Save the current settings to a global settings file."
   (interactive)
   (unless (file-directory-p pandoc-data-dir)
@@ -628,15 +628,15 @@ NO-CONFIRM is non-nil, any existing settings file is overwritten
 without asking."
   (let* ((filename (buffer-file-name))
          (settings pandoc--local-settings)
-         (settings-file (if (eq type 'global)
-                            (pandoc--create-global-settings-filename format)
-                          (pandoc--create-settings-filename type filename format))))
+         (defaults-file (if (eq type 'global)
+                            (pandoc--create-global-defaults-filename format)
+                          (pandoc--create-defaults-filename type filename format))))
     (if (and (not no-confirm)
-             (file-exists-p settings-file)
-             (not (y-or-n-p (format "%s file `%s' already exists.  Overwrite? "
+             (file-exists-p defaults-file)
+             (not (y-or-n-p (format "%s defaults file `%s' already exists.  Overwrite? "
                                     (capitalize (symbol-name type))
-                                    (file-name-nondirectory settings-file)))))
-        (message "%s file not written." (capitalize (symbol-name type)))
+                                    (file-name-nondirectory defaults-file)))))
+        (message "%s defaults file not written." (capitalize (symbol-name type)))
       (with-temp-buffer
         (let ((print-length nil)
               (print-level nil)
@@ -650,8 +650,8 @@ without asking."
                   (format ";; saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M")))
           (pp settings (current-buffer)))
         (let ((make-backup-files nil))
-          (write-region (point-min) (point-max) settings-file))
-        (message "%s settings file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory settings-file)))
+          (write-region (point-min) (point-max) defaults-file))
+        (message "%s settings file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory defaults-file)))
       (setq pandoc--settings-modified-flag nil))))
 
 (defun pandoc-revert-settings ()
@@ -695,13 +695,13 @@ file is found for FILE, otherwise non-nil."
   (let (settings)
     ;; first try to read local settings
     (when file
-      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-settings-filename 'local file format)))))
+      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local file format)))))
     ;; if it fails, try project settings
     (when (and file (not (cdr settings)))
-      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-settings-filename 'project file format)))))
+      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project file format)))))
     ;; if that fails too, or if there is no file, try reading global settings
     (unless (cdr settings)
-      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-global-settings-filename format)))))
+      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-global-defaults-filename format)))))
     ;; now set them
     (when (cdr settings)
       (setq pandoc--local-settings (cdr settings))
@@ -1018,9 +1018,9 @@ argument, the option is toggled."
     ["View Output Buffer" pandoc-view-output-buffer :active t]
     ["View Log Buffer" pandoc-view-log :active t]
     ("Settings Files"
-     ["Save File Settings" pandoc-save-settings-file :active t]
-     ["Save Project File" pandoc-save-project-file :active t]
-     ["Save Global Settings File" pandoc-save-global-settings-file :active t]
+     ["Save File Settings" pandoc-save-settings :active t]
+     ["Save Project File" pandoc-save-project-settings :active t]
+     ["Save Global Settings File" pandoc-save-global-settings :active t]
      ["Revert Settings" pandoc-revert-settings :active t]
      ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))])
     ("Example Lists"
@@ -1148,7 +1148,7 @@ argument, the option is toggled."
     ("O" pandoc-output-formats-transient
      :description (lambda ()
                     (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
-    ("s" "Settings files"        pandoc-settings-file-transient)
+    ("s" "Settings files"        pandoc-settings-transient)
     ("e" "Example lists"         pandoc-@-transient)]]
   [("q" "Quit" transient-quit-all)])
 
@@ -1256,12 +1256,12 @@ argument, the option is toggled."
                                              '("q" "Quit" transient-quit-all)))))]))))
       pandoc--formats)
 
-(transient-define-prefix pandoc-settings-file-transient ()
+(transient-define-prefix pandoc-settings-transient ()
   "Transient for settings files."
   ["Settings files"
-   ("s" "Save file settings"            pandoc-save-settings-file)
-   ("p" "Save project file"             pandoc-save-project-file)
-   ("g" "Save global settings file"     pandoc-save-global-settings-file)
+   ("s" "Save file settings"            pandoc-save-settings)
+   ("p" "Save project settings"         pandoc-save-project-settings)
+   ("g" "Save global settings"          pandoc-save-global-settings)
    ("d" "Set current format as default" pandoc-set-default-format)
    ("r" "Revert settings"               pandoc-revert-settings)
    " "
