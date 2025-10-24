@@ -1346,20 +1346,27 @@ argument, the option is toggled."
 (transient-define-prefix pandoc-file-transient ()
   "Pandoc-mode file menu."
   ["File menu"
-   ("o" pandoc-set-output :description (lambda ()
-                                         (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
-   ("O" pandoc-set-output-dir :description (lambda ()
-                                             (format "%-27s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
-   ("d" pandoc-set-defaults :description (lambda ()
-                                           (format "%-27s[%s]" "Data directory" (pandoc--pp-option 'data-dir))))
-   ("D" pandoc-set-data-dir :description (lambda ()
-                                           (format "%-27s[%s]" "Defaults file" (pandoc--pp-option 'defaults))))
-   ("e" pandoc-set-extract-media :description (lambda ()
-                                                (format "%-27s[%s]" "Extract media files" (pandoc--pp-option 'extract-media))))
-   ("f" pandoc-set-file-scope :description (lambda ()
-                                             (format "%-27s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
-   ("m" pandoc-set-master-file :description (lambda ()
-                                              (format "%-27s[%s]" "Master file" (pandoc--pp-option 'master-file))))
+   ("o" pandoc-set-output
+    :description (lambda ()
+                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
+   ("O" pandoc-set-output-dir
+    :description (lambda ()
+                   (format "%-27s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
+   ("d" pandoc-set-defaults
+    :description (lambda ()
+                   (format "%-27s[%s]" "Data directory" (pandoc--pp-option 'data-dir))))
+   ("D" pandoc-set-data-dir
+    :description (lambda ()
+                   (format "%-27s[%s]" "Defaults file" (pandoc--pp-option 'defaults))))
+   ("e" pandoc-set-extract-media
+    :description (lambda ()
+                   (format "%-27s[%s]" "Extract media files" (pandoc--pp-option 'extract-media))))
+   ("f" pandoc-set-file-scope
+    :description (lambda ()
+                   (format "%-27s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
+   ("m" pandoc-set-master-file
+    :description (lambda ()
+                   (format "%-27s[%s]" "Master file" (pandoc--pp-option 'master-file))))
    ("M" "Use current file as master file" pandoc-set-this-file-as-master)
    " "
    ("b" "Back" transient-quit-one)
