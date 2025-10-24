@@ -1272,7 +1272,6 @@ value."
 (define-pandoc-number-option toc-depth             writer "D"         "TOC Depth")
 (define-pandoc-switch        table-of-contents     writer "T"         "Table of Contents")
 (define-pandoc-number-option columns               writer "c"         "Column Width")
-(define-pandoc-switch        no-wrap               writer "W"         "No Wrap")
 (define-pandoc-choice-option wrap                  writer "w"         "Wrap"                ("auto" "none" "preserve"))
 (define-pandoc-choice-option eol                   writer "e"         "Line Endings Style"  ("crlf" "lf" "native"))
 (define-pandoc-number-option dpi                   writer "d"         "DPI")
