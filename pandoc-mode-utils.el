@@ -886,7 +886,7 @@ as argument."
                 ((eq prefix '-)     ; C-u - or M--
                  nil)
                 ((and (listp prefix)
-                      (= (car prefix) 16)) ; C-u C-u
+                      (eq (car prefix) 16)) ; C-u C-u, use `eq' because `prefix' may be nil.
                  (read-string (concat prompt ": ")))
                 ;; otherwise no prefix or C-u
                 (t (pandoc--read-file-name (concat prompt ": ") default-directory (not prefix))))))
@@ -1064,7 +1064,7 @@ list of files, the function can also be called with the prefix argument
 `\\[universal-argument]' to store the full path."
   (cond
    ((and (listp prefix)
-         (= (car prefix) 16))          ; C-u C-u
+         (eq (car prefix) 16)) ; C-u C-u, use `eq' because `prefix' may be nil.
     (pandoc--set option nil)
     (message (concat description " removed.")))
    ((listp prefix)                      ; C-u or no prefix arg
