@@ -1160,12 +1160,11 @@ it is the negative prefix argument `\\[universal-argument] -' (or `\\[negative-a
 (defmacro define-pandoc-choice-option (option menu key prompt choices &optional output-formats)
   "Define OPTION as a choice option.
 The option is added to `pandoc--options' and `pandoc--cli-options'.
-Furthermore, a menu entry is created and a function to set the
-option.
-
-MENU is a symbol naming the menu to which the option must be added.  KEY
-is a string of one character, the key by which the option will be
-available in the transient.
+Furthermore, a menu entry is created under MENU, which is a symbol
+naming the menu to which the option must be added.  It can also be nil,
+in which case the option is not added to any menu.  KEY is a string of
+one character, the key by which the option will be available in the
+transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
