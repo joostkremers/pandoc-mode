@@ -12,7 +12,7 @@ file, so that you can, for example, write your text in Markdown and then
 translate it to HTML for online reading, PDF for offline reading and
 Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.31 and is compatible with
+The current version of `pandoc-mode` is 2.35 and is compatible with
 Pandoc 2.12.
 
 # Installation
@@ -44,13 +44,13 @@ The function `pandoc-load-default-settings` checks if a default settings
 file exists for the file being loaded and reads its settings if it finds
 one.
 
-## OS X
+## macOS
 
 `pandoc-mode` expects that the `pandoc` binary can be found in your
 system’s `$PATH` and that the contents of `$PATH` is available to Emacs.
-Especially on OS X, this may not always be the case. To remedy this, you
-can set the user option `pandoc-binary` to the full path of `pandoc` on
-your system. A more elegant solution is to install the
+Especially on macOS, this may not always be the case. To remedy this,
+you can set the user option `pandoc-binary` to the full path of `pandoc`
+on your system. A more elegant solution is to install the
 [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell)
 package. This package makes sure that the contents of your system’s
 `$PATH` variable is visible to Emacs, allowing Emacs to find `pandoc`.

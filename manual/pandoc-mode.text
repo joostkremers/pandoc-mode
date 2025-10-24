@@ -6,7 +6,7 @@
 
 `pandoc-mode` is an Emacs mode for interacting with [Pandoc](http://pandoc.org/). Pandoc is a program (plus libraries) created by John MacFarlane that can convert a text written in one markup language into another markup language. `pandoc-mode` is implemented as a minor mode that can be activated alongside the major mode for any of Pandoc's supported input formats. It provides facilities to set the various options that Pandoc accepts and to run Pandoc on the input file. It is possible to create different output profiles for a single input file, so that you can, for example, write your text in Markdown and then translate it to HTML for online reading, PDF for offline reading and Texinfo for reading in Emacs, all with just a few keystrokes.
 
-The current version of `pandoc-mode` is 2.31 and is compatible with Pandoc 2.12.
+The current version of `pandoc-mode` is 2.35 and is compatible with Pandoc 2.12.
 
 
 # Installation #
