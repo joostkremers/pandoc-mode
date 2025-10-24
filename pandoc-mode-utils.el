@@ -518,23 +518,19 @@ it is assumed to be an external viewer, which is called with
     ("yaml_metadata_block"                 ("markdown")))
   "List of Markdown extensions supported by Pandoc.")
 
-(defvar pandoc--cli-options '(defaults)
+(defvar pandoc--cli-options nil
   "List of Pandoc command line options that do not need special treatment.
 This includes all command line options except the list and alist
 options, because they need to be handled separately in
 `pandoc--format-all-options'.")
 
-(defvar pandoc--filepath-options
-  '(data-dir
-    extract-media)
+(defvar pandoc--filepath-options nil
   "List of options that have a file path as value.
-These file paths are expanded before they are sent to Pandoc.
-For relative paths, the file's working directory is used as base
-directory.  Two options are preset, others are added by
-`define-pandoc-file-option'.")
+These file paths are expanded before they are sent to Pandoc.  For
+relative paths, the file's working directory is used as base directory.
+The options are set by `define-pandoc-file-option'.")
 
-(defvar pandoc--switches '(("Use File Scope" . file-scope)
-                           ("Run In Sandbox" . sandbox))
+(defvar pandoc--switches nil
   "List of binary options.
 These are set by `define-pandoc-switch'.")
 
@@ -547,23 +543,14 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((read)
-    (read-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
+  `((read-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
     (write . "native")
-    (write-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
-    (output)
-    (data-dir)
-    (defaults)
-    (extract-media)
-    (file-scope)
-    (output-dir)
-    (master-file))                      ; the last two are not actually pandoc options
-  "Pandoc option alist.
-List of options and their default values.  For each buffer in
-which pandoc-mode is activated, a buffer-local copy of this list
-is made that stores the local values of the options.  The
-`define-pandoc-*-option' functions add their options to this list
-with the default value nil.")
+    (write-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))))
+"Pandoc option alist.
+List of options and their default values.  For each buffer in which
+pandoc-mode is activated, a buffer-local copy of this list is made that
+stores the local values of the options.  The `define-pandoc-*-option'
+functions add their options to this list with default value nil."
 
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
@@ -818,33 +805,37 @@ value of a later buffer."
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of the
 pandoc option (without dashes).  MENU is a symbol naming the menu to
-which the switch should be added.  KEY is a string of one or two
+which the switch should be added.  It can also be nil, in which case the
+option is not added to any menu.  KEY is a string of one or two
 characters, the key by which the option will be available in the
 transient.  DESCRIPTION is the description of the option as it will
 appear in the menu."
   (declare (indent defun))
   `(progn
-     (push ,(vector description `(pandoc--toggle (quote ,option))
-                    :active t
-                    :style 'toggle
-                    :selected `(pandoc--get (quote ,option)))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
+     ,(when menu
+        `(push ,(vector description `(pandoc--toggle (quote ,option))
+                        :active t
+                        :style 'toggle
+                        :selected `(pandoc--get (quote ,option)))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
      (push (cons ,description (quote ,option)) pandoc--switches)
      (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) pandoc--options)
-     (push (quote ,(list key `(lambda () (interactive)
-                                (pandoc--toggle (quote ,option)))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,description (pandoc--pp-switch (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (quote ,(list key `(lambda () (interactive)
+                                    (pandoc--toggle (quote ,option)))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,description (pandoc--pp-switch (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defmacro define-pandoc-file-option (option menu key prompt)
   "Define OPTION as a file option.
 The option is added to `pandoc--options', `pandoc--cli-options', and to
 `pandoc--filepath-options'.  Furthermore, a menu entry is created under
 MENU, which is a symbol naming the menu to which the option should be
-added.  KEY is a string of one or two characters, the key by which the
+added.  It can also be nil, in which case the option is not added to any
+menu.  KEY is a string of one or two characters, the key by which the
 option will be available in the transient.
 
 OPTION must be a symbol and must be identical to the long form of
@@ -858,25 +849,27 @@ or t and indicates whether the option can have a default value."
      (push (quote ,option) pandoc--filepath-options)
      (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) pandoc--options)
-     (push (list ,prompt
-                 ,(vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
-                          :active t
-                          :style 'radio
-                          :selected `(null (pandoc--get (quote ,option))))
-                 ,(vector (concat "Set " prompt "...") (lambda ()
-                                                         (interactive)
-                                                         (pandoc-set-file-option nil option prompt))
-                          :active t
-                          :style 'radio
-                          :selected `(stringp (pandoc--get (quote ,option)))))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-     (push (quote ,(list key (lambda (prefix)
-                               (interactive "P")
-                               (pandoc-set-file-option prefix option prompt))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (list ,prompt
+                     ,(vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
+                              :active t
+                              :style 'radio
+                              :selected `(null (pandoc--get (quote ,option))))
+                     ,(vector (concat "Set " prompt "...") (lambda ()
+                                                             (interactive)
+                                                             (pandoc-set-file-option nil option prompt))
+                              :active t
+                              :style 'radio
+                              :selected `(stringp (pandoc--get (quote ,option)))))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (prefix)
+                                   (interactive "P")
+                                   (pandoc-set-file-option prefix option prompt))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc-set-file-option (prefix option prompt)
   "Set file option OPTION interactively.
@@ -902,7 +895,8 @@ as argument."
   "Define OPTION as a numeric option.
 The option is added to `pandoc--options' and to `pandoc--cli-options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
-menu to which the option must be added.  KEY is a string of one or two
+menu to which the option must be added.  It can also be nil, in which
+case the option is not added to any menu.  KEY is a string of one or two
 characters, the key by which the option will be available in the
 transient.
 
@@ -915,25 +909,26 @@ can be added before it."
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--cli-options)
-     (push (list ,prompt
-                 ,(vector (concat "Default " prompt) `(pandoc--set (quote ,option) nil)
-                          :active t
-                          :style 'radio
-                          :selected `(null (pandoc--get (quote ,option))))
-                 ,(vector (concat "Set " prompt "...") (lambda ()
-                                                         (interactive)
-                                                         (pandoc-set-number-option nil option prompt))
-                          :active t
-                          :style 'radio
-                          :selected `(pandoc--get (quote ,option))))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-
-     (push (quote ,(list key (lambda (prefix) (interactive "P")
-                               (pandoc-set-number-option prefix option prompt))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (list ,prompt
+                     ,(vector (concat "Default " prompt) `(pandoc--set (quote ,option) nil)
+                              :active t
+                              :style 'radio
+                              :selected `(null (pandoc--get (quote ,option))))
+                     ,(vector (concat "Set " prompt "...") (lambda ()
+                                                             (interactive)
+                                                             (pandoc-set-number-option nil option prompt))
+                              :active t
+                              :style 'radio
+                              :selected `(pandoc--get (quote ,option))))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (prefix) (interactive "P")
+                                   (pandoc-set-number-option prefix option prompt))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc-set-number-option (prefix option prompt)
   "Set number option OPTION interactively.
@@ -951,7 +946,8 @@ for a value."
   "Define OPTION as a string option.
 The option is added to `pandoc--options' and to `pandoc--cli-options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
-menu to which the option must be added.  KEY is a string of one or two
+menu to which the option must be added.  It can also be nil, in which
+case the option is not added to any menu.  KEY is a string of one or two
 characters, the key by which the option will be available in the
 transient.
 
@@ -964,31 +960,33 @@ or T and indicates whether the option can have a default value."
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--cli-options)
-     (push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
-                         (list prompt
-                               (vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
-                                       :active t
-                                       :style 'radio
-                                       :selected `(null (pandoc--get (quote ,option))))
-                               (when default
-                                 (vector (concat "Default " prompt) `(pandoc--set (quote ,option) t)
-                                         :active t
-                                         :style 'radio
-                                         :selected `(eq (pandoc--get (quote ,option)) t)))
-                               (vector (concat "Set " prompt "...") (lambda ()
-                                                                      (interactive)
-                                                                      (pandoc-set-string-option nil option prompt default))
-                                       :active t
-                                       :style 'radio
-                                       :selected `(stringp (pandoc--get (quote ,option)))))))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-     (push (quote ,(list key (lambda (prefix)
-                               (interactive)
-                               (pandoc-set-string-option prefix option prompt default))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
+                             (list prompt
+                                   (vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
+                                           :active t
+                                           :style 'radio
+                                           :selected `(null (pandoc--get (quote ,option))))
+                                   (when default
+                                     (vector (concat "Default " prompt) `(pandoc--set (quote ,option) t)
+                                             :active t
+                                             :style 'radio
+                                             :selected `(eq (pandoc--get (quote ,option)) t)))
+                                   (vector (concat "Set " prompt "...") (lambda ()
+                                                                          (interactive)
+                                                                          (pandoc-set-string-option nil option prompt default))
+                                           :active t
+                                           :style 'radio
+                                           :selected `(stringp (pandoc--get (quote ,option)))))))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (prefix)
+                                   (interactive)
+                                   (pandoc-set-string-option prefix option prompt default))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc-set-string-option (prefix option prompt default)
   "Set number option OPTION interactively.
@@ -1012,7 +1010,8 @@ value, if it has one, otherwise unset it."
   "Define OPTION as a list option.
 The option is added to `pandoc--options' and `pandoc--list-options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
-menu to which the option must be added.  KEY is a string of one
+menu to which the option must be added.  It can also be nil, in which
+case the option is not added to any menu.  KEY is a string of one
 character, the key by which the option will be available in the
 transient.
 
@@ -1024,26 +1023,27 @@ option's submenu.  PROMPT is a string that is used to prompt for
 setting and unsetting the option.  It must be formulated in such a
 way that the strings \"Add \", \"Remove \" can be added before
 it."
-
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--list-options)
      (put (quote ,option) (quote pandoc-list-type) (quote ,type))
-     (push (list ,description
-                 ,(vector (concat "Add " prompt) (lambda ()
-                                                   (interactive)
-                                                   (pandoc-set-list-option nil option prompt description type))
-                          :active t)
-                 ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
-                          :active `(pandoc--get (quote ,option))))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-     (push (quote ,(list key (lambda (prefix)
-                               (interactive "P")
-                               (pandoc-set-list-option prefix option prompt description type))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (list ,description
+                     ,(vector (concat "Add " prompt) (lambda ()
+                                                       (interactive)
+                                                       (pandoc-set-list-option nil option prompt description type))
+                              :active t)
+                     ,(vector (concat "Remove " prompt) (list (intern (concat "pandoc-set-" (symbol-name option))) `(quote -))
+                              :active `(pandoc--get (quote ,option))))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (prefix)
+                                   (interactive "P")
+                                   (pandoc-set-list-option prefix option prompt description type))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc-set-list-option (prefix option prompt description type)
   "Set list option OPTION interactively.
@@ -1084,7 +1084,8 @@ list of files, the function can also be called with the prefix argument
   "Define OPTION as an alist option.
 The option is added to `pandoc--options' and `pandoc--alist-options',
 and a menu entry is created under MENU, a symbol naming the menu to
-which the option must be added.  KEY is a string of one character, the
+which the option must be added.  It can also be nil, in which case the
+option is not added to any menu.  KEY is a string of one character, the
 key by which the option will be available in the transient.
 
 OPTION must be a symbol and must be identical to the long form of
@@ -1097,20 +1098,22 @@ formulated in such a way that the strings \"Set/Change \" and
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--alist-options)
      ;; Menu
-     (push (list ,description
-                 ,(vector (concat "Set/Change " prompt) (lambda () (interactive) (pandoc-set-alist-option nil option description prompt))
-                          :active t)
-                 ,(vector (concat "Unset " prompt) (lambda () (interactive) (pandoc-set-alist-option '- option description prompt))
-                          :active t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
+     ,(when menu
+        `(push (list ,description
+                     ,(vector (concat "Set/Change " prompt) (lambda () (interactive) (pandoc-set-alist-option nil option description prompt))
+                              :active t)
+                     ,(vector (concat "Unset " prompt) (lambda () (interactive) (pandoc-set-alist-option '- option description prompt))
+                              :active t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
      ;; Transient
-     (push (quote ,(list key (lambda (pfx)
-                               (interactive "P")
-                               (pandoc-set-alist-option pfx option description prompt))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (pfx)
+                                   (interactive "P")
+                                   (pandoc-set-alist-option pfx option description prompt))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc--alist-option-completion (option)
   "Return a collection function for pandoc-mode alist OPTION."
@@ -1175,26 +1178,28 @@ menu."
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--cli-options)
-     (push (list ,prompt
-                 :active ,(if output-formats
-                              `(quote (member (pandoc--get 'write) (quote ,output-formats)))
-                            t)
-                 ,(vector (car choices) `(pandoc--set (quote ,option) ,(car choices))
-                          :style 'radio
-                          :selected `(null (pandoc--get (quote ,option))))
-                 ,@(mapcar (lambda (choice)
-                             (vector choice `(pandoc--set (quote ,option) ,choice)
-                                     :style 'radio
-                                     :selected `(string= (pandoc--get (quote ,option)) ,choice)))
-                           (cdr choices)))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list")))
-     (push (quote ,(list key (lambda (prefix)
-                               (interactive "P")
-                               (pandoc-set-choice-option prefix option prompt choices))
-                         :description `(lambda ()
-                                         (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
-                         :transient t))
-           ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list")))))
+     ,(when menu
+        `(push (list ,prompt
+                     :active ,(if output-formats
+                                  `(quote (member (pandoc--get 'write) (quote ,output-formats)))
+                                t)
+                     ,(vector (car choices) `(pandoc--set (quote ,option) ,(car choices))
+                              :style 'radio
+                              :selected `(null (pandoc--get (quote ,option))))
+                     ,@(mapcar (lambda (choice)
+                                 (vector choice `(pandoc--set (quote ,option) ,choice)
+                                         :style 'radio
+                                         :selected `(string= (pandoc--get (quote ,option)) ,choice)))
+                               (cdr choices)))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
+     ,(when menu
+        `(push (quote ,(list key (lambda (prefix)
+                                   (interactive "P")
+                                   (pandoc-set-choice-option prefix option prompt choices))
+                             :description `(lambda ()
+                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                             :transient t))
+               ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc-set-choice-option (prefix option prompt choices)
   "Set number option OPTION interactively.
@@ -1218,6 +1223,20 @@ value."
 ;; Note that the options are added to the menus and transients in reverse order.
 ;; For this reason, obsolete options appear first here, so that they appear last
 ;; in their submenus.
+
+;; Options added to menus manually.
+;;
+;; Note that `write' is nod defined here, because it has a default value
+;; other than nil.
+(define-pandoc-string-option read          nil nil "Input Format")
+(define-pandoc-string-option output        nil nil "Output File")
+(define-pandoc-file-option   output-dir    nil nil "Output Directory")
+(define-pandoc-file-option   defaults      nil nil "Defaults File")
+(define-pandoc-switch        file-scope    nil nil "Use File Scope")
+(define-pandoc-switch        sandbox       nil nil "Run In Sandbox")
+(define-pandoc-file-option   data-dir      nil nil "Data Directory")
+(define-pandoc-file-option   extract-media nil nil "Extract Media Files")
+(define-pandoc-file-option   master-file   nil nil "Master File")
 
 ;;; Reader options
 (define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
