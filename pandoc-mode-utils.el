@@ -551,10 +551,8 @@ These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
   `((read)
-    (read-lhs)
     (read-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
     (write . "native")
-    (write-lhs)
     (write-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
     (output)
     (data-dir)

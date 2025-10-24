@@ -269,14 +269,12 @@ OUTPUT-FILE the name of the output file.  If PDF is non-nil, an
 output file is always set, which gets the suffix `.pdf'.  If the
 output format is \"odt\", \"epub\" or \"docx\" but no output file
 is specified, one will be created."
-  (let ((read (format "--read=%s%s%s" (pandoc--get 'read) (if (pandoc--get 'read-lhs) "+lhs" "")
-                      (pandoc--format-extensions (pandoc--get 'read-extensions))))
+  (let ((read (format "--read=%s%s" (pandoc--get 'read) (pandoc--format-extensions (pandoc--get 'read-extensions))))
         (write (if pdf
                    (if (member (pandoc--get 'write) pandoc--pdf-able-formats)
                        (format "--write=%s" (pandoc--get 'write))
                      "--write=latex")
-                 (format "--write=%s%s%s" (pandoc--get 'write) (if (pandoc--get 'write-lhs) "+lhs" "")
-                         (pandoc--format-extensions (pandoc--get 'write-extensions)))))
+                 (format "--write=%s%s" (pandoc--get 'write) (pandoc--format-extensions (pandoc--get 'write-extensions)))))
         (output (when output-file (format "--output=%s" output-file)))
         ;; Filters are handled separately, because they sometimes need to be
         ;; passed to `pandoc' before other options.
@@ -1040,9 +1038,6 @@ argument, the option is toggled."
                                      :selected `(string= (pandoc--get 'read)
                                                          ,(cdr option))))
                            pandoc--input-formats-menu))
-             (list ["Literal Haskell" (pandoc--toggle 'read-lhs)
-                    :active (member (pandoc--get 'read) '("markdown" "rst" "latex"))
-                    :style toggle :selected (pandoc--get 'read-lhs)])
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'read)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
@@ -1061,10 +1056,6 @@ argument, the option is toggled."
                                      :selected `(string= (pandoc--get 'write)
                                                          ,(car option))))
                            (pandoc--extract-formats 'output)))
-             (list ["Literal Haskell" (pandoc--toggle 'write-lhs)
-                    :active (member (pandoc--get 'write)
-                                    '("markdown" "rst" "latex" "beamer" "html" "html5"))
-                    :style toggle :selected (pandoc--get 'write-lhs)])
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'write)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
