@@ -122,7 +122,7 @@ In `pandoc-mode`, the output file setting has three options: the default is to s
 
 Note that Pandoc does not allow output to be sent to stdout if the output format is an OpenOffice.org Document (ODT), EPUB or MS Word (docx) file. Therefore, in those cases, unless you specify an output filename yourself, Emacs will create an output filename for you.
 
-Note that the output file you set is always just the base filename, it does not specify a directory. Which directory the output file is written to depends on the setting “Output Directory” (which is not actually a Pandoc option). Emacs creates an output destination out of the settings for the output directory and output file. If you don't specify any output directory, the output file will be written to the same directory that the input file is in.
+Also note that the output file you set is always just the base filename, it does not specify a directory. Which directory the output file is written to depends on the setting “Output Directory” (which is not actually a Pandoc option). Emacs creates an output destination out of the settings for the output directory and output file. If you don't specify any output directory, the output file will be written to the same directory that the input file is in.
 
 
 ## Creating a pdf ##
