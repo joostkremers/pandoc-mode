@@ -1319,7 +1319,7 @@ value."
 
 ;; epub
 (define-pandoc-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
-(define-pandoc-list-option   epub-embed-font    epub "f"  file "EPUB Fonts"         "EPUB Embedded Font")
+(define-pandoc-list-option   epub-embed-font    epub "f"  file "EPUB Fonts" "EPUB Embedded Font")
 (define-pandoc-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
 (define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB title page")
 (define-pandoc-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
