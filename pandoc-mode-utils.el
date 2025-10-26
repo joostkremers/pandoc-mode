@@ -1243,6 +1243,7 @@ value."
 (define-pandoc-file-option   data-dir      nil nil "Data Directory")
 (define-pandoc-file-option   extract-media nil nil "Extract Media Files")
 (define-pandoc-file-option   master-file   nil nil "Master File")
+(define-pandoc-string-option verbosity     nil nil "Verbosity")
 
 ;;; Reader options
 (define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
@@ -1264,7 +1265,6 @@ value."
 
 ;;; General writer options
 (define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
-(define-pandoc-switch        verbose               writer "V"         "Verbose output") ; Pandoc's README places this in the general options
 (define-pandoc-alist-option  request-header        writer "R"         "HTTP Request Header" "Request Header")
 (define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
 (define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.

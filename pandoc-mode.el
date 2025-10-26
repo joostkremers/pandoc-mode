@@ -1135,7 +1135,14 @@ the method is kept as is, but the user is asked to provide a URL."
      ["Set URL" (lambda () (interactive) (pandoc-set-html-math-method t (cdr (assq 'method (pandoc--get 'html-math-method)))))
       :active t :selected (cdr (assoc (cdr (assq 'method (pandoc--get 'html-math-method))) pandoc--html-math-methods))])
     ("Obsolete options"
-     ,@pandoc--obsolete-menu-list)))
+     ,@pandoc--obsolete-menu-list)
+    ("Verbosity"
+     ["High (show all messages)" (pandoc--set 'verbosity "INFO")
+      :active t :style 'radio :selected (equal (pandoc--get 'verbosity ) "INFO")]
+     ["Medium (show warnings)" (pandoc--set 'verbosity nil)
+      :active t :style 'radio :selected (not (pandoc--get 'verbosity ))]
+     ["Low (show only error messages)" (pandoc--set 'verbosity "ERROR")
+      :active t :style 'radio :selected (equal (pandoc--get 'verbosity ) "ERROR")])))
 
 ;; ("Options"
 ;;  ,@pandoc--options-menu)
@@ -1361,6 +1368,7 @@ the method is kept as is, but the user is asked to provide a URL."
    ("c" "Citations"                    pandoc-citations-transient)
    ("m" "Math rendering"               pandoc-math-transient)
    ("O" "Obsolete options"             pandoc-obsolete-options-transient)
+   ("V" "Verbosity"                    pandoc-set-verbosity)
    " "
    ("b" "Back"                         transient-quit-one)
    ("q" "Quit"                         transient-quit-all)])
