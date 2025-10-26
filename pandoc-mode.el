@@ -1121,7 +1121,20 @@ argument, the option is toggled."
     ("Citations"
      ,@pandoc--citations-menu-list)
     ("Math Rendering"
-     ,@pandoc--math-menu-list)
+     ["KaTeX" (lambda () (interactive) (pandoc-set-html-math-method nil "katex"))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["WebTeX" (lambda () (interactive) (pandoc-set-html-math-method nil "webtex"))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["gladTeX" (lambda () (interactive) (pandoc-set-html-math-method nil "gladTeX"))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["MathJax" (lambda () (interactive) (pandoc-set-html-math-method nil "mathjax"))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["MathML" (lambda () (interactive) (pandoc-set-html-math-method nil "mathml"))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["None" (lambda () (interactive) (pandoc-set-html-math-method nil nil))
+      :active t :style 'radio :selected `(= "katex" (cdr (assq 'method (pandoc--get 'html-math-method))))]
+     ["Set URL" (lambda () (interactive) (pandoc-set-html-math-method t (cdr (assq 'method (pandoc--get 'html-math-method)))))
+      :active t :selected (cdr (assoc (cdr (assq 'method (pandoc--get 'html-math-method))) pandoc--html-math-methods))])
     ("Obsolete options"
      ,@pandoc--obsolete-menu-list)))
 
@@ -1485,17 +1498,40 @@ argument, the option is toggled."
 
 (transient-define-prefix pandoc-math-transient ()
   "Pandoc-mode math rendering menu."
-  [:class transient-columns
-          :pad-keys t
-          :setup-children
-          (lambda (_)
-            (transient-parse-suffixes
-             'pandoc-math-transient
-             (list (vconcat  (list "Math rendering")
-                             pandoc--math-transient-list
-                             '(" "
-                               ("b" "Back" transient-quit-one)
-                               ("q" "Quit" transient-quit-all))))))])
+  [:description (lambda ()
+                  (let* ((value (pandoc--get 'html-math-method))
+                         (method (cdr (assq 'method value)))
+                         (url (cdr (assq 'url value))))
+                    (format "Math HTML method: %s%s"
+                            (or method "none")
+                            (if url (format " <%s>" url) ""))))
+                ("k" "KaTeX" (lambda (prefix)
+                               (interactive "P")
+                               (pandoc-set-html-math-method prefix "katex"))
+                 :transient t)
+                ("w" "WebTeX" (lambda (prefix)
+                                (interactive "P")
+                                (pandoc-set-html-math-method prefix "webtex"))
+                 :transient t)
+                ("g" "gladTeX" (lambda (prefix)
+                                 (interactive "P")
+                                 (pandoc-set-html-math-method prefix "gladtex"))
+                 :transient t)
+                ("J" "MathJax" (lambda (prefix)
+                                 (interactive "P")
+                                 (pandoc-set-html-math-method prefix "mathjax"))
+                 :transient t)
+                ("m" "MathML" (lambda (prefix)
+                                (interactive "P")
+                                (pandoc-set-html-math-method prefix "mathml"))
+                 :transient t)
+                ("n" "None" (lambda ()
+                              (interactive)
+                              (pandoc--set 'html-math-method nil))
+                 :transient t)
+                " "
+                ("b" "Back" transient-quit-one)
+                ("q" "Quit" transient-quit-all)])
 
 ;;; Faces:
 ;;; Regexp based on github.com/vim-pandoc/vim-pandoc-syntax.

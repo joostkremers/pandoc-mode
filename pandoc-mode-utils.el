@@ -552,6 +552,14 @@ pandoc-mode is activated, a buffer-local copy of this list is made that
 stores the local values of the options.  The `define-pandoc-*-option'
 functions add their options to this list with default value nil."
 
+(defconst pandoc--html-math-methods '(("mathjax" . t)
+                                      ("mathml")
+                                      ("webtex" . t)
+                                      ("katex" . t)
+                                      ("gladtex"))
+  "Possible values for the Pandoc option `html-math-method'.
+If the cdr of an entry is t, the option can take an optional URL.")
+
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
 (defvar-local pandoc--settings-modified-flag nil "Non-nil means the current settings were modified and not saved.")
@@ -789,7 +797,6 @@ value of a later buffer."
 (defvar pandoc--epub-transient-list nil)
 (defvar pandoc--obsolete-transient-list nil)
 (defvar pandoc--citations-transient-list nil)
-(defvar pandoc--math-transient-list nil)
 
 ;; menu variables
 (defvar pandoc--reader-menu-list nil)
@@ -799,7 +806,6 @@ value of a later buffer."
 (defvar pandoc--epub-menu-list nil)
 (defvar pandoc--obsolete-menu-list nil)
 (defvar pandoc--citations-menu-list nil)
-(defvar pandoc--math-menu-list nil)
 
 (defmacro define-pandoc-switch (option menu key description)
   "Create a binary option.
@@ -1218,10 +1224,32 @@ value."
                        nil
                      value)))))
 
+;; This setter function has no associated pandoc-define-* macro, because
+;; it's specific to one single option: `html-math-method'.
+(defun pandoc-set-html-math-method (prefix method)
+  "Set the method for rendering mathematics in HTML to METHOD.
+This function is meant to be called from an interactive function to do
+the actual work.  PREFIX is the raw prefix argument from the calling
+function.  If PREFIX is non-nil, ask for a URL and add it to the
+option's value.  METHOD is a string naming a math rendering method as
+defined in `pandoc--html-math-methods'.  METHOD can also be nil, in
+which case `html-math-method' is unset, or it can be t, in which case
+the method is kept as is, but the user is asked to provide a URL."
+  (let* ((method (if (eq method t)
+                     (cdr (assq 'method (pandoc--get 'html-math-method)))
+                   method))
+         (url (if (and prefix
+                       (cdr (assoc method pandoc--html-math-methods)))
+                  (read-string "URL: "))))
+    ;; This is a hack.  Normally, calling `pandoc--set' on a list option
+    ;; would *add* the item to the list.  But we only want the list to have
+    ;; at most these two items, so we clear the option first.
+    (pandoc--set 'html-math-method nil)
+    (if method (pandoc--set 'html-math-method `(method . ,method)))
+    (if url (pandoc--set 'html-math-method `(url . ,url)))))
+
 ;;; Defining the options
 ;; Note that the options are added to the menus and transients in reverse order.
-;; For this reason, obsolete options appear first here, so that they appear last
-;; in their submenus.
 
 ;; Options added to menus manually.
 ;;
@@ -1343,11 +1371,17 @@ value."
 (define-pandoc-switch      citeproc               citations "c"       "Process Citations")
 
 ;;; Math rendering in HTML
-(define-pandoc-string-option katex            math "k"  "KaTeX URL"           t)
-(define-pandoc-string-option webtex           math "w"  "WebTeX URL"          t)
-(define-pandoc-switch        gladtex          math "g"  "gladTeX")
-(define-pandoc-string-option mathjax          math "J"  "MathJax URL"         t)
-(define-pandoc-switch        mathml           math "m"  "MathML URL")
+
+;; Note: `html-math-method' may look like an alist option, since its value
+;; is an alist with keys `method' and `url', but the two keys cannot be set
+;; independently.  Therefore we define it as a list option, even though
+;; that's not a really good fit, either. That's why we also have a special
+;; setter function, `pandoc-set-html-math-method'.
+;;
+;; TODO An object-oriented approach for the options would probably be
+;; better. Perhaps subclassing transient classes, although I'm not sure if
+;; that would still work with the menu-bar menus.
+(define-pandoc-list-option html-math-method nil nil string "HTML Math Rendering" "")
 
 (provide 'pandoc-mode-utils)
 
