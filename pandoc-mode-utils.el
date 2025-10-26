@@ -1156,10 +1156,8 @@ removed from the list.  If it is `\\[universal-argument] \\[universal-argument]'
                                 (pandoc--alist-option-completion option))))
       (when (and var (not (string= "" var)))
         (let ((value (cond
-                      ((eq prefix '-)
-                       nil)
-                      ((numberp prefix)
-                       t)
+                      ((eq prefix '-) nil)
+                      ((numberp prefix) t)
                       (t (read-string "Value: " nil nil (cdr (assq var (pandoc--get option))))))))
           (when (string= value "") ;; Strings may be empty, corresponding to boolean True in Pandoc.
             (setq value t))
