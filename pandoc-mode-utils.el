@@ -1251,7 +1251,7 @@ value."
 (define-pandoc-choice-option track-changes           reader "T"      "Track Changes" ("accept" "reject" "all") ("docx"))
 (define-pandoc-number-option tab-stop                reader "t"      "Tab Stop Width")
 (define-pandoc-switch        preserve-tabs           reader "p"      "Preserve Tabs")
-(define-pandoc-list-option   metadata-file           reader "M" file "Metadata File" "Metadata File")
+(define-pandoc-list-option   metadata-files          reader "M" file "Metadata Files" "Metadata File")
 (define-pandoc-alist-option  metadata                reader "m"      "Metadata" "Metadata item")
 (define-pandoc-list-option   filter                  reader "f" file "Filters" "Filter")
 (define-pandoc-list-option   lua-filter              reader "l" file "Lua Filters" "Lua Filter")
@@ -1270,7 +1270,7 @@ value."
 (define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-before-body   writer "ib"        "Include Before Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-in-header     writer "ih"        "Include Header") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   syntax-definition     writer "y"         "Syntax Definition File")
+(define-pandoc-list-option   syntax-definitions    writer "y" files   "Syntax Definition File" "File")
 (define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
 (define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
 (define-pandoc-switch        list-of-tables        writer "lt"        "List of Tables")
@@ -1296,7 +1296,7 @@ value."
 (define-pandoc-switch        ascii              specific      "a"         "Use Only ASCII")
 (define-pandoc-switch        link-images        specific      "I"         "Include Links to Images")
 (define-pandoc-choice-option ipynb-output       specific      "p"         "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
-(define-pandoc-list-option   pdf-engine-opt     specific      "o"  string "PDF Options" "PDF Option")
+(define-pandoc-list-option   pdf-engine-opts    specific      "o"  string "PDF Options" "PDF Option")
 (define-pandoc-choice-option pdf-engine         specific      "e"         "PDF Engine"
   ("pdflatex" "lualatex" "xelatex" "tectonic" "latexmk" "wkhtmltopdf" "weasyprint" "prince" "pagedjs-cli" "context" "pdfroff"))
 (define-pandoc-file-option   reference-doc      specific      "R"         "Reference Doc")
@@ -1316,8 +1316,8 @@ value."
 
 ;; html-based
 (define-pandoc-list-option   css               html "c"  file "CSS Style Sheet" "CSS")
-(define-pandoc-string-option title-prefix      html "t"       "Title prefix")
-(define-pandoc-string-option id-prefix         html "i"       "ID prefix")
+(define-pandoc-string-option title-prefix      html "t"       "Title Prefix")
+(define-pandoc-string-option identifier-prefix html "i"       "ID Prefix")
 (define-pandoc-choice-option email-obfuscation html "e"       "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
 (define-pandoc-switch        section-divs      html "d"       "Wrap Sections in <div> Tags")
 (define-pandoc-string-option number-offset     html "o"       "Number Offsets")
@@ -1326,12 +1326,12 @@ value."
 
 ;; epub
 (define-pandoc-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
-(define-pandoc-list-option   epub-embed-font    epub "f"  file "EPUB Fonts" "EPUB Embedded Font")
+(define-pandoc-list-option   epub-fonts         epub "f"  file "EPUB Fonts" "Embed Font")
 (define-pandoc-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
-(define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB title page")
+(define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB Title Page")
 (define-pandoc-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
-(define-pandoc-string-option chunk-template     epub "C"       "Template for chunk filenames")
-(define-pandoc-number-option split-level        epub "l"       "Split at heading level")
+(define-pandoc-string-option chunk-template     epub "C"       "Template for Chunk Filenames")
+(define-pandoc-number-option split-level        epub "l"       "Split at Heading Level")
 
 ;; obsolete
 (define-pandoc-string-option highlight-style    obsolete "s" "Highlighting Style")
@@ -1342,12 +1342,11 @@ value."
 (define-pandoc-number-option base-header-level  obsolete "h" "Base Header Level")
 
 ;;; Citation rendering
-(define-pandoc-switch      biblatex               citations "l"       "Use BibLaTeX")
-(define-pandoc-switch      natbib                 citations "n"       "Use NatBib")
-(define-pandoc-file-option citation-abbreviations citations "a"       "Citation Abbreviations File")
-(define-pandoc-file-option csl                    citations "C"       "CSL File")
-(define-pandoc-list-option bibliography           citations "B"  file "Bibliography Files"          "Bibliography File")
-(define-pandoc-switch      citeproc               citations "c"       "Process Citations")
+(define-pandoc-choice-option cite-method            citations "m"       "Citation Method" '("natbib" "biblatex"))
+(define-pandoc-file-option   citation-abbreviations citations "a"       "Citation Abbreviations File")
+(define-pandoc-file-option   csl                    citations "C"       "CSL File")
+(define-pandoc-list-option   bibliography           citations "B"  file "Bibliography Files"          "Bibliography File")
+(define-pandoc-switch        citeproc               citations "c"       "Process Citations")
 
 ;;; Math rendering in HTML
 
