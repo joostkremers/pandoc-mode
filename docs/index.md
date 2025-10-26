@@ -44,36 +44,36 @@ The function `pandoc-load-default-settings` checks if a default settings
 file exists for the file being loaded and reads its settings if it finds
 one.
 
-## OS X
+## macOS
 
 `pandoc-mode` expects that the `pandoc` binary can be found in your
 system’s `$PATH` and that the contents of `$PATH` is available to Emacs.
-Especially on OS X, this may not always be the case. To remedy this, you
-can set the user option `pandoc-binary` to the full path of `pandoc` on
-your system. A more elegant solution is to install the
+Especially on macOS, this may not always be the case. To remedy this,
+you can set the user option `pandoc-binary` to the full path of `pandoc`
+on your system. A more elegant solution is to install the
 [exec-path-from-shell](https://github.com/purcell/exec-path-from-shell)
 package. This package makes sure that the contents of your system’s
 `$PATH` variable is visible to Emacs, allowing Emacs to find `pandoc`.
 
 # Usage
 
-`pandoc-mode` uses the [hydra](https://github.com/abo-abo/hydra) package
-to create a keyboard-driven menu interface to all options and settings.
-The main menu is called by pressing `C-c /`. After that, everything
-should be self-explanatory. From the main menu, you can run `pandoc` on
-the buffer, view the output buffer and the current settings, set the
-input and output formats, and you can go to the options menu.
+`pandoc-mode` uses the transient package to create a keyboard-driven
+menu interface to all options and settings. The main menu is called by
+pressing `C-c /`. After that, everything is mostly self-explanatory.
+From the main menu, you can run `pandoc` on the buffer, view the output
+buffer and the current settings, set the input and output formats, and
+you can go to the options menu.
 
 Note that if the menu bar is active, `pandoc-mode` also provides a menu
-in the menu bar. It has the same structure as the hydra menu and it has
-the advantage that options that do not apply to the current file (due to
-its input or output format), are generally greyed out. On the other
-hand, the hydra menu shows the value of the options and allows you to
-change more than one option without having to keep reopening the menu.
-The menu bar menu disappears when you select an option, the hydra menu
-(generally) does not. Instead, it can be dismissed with `q`. Below, I
-talk about the hydra menu specifically, but most of what is said applies
-to the menu bar menu as well.
+in the menu bar. It has the same structure as the transient menu and it
+has the advantage that options that do not apply to the current file
+(due to its input or output format), are generally greyed out. On the
+other hand, the transient menu shows the value of the options and allows
+you to change more than one option without having to keep reopening the
+menu. The menu bar menu disappears when you select an option, the
+transient menu (generally) does not. Instead, it can be dismissed with
+`q`. Below, I talk about the transient menu specifically, but most of
+what is said applies to the menu bar menu as well.
 
 In the options menu, you can set options for running `pandoc` on your
 input file. All Pandoc options can be set from the menu (except for one
@@ -86,13 +86,16 @@ below.)
 
 ## Input and output formats
 
-The most important settings are the input and output formats. The input
-format is set automatically by Emacs on the basis of the major mode of
-the input file, but you can change it if you need to. The output format
-defaults to “Native Haskell”, so most likely you will want to set it to
-something else before you run Pandoc. The input and output format menus
-also provide access to a submenu with the Markdown extensions that
-Pandoc supports.
+The most important settings are the input and output formats. Emacs
+tries to set the input format automatically on the basis of the major
+mode of the input file, but this only covers more commonly used formats,
+and it does not distinguish between different Markdown dialects. For
+these reasons, you can set the input format manually if you need to. The
+output format defaults to “Native Haskell”, so most likely you will want
+to set it to something else before you run Pandoc. The input and output
+format menus also provide access to a submenu with the
+[extensions](https://pandoc.org/MANUAL.html#extensions) that Pandoc
+supports.
 
 As already stated, you may wish to use different output formats for a
 single input file. Most likely, the options that you want to pass to
@@ -140,14 +143,17 @@ can customise the file extensions for each output format
 
 The options menu has a number of submenus, each related to a specific
 type of options: file options, reader options, writer options (general
-and specific), citations and math rendering. The file options menu
-contains options for the output file, output directory, data directory,
-the directory to extract media files to, and the master file. Only two
-of these (the data directory and the extract media directory) correspond
-directly to a Pandoc option. The output file and output directory
-options are combined to form Pandoc’s `--output` option, while the
-master file option is only used by `pandoc-mode`. These options are
-discussed in the sections [‘Setting an output
+and specific), citations and math rendering. Additionally, there is also
+a submenu for obsolete options, options that are slated for removal but
+which Pandoc still supports.
+
+The file options menu contains options for the output file, output
+directory, data directory, the directory to extract media files to, and
+the master file. Only two of these (the data directory and the extract
+media directory) correspond directly to a Pandoc option. The output file
+and output directory options are combined to form Pandoc’s `--output`
+option, while the master file option is only used by `pandoc-mode`.
+These options are discussed in the sections [‘Setting an output
 file’](#setting-an-output-file) and [’Master file’](#master-file),
 respectively.
 
@@ -155,30 +161,48 @@ Note that the subdivision in the options menu is based on the
 subdivision in the Pandoc README and the user guide on
 [Pandoc.org](http://pandoc.org/README.html), which should make it easier
 to find the relevant options in the menus. `pandoc-mode` supports Pandoc
-version 1.x and version 2.x: options that are only valid in Pandoc 1.x
-are marked with an asterisk. (Options that only exist in Pandoc 2.x
-aren’t marked.)
+version 3.x. Please file a bug report if any options are missing.
 
-One nice thing about the hydra menus is that the value of an option is
-displayed beside it. Pandoc’s options come in several different kinds.
-Switches, (boolean options that do not take a value), are toggled when
-you select them, and their value is displayed as either “yes” or “no”.
-If you select another kind of option, you are asked to provide a value
-in the minibuffer. For template variables and metadata items, you are
-asked both a variable / metadata name and a value.
+One nice thing about the transient menus is that the value of an option
+is displayed beside it. Pandoc’s options come in several different
+kinds. Switches, (boolean options that do not take a value), are toggled
+when you select them, and their value is displayed as either “yes” or
+“no”. If you select another kind of option, you are asked to provide a
+value in the minibuffer.
 
-Unsetting an option can usually be done by prefixing the relevant key
-with a dash `-`. This is actually the negative prefix argument, which
-can be typed without the meta (alt) key when inside a hydra menu. So for
-example, if you’re in the files menu (`C-c / o f`), you can set an
-output file with `o`, and to unset the output file, you can type `- o`.
+Unsetting an option can be done by using the negative prefix argument,
+which can be typed inside the transient menus with `M--` (i.e., hold
+down the meta (alt) key and press `-`), or with `C-u -`. So for example,
+if you’re in the files menu (`C-c / o f`), you can set an output file
+with `o`, and you can unset the output file with `M-- o`.
+
+Options that can be repeated are displayed as lists of values. If you
+select such an option in a transient menu, you are asked for a value,
+which is then added to the list. To remove a single item from the list,
+type the relevant key preceded by the negative prefix argument `C-u -`
+(or `M--`). You are then asked for an item to remove. The remaining
+items are retained. To remove all items from the list, press the key
+with two prefix arguments, i.e., `C-u C-u`.
+
+Some repeatable options, such as template variables and metadata items,
+are key-value pairs. When you set such an option, you are asked both a
+variable / metadata item and a value. Here, too, selecting the option
+adds another item to the list. You can delete single items in the same
+way, using `C-u -`. You’ll be asked for the key to remove. As above,
+deleting all items can be done with `C-u C-u`.
+
+Some template variables do not need a value, they just need to be
+present. In order to set such a variable, use a numeric prefix argument,
+i.e., `M-1` or `C-u 1`. (The actual number is irrelevant.) You are then
+asked for the key, but you do not need to provide a value. This
+obviously also works for other options that take key-value pairs.
 
 Many Pandoc options have file names as values. These are normally
 prompted for and stored as *relative* paths. File name completion is
 available, starting from the current directory. For some options, such
 as `--css`, relative paths make more sense because an absolute file
 would almost certainly be incorrect once the output html file is moved
-to the web server. Other options, such as `--template`, look in Pandoc’s
+to a web server. Other options, such as `--template`, look in Pandoc’s
 data directory and therefore also do not require an absolute path.
 Lastly, auxiliary files, such as `--include-in-header`, will usually be
 stored in the same directory as the source file or in a subdirectory, in
@@ -199,22 +223,23 @@ Note that if you use a minibuffer completion framework (such as
 [Helm](https://github.com/emacs-helm/helm)), file name completion may
 work differently. Ivy, for example, always expands file names.
 
-Some file options (such as `--epub-stylesheet`) may have a default
-value. Such options can be specified on the `pandoc` command line
-without naming a file. To select such a default value for a file option,
-use a numeric prefix argument, which in the hydra menu is obtained by
-pressing a number without the meta key. That is, to select the default
-EPUB style sheet, go to the EPUB options menu (`C-/ o s E`) and press
-`1 s`.
+Some of Pandoc’s file options also allow a URL to be passed instead.
+Since `pandoc-mode` uses file-name completion for file options, passing
+a URL can be problematic. You can bypass file-name completion, however,
+using a double prefix argument, i.e., `C-u C-u`, before setting the
+option. `pandoc-mode` then just reads a string without any kind of
+completion.
 
 Options that are not files or numbers are “string options”, which
-include options that specify a URL. These may also have a default value,
-which can be set in the same way as with file options. Note, though,
-that this does not apply to options that only have a limited set of
-possible values (e.g., `--email-obfuscation`, `--pdf-engine`). These can
-be set or unset, you cannot explicitly request their default value.
-(\`pandoc’ uses their default values even if they are not specified on
-the command line, unlike string options.)
+include options that specify a URL. Some of these can have a default
+value (i.e., they can be passed to Pandoc without specifying a string or
+URL), which can be set in the transient menu using a numeric prefix
+argument. (Any number will do.)
+
+Lastly, there are options that can only have a limited set of possible
+values (e.g., `--email-obfuscation`, `--pdf-engine`). If you set them,
+you can only specify one of these values, using completion. They can be
+unset using the negative prefix argument.
 
 To get an overview of all the settings for the current file and output
 format, you can use the option “View current settings” in the main menu
@@ -237,20 +262,20 @@ variable or metadata item and for a value for it. If you provide a name
 that already exists (TAB completion works), the new value replaces the
 old one.
 
-Deleting a template variable or metadata item can be done by prefixing
-the menu key with `-`. Emacs will ask you for the variable name (TAB
-completion works here, too) and removes it from the list.
+Deleting a template variable or metadata item can be done by using the
+negative prefix argument `M--`. Emacs will ask you for the variable name
+(TAB completion works here, too) and removes it from the list.
 
 ## Running Pandoc
 
 The first item in the menu is “Run Pandoc” (accessible with `C-c / r`),
 which, as the name suggests, runs Pandoc on the document, passing all
 options you have set. By default, Pandoc sends the output to stdout
-(except when the output format is “odt”, “epub” or “docx”, in which case
+(except when the output format is `odt`, `epub` or `docx`, in which case
 output is always sent to a file). Emacs captures this output and
 redirects it to the buffer `*Pandoc output*`. The output buffer is not
 normally shown, but you can make it visible through the menu or by
-typing `C-c / V`. Error messages from Pandoc are also displayed in this
+typing `C-c / b`. Error messages from Pandoc are also displayed in this
 buffer.
 
 When you run Pandoc, `pandoc-mode` also generates a few messages, which
@@ -266,13 +291,12 @@ Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.
 Alternatively, if the region is active, only the region is sent to
 Pandoc.
 
-If you call this command with a prefix argument `C-u` (so the key
-sequence becomes `C-/ C-u r`: `C-/` to open the menu and `C-u r` to run
-Pandoc), Emacs asks you for an output format to use. If there is a
-settings file for the format you specify, the settings in it will be
-passed to Pandoc instead of the settings in the current buffer. If there
-is no settings file, Pandoc will be called with just the output format
-and no other options.
+If you call the command to run Pandoc with a prefix argument `C-u` (so
+the whole key sequence becomes `C-/ C-u r`), Emacs asks you for an
+output format to use. If there is a settings file for the format you
+specify, the settings in it will be passed to Pandoc instead of the
+settings in the current buffer. If there is no settings file, Pandoc
+will be called with just the output format and no other options.
 
 Note that specifying an output format this way does not change the
 output format or any of the settings in the buffer, it just changes the
@@ -285,32 +309,30 @@ profiles when creating the different output files.
 If you want to save the output to a file rather than have it appear in
 the output buffer, you can set an explicit output file. Note that
 setting an output *file* is not the same thing as setting an output
-*format* (though normally the output file has a suffix that indicates
-the format of the file).
+*format*. (Normally the output *file* has a suffix that indicates what
+the output *format* is, but `pandoc-mode` does not enforce this.)
 
 In `pandoc-mode`, the output file setting has three options: the default
 is to send output to stdout, in which case it is redirected to the
-buffer `*Pandoc output*`. This option can be selected by typing `- o` in
-the file options menu. Alternatively, you can let Emacs create an output
-filename for you. In this case the output file will have the same base
-name as the input file but with the proper suffix for the output format.
-To select this option, prefix the output file key `o` with `C-u` in the
-file options menu. The third option is to specify an explicit output
-file. This can (obviously) be done by hitting just `o`.
+buffer `*Pandoc output*`. To set an output file, press `o` and type the
+name of the output file. Alternatively, you can also let Emacs create an
+output filename for you. To choose this option, use the prefix argument
+`C-u` (i.e., press `C-u o` in the file menu). To unset the output file
+and have the output redirected to the output buffer, use the negative
+prefix argument.
 
 Note that Pandoc does not allow output to be sent to stdout if the
 output format is an OpenOffice.org Document (ODT), EPUB or MS Word
-(docx) file. Therefore, Emacs will always create an output filename in
-those cases, unless of course you’ve explicitly set an output file
-yourself.
+(docx) file. Therefore, in those cases, unless you specify an output
+filename yourself, Emacs will create an output filename for you.
 
-The output file you set is always just the base filename, it does not
-specify a directory. Which directory the output file is written to
-depends on the setting “Output Directory” (which is not actually a
-Pandoc option). Emacs creates an output destination out of the settings
-for the output directory and output file. If you don’t specify any
-output directory, the output file will be written to the same directory
-that the input file is in.
+Also note that the output file you set is always just the base filename,
+it does not specify a directory. Which directory the output file is
+written to depends on the setting “Output Directory” (which is not
+actually a Pandoc option). Emacs creates an output destination out of
+the settings for the output directory and output file. If you don’t
+specify any output directory, the output file will be written to the
+same directory that the input file is in.
 
 ## Creating a pdf
 
@@ -388,8 +410,8 @@ If the most recent call to Pandoc created a pdf file (i.e, the option
 “Convert to pdf” was called), Emacs will display the pdf file instead of
 the output file defined by the output file/directory options. The viewer
 to use in this case is defined by the option `pandoc-pdf-viewer`, which
-can be Emacs (which will then use `doc-view-mode, or`pdf-tools\` if
-installed) or an external program.
+can be Emacs (using `doc-view-mode`, or `pdf-tools` if installed) or an
+external program.
 
 Note that this functionality is not as full-featured as with e.g.,
 AUCTeX and SyncTeX. There is no forward or backward search and what
@@ -490,7 +512,7 @@ it manually if you no longer need it.)
 
 The name of a global settings file has the form `<format>.pandoc`, where
 `<format>` obviously specifies the output format. `<format>` can also be
-the string `"default“`, however, in which case it specifies a default
+the string `"default"`, however, in which case it specifies a default
 settings file, which is loaded by `pandoc-load-default-settings` when no
 default local or project settings file is found. In this way, you can
 override the default output format used for new files.
@@ -503,7 +525,20 @@ options, they override settings in defaults files and in YAML metadata
 blocks or files. You should generally stick to using one or the other
 method.
 
-# File-local variables
+# File-local variables (deprecated)
+
+<div class="note">
+
+The possibility to use file-local variables to set Pandoc options is
+deprecated. Pandoc now has the ability to use a [defaults
+file](https://pandoc.org/MANUAL.html#defaults-files) to set options for
+a document. While not contained in the same file, they offer a more
+portable way (i.e., not depending on Emacs) to keep settings and
+documents together. For this reason, the use of file-local variables is
+no longer supported and may be removed from a future version of
+`pandoc-mode`.
+
+</div>
 
 `pandoc-mode` also allows options to be set as file-local variables,
 which gives you the ability to keep the settings for a file in the file
@@ -535,7 +570,7 @@ Note that it is also possible to specify the customisation option
 `pandoc/` prefix, but since its value is a string, it must be enclosed
 in quotes:
 
-    pandoc-binary: "/path/to/alternate/pandoc“
+    pandoc-binary: "/path/to/alternate/pandoc"
 
 # Managing numbered examples
 
@@ -560,7 +595,18 @@ down keys (you can also use `j` and `k` or `n` and `p`) and then hit
 mind, you can leave the selection buffer with `q` without inserting
 anything into your document.
 
-# Using @@-directives
+# Using @@-directives (deprecated)
+
+<div class="note">
+
+The use of `@@-directives` is deprecated as of `pandoc-mode` 3.0. Given
+that Pandoc now comes with a Lua interpreter built-in, it is possible to
+use [Lua filters](https://pandoc.org/lua-filters.html) to do what
+`@@-directives` were meant to do, without having to depend on Emacs. For
+this reason, `@@-directives` are no longer actively maintained and will
+probably be removed from `pandoc-mode` some time in the future.
+
+</div>
 
 `pandoc-mode` includes a facility to make specific, automatic changes to
 the text before sending it to Pandoc. This is done with so-called
@@ -710,32 +756,3 @@ There is another customisable variable related to `@@`-directives:
 *before* the directives are processed. These functions are not supposed
 to change anything in the buffer, they are intended for setting up
 things that the directive functions might need.
-
-# Disabling the hydra menu
-
-The hydra package provides a nice way to control `pandoc-mode` and to
-set all the options that Pandoc provides. However, if for some reason
-you prefer to use normal key bindings, you can disable the hydra menu by
-rebinding `C-c /`. To restore the original key bindings, put the
-following in your init file:
-
-    (with-eval-after-load 'pandoc-mode
-      (define-key 'pandoc-mode-map "C-c / r" #'pandoc-run-pandoc)
-      (define-key 'pandoc-mode-map "C-c / p" #'pandoc-convert-to-pdf)
-      (define-key 'pandoc-mode-map "C-c / s" #'pandoc-save-settings-file)
-      (define-key 'pandoc-mode-map "C-c / w" #'pandoc-set-write)
-      (define-key 'pandoc-mode-map "C-c / f" #'pandoc-set-master-file)
-      (define-key 'pandoc-mode-map "C-c / m" #'pandoc-set-metadata)
-      (define-key 'pandoc-mode-map "C-c / v" #'pandoc-set-variable)
-      (define-key 'pandoc-mode-map "C-c / V" #'pandoc-view-output-buffer)
-      (define-key 'pandoc-mode-map "C-c / S" #'pandoc-view-settings)
-      (define-key 'pandoc-mode-map "C-c / c" #'pandoc-insert-@)
-      (define-key 'pandoc-mode-map "C-c / C" #'pandoc-select-@))
-
-It’s also possible to bind other commands to keys. The switches (i.e.,
-the options that can only be on or off) can be toggled with the command
-`pandoc-toggle-interactive`. All other options (except `--read`) have
-dedicated functions to set them, called `pandoc-set-<option>`, where
-`<option>` corresponds to the long form of the option without the double
-dashes (use `write` rather than `to`, and `table-of-contents` rather
-than `toc`).
