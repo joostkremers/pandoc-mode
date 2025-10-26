@@ -1141,9 +1141,14 @@ add/update the value of the alist option.
 
 This function is meant to be called from an interactive function to do
 the actual work.  PREFIX is the raw prefix argument from the calling
-function.  If it is nil, a new key:value item is added to the list.  If
-it is the negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is
- removed from the list.  If it is`\\[universal-argument] \\[universal-argument]', the entire list is cleared."
+function.  If it is nil, a new <key:value> item is added to the list,
+where the user is asked for both <key> and <value>.  If PREFIX is a
+number (i.e., the function was called with a numeric prefix argument), a
+new <key:value> item is added to the list, where the user is asked for
+<key>, but <value> is set to t.
+
+If PREFIX is the negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is
+removed from the list.  If it is `\\[universal-argument] \\[universal-argument]', the entire list is cleared."
   (if (and (listp prefix)
            (eq (car prefix) 16)) ; C-u C-u
       (progn
@@ -1153,9 +1158,12 @@ it is the negative prefix argument `\\[universal-argument] -' (or `\\[negative-a
     (let ((var (completing-read (format "%s %s: " (if (eq prefix '-) "Remove" "Add/update") prompt)
                                 (pandoc--alist-option-completion option))))
       (when (and var (not (string= "" var)))
-        (let ((value (if (eq prefix '-)
-                         nil
-                       (read-string "Value: " nil nil (cdr (assq var (pandoc--get option)))))))
+        (let ((value (cond
+                      ((eq prefix '-)
+                       nil)
+                      ((numberp prefix)
+                       t)
+                      (t (read-string "Value: " nil nil (cdr (assq var (pandoc--get option))))))))
           (when (string= value "") ;; Strings may be empty, corresponding to boolean True in Pandoc.
             (setq value t))
           (pandoc--set option (cons var value))
