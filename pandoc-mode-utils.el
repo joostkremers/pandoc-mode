@@ -1232,30 +1232,6 @@ value."
                        nil
                      value)))))
 
-;; This setter function has no associated pandoc-define-* macro, because
-;; it's specific to one single option: `html-math-method'.
-(defun pandoc-set-html-math-method (prefix method)
-  "Set the method for rendering mathematics in HTML to METHOD.
-This function is meant to be called from an interactive function to do
-the actual work.  PREFIX is the raw prefix argument from the calling
-function.  If PREFIX is non-nil, ask for a URL and add it to the
-option's value.  METHOD is a string naming a math rendering method as
-defined in `pandoc--html-math-methods'.  METHOD can also be nil, in
-which case `html-math-method' is unset, or it can be t, in which case
-the method is kept as is, but the user is asked to provide a URL."
-  (let* ((method (if (eq method t)
-                     (cdr (assq 'method (pandoc--get 'html-math-method)))
-                   method))
-         (url (if (and prefix
-                       (cdr (assoc method pandoc--html-math-methods)))
-                  (read-string "URL: "))))
-    ;; This is a hack.  Normally, calling `pandoc--set' on a list option
-    ;; would *add* the item to the list.  But we only want the list to have
-    ;; at most these two items, so we clear the option first.
-    (pandoc--set 'html-math-method nil)
-    (if method (pandoc--set 'html-math-method `(method . ,method)))
-    (if url (pandoc--set 'html-math-method `(url . ,url)))))
-
 ;;; Defining the options
 ;; Note that the options are added to the menus and transients in reverse order.
 
