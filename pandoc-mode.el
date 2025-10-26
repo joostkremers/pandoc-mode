@@ -1025,15 +1025,15 @@ the method is kept as is, but the user is asked to provide a URL."
     ["View Output File" pandoc-view-output :active t]
     ["View Output Buffer" pandoc-view-output-buffer :active t]
     ["View Log Buffer" pandoc-view-log :active t]
+    ("Example Lists"
+     ["Insert New Example" pandoc-insert-@ :active t]
+     ["Select And Insert Example Label" pandoc-select-@ :active t])
     ("Settings Files"
      ["Save File Settings" pandoc-save-settings :active t]
      ["Save Project File" pandoc-save-project-settings :active t]
      ["Save Global Settings File" pandoc-save-global-settings :active t]
      ["Revert Settings" pandoc-revert-settings :active t]
      ["Set As Default Format" pandoc-set-default-format :active (not (eq system-type 'windows-nt))])
-    ("Example Lists"
-     ["Insert New Example" pandoc-insert-@ :active t]
-     ["Select And Insert Example Label" pandoc-select-@ :active t])
     "--"
     ["View Current Settings" pandoc-view-settings :active t]
 
@@ -1159,7 +1159,8 @@ the method is kept as is, but the user is asked to provide a URL."
     ("v" "View output file"      pandoc-view-output)
     ("b" "View output buffer"    pandoc-view-output-buffer)
     ("S" "View current settings" pandoc-view-settings)
-    ("l" "View log buffer"       pandoc-view-log)]
+    ("l" "View log buffer"       pandoc-view-log)
+    ("e" "Example lists"         pandoc-@-transient)]
    ["Settings"
     ("o" "Options"               pandoc-options-transient)
     ("I" pandoc-input-formats-transient
@@ -1168,8 +1169,7 @@ the method is kept as is, but the user is asked to provide a URL."
     ("O" pandoc-output-formats-transient
      :description (lambda ()
                     (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
-    ("s" "Settings files"        pandoc-settings-transient)
-    ("e" "Example lists"         pandoc-@-transient)]]
+    ("s" "Settings files"        pandoc-settings-transient)]]
   [("q" "Quit" transient-quit-all)])
 
 ;;; Generate the main input & output format transients.
