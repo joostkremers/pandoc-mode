@@ -574,9 +574,6 @@ If the cdr of an entry is t, the option can take an optional URL.")
 (defvar pandoc--options-menu nil
   "Auxiliary variable for creating the options menu.")
 
-(defvar pandoc--files-menu nil
-  "Auxiliary variable for creating the file menu.")
-
 (defun pandoc--read-file-name (prompt dir relative)
   "Read a file name using PROMPT.
 DIR is the directory used for completing file names.  If RELATIVE

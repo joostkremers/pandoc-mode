@@ -1091,7 +1091,6 @@ the method is kept as is, but the user is asked to provide a URL."
        :style radio :selected (null (pandoc--get 'data-dir))]
       ["Set Data Directory" pandoc-set-data-dir :active t
        :style radio :selected (pandoc--get 'data-dir)])
-     ,@pandoc--files-menu
      ("Extract Media"
       ["Do Not Extract Media Files" (pandoc--set 'extract-media nil) :active t
        :style radio :selected (null (pandoc--get 'extract-media))]
