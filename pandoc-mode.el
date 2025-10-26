@@ -996,28 +996,6 @@ file."
   (pandoc--set 'master-file (buffer-file-name))
   (pandoc--save-settings 'project (pandoc--get 'write)))
 
-(defun pandoc-toggle-interactive (prefix)
-  "Toggle one of pandoc's binary options.
-If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), the options is unset.  If called with
-any other prefix argument, the option is set.  Without any prefix
-argument, the option is toggled."
-  (interactive "P")
-  (let* ((completion-ignore-case t)
-         (option (cdr (assoc (completing-read (format "%s option: " (cond
-                                                                     ((eq prefix '-) "Unset")
-                                                                     ((null prefix) "Toggle")
-                                                                     (t "Set")))
-                                              pandoc--switches nil t)
-                             pandoc--switches))))
-    (pandoc--set option (cond
-                         ((eq prefix '-) nil)
-                         ((null prefix) (not (pandoc--get option)))
-                         (t t)))
-    (message "Option `%s' %s." (car (rassq option pandoc--switches)) (if (pandoc--get option)
-                                                                         "set"
-                                                                       "unset"))))
-
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
