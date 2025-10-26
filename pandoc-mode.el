@@ -891,7 +891,7 @@ file exists, display the *Pandoc output* buffer."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun pandoc--read-completion-function (formats)
-  "Create a completion function for `pandoc-set-read' for FORMATS.
+  "Create a completion function for `pandoc-set-read-from-category' for FORMATS.
 Return a function that can be used in `completing-read' as the
 COLLECTION function, using TABLE as the completion table."
   (lambda (str pred flag)
@@ -903,7 +903,7 @@ COLLECTION function, using TABLE as the completion table."
                                                          'face 'italic))))
       (complete-with-action flag formats str pred))))
 
-(defun pandoc-set-read (category)
+(defun pandoc-set-read-from-category (category)
   "Set the input format.
 CATEGORY is a string naming a category of formats as listed in
 `pandoc--formats'.  Only formats from CATEGORY are offered as completion
@@ -912,6 +912,14 @@ candidates."
          (format (completing-read "Input format: " (pandoc--read-completion-function formats))))
     (pandoc--set 'read format)
     (message "Input format set to `%s'" format)))
+
+(defun pandoc-set-read (format)
+  "Set the input format to FORMAT."
+  (interactive (list (completing-read "Set input format to: "
+                                      (pandoc--extract-formats 'input)
+                                      nil t)))
+  (pandoc--set 'read format)
+  (message "Input format set to `%s'" format))
 
 (defun pandoc-set-write (format)
   "Set the output format to FORMAT.
