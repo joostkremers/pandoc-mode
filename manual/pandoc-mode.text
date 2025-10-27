@@ -83,7 +83,7 @@ However, if for some reason you need to store an absolute path for an option, yo
 
 Note that if you use a minibuffer completion framework (such as   [Ivy](https://github.com/abo-abo/swiper) or [Helm](https://github.com/emacs-helm/helm)), file name completion may work differently. Ivy, for example, always expands file names.
 
-Some of Pandoc's file options also allow a URL to be passed instead. Since `pandoc-mode` uses file-name completion for file options, passing a URL can be problematic. You can bypass file-name completion, however, using a double prefix argument, i.e., `C-u C-u`, before setting the option. `pandoc-mode` then just reads a string without any kind of completion.
+Some of Pandoc's file options also allow a URL to be passed instead. Since `pandoc-mode` uses file-name completion for file options, passing a URL can be problematic. You can bypass file-name completion, however, using a numeric prefix argument, i.e., `C-u 1` or `M-1`, before setting the option. (The actual number is irrelevant.) `pandoc-mode` then just reads a string without any kind of completion.
 
 Options that are not files or numbers are “string options”, which include options that specify a URL. Some of these can have a default value (i.e., they can be passed to Pandoc without specifying a string or URL), which can be set in the transient menu using a numeric prefix argument. (Any number will do.)
 

@@ -880,16 +880,15 @@ This function is meant to be called from an interactive function to do
 the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
 prefix argument from the calling function.  If it is nil, ask the user
 for a file name.  If PREFIX is the negative prefix argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), unset the option.  If PREFIX is \\[universal-argument], store the file's full
-path.  If PREFIX is \\[universal-argument] \\[universal-argument], read a string from the user without
-completion.  This is useful for file options that can also have a URL
-as argument."
+`\\[negative-argument]'), unset the option.  If PREFIX is \\[universal-argument], store the file's full path.
+If PREFIX is numeric , i.e., `\\[universal-argument] 1' or `M-1', read a string from the
+user without completion.  This is useful for file options that can also
+have a URL as argument."
   (pandoc--set option
                (cond
                 ((eq prefix '-)     ; C-u - or M--
                  nil)
-                ((and (listp prefix)
-                      (eq (car prefix) 16)) ; C-u C-u, use `eq' because `prefix' may be nil.
+                ((numberp prefix)
                  (read-string (concat prompt ": ")))
                 ;; otherwise no prefix or C-u
                 (t (pandoc--read-file-name (concat prompt ": ") default-directory (not prefix))))))
