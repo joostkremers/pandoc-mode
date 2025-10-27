@@ -1170,23 +1170,25 @@ allowed values are \"INFO\" and \"ERROR\"."
 (transient-define-prefix pandoc-main-transient ()
   "Pandoc-mode main menu."
   ["Pandoc\n"
-   ["Actions"
+   ("I" pandoc-input-formats-transient
+    :description (lambda ()
+                   (format "Input format   [%s%s]" (pandoc--get 'read) (pandoc--format-extensions (pandoc--get 'read-extensions)))))
+   ("O" pandoc-output-formats-transient
+    :description (lambda ()
+                   (format "Output format  [%s%s]" (pandoc--get 'write) (pandoc--format-extensions (pandoc--get 'write-extensions)))))]
+  [["Actions"
     ("r" "Run Pandoc"            pandoc-run-pandoc)
     ("p" "Convert to PDF"        pandoc-convert-to-pdf)
     ("v" "View output file"      pandoc-view-output)
-    ("b" "View output buffer"    pandoc-view-output-buffer)
-    ("S" "View current settings" pandoc-view-settings)
-    ("l" "View log buffer"       pandoc-view-log)
     ("e" "Example lists"         pandoc-@-transient)]
    ["Settings"
     ("o" "Options"               pandoc-options-transient)
-    ("I" pandoc-input-formats-transient
-     :description (lambda ()
-                    (format "Input format [%s]" (propertize (pandoc--get 'read) 'face 'warning))))
-    ("O" pandoc-output-formats-transient
-     :description (lambda ()
-                    (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
-    ("s" "Settings files"        pandoc-settings-transient)]]
+    ("s" "Settings files"        pandoc-settings-transient)
+    ("S" "View current settings" pandoc-view-settings)]
+   ["Buffers"
+    ("B" "Output buffer"         pandoc-view-output-buffer)
+    ("L" "Log buffer"            pandoc-view-log)]]
+
   [("q" "Quit" transient-quit-all)])
 
 ;;; Generate the main input & output format transients.
