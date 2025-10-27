@@ -1085,7 +1085,7 @@ options that can take both a file name and a URL as argument."
    ((eq prefix '-)
     (let ((value (completing-read "Remove item: " (pandoc--get option) nil t)))
       (pandoc--remove-from-list-option option value)
-      (message (concat prompt " \"%s\" removed.") value))))  )
+      (message (concat prompt " \"%s\" removed.") value)))))
 
 (defmacro define-pandoc-alist-option (option menu key description prompt)
   "Define OPTION as an alist option.
@@ -1349,7 +1349,7 @@ value."
 (define-pandoc-choice-option cite-method            citations "m"       "Citation Method" '("natbib" "biblatex"))
 (define-pandoc-file-option   citation-abbreviations citations "a"       "Citation Abbreviations File")
 (define-pandoc-file-option   csl                    citations "C"       "CSL File")
-(define-pandoc-list-option   bibliography           citations "B"  file "Bibliography Files"          "Bibliography File")
+(define-pandoc-list-option   bibliography           citations "B"  file "Bibliography Files" "Bibliography File")
 (define-pandoc-switch        citeproc               citations "c"       "Process Citations")
 
 ;;; Math rendering in HTML
