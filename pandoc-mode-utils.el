@@ -1018,14 +1018,13 @@ case the option is not added to any menu.  KEY is a string of one
 character, the key by which the option will be available in the
 transient.
 
-OPTION must be a symbol and must be identical to the long form of
-the pandoc option (without dashes).  TYPE specifies the kind of
-data that is stored in the list.  Currently, possible values are
-`string' and `file'.  DESCRIPTION is the description for the
-option's submenu.  PROMPT is a string that is used to prompt for
-setting and unsetting the option.  It must be formulated in such a
-way that the strings \"Add \", \"Remove \" can be added before
-it."
+OPTION must be a symbol and must be identical to the long form of the
+pandoc option (without dashes).  TYPE specifies the kind of data that is
+stored in the list.  Currently, possible values are `string', `file' and
+`number'.  DESCRIPTION is the description for the option's submenu.
+PROMPT is a string that is used to prompt for setting and unsetting the
+option.  It must be formulated in such a way that the strings \"Add \",
+\"Remove \" can be added before it."
   `(progn
      (push (list (quote ,option)) pandoc--options)
      (push (quote ,option) pandoc--list-options)
@@ -1056,15 +1055,16 @@ alist option.
 This function is meant to be called from an interactive function to do
 the actual work.  PROMPT is used to prompt the user, DESCRIPTION is used
 to inform the user.  TYPE indicates the type of option, currently only
-the symbols `string' and `file' are distinguished.
+the symbols `string', `file' and number are distinguished.
 
 PREFIX is the raw prefix argument from the calling function.  If it is
 nil, a new item is added to the list.  If it is the negative prefix
-argument `\\[universal-argument] -' (or `\\[negative-argument]'), an
-item is removed from the list.  If it is `\\[universal-argument]
-\\[universal-argument]', the entire list is cleared.  If the list is a
-list of files, the function can also be called with the prefix argument
-`\\[universal-argument]' to store the full path."
+argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is removed from the list.  If
+it is `\\[universal-argument] \\[universal-argument]', the entire list is cleared.  If the list is a list
+of files, the function can also be called with the prefix argument
+`\\[universal-argument]' to store the full path.  If PREFIX is numeric (i.e., `\\[universal-argument] 1'
+or `M--'), file name completion is not used.  This is useful for list
+options that can take both a file name and a URL as argument."
   (cond
    ((and (listp prefix)
          (eq (car prefix) 16)) ; C-u C-u, use `eq' because `prefix' may be nil.
@@ -1074,6 +1074,10 @@ list of files, the function can also be called with the prefix argument
     (let ((value (cond
                   ((eq type 'string)
                    (read-string "Add value: " nil nil (pandoc--get option)))
+                  ((eq type 'number)
+                   (read-number "Add number: " 1))
+                  ((numberp prefix)
+                   (read-string "Add URL: " nil nil (pandoc--get option)))
                   ((eq type 'file)
                    (pandoc--read-file-name "Add file: " default-directory (not prefix))))))
       (pandoc--set option value)
