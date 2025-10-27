@@ -189,20 +189,6 @@ should be toggled for the input or the output format."
                      (t '+)))) ; otherwise we explicitly set it
     (pandoc--set-extension extension rw new-value)))
 
-(defun pandoc-toggle-read-extension-by-number (n)
-  "Toggle a `read' extension.
-N is the index of the extension in `pandoc--extensions'."
-  (interactive "P")
-  (let* ((ext (caar (nthcdr (1- n) pandoc--extensions))))
-    (pandoc-toggle-extension ext 'read)))
-
-(defun pandoc-toggle-write-extension-by-number (n)
-  "Toggle a `write' extension.
-N is the index of the extension in `pandoc--extensions'."
-  (interactive "P")
-  (let* ((ext (caar (nthcdr (1- n) pandoc--extensions))))
-    (pandoc-toggle-extension ext 'write)))
-
 (defun pandoc--create-defaults-filename (type filename output-format)
   "Create a defaults filename.
 TYPE is the type of defaults file, either `local' or `project'.
