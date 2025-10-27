@@ -1330,12 +1330,13 @@ allowed values are \"INFO\" and \"ERROR\"."
                            (mapcar (lambda (elt)
                                      (let ((extension (car elt)))
                                        (list (format "%02d" (cl-incf num))
-                                             (format " %s %s"
-                                                     (pandoc--extension-active-marker extension 'read)
-                                                     extension)
                                              `(lambda ()
                                                 (interactive)
                                                 (pandoc-toggle-extension ,extension 'read))
+                                             :description (lambda ()
+                                                            (format " %s %s"
+                                                                    (pandoc--extension-active-marker extension 'read)
+                                                                    extension))
                                              :transient t)))
                                    partition)))
                         (seq-partition pandoc--extensions 26))
@@ -1356,12 +1357,13 @@ allowed values are \"INFO\" and \"ERROR\"."
                            (mapcar (lambda (elt)
                                      (let ((extension (car elt)))
                                        (list (format "%02d" (cl-incf num))
-                                             (format " %s %s"
-                                                     (pandoc--extension-active-marker extension 'write)
-                                                     extension)
                                              `(lambda ()
                                                 (interactive)
                                                 (pandoc-toggle-extension ,extension 'write))
+                                             :description (lambda ()
+                                                            (format " %s %s"
+                                                                    (pandoc--extension-active-marker extension 'write)
+                                                                    extension))
                                              :transient t)))
                                    partition)))
                         (seq-partition pandoc--extensions 26))
