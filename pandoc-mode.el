@@ -1018,6 +1018,16 @@ the method is kept as is, but the user is asked to provide a URL."
     (if method (pandoc--set 'html-math-method `(method . ,method)))
     (if url (pandoc--set 'html-math-method `(url . ,url)))))
 
+(defun pandoc-set-verbosity (prefix)
+  "Set the option `verbosity'.
+If PREFIX is \\[negative-argument], unset the option, otherwise ask the user.  Currently
+allowed values are \"INFO\" and \"ERROR\"."
+  (interactive "P")
+  (pandoc--set 'verbosity
+               (if (eq prefix '-)
+                   nil
+                 (completing-read "Verbosity: " '("INFO" "ERROR") nil t))))
+
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu."
   `("Pandoc"
     ["Run Pandoc" pandoc-run-pandoc :active t]
