@@ -1319,14 +1319,14 @@ value."
                              ("latex" "context" "docbook" "docbook5" "tei"))
 
 ;; html-based
-(define-pandoc-list-option   css               html "c"  file "CSS Style Sheet" "CSS")
-(define-pandoc-string-option title-prefix      html "t"       "Title Prefix")
-(define-pandoc-string-option identifier-prefix html "i"       "ID Prefix")
-(define-pandoc-choice-option email-obfuscation html "e"       "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
-(define-pandoc-switch        section-divs      html "d"       "Wrap Sections in <div> Tags")
-(define-pandoc-string-option number-offset     html "o"       "Number Offsets")
-(define-pandoc-switch        html-q-tags       html "Q"       "Use <q> Tags for Quotes in HTML")
-(define-pandoc-switch        embed-resources   html "E"       "Embed All Resources")
+(define-pandoc-list-option   css               html "c"  file  "CSS Style Sheet" "CSS File")
+(define-pandoc-string-option title-prefix      html "t"        "Title Prefix")
+(define-pandoc-string-option identifier-prefix html "i"        "ID Prefix")
+(define-pandoc-choice-option email-obfuscation html "e"        "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
+(define-pandoc-switch        section-divs      html "d"        "Wrap Sections in <div> Tags")
+(define-pandoc-list-option   number-offset     html "o" number "Number Offsets" "Offset")
+(define-pandoc-switch        html-q-tags       html "Q"        "Use <q> Tags for Quotes in HTML")
+(define-pandoc-switch        embed-resources   html "E"        "Embed All Resources")
 
 ;; epub
 (define-pandoc-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
