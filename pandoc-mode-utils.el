@@ -1271,9 +1271,9 @@ value."
 (define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
 (define-pandoc-list-option   request-headers       writer "R"  string "HTTP Request Header" "Request Header")
 (define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
-(define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-before-body   writer "ib"        "Include Before Body") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-file-option   include-in-header     writer "ih"        "Include Header") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-list-option   include-after-body    writer "ia" file   "Include After Body" "File") ; allows URL since Pandoc 2.6.
+(define-pandoc-list-option   include-before-body   writer "ib" file   "Include Before Body" "File") ; Also allows URL since Pandoc 2.6.
+(define-pandoc-list-option   include-in-header     writer "ih" file   "Include Header" "File") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-list-option   syntax-definitions    writer "y" file    "Syntax Definition File" "File")
 (define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
 (define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
