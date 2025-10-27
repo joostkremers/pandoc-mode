@@ -1274,7 +1274,7 @@ value."
 (define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-before-body   writer "ib"        "Include Before Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-in-header     writer "ih"        "Include Header") ; Also allows URL since Pandoc 2.6.
-(define-pandoc-list-option   syntax-definitions    writer "y" files   "Syntax Definition File" "File")
+(define-pandoc-list-option   syntax-definitions    writer "y" file    "Syntax Definition File" "File")
 (define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
 (define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
 (define-pandoc-switch        list-of-tables        writer "lt"        "List of Tables")
