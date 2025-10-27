@@ -1269,7 +1269,7 @@ value."
 
 ;;; General writer options
 (define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
-(define-pandoc-alist-option  request-header        writer "R"         "HTTP Request Header" "Request Header")
+(define-pandoc-list-option   request-headers       writer "R"  string "HTTP Request Header" "Request Header")
 (define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
 (define-pandoc-file-option   include-after-body    writer "ia"        "Include After Body") ; Also allows URL since Pandoc 2.6.
 (define-pandoc-file-option   include-before-body   writer "ib"        "Include Before Body") ; Also allows URL since Pandoc 2.6.
