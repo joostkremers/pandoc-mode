@@ -1091,8 +1091,9 @@ back to its default value, not that it is unset.)"
 (defun pandoc--get-extension (extension rw)
   "Return the value of EXTENSION for RW.
 RW is either `reader' or `writer', indicating whether the read or write
-extension is to be queried.  Return ?+ if the extension is enabled by
-the user, ?- it is disabled, or nil if it has its default value."
+extension is to be queried.  Return ?+ if the extension is explicitly
+enabled, ?- it is explicitly disabled, or nil if it has its default
+value."
   (and-let* ((format (pandoc--get rw))
              (pos (string-match-p (concat "\\b[-+]" extension "\\b") format))
              (state (aref format pos)))))
