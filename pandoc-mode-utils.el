@@ -954,12 +954,9 @@ be retrieved."
 
 (defun pandoc--set (option value)
   "Set the local value of OPTION to VALUE."
-  (when (assq option pandoc--options) ; check if the option is licit
-    (unless (assq option pandoc--local-settings) ; add the option if it's not there
-      (push (list option) pandoc--local-settings)
-      ;; in case of extensions, also add the list of extensions themselves.
-      (if (memq option '(read-extensions write-extensions))
-          (setcdr (assq option pandoc--local-settings) (mapcar #'list (sort (mapcar #'car pandoc--extensions) #'string<)))))
+  (when (assq option pandoc--options) ; Check if the option is licit.
+    (unless (assq option pandoc--local-settings) ; Add the option if it's not there.
+      (push (list option) pandoc--local-settings))
     (cond
      ((memq option pandoc--alist-options)
       (pandoc--set-alist-option option value))
