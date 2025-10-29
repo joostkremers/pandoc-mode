@@ -1074,12 +1074,19 @@ Return a cons cell of the format and the list of extensions."
 
 (defun pandoc--set-extension (extension rw value)
   "Set the value of EXTENSION for RW to VALUE.
-RW is either `read' or `write', indicating whether the read or
-write extension is to be set."
-  (setcdr (assoc extension (if (eq rw 'read)
-                               (pandoc--get 'read-extensions)
-                             (pandoc--get 'write-extensions)))
-          value))
+RW is either `reader' or `writer', indicating whether an input or output
+format extension is to be set.  VALUE is a character, either ?+ or ?-.
+VALUE can also be nil, in which case the extension is removed from the
+input or output format.  (Note that this means that the extension falls
+back to its default value, not that it is unset.)"
+  (let* ((format+exts (pandoc--split-format-and-extensions (pandoc--get rw)))
+         (format (car format+exts))
+         (exts (seq-filter (lambda (ext)
+                             (not (= (substring ext 1) extension)))
+                           (cdr format+exts))))
+    (when value
+      (push (format "%c%s" value extension) exts))
+    (pandoc--set rw (concat format (string-join exts)))))
 
 (defun pandoc--get-extension (extension rw)
   "Return the value of EXTENSION for RW.
