@@ -442,80 +442,397 @@ it is assumed to be an external viewer, which is called with
 (defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms" "typst")
   "List of output formats that can be used to generate pdf output.")
 
-(defvar pandoc--extensions
-  '(("abbreviations"                       ("markdown_phpextra"))
-    ("all_symbols_escapable"               ("markdown" "markdown_mmd"))
-    ("amuse"                               ())
-    ("angle_brackets_escapable"            ("markdown_github"))
-    ("ascii_identifiers"                   ("markdown_github"))
-    ("auto_identifiers"                    ("markdown" "markdown_github" "markdown_mmd" "latex" "rst" "mediawiki" "textile"))
-    ("autolink_bare_uris"                  ("markdown_github"))
-    ("backtick_code_blocks"                ("markdown" "markdown_github"))
-    ("blank_before_blockquote"             ("markdown"))
-    ("blank_before_header"                 ("markdown"))
-    ("bracketed_spans"                     ("markdown"))
-    ("citations"                           ("markdown" "typst"))
-    ("compact_definition_lists"            ())
-    ("definition_lists"                    ("markdown" "markdown_phpextra" "markdown_mmd"))
-    ("east_asian_line_breaks"              ())
-    ("emoji"                               ("markdown_github"))
-    ("empty_paragraphs"                    ())
-    ("epub_html_exts"                      ())
-    ("escaped_line_breaks"                 ("markdown"))
-    ("example_lists"                       ("markdown"))
-    ("fancy_lists"                         ("markdown"))
-    ("fenced_code_attributes"              ("markdown" "markdown_github"))
-    ("fenced_code_blocks"                  ("markdown" "markdown_phpextra" "markdown_github"))
-    ("fenced_divs"                         ("markdown"))
-    ("footnotes"                           ("markdown" "markdown_phpextra" "markdown_mmd"))
-    ("four_space_rule"                     ())
-    ("gfm_auto_identifiers"                ())
-    ("grid_tables"                         ("markdown"))
-    ("hard_line_breaks"                    ("markdown_github"))
-    ("header_attributes"                   ("markdown" "markdown_phpextra"))
-    ("ignore_line_breaks"                  ())
-    ("implicit_figures"                    ("markdown"))
-    ("implicit_header_references"          ("markdown" "markdown_mmd"))
-    ("inline_code_attributes"              ("markdown"))
-    ("inline_notes"                        ("markdown"))
-    ("intraword_underscores"               ("markdown" "markdown_phpextra" "markdown_github" "markdown_mmd"))
-    ("latex_macros"                        ("markdown"))
-    ("line_blocks"                         ("markdown"))
-    ("link_attributes"                     ("markdown" "markdown_phpextra")) ; TODO check
-    ("lists_without_preceding_blankline"   ("markdown_github"))
-    ("literate_haskell"                    ())
-    ("markdown_attribute"                  ("markdown_phpextra" "markdown_mmd"))
-    ("markdown_in_html_blocks"             ("markdown"))
-    ("mmd_header_identifiers"              ("markdown_mmd"))
-    ("mmd_link_attributes"                 ("markdown_mmd"))
-    ("mmd_title_block"                     ("markdown_mmd"))
-    ("multiline_tables"                    ("markdown"))
-    ("native_divs"                         ("markdown"))
-    ("native_spans"                        ("markdown"))
-    ("ntb"                                 ())
-    ("old_dashes"                          ())
-    ("pandoc_title_block"                  ("markdown"))
-    ("pipe_tables"                         ("markdown" "markdown_phpextra" "markdown_github" "markdown_mmd"))
-    ("raw_attribute"                       ("markdown"))
-    ("raw_html"                            ("markdown" "markdown_phpextra" "markdown_github" "markdown_mmd" "markdown_strict"))
-    ("raw_tex"                             ("markdown" "markdown_mmd"))
-    ("shortcut_reference_links"            ("markdown" "markdown_strict" "markdown_github" "markdown_phpextra" "markdown_mmd"))
-    ("simple_tables"                       ("markdown"))
-    ("smart"                               ("markdown"))
-    ("space_in_atx_header"                 ("markdown"))
-    ("spaced_reference_links"              ())
-    ("startnum"                            ("markdown"))
-    ("strikeout"                           ("markdown" "markdown_github"))
-    ("subscript"                           ("markdown"))
-    ("superscript"                         ("markdown"))
-    ("styles"                              ())
-    ("table_captions"                      ("markdown"))
-    ("task_lists"                          ("markdown" "gfm" "org"))
-    ("tex_math_dollars"                    ("markdown" "markdown_mmd" "html"))
-    ("tex_math_double_backslash"           ("markdown_mmd" "html"))
-    ("tex_math_single_backslash"           ("markdown_github" "html"))
-    ("yaml_metadata_block"                 ("markdown")))
-  "List of Markdown extensions supported by Pandoc.")
+(defvar pandoc--extensions-alist
+  '(("abbreviations" .
+     ("markdown_phpextra" | "plain" "opml" "ipynb" "markdown_strict"
+      "markdown_github" "markdown_mmd" "markdown"))
+
+    ("alerts" . ("gfm" "commonmark_x" | "commonmark"))
+
+    ("all_symbols_escapable" .
+     ("opml" "ipynb" "markdown_github" "markdown_mmd" "markdown" | "plain"
+      "markdown_strict" "markdown_phpextra"))
+
+    ("amuse" . ("muse" |))
+
+    ("angle_brackets_escapable" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("ascii_identifiers" .
+     (| "vimwiki" "twiki" "tikiwiki" "textile" "rst" "plain" "org" "opml"
+        "odt" "muse" "mediawiki" "latex" "ipynb" "html5" "html4" "html" "gfm"
+        "epub3" "epub" "epub" "docuwiki" "context" "commonmark_x" "commonmark"
+        "beamer" "asciidoc" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown" "docx"))
+
+    ("attributes" . ("commonmark_x" | "gfm" "commonmark"))
+
+    ("auto_identifiers" .
+     ("vimwiki" "twiki" "tikiwiki" "textile" "rst" "org" "opml" "odt" "muse"
+      "mediawiki" "latex" "jats_publishing" "jats_articleauthoring"
+      "jats_archiving" "jats" "ipynb" "html5" "html4" "html" "docuwiki"
+      "context" "beamer" "asciidoc" "markdown_github" "markdown_mmd"
+      "markdown" "docx" | "plain" "epub3" "epub" "epub" "markdown_strict"
+      "markdown_phpextra"))
+
+    ("autolink_bare_uris" .
+     ("ipynb" "gfm" "markdown_github" | "plain" "opml" "commonmark_x"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_mmd"
+      "markdown"))
+
+    ("backtick_code_blocks" .
+     ("opml" "ipynb" "markdown_github" "markdown_mmd" "markdown" | "plain"
+      "markdown_strict" "markdown_phpextra"))
+
+    ("blank_before_blockquote" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("blank_before_header" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("bracketed_spans" .
+     ("opml" "commonmark_x" "markdown" | "plain" "ipynb" "gfm" "commonmark"
+      "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("citations" .
+     ("typst" "org" "opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd" "docx"))
+
+    ("compact_definition_lists" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("definition_lists" .
+     ("plain" "opml" "commonmark_x" "markdown_phpextra" "markdown_mmd"
+      "markdown" | "ipynb" "gfm" "commonmark" "markdown_strict"
+      "markdown_github"))
+
+    ("east_asian_line_breaks" .
+     (| "zimwiki" "xwiki" "vimwiki" "typst" "twiki" "tsv" "tikiwiki" "textile"
+        "texinfo" "tei" "t2t" "slidy" "slideous" "s5" "rtf" "rst" "ris"
+        "revealjs" "pptx" "plain" "org" "opml" "opendocument" "odt" "native"
+        "muse" "ms" "mediawiki" "man" "latex" "json" "jira" "jats_publishing"
+        "jats_articleauthoring" "jats_archiving" "jats" "ipynb" "icml" "html5"
+        "html4" "html" "haddock" "gfm" "fb2" "epub3" "epub" "epub"
+        "endnotexml" "dzslides" "docuwiki" "docbook5" "docbook4" "docbook"
+        "djot" "csv" "csljson" "creole" "context" "commonmark_x" "commonmark"
+        "chunkedhtml" "bits" "bibtex" "biblatex" "beamer" "asciidoctor"
+        "asciidoc_legacy" "asciidoc" "ansi" "markua" "markdown_strict"
+        "markdown_phpextra" "markdown_github" "markdown_mmd" "markdown" "docx"))
+
+    ("element_citations" .
+     (| "jats_publishing" "jats_articleauthoring" "jats_archiving" "jats"))
+
+    ("emoji" .
+     ("gfm" "commonmark_x" "markdown_github" | "plain" "opml" "ipynb"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_mmd"
+      "markdown"))
+
+    ("empty_paragraphs" .
+     (| "opendocument" "odt" "latex" "html5" "html4" "html" "epub3" "epub"
+        "epub" "beamer" "docx"))
+
+    ("epub_html_exts" . ("epub3" "epub" "epub" | "html5" "html4" "html"))
+
+    ("escaped_line_breaks" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("example_lists" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("fancy_lists" .
+     ("plain" "opml" "commonmark_x" "markdown" | "org" "ipynb" "gfm"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown_mmd"))
+
+    ("fenced_code_attributes" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("fenced_code_blocks" .
+     ("opml" "ipynb" "markdown_phpextra" "markdown_github" "markdown" |
+      "plain" "markdown_strict" "markdown_mmd"))
+
+    ("fenced_divs" .
+     ("opml" "commonmark_x" "markdown" | "plain" "ipynb" "gfm" "commonmark"
+      "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("footnotes" .
+     ("opml" "gfm" "commonmark_x" "markdown_phpextra" "markdown_github"
+      "markdown_mmd" "markdown" | "plain" "ipynb" "commonmark"
+      "markdown_strict"))
+
+    ("four_space_rule" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("gfm_auto_identifiers" .
+     ("ipynb" "gfm" "commonmark_x" "markdown_github" | "vimwiki" "twiki"
+      "tikiwiki" "textile" "rst" "plain" "org" "opml" "odt" "muse" "mediawiki"
+      "latex" "html5" "html4" "html" "epub3" "epub" "epub" "docuwiki"
+      "context" "commonmark" "beamer" "asciidoc" "markdown_strict"
+      "markdown_phpextra" "markdown_mmd" "markdown" "docx"))
+
+    ("grid_tables" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("gutenberg" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("hard_line_breaks" .
+     (| "plain" "opml" "ipynb" "gfm" "commonmark_x" "commonmark"
+        "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+        "markdown"))
+
+    ("header_attributes" .
+     ("opml" "markdown_phpextra" "markdown" | "plain" "ipynb"
+      "markdown_strict" "markdown_github" "markdown_mmd"))
+
+    ("ignore_line_breaks" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("implicit_figures" .
+     ("plain" "opml" "markdown_mmd" "markdown" | "ipynb" "gfm" "commonmark_x"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("implicit_header_references" .
+     ("opml" "commonmark_x" "markdown_mmd" "markdown" | "plain" "ipynb" "gfm"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("inline_code_attributes" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("inline_notes" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("intraword_underscores" .
+     ("plain" "opml" "ipynb" "markdown_phpextra" "markdown_github"
+      "markdown_mmd" "markdown" | "markdown_strict"))
+
+    ("latex_macros" .
+     ("plain" "opml" "latex" "beamer" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("line_blocks" .
+     ("opml" "html5" "html4" "html" "markdown" | "plain" "ipynb" "epub3"
+      "epub" "epub" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown_mmd"))
+
+    ("link_attributes" .
+     ("opml" "markdown_phpextra" "markdown" | "plain" "ipynb"
+      "markdown_strict" "markdown_github" "markdown_mmd"))
+
+    ("lists_without_preceding_blankline" .
+     ("ipynb" "markdown_github" | "plain" "opml" "markdown_strict"
+      "markdown_phpextra" "markdown_mmd" "markdown"))
+
+    ("literate_haskell" .
+     (| "rst" "plain" "opml" "latex" "ipynb" "html5" "html4" "html" "epub3"
+        "epub" "epub" "beamer" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("mark" .
+     (| "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+        "markdown_github" "markdown_mmd" "markdown"))
+
+    ("markdown_attribute" .
+     ("markdown_phpextra" "markdown_mmd" | "plain" "opml" "ipynb"
+      "markdown_strict" "markdown_github" "markdown"))
+
+    ("markdown_in_html_blocks" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("mmd_header_identifiers" .
+     ("markdown_mmd" | "plain" "opml" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown"))
+
+    ("mmd_link_attributes" .
+     ("markdown_mmd" | "plain" "opml" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown"))
+
+    ("mmd_title_block" .
+     ("markdown_mmd" | "plain" "opml" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown"))
+
+    ("multiline_tables" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("native_divs" .
+     ("opml" "html5" "html4" "html" "epub3" "epub" "epub" "markdown" | "plain"
+      "ipynb" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown_mmd"))
+
+    ("native_numbering" . (| "opendocument" "odt" "docx"))
+
+    ("native_spans" .
+     ("opml" "html5" "html4" "html" "epub3" "epub" "epub" "markdown" | "plain"
+      "ipynb" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown_mmd"))
+
+    ("ntb" . (| "context"))
+
+    ("old_dashes" .
+     ("textile" | "plain" "opml" "ipynb" "markdown_strict" "markdown_phpextra"
+      "markdown_github" "markdown_mmd" "markdown"))
+
+    ("pandoc_title_block" .
+     ("opml" "markdown" | "plain" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("pipe_tables" .
+     ("opml" "ipynb" "gfm" "commonmark_x" "markdown_phpextra"
+      "markdown_github" "markdown_mmd" "markdown" | "plain" "commonmark"
+      "markdown_strict"))
+
+    ("raw_attribute" .
+     ("opml" "commonmark_x" "markdown_mmd" "markdown" | "plain" "ipynb" "gfm"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("raw_html" .
+     ("opml" "ipynb" "gfm" "epub3" "epub" "epub" "commonmark_x" "commonmark"
+      "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+      "markdown" | "plain" "html5" "html4" "html"))
+
+    ("raw_markdown" . (| "ipynb"))
+
+    ("raw_tex" .
+     ("opml" "markdown" | "textile" "plain" "latex" "ipynb" "html5" "html4"
+      "html" "epub3" "epub" "epub" "context" "beamer" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("rebase_relative_paths" .
+     (| "plain" "opml" "ipynb" "gfm" "commonmark_x" "commonmark"
+        "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+        "markdown"))
+
+    ("short_subsuperscripts" .
+     ("markdown_mmd" | "plain" "opml" "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown"))
+
+    ("shortcut_reference_links" .
+     ("opml" "ipynb" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown_mmd" "markdown" | "plain"))
+
+    ("simple_tables" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("smart" .
+     ("textile" "opml" "latex" "context" "commonmark_x" "beamer" "markdown" |
+      "twiki" "rst" "plain" "org" "mediawiki" "ipynb" "html5" "html4" "html"
+      "gfm" "epub3" "epub" "epub" "commonmark" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("sourcepos" . (| "gfm" "djot" "commonmark_x" "commonmark"))
+
+    ("space_in_atx_header" .
+     ("opml" "ipynb" "markdown_github" "markdown" | "plain" "markdown_strict"
+      "markdown_phpextra" "markdown_mmd"))
+
+    ("spaced_reference_links" .
+     ("markdown_strict" "markdown_phpextra" "markdown_mmd" | "plain" "opml"
+      "ipynb" "markdown_github" "markdown"))
+
+    ("startnum" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("strikeout" .
+     ("plain" "opml" "ipynb" "gfm" "commonmark_x" "markdown_github" "markdown"
+      | "commonmark" "markdown_strict" "markdown_phpextra" "markdown_mmd"))
+
+    ("styles" . (| "docx"))
+
+    ("subscript" .
+     ("opml" "commonmark_x" "markdown_mmd" "markdown" | "plain" "ipynb" "gfm"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("superscript" .
+     ("opml" "commonmark_x" "markdown_mmd" "markdown" | "plain" "ipynb" "gfm"
+      "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("table_captions" .
+     ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
+      "markdown_phpextra" "markdown_github" "markdown_mmd"))
+
+    ("tagging" . (| "context"))
+
+    ("task_lists" .
+     ("org" "opml" "ipynb" "gfm" "commonmark_x" "markdown_github" "markdown" |
+      "plain" "latex" "html5" "html4" "html" "epub3" "epub" "epub"
+      "commonmark" "beamer" "markdown_strict" "markdown_phpextra"
+      "markdown_mmd"))
+
+    ("tex_math_dollars" .
+     ("opml" "ipynb" "gfm" "commonmark_x" "markdown_mmd" "markdown" | "plain"
+      "html5" "html4" "html" "epub3" "epub" "epub" "docuwiki" "commonmark"
+      "markdown_strict" "markdown_phpextra" "markdown_github"))
+
+    ("tex_math_double_backslash" .
+     ("markdown_mmd" | "plain" "opml" "ipynb" "html5" "html4" "html" "epub3"
+      "epub" "epub" "markdown_strict" "markdown_phpextra" "markdown_github"
+      "markdown"))
+
+    ("tex_math_gfm" . ("gfm" | "commonmark_x" "commonmark"))
+
+    ("tex_math_single_backslash" .
+     (| "plain" "opml" "ipynb" "html5" "html4" "html" "epub3" "epub" "epub"
+        "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+        "markdown"))
+
+    ("wikilinks_title_after_pipe" .
+     (| "plain" "opml" "ipynb" "gfm" "commonmark_x" "commonmark"
+        "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+        "markdown"))
+
+    ("wikilinks_title_before_pipe" .
+     (| "plain" "opml" "ipynb" "gfm" "commonmark_x" "commonmark"
+        "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd"
+        "markdown"))
+
+    ("xrefs_name" . (| "opendocument" "odt"))
+
+    ("xrefs_number" . (| "opendocument" "odt"))
+
+    ("yaml_metadata_block" .
+     ("opml" "gfm" "commonmark_x" "markdown" | "plain" "ipynb" "commonmark"
+      "markdown_strict" "markdown_phpextra" "markdown_github" "markdown_mmd")))
+  "Pandoc extensions alist.
+Each extension maps to a list with the formats in which the extension is
+supported.  Before the pipe symbol are the formats in which the
+extension in active by default, after the pipe symbol are the formats in
+which the extension is inactive by default.")
+
+(defun pandoc-add-extensions (format)
+  "Add extensions for FORMAT."
+  (with-temp-buffer
+    (insert-file-contents "extensions.txt")
+    (goto-char (point-min))
+    (while (< (point) (point-max))
+      (let* ((line (buffer-substring-no-properties (line-beginning-position) (line-end-position)))
+             (flag (cdr (assoc (substring line 0 1) '(("+" . 1) ("-" . 2)))))
+             (extension (substring line 1))
+             (entry (assoc extension pandoc--extensions-alist)))
+        (when (null entry)
+          (setq entry (car (push (list extension nil nil) pandoc--extensions-alist))))
+        (push format (nth flag entry)))
+      (forward-line 1)))
+  (with-current-buffer "extensions.eld"
+    (erase-buffer)
+    (insert (format "%S" pandoc--extensions-alist))
+    (save-buffer)))
 
 (defvar pandoc--cli-options nil
   "List of Pandoc command line options that do not need special treatment.
