@@ -142,6 +142,7 @@ matches KEY."
     (html-mode      . "html")
     (json-mode      . "json")
     (latex-mode     . "latex")
+    (LaTeX-mode     . "latex")
     (markdown-mode  . "markdown")
     (mediawiki-mode . "mediawiki")
     (muse-mode      . "muse")
