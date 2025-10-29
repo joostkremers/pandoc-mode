@@ -176,18 +176,18 @@ This is for use in major mode hooks."
 
 (defun pandoc-toggle-extension (extension rw)
   "Toggle the value of EXTENSION.
-RW is either `read' or `write', indicating whether the extension
+RW is either `reader' or `writer', indicating whether the extension
 should be toggled for the input or the output format."
-  (interactive (list (completing-read "Extension: " pandoc--extensions nil t)
-                     (intern (completing-read "Read/write: " '("read" "write") nil t))))
-  (let* ((current-value (pandoc--get-extension extension rw))
-         (new-value (cond
-                     ((memq current-value '(+ -)) ; if the value is set explicitly
-                      nil)  ; we can simply return it to the default
-                     ((pandoc--extension-in-format-p extension (pandoc--get rw) rw) ; if the extension is part of the current format
-                      '-)  ; we explicitly unset it
-                     (t '+)))) ; otherwise we explicitly set it
-    (pandoc--set-extension extension rw new-value)))
+  (pandoc--set-extension
+   extension
+   rw
+   (cond
+    ((memq (pandoc--get-extension extension rw) '(?+ ?-)) ; If the value is set explicitly,
+     nil)               ; we can simply return it to the default.
+    ((if (eq (pandoc--extension-in-format extension (car (split-string (pandoc--get rw) "[-+]")))
+             :enabled)) ; If the extension is enabled in the current format,
+     ?-)                ; we explicitly unset it.
+    (t ?+)))) ; Otherwise we explicitly set it.
 
 (defun pandoc--create-defaults-filename (type filename output-format)
   "Create a defaults filename.
@@ -1045,7 +1045,7 @@ allowed values are \"INFO\" and \"ERROR\"."
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'read)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(pandoc-toggle-extension ,(car ext) 'read)
+                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'read))
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'read)))
@@ -1063,7 +1063,7 @@ allowed values are \"INFO\" and \"ERROR\"."
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'write)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(pandoc-toggle-extension ,(car ext) 'write)
+                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'write))
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'write)))
@@ -1320,7 +1320,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                        (list (format "%02d" (cl-incf num))
                                              `(lambda ()
                                                 (interactive)
-                                                (pandoc-toggle-extension ,extension 'read))
+                                                (pandoc-toggle-extension ,extension 'reader))
                                              :description (lambda ()
                                                             (format " %s %s"
                                                                     (pandoc--extension-active-marker extension 'read)
@@ -1347,7 +1347,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                        (list (format "%02d" (cl-incf num))
                                              `(lambda ()
                                                 (interactive)
-                                                (pandoc-toggle-extension ,extension 'write))
+                                                (pandoc-toggle-extension ,extension 'writer))
                                              :description (lambda ()
                                                             (format " %s %s"
                                                                     (pandoc--extension-active-marker extension 'write)
