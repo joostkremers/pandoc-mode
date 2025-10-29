@@ -1750,7 +1750,7 @@ file (i.e., if the output file is set to nil), return nil."
   (or input-file
       (setq input-file (expand-file-name (buffer-file-name))))
   (cond
-   ((or (eq (pandoc--get 'output-file) t) ; If the user set the output file to t
+   ((or (eq (pandoc--get 'output-file) t) ; If the user set the output file to t.
         (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
              (or pdf                      ; (i) we're converting to pdf, or
                  (member (pandoc--get 'writer) ; (ii) the output format is one of these:
