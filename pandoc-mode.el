@@ -1725,7 +1725,7 @@ value."
   "Turn on pandoc-mode if a Pandoc defaults file exists.
 This is for use in major mode hooks."
   (when (and (buffer-file-name)
-             (file-exists-p (pandoc--create-defaults-filename 'local (buffer-file-name) "default")))
+             (file-exists-p (pandoc--create-defaults-filename 'local "default" (buffer-file-name))))
     (pandoc-mode 1)))
 
 ;;; Running Pandoc
@@ -2120,24 +2120,21 @@ value of a later buffer."
                           (cons var (buffer-local-value var (car bs))))))
                     pandoc--options)))
 
-(defun pandoc--create-defaults-filename (type filename output-format)
+(defun pandoc--create-defaults-filename (type output-format &optional filename)
   "Create a defaults filename.
-TYPE is the type of defaults file, either `local' or `project'.
-FILENAME is name of the file for which the defaults file is to be
-created, OUTPUT-FORMAT the output format of the defaults file,
-which is recorded in its name.  The return value is an absolute
-filename."
-  (setq filename (expand-file-name filename))
+TYPE is the type of defaults file, either `local', `project', or
+`global'.  FILENAME is name of the file for which the defaults file is
+to be created (which is ignored if TYPE is `global'), OUTPUT-FORMAT the
+output format of the defaults file, which is recorded in its name.  The
+return value is an absolute filename."
+  (when filename (setq filename (expand-file-name filename)))
   (cond
    ((eq type 'local)
-    (concat (file-name-directory filename) "." (file-name-nondirectory filename) "." output-format ".pandoc"))
+    (concat (file-name-directory filename) (file-name-nondirectory filename) "_" output-format ".yaml"))
    ((eq type 'project)
-    (concat (file-name-directory filename) "Project." output-format ".pandoc"))))
-
-(defun pandoc--create-global-defaults-filename (format)
-  "Create a global defaults filename.
-FORMAT is the output format to use."
-  (concat (file-name-as-directory pandoc-data-dir) format ".pandoc"))
+    (concat (file-name-directory filename) "Project_" output-format ".yaml"))
+   ((eq type 'global)
+    (concat (file-name-as-directory pandoc-data-dir) output-format "defaults.yaml"))))
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
@@ -2147,18 +2144,18 @@ files.  (Therefore, this function is not available on Windows.)"
   (if (eq system-type 'windows-nt)
       (message "This option is not available on MS Windows")
     (let ((current-defaults-file
-           (file-name-nondirectory (pandoc--create-defaults-filename 'local (buffer-file-name)
-                                                                     (pandoc--get 'writer))))
+           (file-name-nondirectory
+            (pandoc--create-defaults-filename 'local (pandoc--get 'writer) (buffer-file-name))))
           (current-project-file
-           (file-name-nondirectory (pandoc--create-defaults-filename 'project (buffer-file-name)
-                                                                     (pandoc--get 'writer)))))
+           (file-name-nondirectory
+            (pandoc--create-defaults-filename 'project (pandoc--get 'writer) (buffer-file-name)))))
       (when (not (file-exists-p current-defaults-file))
         (pandoc--save-settings 'local (pandoc--get 'writer)))
       (make-symbolic-link current-defaults-file
-                          (pandoc--create-defaults-filename 'local (buffer-file-name) "default") t)
+                          (pandoc--create-defaults-filename 'local "default" (buffer-file-name)) t)
       (when (file-exists-p current-project-file)
         (make-symbolic-link current-project-file
-                            (pandoc--create-defaults-filename 'project (buffer-file-name) "default") t))
+                            (pandoc--create-defaults-filename 'project "default" (buffer-file-name)) t))
       (message "`%s' set as default output format." (pandoc--get 'writer)))))
 
 (defun pandoc-save-settings ()
@@ -2190,8 +2187,8 @@ without asking."
   (let* ((filename (buffer-file-name))
          (settings pandoc--local-settings)
          (defaults-file (if (eq type 'global)
-                            (pandoc--create-global-defaults-filename format)
-                          (pandoc--create-defaults-filename type filename format))))
+                            (pandoc--create-defaults-filename 'global format)
+                          (pandoc--create-defaults-filename type format filename))))
     (if (and (not no-confirm)
              (file-exists-p defaults-file)
              (not (y-or-n-p (format "%s defaults file `%s' already exists.  Overwrite? "
@@ -2256,13 +2253,13 @@ file is found for FILE, otherwise non-nil."
   (let (settings)
     ;; first try to read local settings
     (when file
-      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local file format)))))
+      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local format file)))))
     ;; if it fails, try project settings
     (when (and file (not (cdr settings)))
-      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project file format)))))
+      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project format file)))))
     ;; if that fails too, or if there is no file, try reading global settings
     (unless (cdr settings)
-      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-global-defaults-filename format)))))
+      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'global format)))))
     ;; now set them
     (when (cdr settings)
       (setq pandoc--local-settings (cdr settings))
