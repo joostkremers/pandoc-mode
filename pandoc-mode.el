@@ -1049,7 +1049,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'reader)))
-                                   pandoc--extensions))))
+                                   pandoc--extensions-alist))))
 
     ,(append (cons "Output Format"
                    (mapcar (lambda (option)
@@ -1067,7 +1067,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                              :active t
                                              :style 'toggle
                                              :selected `(pandoc--extension-active-p ,(car ext) 'writer)))
-                                   pandoc--extensions))))
+                                   pandoc--extensions-alist))))
 
     ("Files"
      ("Output File"
