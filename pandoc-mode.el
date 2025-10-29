@@ -1311,7 +1311,8 @@ allowed values are \"INFO\" and \"ERROR\"."
           (lambda (_)
             (transient-parse-suffixes
              'pandoc-read-exts-transient
-             (let ((num 0))
+             (let ((num 0)
+                   (format (pandoc--get 'reader)))
                (append (mapcar
                         (lambda (partition)
                           (vconcat
@@ -1327,7 +1328,10 @@ allowed values are \"INFO\" and \"ERROR\"."
                                                                     extension))
                                              :transient t)))
                                    partition)))
-                        (seq-partition pandoc--extensions 26))
+                        (seq-partition (seq-filter (lambda (ext)
+                                                     (member format (cdr ext)))
+                                                   pandoc--extensions-alist)
+                                       26))
                        (list [("b" "Back" transient-quit-one)
                               ("q" "Quit" transient-quit-all)])))))])
 
@@ -1338,7 +1342,8 @@ allowed values are \"INFO\" and \"ERROR\"."
           (lambda (_)
             (transient-parse-suffixes
              'pandoc-write-exts-transient
-             (let ((num 0))
+             (let ((num 0)
+                   (format (pandoc--get 'writer)))
                (append (mapcar
                         (lambda (partition)
                           (vconcat
@@ -1354,7 +1359,10 @@ allowed values are \"INFO\" and \"ERROR\"."
                                                                     extension))
                                              :transient t)))
                                    partition)))
-                        (seq-partition pandoc--extensions 26))
+                        (seq-partition (seq-filter (lambda (ext)
+                                                     (member format (cdr ext)))
+                                                   pandoc--extensions-alist)
+                                       26))
                        (list [("b" "Back" transient-quit-one)
                               ("q" "Quit" transient-quit-all)])))))])
 
