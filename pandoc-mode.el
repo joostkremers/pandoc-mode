@@ -1190,10 +1190,10 @@ argument, the option is toggled."
     ("o" "Options"               pandoc-options-transient)
     ("I" pandoc-input-formats-transient
      :description (lambda ()
-                    (format "Input format [%s]" (propertize (pandoc--get 'read) 'face 'warning))))
+                    (format "Input format [%s]" (propertize (or (pandoc--get 'read) "none") 'face 'warning))))
     ("O" pandoc-output-formats-transient
      :description (lambda ()
-                    (format "Output format [%s]" (propertize (pandoc--get 'write) 'face 'warning))))
+                    (format "Output format [%s]" (propertize (or (pandoc--get 'write) "none") 'face 'warning))))
     ("s" "Settings files"        pandoc-settings-file-transient)
     ("e" "Example lists"         pandoc-@-transient)]]
   [("q" "Quit" transient-quit-all)])
