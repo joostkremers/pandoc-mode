@@ -152,11 +152,11 @@
 ;;;###autoload
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
-  :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get 'write))) :global nil
+  :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get 'writer))) :global nil
   (cond
    (pandoc-mode    ; pandoc-mode is turned on
     (setq pandoc--local-settings (copy-tree pandoc--options))
-    (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes)))
+    (pandoc--set 'reader (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc--settings-modified-flag nil)
     ;; Make sure the output buffer exists.
     (get-buffer-create pandoc--output-buffer-name)
@@ -231,7 +231,7 @@ file (i.e., if the output file is set to nil), return nil."
    ((or (eq (pandoc--get 'output) t) ; If the user set the output file to T
         (and (null (pandoc--get 'output)) ; or if the user set no output file but either
              (or pdf                      ; (i) we're converting to pdf, or
-                 (member (pandoc--get 'write) ; (ii) the output format is one of these:
+                 (member (pandoc--get 'writer) ; (ii) the output format is one of these:
                          '("odt" "epub" "docx" "pptx")))))
     (format "%s/%s%s"                   ; we create an output file name.
             (expand-file-name (or (pandoc--get 'output-dir)
@@ -239,7 +239,7 @@ file (i.e., if the output file is set to nil), return nil."
             (file-name-sans-extension (file-name-nondirectory input-file))
             (if pdf
                 ".pdf"
-              (cadr (assoc (pandoc--get 'write) pandoc-output-format-extensions)))))
+              (cadr (assoc (pandoc--get 'writer) pandoc-output-format-extensions)))))
    ((stringp (pandoc--get 'output))     ; If the user set an output file,
     (format "%s/%s"               ; we combine it with the output directory
             (expand-file-name (or (pandoc--get 'output-dir)
@@ -255,12 +255,12 @@ OUTPUT-FILE the name of the output file.  If PDF is non-nil, an
 output file is always set, which gets the suffix `.pdf'.  If the
 output format is \"odt\", \"epub\" or \"docx\" but no output file
 is specified, one will be created."
-  (let ((read (format "--read=%s%s" (pandoc--get 'read) (pandoc--format-extensions (pandoc--get 'read-extensions))))
+  (let ((read (format "--read=%s%s" (pandoc--get 'reader) (pandoc--format-extensions (pandoc--get 'read-extensions))))
         (write (if pdf
-                   (if (member (pandoc--get 'write) pandoc--pdf-able-formats)
-                       (format "--write=%s" (pandoc--get 'write))
+                   (if (member (pandoc--get 'writer) pandoc--pdf-able-formats)
+                       (format "--write=%s" (pandoc--get 'writer))
                      "--write=latex")
-                 (format "--write=%s%s" (pandoc--get 'write) (pandoc--format-extensions (pandoc--get 'write-extensions)))))
+                 (format "--write=%s%s" (pandoc--get 'writer) (pandoc--format-extensions (pandoc--get 'write-extensions)))))
         (output (when output-file (format "--output=%s" output-file)))
         ;; Filters are handled separately, because they sometimes need to be
         ;; passed to `pandoc' before other options.
@@ -339,7 +339,7 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
   "Processes pandoc-mode @@-directives in the current buffer.
 OUTPUT-FORMAT is passed unchanged to the functions associated
 with the @@-directives."
-  (interactive (list (pandoc--get 'write)))
+  (interactive (list (pandoc--get 'writer)))
   (mapc #'funcall pandoc-directives-hook)
   (let ((case-fold-search nil)
         (directives-regexp (concat "\\([\\]?\\)@@" (regexp-opt (mapcar #'car pandoc-directives) t))))
@@ -446,8 +446,8 @@ also ignored in this case."
                      (pandoc--load-settings-for-file (expand-file-name input-file) output-format t))
           ;; If no defaults file was found, unset all options except input and output format.
           (setq pandoc--local-settings (copy-tree pandoc--options))
-          (pandoc--set 'write output-format)
-          (pandoc--set 'read (pandoc--get 'read buffer))))
+          (pandoc--set 'writer output-format)
+          (pandoc--set 'reader (pandoc--get 'reader buffer))))
 
        ;; If no output format was provided, we use BUFFER's options, except the
        ;; output format, which we take from ORIG-BUFFER.  We also set the local
@@ -455,7 +455,7 @@ also ignored in this case."
        ;; `pandoc--latest-run' is set correctly beloww.
        ((eq output-format t)
         (setq pandoc--local-settings (buffer-local-value 'pandoc--local-settings buffer))
-        (pandoc--set 'write (setq output-format (pandoc--get 'write orig-buffer)))))
+        (pandoc--set 'writer (setq output-format (pandoc--get 'writer orig-buffer)))))
 
       ;; Set the name of the output file.
       (setq output-file (pandoc--compose-output-file-name pdf input-file))
@@ -468,7 +468,7 @@ also ignored in this case."
         (insert-buffer-substring-no-properties buffer (car region) (cdr region))
         (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it will hang forever.
         (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
-        (pandoc-process-directives (pandoc--get 'write))
+        (pandoc-process-directives (pandoc--get 'writer))
         (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
           (erase-buffer))
         (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
@@ -557,7 +557,7 @@ pandoc is always run on the master file)."
   (let ((ask (and (listp prefix) (eq (car prefix) 4))))
     (cond
      ((and (not ask)
-           (member (pandoc--get 'write) pandoc--pdf-able-formats))
+           (member (pandoc--get 'writer) pandoc--pdf-able-formats))
       (setq pandoc--output-format-for-pdf t)) ; Use buffer's output format and settings.
      ((or ask
           (not pandoc--output-format-for-pdf))
@@ -573,37 +573,37 @@ files.  (Therefore, this function is not available on Windows.)"
       (message "This option is not available on MS Windows")
     (let ((current-defaults-file
            (file-name-nondirectory (pandoc--create-defaults-filename 'local (buffer-file-name)
-                                                                     (pandoc--get 'write))))
+                                                                     (pandoc--get 'writer))))
           (current-project-file
            (file-name-nondirectory (pandoc--create-defaults-filename 'project (buffer-file-name)
-                                                                     (pandoc--get 'write)))))
+                                                                     (pandoc--get 'writer)))))
       (when (not (file-exists-p current-defaults-file))
-        (pandoc--save-settings 'local (pandoc--get 'write)))
+        (pandoc--save-settings 'local (pandoc--get 'writer)))
       (make-symbolic-link current-defaults-file
                           (pandoc--create-defaults-filename 'local (buffer-file-name) "default") t)
       (when (file-exists-p current-project-file)
         (make-symbolic-link current-project-file
                             (pandoc--create-defaults-filename 'project (buffer-file-name) "default") t))
-      (message "`%s' set as default output format." (pandoc--get 'write)))))
+      (message "`%s' set as default output format." (pandoc--get 'writer)))))
 
 (defun pandoc-save-settings ()
   "Save the settings of the current buffer.
 This function just calls pandoc--save-settings with the
 appropriate output format."
   (interactive)
-  (pandoc--save-settings 'local (pandoc--get 'write)))
+  (pandoc--save-settings 'local (pandoc--get 'writer)))
 
 (defun pandoc-save-project-settings ()
   "Save the current settings as a project file."
   (interactive)
-  (pandoc--save-settings 'project (pandoc--get 'write)))
+  (pandoc--save-settings 'project (pandoc--get 'writer)))
 
 (defun pandoc-save-global-settings ()
   "Save the current settings to a global settings file."
   (interactive)
   (unless (file-directory-p pandoc-data-dir)
     (make-directory pandoc-data-dir))
-  (pandoc--save-settings 'global (pandoc--get 'write)))
+  (pandoc--save-settings 'global (pandoc--get 'writer)))
 
 (defun pandoc--save-settings (type format &optional no-confirm)
   "Save the settings of the current buffer.
@@ -645,7 +645,7 @@ without asking."
 The settings file is reread from disk, so that any changes made
 to the settings that have not been saved are reverted."
   (interactive)
-  (let ((format (pandoc--get 'write)))
+  (let ((format (pandoc--get 'writer)))
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--load-settings-profile format 'no-confirm)))
 
@@ -676,8 +676,8 @@ The settings are stored in the current buffer's
 file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
-             (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get 'write))))
-    (pandoc--save-settings 'local (pandoc--get 'write) t))
+             (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get 'writer))))
+    (pandoc--save-settings 'local (pandoc--get 'writer) t))
   (let (settings)
     ;; first try to read local settings
     (when file
@@ -756,7 +756,7 @@ file exists, display the *Pandoc output* buffer."
   (when (and (eq pandoc--latest-run 'error) (not arg))
     (error "No output file created on most recent call to `pandoc'"))
   (let ((format (or (car pandoc--latest-run)
-                    (pandoc--get 'write)))
+                    (pandoc--get 'writer)))
         (file (or (cdr pandoc--latest-run)
                   (pandoc--compose-output-file-name arg))))
     (if file
@@ -865,7 +865,7 @@ CATEGORY is a string naming a category of formats as listed in
 candidates."
   (let* ((formats (drop 3 (assoc category pandoc--formats)))
          (format (completing-read "Input format: " (pandoc--read-completion-function formats))))
-    (pandoc--set 'read format)
+    (pandoc--set 'reader format)
     (message "Input format set to `%s'" format)))
 
 (defun pandoc-set-read (format)
@@ -873,7 +873,7 @@ candidates."
   (interactive (list (completing-read "Set input format to: "
                                       (pandoc--extract-formats 'input)
                                       nil t)))
-  (pandoc--set 'read format)
+  (pandoc--set 'reader format)
   (message "Input format set to `%s'" format))
 
 (defun pandoc-set-write (format)
@@ -885,12 +885,12 @@ format)."
                                       (pandoc--extract-formats 'output)
                                       nil t)))
   (when (and pandoc--settings-modified-flag
-             (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get 'write))))
-    (pandoc--save-settings 'local (pandoc--get 'write) t))
+             (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get 'writer))))
+    (pandoc--save-settings 'local (pandoc--get 'writer) t))
   (unless (pandoc--load-settings-profile format t)
     (setq pandoc--local-settings (copy-tree pandoc--options))
-    (pandoc--set 'write format)
-    (pandoc--set 'read (cdr (assq major-mode pandoc-major-modes))))
+    (pandoc--set 'writer format)
+    (pandoc--set 'reader (cdr (assq major-mode pandoc-major-modes))))
   (setq pandoc--settings-modified-flag nil)
   (setq pandoc--output-format-for-pdf nil)
   (message "Output format set to `%s'" format))
@@ -980,7 +980,7 @@ directory to ensure that all files use the current file as master
 file."
   (interactive)
   (pandoc--set 'master-file (buffer-file-name))
-  (pandoc--save-settings 'project (pandoc--get 'write)))
+  (pandoc--save-settings 'project (pandoc--get 'writer)))
 
 (defun pandoc-set-html-math-method (prefix method)
   "Set the method for rendering mathematics in HTML to METHOD.
@@ -1036,19 +1036,19 @@ allowed values are \"INFO\" and \"ERROR\"."
     ,(append (cons "Input Format"
                    (mapcar (lambda (option)
                              (vector (car option)
-                                     `(pandoc--set 'read ,(cdr option))
+                                     `(pandoc--set 'reader ,(cdr option))
                                      :active t
                                      :style 'radio
-                                     :selected `(string= (pandoc--get 'read)
+                                     :selected `(string= (pandoc--get 'reader)
                                                          ,(cdr option))))
                            pandoc--input-formats-menu))
-             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'read)))
+             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'reader)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'read))
+                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'reader))
                                              :active t
                                              :style 'toggle
-                                             :selected `(pandoc--extension-active-p ,(car ext) 'read)))
+                                             :selected `(pandoc--extension-active-p ,(car ext) 'reader)))
                                    pandoc--extensions))))
 
     ,(append (cons "Output Format"
@@ -1057,16 +1057,16 @@ allowed values are \"INFO\" and \"ERROR\"."
                                      `(pandoc-set-write ,(car option))
                                      :active t
                                      :style 'radio
-                                     :selected `(string= (pandoc--get 'write)
+                                     :selected `(string= (pandoc--get 'writer)
                                                          ,(car option))))
                            (pandoc--extract-formats 'output)))
-             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'write)))
+             (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'writer)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
-                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'write))
+                                             `(lambda () (interactive) (pandoc-toggle-extension ,(car ext) 'writer))
                                              :active t
                                              :style 'toggle
-                                             :selected `(pandoc--extension-active-p ,(car ext) 'write)))
+                                             :selected `(pandoc--extension-active-p ,(car ext) 'writer)))
                                    pandoc--extensions))))
 
     ("Files"
@@ -1158,10 +1158,10 @@ allowed values are \"INFO\" and \"ERROR\"."
   ["Pandoc\n"
    ("I" pandoc-input-formats-transient
     :description (lambda ()
-                   (format "Input format   [%s%s]" (pandoc--get 'read) (pandoc--format-extensions (pandoc--get 'read-extensions)))))
+                   (format "Input format   [%s%s]" (pandoc--get 'reader) (pandoc--format-extensions (pandoc--get 'read-extensions)))))
    ("O" pandoc-output-formats-transient
     :description (lambda ()
-                   (format "Output format  [%s%s]" (pandoc--get 'write) (pandoc--format-extensions (pandoc--get 'write-extensions)))))]
+                   (format "Output format  [%s%s]" (pandoc--get 'writer) (pandoc--format-extensions (pandoc--get 'write-extensions)))))]
   [["Actions"
     ("r" "Run Pandoc"            pandoc-run-pandoc)
     ("p" "Convert to PDF"        pandoc-convert-to-pdf)
@@ -1323,7 +1323,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                                 (pandoc-toggle-extension ,extension 'reader))
                                              :description (lambda ()
                                                             (format " %s %s"
-                                                                    (pandoc--extension-active-marker extension 'read)
+                                                                    (pandoc--extension-active-marker extension 'reader)
                                                                     extension))
                                              :transient t)))
                                    partition)))
@@ -1350,7 +1350,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                                 (pandoc-toggle-extension ,extension 'writer))
                                              :description (lambda ()
                                                             (format " %s %s"
-                                                                    (pandoc--extension-active-marker extension 'write)
+                                                                    (pandoc--extension-active-marker extension 'writer)
                                                                     extension))
                                              :transient t)))
                                    partition)))

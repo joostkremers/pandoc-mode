@@ -1532,7 +1532,7 @@ menu."
      ,(when menu
         `(push (list ,prompt
                      :active ,(if output-formats
-                                  `(quote (member (pandoc--get 'write) (quote ,output-formats)))
+                                  `(quote (member (pandoc--get 'writer) (quote ,output-formats)))
                                 t)
                      ,(vector (car choices) `(pandoc--set (quote ,option) ,(car choices))
                               :style 'radio
