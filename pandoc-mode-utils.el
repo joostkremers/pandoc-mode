@@ -1090,11 +1090,12 @@ back to its default value, not that it is unset.)"
 
 (defun pandoc--get-extension (extension rw)
   "Return the value of EXTENSION for RW.
-RW is either `read' or `write', indicating whether the read or
-write extension is to be queried."
-  (cdr (assoc extension (if (eq rw 'read)
-                            (pandoc--get 'read-extensions)
-                          (pandoc--get 'write-extensions)))))
+RW is either `reader' or `writer', indicating whether the read or write
+extension is to be queried.  Return ?+ if the extension is enabled by
+the user, ?- it is disabled, or nil if it has its default value."
+  (and-let* ((format (pandoc--get rw))
+             (pos (string-match-p (concat "\\b[-+]" extension "\\b") format))
+             (state (aref format pos)))))
 
 (defun pandoc--current-settings ()
   "Return a list of settings with non-default values."
