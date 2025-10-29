@@ -1044,17 +1044,18 @@ FORMAT."
       :enabled))))
 
 (defun pandoc--extension-active-p (extension rw)
-  "Return T if EXTENSION is active in the current buffer.
-RW is either `read' or `write', indicating whether to test for the
+  "Return non-nil if EXTENSION is active in the current buffer.
+RW is either `reader' or `writer', indicating whether to test for the
 input or the output format.
 
-An extension is active either if it's part of the in/output
-format and hasn't been deactivated by the user, or if the user
-has activated it."
+An extension is active either if it is automatically enabled for a
+format and hasn't been deactivated by the user, or if the user has
+activated it."
   (let ((value (pandoc--get-extension extension rw)))
-    (or (eq value '+)
+    (or (char-equal value ?+)
         (and (not value)
-             (pandoc--extension-in-format-p extension (pandoc--get rw) rw)))))
+             (eq (pandoc--extension-in-format extension (pandoc--get rw)) :enabled)))))
+
 (defun pandoc--split-format-and-extensions (full-format)
   "Split FULL-FORMAT into format and extensions.
 Return a cons cell of the format and the list of extensions."
