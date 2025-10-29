@@ -2711,10 +2711,10 @@ allowed values are \"INFO\" and \"ERROR\"."
   ["Pandoc\n"
    ("I" pandoc-input-formats-transient
     :description (lambda ()
-                   (format "Input format   [%s%s]" (pandoc--get 'reader) (pandoc--format-extensions (pandoc--get 'read-extensions)))))
+                   (format "Input format   [%s]" (or (pandoc--get 'reader) "none"))))
    ("O" pandoc-output-formats-transient
     :description (lambda ()
-                   (format "Output format  [%s%s]" (pandoc--get 'writer) (pandoc--format-extensions (pandoc--get 'write-extensions)))))]
+                   (format "Output format  [%s]" (or (pandoc--get 'writer) "none"))))]
   [["Actions"
     ("r" "Run Pandoc"            pandoc-run-pandoc)
     ("p" "Convert to PDF"        pandoc-convert-to-pdf)
