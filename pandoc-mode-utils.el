@@ -962,10 +962,6 @@ be retrieved."
       (pandoc--set-alist-option option value))
      ((memq option pandoc--list-options)
       (pandoc--set-list-option option value))
-     ((eq option 'read-extensions)
-      (pandoc--set-extension (car value) 'read (cdr value)))
-     ((eq option 'write-extensions)
-      (pandoc--set-extension (car value) 'write (cdr value)))
      (t (setcdr (assq option pandoc--local-settings) value)))
     (setq pandoc--settings-modified-flag t)))
 
