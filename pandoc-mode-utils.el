@@ -1021,7 +1021,7 @@ If VALUE is nil, OPTION is unset entirely."
 
 (defun pandoc--extension-active-marker (extension rw)
   "Return a marker indicating whether EXTENSION is active.
-RW is either `read' or `write', indicating whether to take the
+RW is either `reader' or `writer', indicating whether to take the
 input or the output format."
   (if (pandoc--extension-active-p extension rw)
       pandoc-extension-active-marker
