@@ -1567,7 +1567,7 @@ value."
 
 ;; Options added to menus manually.
 (define-pandoc-string-option reader        nil nil "Input Format")
-(define-pandoc-string-option output        nil nil "Output File")
+(define-pandoc-string-option output-file   nil nil "Output File")
 (define-pandoc-file-option   output-dir    nil nil "Output Directory")
 (define-pandoc-file-option   defaults      nil nil "Defaults File")
 (define-pandoc-switch        file-scope    nil nil "Use File Scope")
@@ -1750,8 +1750,8 @@ file (i.e., if the output file is set to nil), return nil."
   (or input-file
       (setq input-file (expand-file-name (buffer-file-name))))
   (cond
-   ((or (eq (pandoc--get 'output) t) ; If the user set the output file to T
-        (and (null (pandoc--get 'output)) ; or if the user set no output file but either
+   ((or (eq (pandoc--get 'output-file) t) ; If the user set the output file to t
+        (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
              (or pdf                      ; (i) we're converting to pdf, or
                  (member (pandoc--get 'writer) ; (ii) the output format is one of these:
                          '("odt" "epub" "docx" "pptx")))))
@@ -1762,13 +1762,13 @@ file (i.e., if the output file is set to nil), return nil."
             (if pdf
                 ".pdf"
               (cadr (assoc (pandoc--get 'writer) pandoc-output-format-extensions)))))
-   ((stringp (pandoc--get 'output))     ; If the user set an output file,
+   ((stringp (pandoc--get 'output-file))     ; If the user set an output file,
     (format "%s/%s"               ; we combine it with the output directory
             (expand-file-name (or (pandoc--get 'output-dir)
                                   (file-name-directory input-file)))
             (if pdf                 ; and check if we're converting to pdf.
-                (concat (file-name-sans-extension (pandoc--get 'output)) ".pdf")
-              (pandoc--get 'output))))
+                (concat (file-name-sans-extension (pandoc--get 'output-file)) ".pdf")
+              (pandoc--get 'output-file))))
    (t nil)))
 
 (defun pandoc--format-all-options (output-file &optional pdf)
@@ -2453,7 +2453,7 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 with any other prefix argument, the output file is created on the
 basis of the input file and the output format."
   (interactive "P")
-  (pandoc--set 'output
+  (pandoc--set 'output-file
                (cond
                 ((eq prefix '-) nil)
                 ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
@@ -2624,12 +2624,12 @@ allowed values are \"INFO\" and \"ERROR\"."
 
     ("Files"
      ("Output File"
-      ["Output To Stdout" (pandoc--set 'output nil) :active t
-       :style radio :selected (null (pandoc--get 'output))]
-      ["Create Output Filename" (pandoc--set 'output t) :active t
-       :style radio :selected (eq (pandoc--get 'output) t)]
+      ["Output To Stdout" (pandoc--set 'output-file nil) :active t
+       :style radio :selected (null (pandoc--get 'output-file))]
+      ["Create Output Filename" (pandoc--set 'output-file t) :active t
+       :style radio :selected (eq (pandoc--get 'output-file) t)]
       ["Set Output File..." pandoc-set-output :active t
-       :style radio :selected (stringp (pandoc--get 'output))])
+       :style radio :selected (stringp (pandoc--get 'output-file))])
      ("Output Directory"
       ["Use Input Directory" (pandoc--set 'output-dir nil) :active t
        :style radio :selected (null (pandoc--get 'output-dir))]
@@ -2800,7 +2800,7 @@ allowed values are \"INFO\" and \"ERROR\"."
                                                                             (pandoc-set-read format-name))
                                                           :transient t)))
                                                (seq-filter (lambda (elt)
-                                                             (not (eq (nth 3 elt) 'output)))
+                                                             (not (eq (nth 3 elt) 'output-file)))
                                                            (drop 3 (quote ,group))))
                                        (list " " ; empty line
                                              '("b" "Back" transient-quit-one)
@@ -2939,7 +2939,7 @@ allowed values are \"INFO\" and \"ERROR\"."
   ["File menu"
    ("o" pandoc-set-output
     :description (lambda ()
-                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
+                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output-file))))
    ("O" pandoc-set-output-dir
     :description (lambda ()
                    (format "%-27s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
