@@ -883,7 +883,7 @@ functions add their options to this list with default value nil."
                                       ("katex" . t)
                                       ("gladtex"))
   "Possible values for the Pandoc option `html-math-method'.
-If the cdr of an entry is t, the option can take an optional URL.")
+If the cdr of an entry is t, the option takes an optional URL.")
 
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
