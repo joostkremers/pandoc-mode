@@ -249,7 +249,6 @@ matches KEY."
      ("haddock"                "Haddock"                      "h" both)
      ("man"                    "Man Page"                     "m" both)
      ("ms"                     "Groff MS"                     "g" output)
-     ("pdf"                    "PDF"                          "p" output)
      ("tei"                    "TEI"                          "t" output)
      ("texinfo"                "TeXinfo"                      "i" output)) ; Also under TeX Formats.
 
