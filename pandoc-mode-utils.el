@@ -1055,6 +1055,21 @@ has activated it."
     (or (eq value '+)
         (and (not value)
              (pandoc--extension-in-format-p extension (pandoc--get rw) rw)))))
+(defun pandoc--split-format-and-extensions (full-format)
+  "Split FULL-FORMAT into format and extensions.
+Return a cons cell of the format and the list of extensions."
+  (let* ((start 0)
+         (pos 0)
+         result)
+    ;; We start searching at `(1+ start)', because `start' is set to `pos'
+    ;; at the end of the loop, but `pos' is the position of the + or - we
+    ;; found.  We need this position because the + or - needs to be
+    ;; included in the substring. (Which is also why we can't use
+    ;; `split-string'.)
+    (while (setq pos (string-match-p "[-+]" full-format (1+ start)))
+      (push (substring full-format start pos) result)
+      (setq start pos))
+    (nreverse (push (substring full-format start) result))))
 
 (defun pandoc--set-extension (extension rw value)
   "Set the value of EXTENSION for RW to VALUE.
