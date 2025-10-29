@@ -2448,10 +2448,9 @@ should be toggled for the input or the output format."
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
-If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]', the output file is unset.  If called
-with any other prefix argument, the output file is created on the
-basis of the input file and the output format."
+If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument]', the output
+file is unset.  If called with any other prefix argument, the output
+file is created on the basis of the input file and the output format."
   (interactive "P")
   (pandoc--set 'output-file
                (cond
