@@ -1027,13 +1027,21 @@ input or the output format."
       pandoc-extension-active-marker
     pandoc-extension-inactive-marker))
 
-(defun pandoc--extension-in-format-p (extension format &optional rw)
-  "Check if EXTENSION is a default extension for FORMAT.
-RW must be either `read' or `write', indicating whether FORMAT is
-being considered as an input or an output format."
-  (let ((formats (cadr (assoc extension pandoc--extensions))))
-    (or (member format formats)
-        (member format (cadr (assoc rw formats))))))
+(defun pandoc--extension-in-format (extension format)
+  "Check if EXTENSION is supported for FORMAT.
+Return value is either one of the keywords `:enabled' or `:disabled',
+indicating that EXTENSION is supported for FORMAT and whether it is
+enabled or disabled by default, or nil if EXTENSION is not supported for
+FORMAT."
+  (let ((formats (cdr (assoc extension pandoc--extensions-alist))))
+    (cond
+     ((member format (memq '| formats))
+      :disabled)
+     ;; We could just check `format' against the entire list here, because
+     ;; it wasn't found after the pipe, but this is cleaner and avoids some
+     ;; unnecessary comparisons if the format is not supported.
+     ((member format (seq-take-while (lambda (e) (not (eq e '|))) formats))
+      :enabled))))
 
 (defun pandoc--extension-active-p (extension rw)
   "Return T if EXTENSION is active in the current buffer.
