@@ -859,7 +859,7 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((write . "native")))
+  `((writer . "native")))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
@@ -1549,9 +1549,9 @@ value."
 
 ;; Options added to menus manually.
 ;;
-;; Note that `write' is nod defined here, because it has a default value
+;; Note that `writer' is nod defined here, because it has a default value
 ;; other than nil.
-(define-pandoc-string-option read          nil nil "Input Format")
+(define-pandoc-string-option reader        nil nil "Input Format")
 (define-pandoc-string-option output        nil nil "Output File")
 (define-pandoc-file-option   output-dir    nil nil "Output Directory")
 (define-pandoc-file-option   defaults      nil nil "Defaults File")
