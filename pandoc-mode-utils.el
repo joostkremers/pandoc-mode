@@ -859,9 +859,7 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((read-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))
-    (write . "native")
-    (write-extensions ,@(mapcar 'list (sort (mapcar #'car pandoc--extensions) #'string<)))))
+  `((write . "native")))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
