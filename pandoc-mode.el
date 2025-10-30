@@ -2253,16 +2253,16 @@ file is found for FILE, otherwise non-nil."
              (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get 'writer))))
     (pandoc--save-settings 'local (pandoc--get 'writer) t))
   (let (settings)
-    ;; first try to read local settings
+    ;; First try to read local settings:
     (when file
       (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local format file)))))
-    ;; if it fails, try project settings
+    ;; If that fails, try project settings:
     (when (and file (not (cdr settings)))
       (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project format file)))))
-    ;; if that fails too, or if there is no file, try reading global settings
+    ;; If that fails too, or if there is no file, try reading global settings:
     (unless (cdr settings)
       (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'global format)))))
-    ;; now set them
+    ;; Now set them:
     (when (cdr settings)
       (setq pandoc--local-settings (cdr settings))
       (message "%s settings file loaded for format \"%s\"." (capitalize (symbol-name (car settings))) format))))
