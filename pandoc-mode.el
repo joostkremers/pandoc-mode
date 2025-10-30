@@ -8,6 +8,7 @@
 ;; Version: 2.34
 ;; Keywords: text, pandoc
 ;; URL: http://joostkremers.github.io/pandoc-mode/
+;; Package-Requires: ((emacs "30.1") (yaml "1.2.0"))
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
@@ -45,6 +46,7 @@
 (require 'transient)
 (require 'cl-lib)
 (require 'thingatpt)
+(require 'yaml)
 
 (declare-function ebib "ext:ebib.el" (&optional file key))
 
