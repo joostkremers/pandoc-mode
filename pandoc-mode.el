@@ -101,27 +101,6 @@ This is where `pandoc-mode' looks for global settings files."
   :group 'pandoc
   :type 'directory)
 
-(defcustom pandoc-directives '(("include" . pandoc--process-include-directive)
-                               ("lisp" . pandoc--process-lisp-directive))
-  "List of directives to be processed before pandoc is called.
-The directive must be given without `@@'; the function should
-return a string that will replace the directive and its
-argument (if any).
-
-The directives are processed in the order in which they appear in
-this list.  If a directive produces output that contains another
-directive, the new directive will only be processed if it is of
-the same type (i.e., an @@include directive loading a text that
-also contains @@include directives) or if it is lower on the
-list, not if it appears higher on the list."
-  :group 'pandoc
-  :type '(alist :key-type (string :tag "Directive") :value-type function))
-
-(defcustom pandoc-directives-hook nil
-  "List of functions to call before the directives are processed."
-  :group 'pandoc
-  :type '(repeat function))
-
 (defcustom pandoc-extension-active-marker "X"
   "Marker used to indicate an active extension."
   :group 'pandoc
@@ -1859,56 +1838,6 @@ EXTENSIONS is an alist of (<extension> . <value>) pairs."
                (t nil))))
           pandoc--cli-options))
 
-(defun pandoc-process-directives (output-format)
-  "Processes pandoc-mode @@-directives in the current buffer.
-OUTPUT-FORMAT is passed unchanged to the functions associated
-with the @@-directives."
-  (interactive (list (pandoc--get 'writer)))
-  (mapc #'funcall pandoc-directives-hook)
-  (let ((case-fold-search nil)
-        (directives-regexp (concat "\\([\\]?\\)@@" (regexp-opt (mapcar #'car pandoc-directives) t))))
-    (goto-char (point-min))
-    (while (re-search-forward directives-regexp nil t)
-      (if (string= (match-string 1) "\\")
-          (delete-region (match-beginning 1) (match-end 1))
-        (let ((@@-beg (match-beginning 0))
-              (@@-end (match-end 0))
-              (directive-fn (cdr (assoc (match-string 2) pandoc-directives))))
-          (cond
-           ((eq (char-after) ?{) ; if there is an argument.
-            ;; note: point is on the left brace, and scan-lists
-            ;; returns the position *after* the right brace. we need
-            ;; to adjust both values to get the actual argument.
-            (let* ((arg-beg (1+ (point)))
-                   (arg-end (1- (scan-lists (point) 1 0)))
-                   (text (buffer-substring-no-properties arg-beg arg-end)))
-              (goto-char @@-beg)
-              (delete-region @@-beg (1+ arg-end))
-              (insert (funcall directive-fn output-format text)))
-            (goto-char @@-beg))
-           ;; check if the next character is not a letter or number.
-           ;; if it is, we're actually on a different directive.
-           ((looking-at "[a-zA-Z0-9]") t)
-           ;; otherwise there is no argument.
-           (t (goto-char @@-beg)
-              (delete-region @@-beg @@-end) ; else there is no argument
-              (insert (funcall directive-fn output-format))
-              (goto-char @@-beg))))))))
-
-(defun pandoc--process-lisp-directive (_ lisp)
-  "Process @@lisp directives.
-The first argument is the output argument and is ignored.  LISP
-is the argument of the @@lisp directive."
-  (format "%s" (eval (car (read-from-string lisp)))))
-
-(defun pandoc--process-include-directive (_ include-file)
-  "Process @@include directives.
-The first argument is the output argument and is ignored.
-INCLUDE-FILE is the argument of the @@include directive."
-  (with-temp-buffer
-    (insert-file-contents include-file)
-    (buffer-string)))
-
 ;; `pandoc-call-external' sets up a process sentinel that needs to refer to
 ;; `pandoc-binary' to provide an informative message. We want to allow a
 ;; buffer-local value of `pandoc-binary', but the process sentinel doesn't
@@ -1923,10 +1852,9 @@ INCLUDE-FILE is the argument of the @@include directive."
 
 (defun pandoc--call-external (output-format &optional pdf region)
   "Call pandoc on the current buffer.
-This function creates a temporary buffer and sets up the required
-local options.  The contents of the current buffer is copied into
-the temporary buffer, the @@-directives are processed, after
-which pandoc is called.
+This function creates a temporary buffer and sets up the required local
+options.  The contents of the current buffer is copied into the
+temporary buffer, after which pandoc is called.
 
 OUTPUT-FORMAT is the format to use.  If t, the current buffer's
 output format is used.  If PDF is non-nil, a pdf file is created.
@@ -1960,8 +1888,8 @@ also ignored in this case."
     ;; Keep track of the buffer-local value of `pandoc-binary', if there is one.
     (setq pandoc--local-binary (buffer-local-value 'pandoc-binary buffer))
 
-    ;; We use a temp buffer, so we can process @@-directives without having to
-    ;; undo them and set the options independently of the original buffer.
+    ;; We use a temp buffer, so we can set the options independently of the
+    ;; original buffer.
     (with-temp-buffer
       (cond
        ;; If an output format was provided, try and load a defaults file for it.
@@ -1992,7 +1920,6 @@ also ignored in this case."
         (insert-buffer-substring-no-properties buffer (car region) (cdr region))
         (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it will hang forever.
         (message "Running %s on %s" (file-name-nondirectory pandoc--local-binary) display-name)
-        (pandoc-process-directives (pandoc--get 'writer))
         (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
           (erase-buffer))
         (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
@@ -3107,18 +3034,6 @@ allowed values are \"INFO\" and \"ERROR\"."
 (defvar pandoc-strikethrough-tilde-face 'pandoc-strikethrough-tilde-face
   "Face name to use for strikethrough delimiters.")
 
-(defvar pandoc-directive-@@-face 'pandoc-directive-@@-face
-  "Face name to use for '@@' in @@directives.")
-
-(defvar pandoc-directive-type-face 'pandoc-directive-type-face
-  "Face name to use for name of @@directives.")
-
-(defvar pandoc-directive-braces-face 'pandoc-directive-braces-face
-  "Face name to use for braces in @@directives.")
-
-(defvar pandoc-directive-contents-face 'pandoc-directive-contents-face
-  "Face name to use for contents of @@directives.")
-
 (defface pandoc-citation-key-face
   '((t (:inherit font-lock-function-name-face)))
   "Base face for the key of Pandoc citations."
@@ -3134,26 +3049,6 @@ allowed values are \"INFO\" and \"ERROR\"."
   "Base face for Pandoc strikethrough delimiters."
   :group 'pandoc)
 
-(defface pandoc-directive-@@-face
-  '((t (:inherit font-lock-type-face)))
-  "Base face for pandoc-mode @@directive syntax."
-  :group 'pandoc)
-
-(defface pandoc-directive-type-face
-  '((t (:inherit font-lock-preprocessor-face)))
-  "Base face for pandoc-mode @@directive type."
-  :group 'pandoc)
-
-(defface pandoc-directive-braces-face
-  '((t (:inherit font-lock-variable-name-face)))
-  "Base face for pandoc-mode @@directive braces."
-  :group 'pandoc)
-
-(defface pandoc-directive-contents-face
-  '((t (:inherit font-lock-constant-face)))
-  "Base face for pandoc-mode @@directive type."
-  :group 'pandoc)
-
 (defconst pandoc-regex-citation-key
   "[^[:alnum:]]\\(-?@\\([[:alnum:]_][[:alnum:]_:.#$%&+?<>~/-]*\\)\\)"
   "Regular expression for a citation key.")
@@ -3162,18 +3057,8 @@ allowed values are \"INFO\" and \"ERROR\"."
   "\\(~\\{2\\}\\)\\([^~].*?\\)\\(~\\{2\\}\\)"
   "Regular expression for pandoc markdown's strikethrough syntax.")
 
-(defconst pandoc-regex-@@-directive
-  "\\(@@\\)\\(include\\|lisp\\)\\({\\)\\(.*?\\)\\(}\\)"
-  "Regular expression for pandoc-mode's @@directives.")
-
 (defvar pandoc-faces-keywords
   (list
-   (cons pandoc-regex-@@-directive
-   	 '((1 pandoc-directive-@@-face)
-	   (2 pandoc-directive-type-face)
-	   (3 pandoc-directive-braces-face)
-   	   (4 pandoc-directive-contents-face)
-	   (5 pandoc-directive-braces-face)))
    (cons pandoc-regex-citation-key
    	 '((1 pandoc-citation-key-face t)))
    (cons pandoc-regex-strikethrough
