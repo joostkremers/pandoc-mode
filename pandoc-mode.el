@@ -2187,10 +2187,10 @@ output format for which the settings are to be saved.  If
 NO-CONFIRM is non-nil, any existing settings file is overwritten
 without asking."
   (let* ((filename (buffer-file-name))
-         (settings pandoc--local-settings)
-         (defaults-file (if (eq type 'global)
-                            (pandoc--create-defaults-filename 'global format)
-                          (pandoc--create-defaults-filename type format filename))))
+         (defaults-file (pandoc--create-defaults-filename
+                         type
+                         format
+                         (unless (eq type 'global) filename))))
     (if (and (not no-confirm)
              (file-exists-p defaults-file)
              (not (y-or-n-p (format "%s defaults file `%s' already exists.  Overwrite? "
@@ -2198,20 +2198,26 @@ without asking."
                                     (file-name-nondirectory defaults-file)))))
         (message "%s defaults file not written." (capitalize (symbol-name type)))
       (with-temp-buffer
-        (let ((print-length nil)
-              (print-level nil)
-              (print-circle nil))
-          (insert ";; -*- mode: lisp-data -*-\n\n"
-                  (format ";; pandoc-mode %s settings file%s\n"
-                          type
-                          (if (eq type 'local)
-                              (concat " for " (file-name-nondirectory filename))
-                            ""))
-                  (format ";; saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M")))
-          (pp settings (current-buffer)))
+        (insert (format "# Emacs pandoc-mode %s settings file%s\n"
+                        type
+                        (if (eq type 'local)
+                            (concat " for " (file-name-nondirectory filename))
+                          ""))
+                (format "# Saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M"))
+                (yaml-encode pandoc--local-settings)
+                "\n\n## pandoc-mode settings ##\n"
+                (string-join (mapcar (lambda (str)
+                                       (concat "# " str))
+                                     (split-string (yaml-encode `((output-dir . ,pandoc-output-dir)
+                                                                  (master-file . ,pandoc-master-file)))
+                                                   "\n"))
+                             "\n")
+                "\n")
         (let ((make-backup-files nil))
           (write-region (point-min) (point-max) defaults-file))
-        (message "%s settings file written to `%s'." (capitalize (symbol-name type)) (file-name-nondirectory defaults-file)))
+        (message "%s settings file written to `%s'."
+                 (capitalize (symbol-name type))
+                 (file-name-nondirectory defaults-file)))
       (setq pandoc--settings-modified-flag nil))))
 
 (defun pandoc-revert-settings ()
