@@ -949,10 +949,7 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 Optional argument BUFFER is the buffer from which the value is to
 be retrieved."
   (or buffer (setq buffer (current-buffer)))
-  (let ((var (intern (concat "pandoc/" (symbol-name option)))))
-    (if (local-variable-p var buffer)
-        (buffer-local-value var buffer)
-      (cdr (assq option (buffer-local-value 'pandoc--local-settings buffer))))))
+  (cdr (assq option (buffer-local-value 'pandoc--local-settings buffer))))
 
 (defun pandoc--set (option value)
   "Set the local value of OPTION to VALUE."
@@ -1912,10 +1909,6 @@ also ignored in this case."
       ;; Set the name of the output file.
       (setq output-file (pandoc--compose-output-file-name pdf input-file))
 
-      ;; Copy any local `pandoc/' variables from `orig-buffer' or
-      ;; `buffer' (the values in `orig-buffer' take precedence):
-      (dolist (option (pandoc--get-file-local-options (list orig-buffer buffer)))
-        (set (make-local-variable (car option)) (cdr option)))
       (let ((option-list (pandoc--format-all-options output-file pdf)))
         (insert-buffer-substring-no-properties buffer (car region) (cdr region))
         (insert "\n") ; Insert a new line. If Pandoc does not encounter a newline on a single line, it will hang forever.
@@ -2031,23 +2024,6 @@ pandoc is always run on the master file)."
     (when write-extensions
       (setcdr write-extensions (funcall remove-defaults (cdr write-extensions))))
     (funcall remove-defaults settings)))
-
-(defun pandoc--get-file-local-options (buffers)
-  "Return all pandoc related file-local variables and their values.
-These are file local variables beginning with `pandoc/'.  Return
-value is an alist of (var . value) pairs.  The values are
-searched in BUFFERS, which is a list of buffers.  The first value
-found for a particular value is the one returned.  In other
-words, a value from a buffer earlier in BUFFERS overrides the
-value of a later buffer."
-  (delq nil (mapcar (lambda (option)
-                      (let ((var (intern (concat "pandoc/" (symbol-name (car option)))))
-                            (bs buffers))
-                        (while (and bs (not (local-variable-p var (car bs))))
-                          (setq bs (cdr bs)))
-                        (when bs
-                          (cons var (buffer-local-value var (car bs))))))
-                    pandoc--options)))
 
 (defun pandoc--create-defaults-filename (type output-format &optional filename)
   "Create a defaults filename.
