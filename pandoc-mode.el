@@ -2280,11 +2280,24 @@ If FILE does not exist or cannot be read, return nil."
       (with-temp-buffer
         (insert-file-contents file)
         (goto-char (point-min))
-        (let ((flist (when (search-forward "(" nil t)
-                       (forward-char -1)
-                       (read (current-buffer)))))
-          (if (listp flist)
-              flist)))))
+        (list :yaml (yaml-parse-string (buffer-string) :object-type 'alist :null-object nil)
+              :non-pandoc (pandoc--read-non-pandoc-settings)))))
+
+(defun pandoc--read-non-pandoc-settings ()
+  "Read non-Pandoc settings in the current buffer.
+The buffer should be a (temporary) buffer holding a defaults file.  The
+non-Pandoc settings are additional settings placed in a comment block at
+the end of the defaults file."
+  (goto-char (point-min))
+  (let* ((start (re-search-forward "## pandoc-mode settings ##\n"))
+         (end (re-search-forward "## end"))
+         (lines (split-string (buffer-substring start end) "\n")))
+    (yaml-parse-string (string-join (mapcar (lambda (l)
+                                              (substring l 2))
+                                            (take (1- (length lines)) lines))
+                                    "\n")
+                       :object-type 'alist
+                       :null-object nil)))
 
 (defun pandoc-view-output (&optional arg)
   "Display the output file.
