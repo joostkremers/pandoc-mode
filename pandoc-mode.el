@@ -2274,48 +2274,11 @@ If FILE does not exist or cannot be read, return nil."
       (with-temp-buffer
         (insert-file-contents file)
         (goto-char (point-min))
-        (if (looking-at "#") ; We're probably dealing with an old settings file.
-            (pandoc--read-old-settings-from-buffer)
-          (let ((flist (when (search-forward "(" nil t)
-                         (forward-char -1)
-                         (read (current-buffer)))))
-            (if (listp flist)
-                flist))))))
-
-(defun pandoc--read-old-settings-from-buffer ()
-  "Read old-style settings from the current buffer.
-`pandoc--settings-modified-flag' is set, so that the user will be
-asked to save the settings on exit.  Return an alist with the
-options and their values."
-  (goto-char (point-min))
-  (let (options)                        ; we collect the options in a list
-    (while (re-search-forward "^\\([a-z-]*\\)::\\(.*?\\)$" nil t)
-      (let ((option (intern (match-string 1)))
-            (value (match-string 2)))
-        ;; If the option is a variable or extension, we read its name and
-        ;; value and add them to the alist as a dotted list.
-        (push (if (memq option '(variable read-extensions write-extensions))
-                  (progn
-                    (string-match "^\\(.*?\\):\\(.*?\\)$" value)
-                    (cons option (cons (match-string 1 value)
-                                       (if (eq option 'variable)
-                                           (match-string 2 value)
-                                         (intern (match-string 2 value))))))
-                (cons option (cond
-                              ((string-match "^[0-9]$" value) (string-to-number value))
-                              ((string= "t" value) t)
-                              ((string= "nil" value) nil)
-                              (t value))))
-              options)))
-    ;; `options' isn't in the proper format for pandoc--local-settings yet:
-    ;; there may be multiple variables and extensions in it. Since we're in
-    ;; a temp buffer, we can simply use pandoc--set to set all options and
-    ;; then return the local value of `pandoc--local-settings'.
-    (setq pandoc--local-settings (copy-tree pandoc--options))
-    (mapc (lambda (option)
-            (pandoc--set (car option) (cdr option)))
-          options)
-    pandoc--local-settings))
+        (let ((flist (when (search-forward "(" nil t)
+                       (forward-char -1)
+                       (read (current-buffer)))))
+          (if (listp flist)
+              flist)))))
 
 (defun pandoc-view-output (&optional arg)
   "Display the output file.
