@@ -2197,7 +2197,7 @@ the end of the defaults file."
          (end (re-search-forward "## end"))
          (lines (split-string (buffer-substring start end) "\n")))
     (yaml-parse-string (string-join (mapcar (lambda (l)
-                                              (substring l 2))
+                                              (string-remove-prefix "# " l))
                                             (take (1- (length lines)) lines))
                                     "\n")
                        :object-type 'alist
