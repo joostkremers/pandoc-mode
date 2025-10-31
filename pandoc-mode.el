@@ -851,12 +851,17 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((writer . "native")))
+  `((:yaml ((writer . "native")))
+    (:non-pandoc ((output)
+                  (output-dir)
+                  (master-file)))))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
 stores the local values of the options.  The `define-pandoc-*-option'
-functions add their options to this list with default value nil."
+functions add their options to this list with default value nil.  The
+`:yaml' options are those that Pandoc can read, while the `:non-pandoc'
+options are those that only `pandoc-mode' uses."
 
 (defconst pandoc--html-math-methods '(("mathjax" . t)
                                       ("mathml")
@@ -865,11 +870,6 @@ functions add their options to this list with default value nil."
                                       ("gladtex"))
   "Possible values for the Pandoc option `html-math-method'.
 If the cdr of an entry is t, the option takes an optional URL.")
-
-(defvar-local pandoc--non-pandoc-settings '((output)
-                                            (output-dir)
-                                            (master-file))
-  "Alist of settings used by `pandoc-mode' that are not Pandoc settings.")
 
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
@@ -946,25 +946,38 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 
 ;; Getter and setter functions
 
+(defun pandoc--get-option-type (option)
+  "Get the type of OPTION.
+The type is either `:yaml' or `:non-pandoc'.  See `pandoc--options' for
+details."
+  ;; Note: `pandoc--options' is an alist where each value is itself an
+  ;; alist.  Hence the somewhat complex `cl-rassoc' call.
+  (car (cl-rassoc option pandoc--options
+                  :key (lambda (l)
+                         (car (assq option l))))))
+
 (defun pandoc--get (option &optional buffer)
   "Return the value of OPTION.
 Optional argument BUFFER is the buffer from which the value is to
 be retrieved."
   (or buffer (setq buffer (current-buffer)))
-  (cdr (assq option (buffer-local-value 'pandoc--local-settings buffer))))
+  (let ((type (pandoc--get-option-type option)))
+    (cdr (assq option (alist-get type (buffer-local-value 'pandoc--local-settings buffer))))))
 
 (defun pandoc--set (option value)
   "Set the local value of OPTION to VALUE."
-  (when (assq option pandoc--options) ; Check if the option is licit.
-    (unless (assq option pandoc--local-settings) ; Add the option if it's not there.
-      (push (list option) pandoc--local-settings))
-    (cond
-     ((memq option pandoc--alist-options)
-      (pandoc--set-alist-option option value))
-     ((memq option pandoc--list-options)
-      (pandoc--set-list-option option value))
-     (t (setcdr (assq option pandoc--local-settings) value)))
-    (setq pandoc--settings-modified-flag t)))
+  (if-let* ((type (pandoc--get-option-type option))) ; Check if the option is licit.
+      (progn
+        (unless (assq option (alist-get type pandoc--local-settings)) ; Add the option if it's not there.
+          (push (list option) (alist-get type pandoc--local-settings)))
+        (cond
+         ((memq option pandoc--alist-options)
+          (pandoc--set-alist-option option value))
+         ((memq option pandoc--list-options)
+          (pandoc--set-list-option option value))
+         (t (setcdr (assq option (alist-get type pandoc--local-settings)) value)))
+        (setq pandoc--settings-modified-flag t))
+    (error "[pandoc-mode] No such option: `%s'" option)))
 
 (defun pandoc--set-alist-option (option new-elem)
   "Set an alist OPTION.
@@ -985,13 +998,13 @@ If NEW-ELEM is nil, OPTION is unset entirely."
       (setq items (delq item items))) ; remove <name>
      ((and (not item) value) ; if <name> does not exist
       (setq items (append items (list new-elem))))) ; add it
-    (setcdr (assoc option pandoc--local-settings) items)))
+    (setcdr (assq option (alist-get :yaml pandoc--local-settings)) items)))
 
 (defun pandoc--set-list-option (option value)
   "Add VALUE to list option OPTION.
 If VALUE is nil, OPTION is unset entirely."
   (let* ((values (pandoc--get option)))
-    (setcdr (assoc option pandoc--local-settings)
+    (setcdr (assoc option (alist-get :yaml pandoc--local-settings))
             (if value
                 (append values (list value))
               nil)))) ; if VALUE was nil, we unset the option
@@ -1000,7 +1013,7 @@ If VALUE is nil, OPTION is unset entirely."
   "Remove VALUE from the list of OPTION."
   (let* ((values (pandoc--get option))
          (new-values (remove value values)))
-    (setcdr (assoc option pandoc--local-settings) new-values)))
+    (setcdr (assoc option (alist-get :yaml pandoc--local-settings)) new-values)))
 
 (defun pandoc--toggle (switch)
   "Toggle the value of SWITCH."
@@ -1135,7 +1148,7 @@ appear in the menu."
                ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
      (push (cons ,description (quote ,option)) pandoc--switches)
      (push (quote ,option) pandoc--cli-options)
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      ,(when menu
         `(push (quote ,(list key `(lambda () (interactive)
                                     (pandoc--toggle (quote ,option)))
@@ -1163,7 +1176,7 @@ or t and indicates whether the option can have a default value."
   `(progn
      (push (quote ,option) pandoc--filepath-options)
      (push (quote ,option) pandoc--cli-options)
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      ,(when menu
         `(push (list ,prompt
                      ,(vector (concat "No " prompt) `(pandoc--set (quote ,option) nil)
@@ -1221,7 +1234,7 @@ formulated in such a way that the strings \"Default \" and \"Set \"
 can be added before it."
   (declare (indent defun))
   `(progn
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,prompt
@@ -1272,7 +1285,7 @@ formulated in such a way that the strings \"No \", \"Set \" and
 \"Default \" can be added before it.  DEFAULT must be either NIL
 or T and indicates whether the option can have a default value."
   `(progn
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
@@ -1337,7 +1350,7 @@ PROMPT is a string that is used to prompt for setting and unsetting the
 option.  It must be formulated in such a way that the strings \"Add \",
 \"Remove \" can be added before it."
   `(progn
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      (push (quote ,option) pandoc--list-options)
      (put (quote ,option) (quote pandoc-list-type) (quote ,type))
      ,(when menu
@@ -1413,7 +1426,7 @@ used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"Set/Change \" and
 \"Unset \" can be added before it."
   `(progn
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      (push (quote ,option) pandoc--alist-options)
      ;; Menu
      ,(when menu
@@ -1499,7 +1512,7 @@ that Pandoc uses if the option is unspecified.  OUTPUT-FORMATS is
 a list of output formats for which OPTION should be active in the
 menu."
   `(progn
-     (push (list (quote ,option)) pandoc--options)
+     (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,prompt
@@ -2109,11 +2122,11 @@ without asking."
                             (concat " for " (file-name-nondirectory filename))
                           ""))
                 (format "# Saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M"))
-                (yaml-encode pandoc--local-settings)
+                (yaml-encode (alist-get :yaml pandoc--local-settings))
                 "\n\n## pandoc-mode settings ##\n"
                 (string-join (mapcar (lambda (str)
                                        (concat "# " str))
-                                     (split-string (yaml-encode pandoc--non-pandoc-settings)
+                                     (split-string (yaml-encode (alist-get :non-pandoc pandoc--local-settings))
                                                    "\n"))
                              "\n")
                 "\n")
@@ -2162,20 +2175,24 @@ file is found for FILE, otherwise non-nil."
              pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get 'writer))))
     (pandoc--save-settings 'local (pandoc--get 'writer) t))
-  (let (settings)
+  (let (settings
+        type)
     ;; First try to read local settings:
     (when file
-      (setq settings (cons 'local (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local format file)))))
+      (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local format file))
+            type "Local"))
     ;; If that fails, try project settings:
-    (when (and file (not (cdr settings)))
-      (setq settings (cons 'project (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project format file)))))
+    (when (and file (not settings))
+      (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project format file))
+            type "Project"))
     ;; If that fails too, or if there is no file, try reading global settings:
-    (unless (cdr settings)
-      (setq settings (cons 'global (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'global format)))))
+    (unless settings
+      (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'global format))
+            type "Global"))
     ;; Now set them:
-    (when (cdr settings)
-      (setq pandoc--local-settings (cdr settings))
-      (message "%s settings file loaded for format \"%s\"." (capitalize (symbol-name (car settings))) format))))
+    (when settings
+      (setq pandoc--local-settings settings)
+      (message "%s settings file loaded for format \"%s\"." type format))))
 
 (defun pandoc--read-settings-from-file (file)
   "Read the settings in FILE and return them.
@@ -2184,8 +2201,8 @@ If FILE does not exist or cannot be read, return nil."
       (with-temp-buffer
         (insert-file-contents file)
         (goto-char (point-min))
-        (list :yaml (yaml-parse-string (buffer-string) :object-type 'alist :null-object nil)
-              :non-pandoc (pandoc--read-non-pandoc-settings)))))
+        (list (cons :yaml (yaml-parse-string (buffer-string) :object-type 'alist :null-object nil))
+              (cons :non-pandoc (pandoc--read-non-pandoc-settings))))))
 
 (defun pandoc--read-non-pandoc-settings ()
   "Read non-Pandoc settings in the current buffer.
