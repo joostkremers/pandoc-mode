@@ -866,6 +866,11 @@ functions add their options to this list with default value nil."
   "Possible values for the Pandoc option `html-math-method'.
 If the cdr of an entry is t, the option takes an optional URL.")
 
+(defvar-local pandoc--non-pandoc-settings '((output)
+                                            (output-dir)
+                                            (master-file))
+  "Alist of settings used by `pandoc-mode' that are not Pandoc settings.")
+
 (defvar-local pandoc--local-settings nil "A buffer-local variable holding a file's pandoc options.")
 
 (defvar-local pandoc--settings-modified-flag nil "Non-nil means the current settings were modified and not saved.")
@@ -2111,8 +2116,7 @@ without asking."
                 "\n\n## pandoc-mode settings ##\n"
                 (string-join (mapcar (lambda (str)
                                        (concat "# " str))
-                                     (split-string (yaml-encode `((output-dir . ,pandoc-output-dir)
-                                                                  (master-file . ,pandoc-master-file)))
+                                     (split-string (yaml-encode pandoc--non-pandoc-settings)
                                                    "\n"))
                              "\n")
                 "\n")
