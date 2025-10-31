@@ -2263,21 +2263,17 @@ file exists, display the *Pandoc output* buffer."
 (defun pandoc-view-settings ()
   "Displays the settings file in a *Help* buffer."
   (interactive)
-  ;; remove all options that do not have a value.
-  (let* ((settings (pandoc--current-settings))
-         (buffers (list (current-buffer)
-                        (if (pandoc--get 'master-file)
-                            (find-file-noselect (pandoc--get 'master-file)))))
-         (file-locals (pandoc--get-file-local-options buffers)))
+  (let* ((settings pandoc--local-settings))
     (with-help-window " *Pandoc Help*"
-      (let ((print-length nil)
-            (print-level nil)
-            (print-circle nil))
-        (princ "Current settings:\n\n")
-        (pp settings)
-        (when file-locals
-          (princ "\n\nFile-local settings:\n\n")
-          (pp file-locals))))))
+      (princ "Current settings:\n\n")
+      (insert (yaml-encode (alist-get :yaml settings))
+              "\n\n## pandoc-mode settings ##\n"
+              (string-join (mapcar (lambda (str)
+                                     (concat "# " str))
+                                   (split-string (yaml-encode (alist-get :non-pandoc settings))
+                                                 "\n"))
+                           "\n")
+              "\n"))))
 
 (defun pandoc-view-log ()
   "Display the log buffer in a temporary window."
