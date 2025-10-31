@@ -882,9 +882,6 @@ If the cdr of an entry is t, the option takes an optional URL.")
 (defvar pandoc--log-buffer-name " *Pandoc log*")
 (defvar pandoc--viewer-buffer-name " *Pandoc viewer*")
 
-(defvar pandoc--options-menu nil
-  "Auxiliary variable for creating the options menu.")
-
 ;;; Utility functions
 
 ;; File names
@@ -2605,17 +2602,6 @@ allowed values are \"INFO\" and \"ERROR\"."
       :active t :style 'radio :selected (not (pandoc--get 'verbosity ))]
      ["Low (show only error messages)" (pandoc--set 'verbosity "ERROR")
       :active t :style 'radio :selected (equal (pandoc--get 'verbosity ) "ERROR")])))
-
-;; ("Options"
-;;  ,@pandoc--options-menu)
-;; ("Switches"
-;;  ;; put the binary options into the menu
-;;  ,@(mapcar (lambda (option)
-;;              (vector (car option) `(pandoc--toggle (quote ,(cdr option)))
-;;                      :active t
-;;                      :style 'toggle
-;;                      :selected `(pandoc--get (quote ,(cdr option)))))
-;;            pandoc--switches))
 
 ;;; Transients
 
