@@ -2339,15 +2339,38 @@ should be toggled for the input or the output format."
 
 (defun pandoc-set-output (prefix)
   "Set the output file.
-If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument]', the output
-file is unset.  If called with any other prefix argument, the output
-file is created on the basis of the input file and the output format."
+This function actually sets two options: `output-file' and `output'.
+The former is a Pandoc option, the latter is not, and is used instead by
+`pandoc-mode' to determine whether it should create an output file name
+to pass to Pandoc on the command line.
+
+If called without prefix argument, ask for a file name and store it as
+an absolute path.  If called with the prefix argument `\\[universal-argument]', ask for a
+file name but only store the base name.  This puts the output file in
+the same directory as the input file, or in the `output-dir' directory.
+
+If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument])', unset the
+output file, which means that the output goes to stdout.  If called with
+a numeric prefix argument, create the output file name on the basis of
+the input file, but with the appropriate extension for the output
+format."
   (interactive "P")
-  (pandoc--set 'output-file
-               (cond
-                ((eq prefix '-) nil)
-                ((null prefix) (file-name-nondirectory (read-file-name "Output file: ")))
-                (t t))))
+  (cond
+   ((null prefix)
+    (pandoc--set 'output nil)
+    (pandoc--set 'output-file (read-file-name "Output file (full path): ")))
+   ((and (listp prefix)
+         (eq (car prefix) 4))
+    (pandoc--set 'output nil)
+    (pandoc--set 'output-file (file-name-nondirectory
+                               (read-file-name "Output file (filename only): "
+                                               (pandoc--get 'output-dir)))))
+   ((eq prefix '-)
+    (pandoc--set 'output nil)
+    (pandoc--set 'output-file nil))
+   ((numberp prefix)
+    (pandoc--set 'output t)
+    (pandoc--set 'output-file nil))))
 
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
