@@ -2857,7 +2857,7 @@ allowed values are \"INFO\" and \"ERROR\"."
   ["File menu"
    ("o" pandoc-set-output
     :description (lambda ()
-                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output-file))))
+                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
    ("O" pandoc-set-output-dir
     :description (lambda ()
                    (format "%-27s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
