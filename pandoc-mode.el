@@ -2494,6 +2494,39 @@ allowed values are \"INFO\" and \"ERROR\"."
                    nil
                  (completing-read "Verbosity: " '("INFO" "ERROR") nil t))))
 
+(defun pandoc-set-filters (prefix)
+  "Add / remove a filter.
+If called with the universal PREFIX argument `\\[universal-argument]',
+ask for both a filter and its type (`lua' or `json').  If PREFIX is the
+negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), ask for a filter to
+remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument]', remove all filters."
+  (interactive "P")
+  (cond
+   ((and (listp prefix) ; Remove all filters.
+         (eq (car prefix) 16))
+    (pandoc--set 'filters nil))
+
+   ((eq prefix '-)                      ; Remove a filter.
+    ;; The `filters' option is a list where each element is either a string
+    ;; or a two-element alist with keys `path' and `type'.  This makes for
+    ;; some cumbersome list-handling, so we define a local function
+    ;; `get-key' here to make it a bit easier.
+    (cl-flet ((get-key (e)
+                (if (stringp e)
+                    e
+                  (alist-get 'path e))))
+      (let* ((filters (pandoc--get 'filters))
+             (filter (completing-read "Remove filter: " (mapcar #'get-key filters) nil t)))
+        (pandoc--set 'filters (cl-delete filter filters :key #'get-key :test #'equal)))))
+
+   ((and (listp prefix)         ; Add a filter with both `path' and `type'.
+         (eq (car prefix) 4))
+    (let ((filter (pandoc--read-file-name "Add filter: " default-directory 'relative))
+          (type (completing-read "Filter type: " '("lua" "json") nil t)))
+      (pandoc--set 'filters `((path . ,filter) (type . ,type)))))
+
+   (t (pandoc--set 'filters (pandoc--read-file-name "Add filter: " default-directory 'relative)))))
+
 ;;; Menu-bar menu
 
 (easy-menu-define pandoc-mode-menu pandoc-mode-map "Pandoc menu."
