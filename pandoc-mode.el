@@ -1556,22 +1556,42 @@ value."
                      value)))))
 
 ;;; Defining the options
-;; Note that the options are added to the menus and transients in reverse order.
 
-;; Options added to menus manually.
-(define-pandoc-string-option reader        nil nil "Input Format")
-(define-pandoc-string-option output-file   nil nil "Output File")
-(define-pandoc-file-option   output-dir    nil nil "Output Directory")
-(define-pandoc-file-option   defaults      nil nil "Defaults File")
-(define-pandoc-switch        file-scope    nil nil "Use File Scope")
-(define-pandoc-switch        sandbox       nil nil "Run In Sandbox")
-(define-pandoc-file-option   data-dir      nil nil "Data Directory")
-(define-pandoc-file-option   extract-media nil nil "Extract Media Files")
-(define-pandoc-file-option   master-file   nil nil "Master File")
-(define-pandoc-string-option verbosity     nil nil "Verbosity")
+;; We first define a number of options without adding them to any menu.
+;; They are added to various menus manually, and they have specific setter
+;; functions.
 
-;; Note that `writer' is not defined here, because it has a default value
-;; other than nil.
+;; TODO An object-oriented approach for the options would probably be
+;; better. Perhaps subclassing transient classes, although I'm not sure if
+;; that would still work with `yaml-encode' or the menu-bar menus.
+
+;; A few comments:
+;;
+;; The `writer' option is not defined here, because its default value is
+;; not nil.
+
+;; `filters' and `html-math-method' are defined as list options, because
+;; that ensures that `yaml-encode' treats them correctly.  In pandoc-mode,
+;; however, they behave differently from other list options, which is why
+;; we define them here and why they have special setter functions.  (This
+;; is why an object-oriented approach would be better.  In fact, I'm kinda
+;; implementing one, just in a haphazard way.)
+
+(define-pandoc-string-option reader           nil nil "Input Format")
+(define-pandoc-string-option output-file      nil nil "Output File")
+(define-pandoc-file-option   defaults         nil nil "Defaults File")
+(define-pandoc-switch        file-scope       nil nil "Use File Scope")
+(define-pandoc-switch        sandbox          nil nil "Run In Sandbox")
+(define-pandoc-file-option   data-dir         nil nil "Data Directory")
+(define-pandoc-file-option   extract-media    nil nil "Extract Media Files")
+(define-pandoc-string-option verbosity        nil nil "Verbosity")
+(define-pandoc-list-option   filters          nil nil file "Filters" "Filter")
+(define-pandoc-list-option   html-math-method nil nil string "HTML Math Rendering" "")
+
+;; Options added to the menus automatically. Note that the options are
+;; added to the menus and transients in reverse order, because we're using
+;; `push' to put them in the lists that we use to define the transients and
+;; menus.
 
 ;; Reader options
 (define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
@@ -1581,8 +1601,6 @@ value."
 (define-pandoc-switch        preserve-tabs           reader "p"      "Preserve Tabs")
 (define-pandoc-list-option   metadata-files          reader "M" file "Metadata Files" "Metadata File")
 (define-pandoc-alist-option  metadata                reader "m"      "Metadata" "Metadata item")
-(define-pandoc-list-option   filter                  reader "f" file "Filters" "Filter")
-(define-pandoc-list-option   lua-filter              reader "l" file "Lua Filters" "Lua Filter")
 (define-pandoc-string-option default-image-extension reader "i"      "Default Image Extension")
 (define-pandoc-string-option indented-code-classes   reader "c"      "Indented Code Classes")
 (define-pandoc-number-option shift-heading-level-by  reader "h"      "Header Level Shift")
@@ -1674,19 +1692,6 @@ value."
 (define-pandoc-file-option   csl                    citations "C"       "CSL File")
 (define-pandoc-list-option   bibliography           citations "B"  file "Bibliography Files" "Bibliography File")
 (define-pandoc-switch        citeproc               citations "c"       "Process Citations")
-
-;;; Math rendering in HTML
-
-;; Note: `html-math-method' may look like an alist option, since its value
-;; is an alist with keys `method' and `url', but the two keys cannot be set
-;; independently.  Therefore we define it as a list option, even though
-;; that's not a really good fit, either. That's why we also have a special
-;; setter function, `pandoc-set-html-math-method'.
-;;
-;; TODO An object-oriented approach for the options would probably be
-;; better. Perhaps subclassing transient classes, although I'm not sure if
-;; that would still work with the menu-bar menus.
-(define-pandoc-list-option html-math-method nil nil string "HTML Math Rendering" "")
 
 ;;; Main
 
