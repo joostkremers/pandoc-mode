@@ -2216,15 +2216,15 @@ The buffer should be a (temporary) buffer holding a defaults file.  The
 non-Pandoc settings are additional settings placed in a comment block at
 the end of the defaults file."
   (goto-char (point-min))
-  (let* ((start (re-search-forward "## pandoc-mode settings ##\n"))
-         (end (re-search-forward "## end"))
-         (lines (split-string (buffer-substring start end) "\n")))
-    (yaml-parse-string (string-join (mapcar (lambda (l)
-                                              (string-remove-prefix "# " l))
-                                            (take (1- (length lines)) lines))
-                                    "\n")
-                       :object-type 'alist
-                       :null-object nil)))
+  (if-let* ((start (re-search-forward "## pandoc-mode settings ##\n" nil t))
+            (end (re-search-forward "## end" nil t))
+            (lines (split-string (buffer-substring start end) "\n")))
+      (yaml-parse-string (string-join (mapcar (lambda (l)
+                                                (string-remove-prefix "# " l))
+                                              (take (1- (length lines)) lines))
+                                      "\n")
+                         :object-type 'alist
+                         :null-object nil)))
 
 (defun pandoc-view-output (&optional arg)
   "Display the output file.
