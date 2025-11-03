@@ -1747,24 +1747,24 @@ If PDF is non-nil, use `pdf' as the extension.
 If the current buffer's settings do not specify an output
 file (i.e., if the output file is set to nil), return nil."
   (or input-file
-      (setq input-file (expand-file-name (buffer-file-name))))
+      (setq input-file (buffer-file-name)))
   (cond
-   ((or (eq (pandoc--get 'output-file) t) ; If the user set the output file to t.
+   ((or (eq (pandoc--get 'output) t) ; If the user set `output' to t.
         (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
              (or pdf                      ; (i) we're converting to pdf, or
                  (member (pandoc--get 'writer) ; (ii) the output format is one of these:
                          '("odt" "epub" "docx" "pptx")))))
-    (format "%s/%s%s"                   ; we create an output file name.
-            (expand-file-name (or (pandoc--get 'output-dir)
-                                  (file-name-directory input-file)))
+    (format "%s%s%s"                   ; we create an output file name.
+            (or (pandoc--get 'output-dir)
+                (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
             (file-name-sans-extension (file-name-nondirectory input-file))
             (if pdf
                 ".pdf"
               (cadr (assoc (pandoc--get 'writer) pandoc-output-format-extensions)))))
    ((stringp (pandoc--get 'output-file))     ; If the user set an output file,
-    (format "%s/%s"               ; we combine it with the output directory
-            (expand-file-name (or (pandoc--get 'output-dir)
-                                  (file-name-directory input-file)))
+    (format "%s%s"               ; we combine it with the output directory
+            (or (pandoc--get 'output-dir)
+                (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
             (if pdf                 ; and check if we're converting to pdf.
                 (concat (file-name-sans-extension (pandoc--get 'output-file)) ".pdf")
               (pandoc--get 'output-file))))
@@ -1928,7 +1928,7 @@ also ignored in this case."
         (pandoc--set 'writer (setq output-format (pandoc--get 'writer orig-buffer)))))
 
       ;; Set the name of the output file.
-      (setq output-file (pandoc--compose-output-file-name pdf input-file))
+      (setq output-file (expand-file-name (pandoc--compose-output-file-name pdf input-file)))
 
       (let ((option-list (pandoc--format-all-options output-file pdf)))
         (insert-buffer-substring-no-properties buffer (car region) (cdr region))
@@ -2241,7 +2241,7 @@ file exists, display the *Pandoc output* buffer."
   (let ((format (or (car pandoc--latest-run)
                     (pandoc--get 'writer)))
         (file (or (cdr pandoc--latest-run)
-                  (pandoc--compose-output-file-name arg))))
+                  (expand-file-name (pandoc--compose-output-file-name arg)))))
     (if file
         (if (file-readable-p file)
             (let ((handler (if (cl-equalp (file-name-extension file) "pdf")
