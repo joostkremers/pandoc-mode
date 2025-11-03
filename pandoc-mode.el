@@ -851,10 +851,10 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((:yaml ((writer . "native")))
-    (:non-pandoc ((output)
-                  (output-dir)
-                  (master-file)))))
+  `((:yaml . ((writer . "native")))
+    (:non-pandoc . ((output)
+                    (output-dir)
+                    (master-file)))))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
