@@ -2890,7 +2890,8 @@ allowed values are \"INFO\" and \"ERROR\"."
              'pandoc-reader-options-transient
              (list (vconcat (list "Reader options")
                             pandoc--reader-transient-list
-                            '(" "
+                            '("f" "Filters" pandoc-set-filters
+                              " "
                               ("b" "Back" transient-quit-one)
                               ("q" "Quit" transient-quit-all))))))])
 
