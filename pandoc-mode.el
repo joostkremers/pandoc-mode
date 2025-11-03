@@ -1468,7 +1468,7 @@ This function is meant to be called from an interactive function to do
 the actual work.  PREFIX is the raw prefix argument from the calling
 function.  If it is nil, a new <key:value> item is added to the list,
 where the user is asked for both <key> and <value>.  If PREFIX is a
-number (i.e., the function was called with a numeric prefix argument), a
+number (i.e., the function was called with the prefix argument \\[universal-argument]), a
 new <key:value> item is added to the list, where the user is asked for
 <key>, but <value> is set to t.
 
@@ -1485,7 +1485,7 @@ removed from the list.  If it is `\\[universal-argument] \\[universal-argument]'
       (when (and var (not (string= "" var)))
         (let ((value (cond
                       ((eq prefix '-) nil)
-                      ((numberp prefix) t)
+                      ((and (listp prefix) (eq (car prefix) 4)) t)
                       (t (read-string "Value: " nil nil (cdr (assq var (pandoc--get option))))))))
           (when (string= value "") ;; Strings may be empty, corresponding to boolean True in Pandoc.
             (setq value t))
