@@ -1387,7 +1387,7 @@ argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is rem
 it is `\\[universal-argument] \\[universal-argument]', the entire list is cleared.  If the list is a list
 of files, the function can also be called with the prefix argument
 `\\[universal-argument]' to store the full path.  If PREFIX is numeric (i.e., `\\[universal-argument] 1'
-or `M--'), file name completion is not used.  This is useful for list
+or `M-1'), file name completion is not used.  This is useful for list
 options that can take both a file name and a URL as argument."
   (cond
    ((and (listp prefix)
