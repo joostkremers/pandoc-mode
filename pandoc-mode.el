@@ -56,11 +56,11 @@
   "Minor mode for interacting with pandoc."
   :group 'text)
 
-(defcustom pandoc-binary "pandoc"
+(defcustom pandoc-executable "pandoc"
   "The name of the pandoc binary.
 You can specify a full path here or a relative path (the
 default).  In the latter case, the value of `exec-path` is used
-to search the binary."
+to search the executable."
   :group 'pandoc
   :type 'file)
 
