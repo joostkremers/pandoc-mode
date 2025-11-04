@@ -416,9 +416,12 @@ it is assumed to be an external viewer, which is called with
      ("ris"                    "RIS bibliography"             "r" input)))
   "List of Pandoc formats, their descriptions and transient shortcut keys.")
 
-(defun pandoc--extract-formats (io)
-  "Extract the input or output formats in `pandoc--formats'.
-IO is a symbol, either `input' or `output'.  Return a list of formats."
+(defun pandoc--list-formats (io)
+  "List the formats in `pandoc--formats'.
+IO is a symbol, either `input' or `output'.  Return a list of the
+formats that can be used as input or output formats, respectively.  The
+returned list only contains the formats, all the other information in
+`pandoc--formats` is stripped.''"
   (apply #'append (mapcar (lambda (formats)
                             (seq-filter (lambda (it)
                                           (memq (car (last it)) `(,io both)))
@@ -428,7 +431,7 @@ IO is a symbol, either `input' or `output'.  Return a list of formats."
 (defvar pandoc--input-formats-menu
   (mapcar (lambda (f)
             (cons (cadr f) (car f)))
-          (pandoc--extract-formats 'input))
+          (pandoc--list-formats 'input))
   "List of items in pandoc-mode's input format menu.")
 
 (defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms" "typst")
@@ -1990,7 +1993,7 @@ the buffer."
   (interactive "P")
   (pandoc--call-external (if prefix
                              (completing-read "Output format to use: "
-                                              (pandoc--extract-formats 'output)
+                                              (pandoc--list-formats 'output)
                                               nil t)
                            t)
                          nil
@@ -2320,7 +2323,7 @@ candidates."
 (defun pandoc-set-read (format)
   "Set the input format to FORMAT."
   (interactive (list (completing-read "Set input format to: "
-                                      (pandoc--extract-formats 'input)
+                                      (pandoc--list-formats 'input)
                                       nil t)))
   (pandoc--set 'reader format)
   (message "Input format set to `%s'" format))
@@ -2331,7 +2334,7 @@ If a settings and/or project file exists for FORMAT, they are
 loaded.  If none exists, all options are unset (except the input
 format)."
   (interactive (list (completing-read "Set output format to: "
-                                      (pandoc--extract-formats 'output)
+                                      (pandoc--list-formats 'output)
                                       nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get 'writer))))
@@ -2580,7 +2583,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
                                      :style 'radio
                                      :selected `(string= (pandoc--get 'writer)
                                                          ,(car option))))
-                           (pandoc--extract-formats 'output)))
+                           (pandoc--list-formats 'output)))
              (list (append (list "Extensions" :visible `(string-match "markdown" (pandoc--get 'writer)))
                            (mapcar (lambda (ext)
                                      (vector (car ext)
