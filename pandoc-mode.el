@@ -2143,7 +2143,7 @@ without asking."
                                        (concat "# " str))
                                      (split-string (yaml-encode (alist-get :non-pandoc pandoc--local-settings))
                                                    "\n"))
-                             "\n")
+                             "## end\n")
                 "\n")
         (let ((make-backup-files nil))
           (write-region (point-min) (point-max) defaults-file))
