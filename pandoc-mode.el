@@ -2209,6 +2209,15 @@ file is found for FILE, otherwise non-nil."
       (setq pandoc--local-settings settings)
       (message "%s settings file loaded for format \"%s\"." type format))))
 
+(defun pandoc--select-defaults-file (input-file format)
+  "Select a defaults file for INPUT-FILE for conversion to FORMAT.
+Check if there is a local, project or global defaults file, in that
+order, and return the file path of the first one that is found.  If no
+defaults file is found, return nil."
+  (seq-find #'file-readable-p (mapcar (lambda (type)
+                                        (pandoc--create-defaults-filename type format input-file))
+                                      '(local project global))))
+
 (defun pandoc--read-settings-from-file (file)
   "Read the settings in FILE and return them.
 If FILE does not exist or cannot be read, return nil."
