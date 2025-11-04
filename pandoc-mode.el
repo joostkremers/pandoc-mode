@@ -2666,12 +2666,14 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 (transient-define-prefix pandoc-main-transient ()
   "Pandoc-mode main menu."
   ["Pandoc\n"
-   ("I" pandoc-input-formats-transient
-    :description (lambda ()
-                   (format "Input format   [%s]" (or (pandoc--get 'reader) "none"))))
-   ("O" pandoc-output-formats-transient
-    :description (lambda ()
-                   (format "Output format  [%s]" (or (pandoc--get 'writer) "none"))))]
+   [("I" pandoc-input-formats-transient
+     :description (lambda ()
+                    (format "Input format   [%s]" (or (pandoc--get 'reader) "none"))))
+    ("O" pandoc-output-formats-transient
+     :description (lambda ()
+                    (format "Output format  [%s]" (or (pandoc--get 'writer) "none"))))]
+   [("Xi" "Input extensions"  pandoc-read-exts-transient)
+    ("Xo" "Output extensions" pandoc-write-exts-transient)]]
   [["Actions"
     ("r" "Run Pandoc"            pandoc-run-pandoc)
     ("p" "Convert to PDF"        pandoc-convert-to-pdf)
