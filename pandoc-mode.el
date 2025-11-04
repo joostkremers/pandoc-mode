@@ -2822,7 +2822,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
             (transient-parse-suffixes
              'pandoc-read-exts-transient
              (let ((num 0)
-                   (format (pandoc--get 'reader)))
+                   (format (pandoc--get-format 'reader)))
                (append (mapcar
                         (lambda (partition)
                           (vconcat
@@ -2853,7 +2853,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
             (transient-parse-suffixes
              'pandoc-write-exts-transient
              (let ((num 0)
-                   (format (pandoc--get 'writer)))
+                   (format (pandoc--get-format 'writer)))
                (append (mapcar
                         (lambda (partition)
                           (vconcat
