@@ -2069,7 +2069,7 @@ return value is an absolute filename."
    ((eq type 'project)
     (concat (file-name-directory filename) "Project_" output-format ".yaml"))
    ((eq type 'global)
-    (concat (file-name-as-directory pandoc-data-dir) output-format "defaults.yaml"))))
+    (concat (file-name-as-directory pandoc-data-dir) output-format "_defaults.yaml"))))
 
 (defun pandoc-set-default-format ()
   "Set the current output format as default.
