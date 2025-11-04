@@ -2040,21 +2040,6 @@ pandoc is always run on the master file)."
 
 ;;; Saving settings
 
-(defun pandoc--current-settings ()
-  "Return a list of settings with non-default values."
-  (let* ((remove-defaults (lambda (alist)
-                            (seq-filter (lambda (option)
-                                          (cdr option))
-                                        alist)))
-         (settings (copy-tree pandoc--local-settings))
-         (read-extensions (assq 'read-extensions settings))
-         (write-extensions (assq 'write-extensions settings)))
-    (when read-extensions
-      (setcdr read-extensions (funcall remove-defaults (cdr read-extensions))))
-    (when write-extensions
-      (setcdr write-extensions (funcall remove-defaults (cdr write-extensions))))
-    (funcall remove-defaults settings)))
-
 (defun pandoc--create-defaults-filename (type output-format &optional filename)
   "Create a defaults filename.
 TYPE is the type of defaults file, either `local', `project', or
