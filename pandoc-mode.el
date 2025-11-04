@@ -965,6 +965,11 @@ be retrieved."
   (let ((type (pandoc--get-option-type option)))
     (cdr (assq option (alist-get type (buffer-local-value 'pandoc--local-settings buffer))))))
 
+(defun pandoc--get-format (rw)
+  "Get the input or output format.
+RW is a symbol, either `reader' or `writer'."
+  (car (split-string (pandoc--get rw) "[-+]")))
+
 (defun pandoc--set (option value)
   "Set the local value of OPTION to VALUE."
   (if-let* ((type (pandoc--get-option-type option))) ; Check if the option is licit.
