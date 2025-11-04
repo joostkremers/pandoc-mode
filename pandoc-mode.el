@@ -405,7 +405,7 @@ it is assumed to be an external viewer, which is called with
      ("jats_articleauthoring"  "Article Authoring Tag Set"    "a" output)
      ("jats_publishing"        "Publishing Tag Set"           "p" output)
      ("jats_archiving"         "Archiving Tag Set"            "x" output)
-     ("bits"                   "BITS XML"                     "b" input))
+     ("bits"                   "BITS XML"                     "B" input))
 
     ("misc" "Miscellaneous Formats" "M"
      ("ipynb"                  "Jupyter Notebook"             "p" both)
