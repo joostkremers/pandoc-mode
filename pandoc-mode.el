@@ -317,9 +317,9 @@ it is assumed to be an external viewer, which is called with
   '(("markdown" "Markdown Formats" "m"
      ("markdown"               "Pandoc Markdown"               "m" both)
      ("markdown_mmd"           "MultiMarkdown"                 "M" both)
-     ("markdown_phpextra"      "PHP Markdown Extra"            "P" both)
-     ("markdown_strict"        "Markdown (original)"           "S" both)
-     ("commonmark"             "CommonMark"                    "C" both)
+     ("markdown_phpextra"      "PHP Markdown Extra"            "p" both)
+     ("markdown_strict"        "Markdown (original)"           "s" both)
+     ("commonmark"             "CommonMark"                    "c" both)
      ("commonmark_x"           "CommonMark with extensions"    "x" both)
      ("gfm"                    "GitHub-flavoured Markdown"     "g" both)
      ("djot"                   "Djot"                          "d" both)
