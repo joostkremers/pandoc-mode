@@ -1071,7 +1071,8 @@ activated it."
   (let ((value (pandoc--get-extension extension rw)))
     (or (eq value ?+)
         (and (not value)
-             (eq (pandoc--extension-in-format extension (pandoc--get rw)) :enabled)))))
+             (eq (pandoc--extension-in-format extension (pandoc--get-format rw))
+                 :enabled)))))
 
 (defun pandoc--split-format-and-extensions (full-format)
   "Split FULL-FORMAT into format and extensions.
