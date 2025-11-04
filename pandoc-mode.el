@@ -1049,7 +1049,7 @@ input or the output format."
 Return value is either one of the keywords `:enabled' or `:disabled',
 indicating that EXTENSION is supported for FORMAT and whether it is
 enabled or disabled by default, or nil if EXTENSION is not supported for
-FORMAT."
+FORMAT.  FORMAT should be a format name without any extensions."
   (let ((formats (cdr (assoc extension pandoc--extensions-alist))))
     (cond
      ((member format (memq '| formats))
