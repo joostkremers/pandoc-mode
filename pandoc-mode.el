@@ -1069,7 +1069,7 @@ An extension is active either if it is automatically enabled for a
 format and hasn't been deactivated by the user, or if the user has
 activated it."
   (let ((value (pandoc--get-extension extension rw)))
-    (or (char-equal value ?+)
+    (or (eq value ?+)
         (and (not value)
              (eq (pandoc--extension-in-format extension (pandoc--get rw)) :enabled)))))
 
