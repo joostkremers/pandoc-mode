@@ -2251,24 +2251,24 @@ file exists, display the *Pandoc output* buffer."
                     (pandoc--get 'writer)))
         (file (or (cdr pandoc--latest-run)
                   (pandoc--compose-output-file-name arg))))
-    (if file
-        (if (file-readable-p file)
-            (let ((handler (if (cl-equalp (file-name-extension file) "pdf")
-                               pandoc-pdf-viewer
-                             (cadr (assoc-string format pandoc-viewers)))))
-              (cond
-               ((stringp handler)
-                (start-process "pandoc-viewer" pandoc--viewer-buffer-name handler file))
-               ((eq handler 'emacs)
-                (let ((buffer (find-file-noselect file)))
-                  (if buffer
-                      (display-buffer buffer)
-                    (error "Could not open %s" file))))
-               ((functionp handler)
-                (funcall handler file))
-               (t (error "No viewer defined for output format `%s'" format))))
-          (error "`%s' is not readable" file))
-      (pandoc-view-output-buffer))))
+    (if (not file)
+        (pandoc-view-output-buffer)
+      (if (file-readable-p file)
+          (let ((handler (if (cl-equalp (file-name-extension file) "pdf")
+                             pandoc-pdf-viewer
+                           (cadr (assoc-string format pandoc-viewers)))))
+            (cond
+             ((stringp handler)
+              (start-process "pandoc-viewer" pandoc--viewer-buffer-name handler file))
+             ((eq handler 'emacs)
+              (let ((buffer (find-file-noselect file)))
+                (if buffer
+                    (display-buffer buffer)
+                  (error "Could not open %s" file))))
+             ((functionp handler)
+              (funcall handler file))
+             (t (error "No viewer defined for output format `%s'" format))))
+        (error "`%s' is not readable" file)))))
 
 (defun pandoc-view-output-buffer ()
   "Displays the *Pandoc output* buffer."
