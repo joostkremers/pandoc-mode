@@ -1100,7 +1100,7 @@ back to its default value, not that it is unset.)"
   (let* ((format+exts (pandoc--split-format-and-extensions (pandoc--get rw)))
          (format (car format+exts))
          (exts (seq-filter (lambda (ext)
-                             (not (= (substring ext 1) extension)))
+                             (not (equal (substring ext 1) extension)))
                            (cdr format+exts))))
     (when value
       (push (format "%c%s" value extension) exts))
