@@ -318,12 +318,12 @@ it is assumed to be an external viewer, which is called with
      ("markdown"               "Pandoc Markdown"               "m" both)
      ("markdown_mmd"           "MultiMarkdown"                 "M" both)
      ("markdown_phpextra"      "PHP Markdown Extra"            "p" both)
-     ("markdown_strict"        "Markdown (original)"           "s" both)
      ("commonmark"             "CommonMark"                    "c" both)
      ("commonmark_x"           "CommonMark with extensions"    "x" both)
      ("gfm"                    "GitHub-flavoured Markdown"     "g" both)
      ("djot"                   "Djot"                          "d" both)
      ("markua"                 "Markua"                        "u" output)
+     ("markdown_strict"        "Strict Markdown"               "s" both)
      ("markdown_github"        "Markdown (Github; obsolete)"   "G" both))
 
     ("html" "HTML Formats" "h"
