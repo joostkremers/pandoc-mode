@@ -1711,7 +1711,7 @@ value."
 ;;;###autoload
 (define-minor-mode pandoc-mode
   "Minor mode for interacting with Pandoc."
-  :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get 'writer))) :global nil
+  :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get-format 'writer))) :global nil
   (cond
    (pandoc-mode    ; pandoc-mode is turned on
     (setq pandoc--local-settings (copy-tree pandoc--options))
