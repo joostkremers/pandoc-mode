@@ -2354,8 +2354,8 @@ should be toggled for the input or the output format."
    (cond
     ((memq (pandoc--get-extension extension rw) '(?+ ?-)) ; If the value is set explicitly,
      nil)               ; we can simply return it to the default.
-    ((if (eq (pandoc--extension-in-format extension (car (split-string (pandoc--get rw) "[-+]")))
-             :enabled)) ; If the extension is enabled in the current format,
+    ((eq (pandoc--extension-in-format extension (pandoc--get-format rw))
+         :enabled)     ; If the extension is enabled in the current format,
      ?-)                ; we explicitly unset it.
     (t ?+)))) ; Otherwise we explicitly set it.
 
