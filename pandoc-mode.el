@@ -945,7 +945,7 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 (defun pandoc--pp-option (option)
   "Return a pretty-printed representation of OPTION."
   (if (eq option 'output)
-      (pandoc--compose-output-file-name)
+      (pandoc--compose-output-file-name nil nil 'expand)
     (or (pandoc--get option) "")))
 
 ;; Getter and setter functions
@@ -1738,7 +1738,7 @@ This is for use in major mode hooks."
 
 ;;; Running Pandoc
 
-(defun pandoc--compose-output-file-name (&optional pdf input-file)
+(defun pandoc--compose-output-file-name (&optional pdf input-file no-expand)
   "Create an output file name for the current buffer based on INPUT-FILE.
 If INPUT-FILE is non-nil, use the file the current buffer is
 visiting.  If the current buffer's output file is set to t, or if
@@ -1753,31 +1753,37 @@ but no output directory, use the directory of INPUT-FILE.
 
 If PDF is non-nil, use `pdf' as the extension.
 
+If NO-EXPAND is non-nil, do not expand the file name.
+
 If the current buffer's settings do not specify an output
 file (i.e., if the output file is set to nil), return nil."
   (or input-file
       (setq input-file (buffer-file-name)))
-  (cond
-   ((or (eq (pandoc--get 'output) t) ; If the user set `output' to t.
-        (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
-             (or pdf                      ; (i) we're converting to pdf, or
-                 (member (pandoc--get 'writer) ; (ii) the output format is one of these:
-                         '("odt" "epub" "docx" "pptx")))))
-    (format "%s%s%s"                   ; we create an output file name.
-            (or (pandoc--get 'output-dir)
-                (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
-            (file-name-sans-extension (file-name-nondirectory input-file))
-            (if pdf
-                ".pdf"
-              (cadr (assoc (pandoc--get 'writer) pandoc-output-format-extensions)))))
-   ((stringp (pandoc--get 'output-file))     ; If the user set an output file,
-    (format "%s%s"               ; we combine it with the output directory
-            (or (pandoc--get 'output-dir)
-                (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
-            (if pdf                 ; and check if we're converting to pdf.
-                (concat (file-name-sans-extension (pandoc--get 'output-file)) ".pdf")
-              (pandoc--get 'output-file))))
-   (t nil)))
+  (when-let* ((output-file
+               (cond
+                ((or (eq (pandoc--get 'output) t) ; If the user set `output' to t.
+                     (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
+                          (or pdf       ; (i) we're converting to pdf, or
+                              (member (pandoc--get 'writer) ; (ii) the output format is one of these:
+                                      '("odt" "epub" "docx" "pptx")))))
+                 (format "%s%s%s"       ; we create an output file name.
+                         (or (pandoc--get 'output-dir)
+                             (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
+                         (file-name-sans-extension (file-name-nondirectory input-file))
+                         (if pdf
+                             ".pdf"
+                           (cadr (assoc (pandoc--get 'writer) pandoc-output-format-extensions)))))
+                ((stringp (pandoc--get 'output-file)) ; If the user set an output file,
+                 (format "%s%s"   ; we combine it with the output directory
+                         (or (pandoc--get 'output-dir)
+                             (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
+                         (if pdf    ; and check if we're converting to pdf.
+                             (concat (file-name-sans-extension (pandoc--get 'output-file)) ".pdf")
+                           (pandoc--get 'output-file))))
+                (t nil))))
+    (if no-expand
+        output-file
+      (expand-file-name output-file))))
 
 (defun pandoc--format-all-options (output-file &optional pdf)
   "Create a list of strings with pandoc options for the current buffer.
@@ -2244,7 +2250,7 @@ file exists, display the *Pandoc output* buffer."
   (let ((format (or (car pandoc--latest-run)
                     (pandoc--get 'writer)))
         (file (or (cdr pandoc--latest-run)
-                  (expand-file-name (pandoc--compose-output-file-name arg)))))
+                  (pandoc--compose-output-file-name arg))))
     (if file
         (if (file-readable-p file)
             (let ((handler (if (cl-equalp (file-name-extension file) "pdf")
