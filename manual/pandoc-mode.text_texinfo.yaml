@@ -1,0 +1,10 @@
+# Emacs pandoc-mode local settings file for pandoc-mode.text
+# Saved on 2025.11.05 15:25
+
+reader: markdown
+writer: texinfo
+filters: ["filters.lua"]
+include-before-body: ["before-body.texi"]
+
+## pandoc-mode settings ##
+# output: true

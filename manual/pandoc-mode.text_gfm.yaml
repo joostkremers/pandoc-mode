@@ -1,0 +1,8 @@
+reader: markdown
+writer: gfm
+output-file: "index.md"
+
+## pandoc-mode settings ##
+# output: null
+# output-dir: "~/src/pandoc-mode/docs/"
+## end
