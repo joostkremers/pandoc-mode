@@ -829,22 +829,6 @@ which the extension is inactive by default.")
 ;;     (insert (format "%S" pandoc--extensions-alist))
 ;;     (save-buffer)))
 
-(defvar pandoc--cli-options nil
-  "List of Pandoc command line options that do not need special treatment.
-This includes all command line options except the list and alist
-options, because they need to be handled separately in
-`pandoc--format-all-options'.")
-
-(defvar pandoc--filepath-options nil
-  "List of options that have a file path as value.
-These file paths are expanded before they are sent to Pandoc.  For
-relative paths, the file's working directory is used as base directory.
-The options are set by `define-pandoc-file-option'.")
-
-(defvar pandoc--switches nil
-  "List of binary options.
-These are set by `define-pandoc-switch'.")
-
 (defvar pandoc--list-options nil
   "List of options that have a list as value.
 These are set by `define-pandoc-list-option'.")
@@ -1159,8 +1143,6 @@ appear in the menu."
                         :style 'toggle
                         :selected `(pandoc--get (quote ,option)))
                ,(intern (concat "pandoc--" (symbol-name menu) "-menu-list"))))
-     (push (cons ,description (quote ,option)) pandoc--switches)
-     (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      ,(when menu
         `(push (quote ,(list key `(lambda () (interactive)
@@ -1172,12 +1154,11 @@ appear in the menu."
 
 (defmacro define-pandoc-file-option (option menu key prompt)
   "Define OPTION as a file option.
-The option is added to `pandoc--options', `pandoc--cli-options', and to
-`pandoc--filepath-options'.  Furthermore, a menu entry is created under
-MENU, which is a symbol naming the menu to which the option should be
-added.  It can also be nil, in which case the option is not added to any
-menu.  KEY is a string of one or two characters, the key by which the
-option will be available in the transient.
+The option is added to `pandoc--options'.  Furthermore, a menu entry is
+created under MENU, which is a symbol naming the menu to which the
+option should be added.  It can also be nil, in which case the option is
+not added to any menu.  KEY is a string of one or two characters, the
+key by which the option will be available in the transient.
 
 OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
@@ -1187,8 +1168,6 @@ formulated in such a way that the strings \"No \", \"Set \" and
 or t and indicates whether the option can have a default value."
   (declare (indent defun))
   `(progn
-     (push (quote ,option) pandoc--filepath-options)
-     (push (quote ,option) pandoc--cli-options)
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      ,(when menu
         `(push (list ,prompt
@@ -1233,7 +1212,7 @@ have a URL as argument."
 
 (defmacro define-pandoc-number-option (option menu key prompt)
   "Define OPTION as a numeric option.
-The option is added to `pandoc--options' and to `pandoc--cli-options'.
+The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
 menu to which the option must be added.  It can also be nil, in which
 case the option is not added to any menu.  KEY is a string of one or two
@@ -1248,7 +1227,6 @@ can be added before it."
   (declare (indent defun))
   `(progn
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
-     (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,prompt
                      ,(vector (concat "Default " prompt) `(pandoc--set (quote ,option) nil)
@@ -1284,7 +1262,7 @@ for a value."
 
 (defmacro define-pandoc-string-option (option menu key prompt &optional default)
   "Define OPTION as a string option.
-The option is added to `pandoc--options' and to `pandoc--cli-options'.
+The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
 menu to which the option must be added.  It can also be nil, in which
 case the option is not added to any menu.  KEY is a string of one or two
@@ -1299,7 +1277,6 @@ formulated in such a way that the strings \"No \", \"Set \" and
 or T and indicates whether the option can have a default value."
   `(progn
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
-     (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,@(delq nil ; if DEFAULT is nil, we need to remove it from the list.
                              (list prompt
@@ -1509,7 +1486,7 @@ removed from the list.  If it is `\\[universal-argument] \\[universal-argument]'
 
 (defmacro define-pandoc-choice-option (option menu key prompt choices &optional output-formats)
   "Define OPTION as a choice option.
-The option is added to `pandoc--options' and `pandoc--cli-options'.
+The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, which is a symbol
 naming the menu to which the option must be added.  It can also be nil,
 in which case the option is not added to any menu.  KEY is a string of
@@ -1526,7 +1503,6 @@ a list of output formats for which OPTION should be active in the
 menu."
   `(progn
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
-     (push (quote ,option) pandoc--cli-options)
      ,(when menu
         `(push (list ,prompt
                      :active ,(if output-formats
