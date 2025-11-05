@@ -1628,7 +1628,7 @@ value."
 (define-pandoc-list-option   include-after-body    writer "ia" file   "Include After Body" "File")
 (define-pandoc-list-option   include-before-body   writer "ib" file   "Include Before Body" "File")
 (define-pandoc-list-option   include-in-header     writer "ih" file   "Include Header" "File")
-(define-pandoc-list-option   syntax-definitions    writer "y" file    "Syntax Definition File" "File")
+(define-pandoc-list-option   syntax-definitions    writer "y"  file   "Syntax Definition File" "File")
 (define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
 (define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
 (define-pandoc-switch        list-of-tables        writer "lt"        "List of Tables")
