@@ -2080,7 +2080,7 @@ If FILE does not exist or cannot be read, return nil."
       (with-temp-buffer
         (insert-file-contents file)
         (goto-char (point-min))
-        (list (cons :yaml (yaml-parse-string (buffer-string) :object-type 'alist :null-object nil))
+        (list (cons :yaml (yaml-parse-string (buffer-string) :object-type 'alist :sequence-type 'list :null-object nil))
               (cons :non-pandoc (pandoc--read-non-pandoc-settings))))))
 
 (defun pandoc--read-non-pandoc-settings ()
@@ -2097,6 +2097,7 @@ the end of the defaults file."
                                               (take (1- (length lines)) lines))
                                       "\n")
                          :object-type 'alist
+                         :sequence-type 'list
                          :null-object nil)))
 
 (defun pandoc-view-output (&optional arg)
