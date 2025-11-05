@@ -857,14 +857,17 @@ These are set by `define-pandoc-alist-option'.")
   `((:yaml . ((writer . "native")))
     (:non-pandoc . ((output)
                     (output-dir)
-                    (master-file)))))
+                    (master-file)))
+    (:type)))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
 stores the local values of the options.  The `define-pandoc-*-option'
 functions add their options to this list with default value nil.  The
 `:yaml' options are those that Pandoc can read, while the `:non-pandoc'
-options are those that only `pandoc-mode' uses."
+options are those that only `pandoc-mode' uses.  The `:type' entry is
+used to keep track of the type of settings file from which the settings
+were loaded or to which they were saved."
 
 (defconst pandoc--html-math-methods '(("mathjax" . t)
                                       ("mathml")
@@ -2141,6 +2144,7 @@ without asking."
         (message "%s settings file written to `%s'."
                  (capitalize (symbol-name type))
                  (file-name-nondirectory defaults-file)))
+      (setcdr (assq :type pandoc--local-settings) type)
       (setq pandoc--settings-modified-flag nil))))
 
 (defun pandoc-revert-settings ()
@@ -2186,19 +2190,20 @@ file is found for FILE, otherwise non-nil."
     ;; First try to read local settings:
     (when file
       (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'local format file))
-            type "Local"))
+            type 'local))
     ;; If that fails, try project settings:
     (when (and file (not settings))
       (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'project format file))
-            type "Project"))
+            type 'project))
     ;; If that fails too, or if there is no file, try reading global settings:
     (unless settings
       (setq settings (pandoc--read-settings-from-file (pandoc--create-defaults-filename 'global format))
-            type "Global"))
+            type 'global))
     ;; Now set them:
     (when settings
       (setq pandoc--local-settings settings)
-      (message "%s settings file loaded for format \"%s\"." type format))))
+      (push (cons :type type) pandoc--local-settings)
+      (message "%s settings file loaded for format \"%s\"." (capitalize (symbol-name type)) format))))
 
 (defun pandoc--select-defaults-file (input-file format)
   "Select a defaults file for INPUT-FILE for conversion to FORMAT.
