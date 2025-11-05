@@ -2145,7 +2145,8 @@ without asking."
                  (capitalize (symbol-name type))
                  (file-name-nondirectory defaults-file)))
       (setcdr (assq :type pandoc--local-settings) type)
-      (setq pandoc--settings-modified-flag nil))))
+      (setq pandoc--settings-modified-flag nil)
+      defaults-file)))
 
 (defun pandoc-revert-settings ()
   "Revert settings for the current buffer.
