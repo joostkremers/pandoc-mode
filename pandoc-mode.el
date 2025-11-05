@@ -889,13 +889,6 @@ DIR, otherwise return the full path."
         (file-relative-name file dir)
       file)))
 
-(defun pandoc--expand-absolute-path (filename)
-  "Expand FILENAME if it is an absolute path.
-If FILENAME is a relative path, return it unchanged."
-  (if (file-name-absolute-p filename)
-      (expand-file-name filename)
-    filename))
-
 (defun pandoc--create-file-name-from-buffer (buffer-name)
   "Create a file name from BUFFER-NAME.
 The file name is formed from BUFFER-NAME by removing any
