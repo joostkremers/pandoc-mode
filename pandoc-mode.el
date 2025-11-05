@@ -1975,7 +1975,8 @@ without asking.
 
 Return the file path of defaults file upon success, or nil otherwise."
   (let* ((filename (buffer-file-name))
-         (defaults-file (pandoc--create-defaults-filename type format filename)))
+         (defaults-file (pandoc--create-defaults-filename type format filename))
+         (settings pandoc--local-settings))
     (when (or no-confirm
               (not (file-exists-p defaults-file))
               (y-or-n-p (format "%s defaults file `%s' already exists.  Overwrite? "
@@ -1988,11 +1989,11 @@ Return the file path of defaults file upon success, or nil otherwise."
                             (concat " for " (file-name-nondirectory filename))
                           ""))
                 (format "# Saved on %s\n\n" (format-time-string "%Y.%m.%d %H:%M"))
-                (yaml-encode (alist-get :yaml pandoc--local-settings))
+                (yaml-encode (alist-get :yaml settings))
                 "\n\n## pandoc-mode settings ##\n"
                 (string-join (mapcar (lambda (str)
                                        (concat "# " str))
-                                     (split-string (yaml-encode (alist-get :non-pandoc pandoc--local-settings))
+                                     (split-string (yaml-encode (alist-get :non-pandoc settings))
                                                    "\n"))
                              "## end\n")
                 "\n")
