@@ -1380,7 +1380,7 @@ option.  It must be formulated in such a way that the strings \"Add \",
                                    (interactive "P")
                                    (pandoc-set-list-option prefix option prompt description type))
                              :description `(lambda ()
-                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                             (format "%-35s[%s]" ,description (pandoc--pp-option (quote ,option))))
                              :transient t))
                ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
@@ -1455,7 +1455,7 @@ formulated in such a way that the strings \"Set/Change \" and
                                    (interactive "P")
                                    (pandoc-set-alist-option pfx option description prompt))
                              :description `(lambda ()
-                                             (format "%-35s[%s]" ,prompt (pandoc--pp-option (quote ,option))))
+                                             (format "%-35s[%s]" ,description (pandoc--pp-option (quote ,option))))
                              :transient t))
                ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
