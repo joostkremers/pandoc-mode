@@ -2935,7 +2935,10 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
              'pandoc-reader-options-transient
              (list (vconcat (list "Reader options")
                             pandoc--reader-transient-list
-                            '("f" "Filters" pandoc-set-filters
+                            '(("f" pandoc-set-filters
+                               :description (lambda ()
+                                              (format "%-35s[%s]" "Filters" (pandoc--pp-option 'filters)))
+                               :transient t)
                               " "
                               ("b" "Back" transient-quit-one)
                               ("q" "Quit" transient-quit-all))))))])
