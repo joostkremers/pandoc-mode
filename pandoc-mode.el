@@ -1988,8 +1988,8 @@ Return the file path of defaults file upon success, or nil otherwise."
                                        (concat "# " str))
                                      (split-string (yaml-encode (alist-get :non-pandoc settings))
                                                    "\n"))
-                             "## end\n")
-                "\n")
+                             "\n")
+                "\n## end\n")
         (let ((make-backup-files nil))
           (write-region (point-min) (point-max) defaults-file))
         (message "%s settings file written to `%s'."
