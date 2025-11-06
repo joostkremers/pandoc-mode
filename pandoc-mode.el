@@ -2165,7 +2165,7 @@ file exists, display the *Pandoc output* buffer."
   (interactive)
   (let* ((settings pandoc--local-settings))
     (with-help-window " *Pandoc Help*"
-      (princ "Current settings:\n\n")
+      (princ "# Current settings:\n\n")
       (insert (yaml-encode (alist-get :yaml settings))
               "\n\n## pandoc-mode settings ##\n"
               (string-join (mapcar (lambda (str)
@@ -2173,7 +2173,7 @@ file exists, display the *Pandoc output* buffer."
                                    (split-string (yaml-encode (alist-get :non-pandoc settings))
                                                  "\n"))
                            "\n")
-              "\n"))))
+              "## end\n"))))
 
 (defun pandoc-view-log ()
   "Display the log buffer in a temporary window."
