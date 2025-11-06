@@ -394,7 +394,8 @@ it is assumed to be an external viewer, which is called with
      ("man"                    "Man Page"                     "m" both)
      ("ms"                     "Groff MS"                     "g" output)
      ("tei"                    "TEI"                          "t" output)
-     ("texinfo"                "TeXinfo"                      "i" output)) ; Also under TeX Formats.
+     ("texinfo"                "TeXinfo"                      "i" output) ; Also under TeX Formats.
+     ("vimdoc"                 "VimDoc"                       "v" output))
 
     ("emacs" "Emacs-based Formats" "E"
      ("muse"                   "Muse"                         "m" both)
