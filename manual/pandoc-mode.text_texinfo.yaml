@@ -8,3 +8,4 @@ include-before-body: ["before-body.texi"]
 
 ## pandoc-mode settings ##
 # output: true
+## end
