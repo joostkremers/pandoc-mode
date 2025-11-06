@@ -150,7 +150,7 @@ matches KEY."
   :group 'pandoc
   :type '(repeat (cons (symbol :tag "Major mode") (string :tag "Input format"))))
 
-(defcustom pandoc-output-format-extensions
+(defcustom pandoc-output-file-extensions
   '(("ansi"                  ".txt")
     ("asciidoc"              ".txt")
     ("asciidoc_legacy"       ".txt")
@@ -1771,7 +1771,7 @@ file (i.e., if the output file is set to nil), return nil."
                          (file-name-sans-extension (file-name-nondirectory input-file))
                          (if pdf
                              ".pdf"
-                           (cadr (assoc (pandoc--get-format 'writer) pandoc-output-format-extensions)))))
+                           (cadr (assoc (pandoc--get-format 'writer) pandoc-output-file-extensions)))))
                 ((stringp (pandoc--get 'output-file)) ; If the user set an output file,
                  (format "%s%s"   ; we combine it with the output directory
                          (or (pandoc--get 'output-dir)
