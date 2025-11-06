@@ -759,6 +759,10 @@ returned list only contains the formats, all the other information in
      ("opml" "commonmark_x" "markdown_mmd" "markdown" | "plain" "ipynb" "gfm"
       "commonmark" "markdown_strict" "markdown_phpextra" "markdown_github"))
 
+    ("table_attributes" .
+     ("markdown" "opml" | "ipynb" "markdown_github" "markdown_mmd"
+      "markdown_phpextra" "markdown_strict" "plain"))
+
     ("table_captions" .
      ("plain" "opml" "markdown" | "ipynb" "markdown_strict"
       "markdown_phpextra" "markdown_github" "markdown_mmd"))
