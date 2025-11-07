@@ -1407,13 +1407,13 @@ options that can take both a file name and a URL as argument."
    ((listp prefix)                      ; C-u or no prefix arg
     (let ((value (cond
                   ((eq type 'string)
-                   (read-string "Add value: " nil nil (pandoc--get option)))
+                   (read-string (concat prompt ": ") nil nil (pandoc--get option)))
                   ((eq type 'number)
-                   (read-number "Add number: " 1))
+                   (read-number (concat prompt ": ") 1))
                   ((numberp prefix)
-                   (read-string "Add URL: " nil nil (pandoc--get option)))
+                   (read-string (concat prompt ": ") nil nil (pandoc--get option)))
                   ((eq type 'file)
-                   (pandoc--read-file-name "Add file: " prefix)))))
+                   (pandoc--read-file-name (concat prompt ": ") prefix)))))
       (pandoc--set option value)
       (message (concat prompt " \"%s\" added.") value)))
    ((eq prefix '-)
