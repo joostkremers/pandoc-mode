@@ -893,20 +893,28 @@ directories in the option `resource-path', or, if that is empty, from
          (file (read-file-name prompt)))
     (if absolute
         (expand-file-name file)
-      ;; Create a relative path: we first create a list of names relative
-      ;; to each dir in `resource-path'.  We remove the ones that start
-      ;; with "..", because `file' needs to be in (a subdir of) `dir'.
-      (if-let* ((dirs (pandoc--get 'resource-path))
-                (names (delq nil (mapcar (lambda (dir)
-                                           (let ((rel-name (file-relative-name file dir)))
-                                             (unless (string-prefix-p ".." rel-name)
-                                               rel-name)))
-                                         dirs))))
-          ;; Then we take the shortest one and return it.
-          (car (sort names :key #'length))
-        ;; If that fails, return `file' relative to `default-directory'.  Note
-        ;; that in this case, a relative path starting with ".." is allowed.
-        (file-relative-name file default-directory)))))
+      (pandoc--file-relative-name file))))
+
+(defun pandoc--file-relative-name (file)
+  "Return a path to FILE relative to `resource-path'.
+FILE should be an absolute file path.  If FILE is found under one of the
+directories in the option `resource-path', return a relative path
+starting from that directory.  If not, return a relative path starting
+from `default-directory'."
+  ;; We first create a list of names relative to each dir in
+  ;; `resource-path'.  We remove the ones that start with "..", because
+  ;; `file' needs to be in (a subdir of) `dir'.
+  (if-let* ((dirs (pandoc--get 'resource-path))
+            (names (delq nil (mapcar (lambda (dir)
+                                       (let ((rel-name (file-relative-name file dir)))
+                                         (unless (string-prefix-p ".." rel-name)
+                                           rel-name)))
+                                     dirs))))
+      ;; Then we take the shortest one and return it.
+      (car (sort names :key #'length))
+    ;; If that fails, return `file' relative to `default-directory'.  Note
+    ;; that in this case, a relative path starting with ".." is allowed.
+    (file-relative-name file default-directory)))
 
 (defun pandoc--create-file-name-from-buffer (buffer-name)
   "Create a file name from BUFFER-NAME.
