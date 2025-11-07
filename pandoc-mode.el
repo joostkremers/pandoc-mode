@@ -1586,15 +1586,16 @@ value."
 ;; is why an object-oriented approach would be better.  In fact, I'm kinda
 ;; implementing one, just in a haphazard way.)
 
-(define-pandoc-string-option reader           nil nil "Input Format")
-(define-pandoc-string-option output-file      nil nil "Output File")
-(define-pandoc-list-option   defaults         nil nil file "Defaults Files" "Defaults File")
-(define-pandoc-switch        file-scope       nil nil "Use File Scope")
-(define-pandoc-switch        sandbox          nil nil "Run In Sandbox")
-(define-pandoc-file-option   data-dir         nil nil "Data Directory")
-(define-pandoc-file-option   extract-media    nil nil "Extract Media Files")
-(define-pandoc-string-option verbosity        nil nil "Verbosity")
-(define-pandoc-list-option   filters          nil nil file "Filters" "Filter")
+(define-pandoc-string-option reader           nil nil        "Input Format")
+(define-pandoc-list-option   input-files      nil nil file   "Input Files" "Input File")
+(define-pandoc-string-option output-file      nil nil        "Output File")
+(define-pandoc-list-option   defaults         nil nil file   "Defaults Files" "Defaults File")
+(define-pandoc-switch        file-scope       nil nil        "Use File Scope")
+(define-pandoc-switch        sandbox          nil nil        "Run In Sandbox")
+(define-pandoc-file-option   data-dir         nil nil        "Data Directory")
+(define-pandoc-file-option   extract-media    nil nil        "Extract Media Files")
+(define-pandoc-string-option verbosity        nil nil        "Verbosity")
+(define-pandoc-list-option   filters          nil nil file   "Filters" "Filter")
 (define-pandoc-list-option   html-math-method nil nil string "HTML Math Rendering" "")
 
 ;; Options added to the menus automatically. Note that the options are
@@ -2247,6 +2248,16 @@ should be toggled for the input or the output format."
      ?-)                ; we explicitly unset it.
     (t ?+)))) ; Otherwise we explicitly set it.
 
+(defun pandoc-set-input-files (prefix)
+  "Set the input files.
+If PREFIX is nil, a new item is added to the list.  If it is the
+negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is removed from
+the list.  If it is `\\[universal-argument] \\[universal-argument]', the entire list is cleared.  If the
+list is a list of files, the function can also be called with the prefix
+argument `\\[universal-argument]' to store the full path."
+  (interactive "P")
+  (pandoc-set-list-option prefix 'input-files "Input File" "Input Files" 'file))
+
 (defun pandoc-set-output (prefix)
   "Set the output file.
 This function actually sets two options: `output-file' and `output'.
@@ -2787,6 +2798,9 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 (transient-define-prefix pandoc-file-transient ()
   "Pandoc-mode file menu."
   ["File menu"
+   ("i" pandoc-set-input-files
+    :description (lambda ()
+                   (format "%-27s[%s]" "Input files" (pandoc--pp-option 'input-files))))
    ("o" pandoc-set-output
     :description (lambda ()
                    (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
