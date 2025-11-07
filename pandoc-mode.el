@@ -2246,10 +2246,11 @@ The former is a Pandoc option, the latter is not, and is used instead by
 `pandoc-mode' to determine whether it should create an output file name
 to pass to Pandoc on the command line.
 
-If called without prefix argument, ask for a file name and store it as
-an absolute path.  If called with the prefix argument `\\[universal-argument]', ask for a
-file name but only store the base name.  This puts the output file in
-the same directory as the input file, or in the `output-dir' directory.
+If called without prefix argument, ask for a file name and store only
+its base name.  This puts the output file in the same directory as the
+input file, or in the `output-dir' directory.  If called with the prefix
+argument `\\[universal-argument]', ask for a file name and store it as a fully expanded,
+absolute path.
 
 If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument])', unset the
 output file, which means that the output goes to stdout.  If called with
@@ -2260,13 +2261,13 @@ format."
   (cond
    ((null prefix)
     (pandoc--set 'output nil)
-    (pandoc--set 'output-file (pandoc--read-file-name "Output file (full path): " 'absolute)))
-   ((and (listp prefix)
-         (eq (car prefix) 4))
-    (pandoc--set 'output nil)
     (pandoc--set 'output-file (file-name-nondirectory
                                (read-file-name "Output file (filename only): "
                                                (pandoc--get 'output-dir)))))
+   ((and (listp prefix)
+         (eq (car prefix) 4))
+    (pandoc--set 'output nil)
+    (pandoc--set 'output-file (pandoc--read-file-name "Output file (full path): " 'absolute)))
    ((eq prefix '-)
     (pandoc--set 'output nil)
     (pandoc--set 'output-file nil))
