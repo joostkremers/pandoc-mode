@@ -952,7 +952,7 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 (defun pandoc--pp-option (option)
   "Return a pretty-printed representation of OPTION."
   (if (eq option 'output)
-      (pandoc--compose-output-file-name nil nil 'expand)
+      (or (pandoc--compose-output-file-name nil nil 'expand) (propertize "none" 'face 'font-lock-comment-face))
     (or (pandoc--get option) "")))
 
 ;; Getter and setter functions
