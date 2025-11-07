@@ -2567,7 +2567,8 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
     ("r" "Run Pandoc"            pandoc-run-pandoc)
     ("p" "Convert to PDF"        pandoc-convert-to-pdf)
     ("v" "View output file"      pandoc-view-output)
-    ("e" "Example lists"         pandoc-@-transient)]
+    ("e" "Example lists"         pandoc-@-transient)
+    ("j" "Jump to reference"     pandoc-jump-to-reference)]
    ["Settings"
     ("o" "Options"               pandoc-options-transient)
     ("s" "Settings files"        pandoc-settings-transient)
