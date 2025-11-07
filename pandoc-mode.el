@@ -1389,7 +1389,7 @@ alist option.
 This function is meant to be called from an interactive function to do
 the actual work.  PROMPT is used to prompt the user, DESCRIPTION is used
 to inform the user.  TYPE indicates the type of option, currently only
-the symbols `string', `file' and number are distinguished.
+the symbols `string', `file' and `number' are distinguished.
 
 PREFIX is the raw prefix argument from the calling function.  If it is
 nil, a new item is added to the list.  If it is the negative prefix
