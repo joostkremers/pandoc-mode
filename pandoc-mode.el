@@ -3030,10 +3030,12 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 (defun pandoc-jump-to-reference ()
   "Display the BibTeX reference for the citation key at point.
 Extract the key at point and pass it to the function in
-`pandoc-citation-jump-function', together with a list of the
-current buffer's BibTeX files."
+`pandoc-citation-jump-function', together with a list of the current
+buffer's `.bib' files.  The `.bib' files are searched for in Pandoc's
+`resource-path', or in the default directory if `resource-path' is
+empty."
   (interactive)
-  (let ((biblist (pandoc--get 'bibliography)))
+  (let ((biblist (mapcar #'pandoc--file-relative-name (pandoc--get 'bibliography))))
     (if biblist
         (if (thing-at-point-looking-at pandoc-regex-citation-key)
             (funcall pandoc-citation-jump-function (match-string-no-properties 2) biblist)
