@@ -1588,7 +1588,7 @@ value."
 
 (define-pandoc-string-option reader           nil nil "Input Format")
 (define-pandoc-string-option output-file      nil nil "Output File")
-(define-pandoc-file-option   defaults         nil nil "Defaults File")
+(define-pandoc-list-option   defaults         nil nil file "Defaults Files" "Defaults File")
 (define-pandoc-switch        file-scope       nil nil "Use File Scope")
 (define-pandoc-switch        sandbox          nil nil "Run In Sandbox")
 (define-pandoc-file-option   data-dir         nil nil "Data Directory")
@@ -2296,12 +2296,13 @@ means use $HOME/.pandoc."
 
 (defun pandoc-set-defaults (prefix)
   "Set the defaults file.
-If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), the defaults file is set to nil."
+If PREFIX is nil, a new item is added to the list.  If it is the
+negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]'), an item is removed from
+the list.  If it is `\\[universal-argument] \\[universal-argument]', the entire list is cleared.  If the
+list is a list of files, the function can also be called with the prefix
+argument `\\[universal-argument]' to store the full path."
   (interactive "P")
-  (pandoc--set 'defaults (cond
-                          ((eq prefix '-) nil)
-                          (t (pandoc--read-file-name "Defaults file: " prefix)))))
+  (pandoc-set-list-option prefix 'defaults "Defaults File" "Defaults Files" 'file))
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
