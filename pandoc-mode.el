@@ -881,40 +881,32 @@ If the cdr of an entry is t, the option takes an optional URL.")
 
 ;; File names
 
-(defun pandoc--read-file-name (prompt relative)
+(defun pandoc--read-file-name (prompt &optional absolute)
   "Read a file name using PROMPT.
-If RELATIVE is non-nil, return the file path as a relative path starting
-from one of the directories in the option `resource-path', or, if that
-is empty, from `default-directory'.  If RELATIVE is nil, return the
-fully expanded path."
+If ABSOLUTE is non-nil, return the file path as a absolute, expanded
+path.  Otherwise, return a relative path starting from one of the
+directories in the option `resource-path', or, if that is empty, from
+`default-directory'."
   ;; We inhibit inserting the default directory, though not all completion
   ;; systems honor this.
-  (let* ((insert-default-directory (not relative))
+  (let* ((insert-default-directory absolute)
          (file (read-file-name prompt)))
-    (if relative
-        (pandoc--file-relative-name file)
-      (expand-file-name file))))
-
-(defun pandoc--file-relative-name (file)
-  "Return a path to FILE relative to `resource-path'.
-FILE should be an absolute file path.  If FILE is found under one of the
-directories in the option `resource-path', return a relative path
-starting from that directory.  If not, return a relative path starting
-from `default-directory'."
-  ;; We first create a list of names relative to each dir in
-  ;; `resource-path'.  We remove the ones that start with "..", because
-  ;; `file' needs to be in (a subdir of) `dir'.
-  (if-let* ((dirs (pandoc--get 'resource-path))
-            (names (delq nil (mapcar (lambda (dir)
-                                       (let ((rel-name (file-relative-name file dir)))
-                                         (unless (string-prefix-p ".." rel-name)
-                                           rel-name)))
-                                     dirs))))
-      ;; Then we take the shortest one and return it.
-      (car (sort names :key #'length))
-    ;; If that fails, return `file' relative to `default-directory'.  Note
-    ;; that in this case, a relative path starting with ".." is allowed.
-    (file-relative-name file default-directory)))
+    (if absolute
+        (expand-file-name file)
+      ;; Create a relative path: we first create a list of names relative
+      ;; to each dir in `resource-path'.  We remove the ones that start
+      ;; with "..", because `file' needs to be in (a subdir of) `dir'.
+      (if-let* ((dirs (pandoc--get 'resource-path))
+                (names (delq nil (mapcar (lambda (dir)
+                                           (let ((rel-name (file-relative-name file dir)))
+                                             (unless (string-prefix-p ".." rel-name)
+                                               rel-name)))
+                                         dirs))))
+          ;; Then we take the shortest one and return it.
+          (car (sort names :key #'length))
+        ;; If that fails, return `file' relative to `default-directory'.  Note
+        ;; that in this case, a relative path starting with ".." is allowed.
+        (file-relative-name file default-directory)))))
 
 (defun pandoc--create-file-name-from-buffer (buffer-name)
   "Create a file name from BUFFER-NAME.
@@ -1228,7 +1220,7 @@ have a URL as argument."
                 ((numberp prefix)
                  (read-string (concat prompt ": ")))
                 ;; otherwise no prefix or C-u
-                (t (pandoc--read-file-name (concat prompt ": ") (not prefix))))))
+                (t (pandoc--read-file-name (concat prompt ": ") prefix)))))
 
 (defmacro define-pandoc-number-option (option menu key prompt)
   "Define OPTION as a numeric option.
@@ -1413,7 +1405,7 @@ options that can take both a file name and a URL as argument."
                   ((numberp prefix)
                    (read-string "Add URL: " nil nil (pandoc--get option)))
                   ((eq type 'file)
-                   (pandoc--read-file-name "Add file: " (not prefix))))))
+                   (pandoc--read-file-name "Add file: " prefix)))))
       (pandoc--set option value)
       (message (concat prompt " \"%s\" added.") value)))
    ((eq prefix '-)
@@ -2268,7 +2260,7 @@ format."
   (cond
    ((null prefix)
     (pandoc--set 'output nil)
-    (pandoc--set 'output-file (read-file-name "Output file (full path): ")))
+    (pandoc--set 'output-file (pandoc--read-file-name "Output file (full path): " 'absolute)))
    ((and (listp prefix)
          (eq (car prefix) 4))
     (pandoc--set 'output nil)
@@ -2300,7 +2292,7 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
   (interactive "P")
   (pandoc--set 'defaults (cond
                           ((eq prefix '-) nil)
-                          (t (pandoc--read-file-name "Defaults file: " (not prefix))))))
+                          (t (pandoc--read-file-name "Defaults file: " prefix)))))
 
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
@@ -2345,7 +2337,7 @@ means the current file is the master file."
   (interactive "P")
   (pandoc--set 'master-file (cond
                              ((eq prefix '-) nil)
-                             (t (pandoc--read-file-name "Master file: " (not prefix))))))
+                             (t (pandoc--read-file-name "Master file: " prefix)))))
 
 (defun pandoc-set-this-file-as-master ()
   "Set the current file as master file.
@@ -2415,11 +2407,11 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 
    ((and (listp prefix)         ; Add a filter with both `path' and `type'.
          (eq (car prefix) 4))
-    (let ((filter (pandoc--read-file-name "Add filter: " 'relative))
+    (let ((filter (pandoc--read-file-name "Add filter: "))
           (type (completing-read "Filter type: " '("lua" "json") nil t)))
       (pandoc--set 'filters `((path . ,filter) (type . ,type)))))
 
-   (t (pandoc--set 'filters (pandoc--read-file-name "Add filter: " 'relative)))))
+   (t (pandoc--set 'filters (pandoc--read-file-name "Add filter: ")))))
 
 ;;; Menu-bar menu
 
