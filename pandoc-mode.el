@@ -2817,28 +2817,28 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
   ["File menu"
    ("i" pandoc-set-input-files
     :description (lambda ()
-                   (format "%-27s[%s]" "Input files" (pandoc--pp-option 'input-files))))
+                   (format "%-32s[%s]" "Input files" (pandoc--pp-option 'input-files))))
    ("o" pandoc-set-output
     :description (lambda ()
-                   (format "%-27s[%s]" "Output file" (pandoc--pp-option 'output))))
+                   (format "%-32s[%s]" "Output file" (pandoc--pp-option 'output))))
    ("O" pandoc-set-output-dir
     :description (lambda ()
-                   (format "%-27s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
+                   (format "%-32s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
    ("d" pandoc-set-defaults
     :description (lambda ()
-                   (format "%-27s[%s]" "Data directory" (pandoc--pp-option 'data-dir))))
+                   (format "%-32s[%s]" "Data directory" (pandoc--pp-option 'data-dir))))
    ("D" pandoc-set-data-dir
     :description (lambda ()
-                   (format "%-27s[%s]" "Defaults file" (pandoc--pp-option 'defaults))))
+                   (format "%-32s[%s]" "Defaults file" (pandoc--pp-option 'defaults))))
    ("e" pandoc-set-extract-media
     :description (lambda ()
-                   (format "%-27s[%s]" "Extract media files" (pandoc--pp-option 'extract-media))))
+                   (format "%-32s[%s]" "Extract media files" (pandoc--pp-option 'extract-media))))
    ("f" pandoc-set-file-scope
     :description (lambda ()
-                   (format "%-27s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
+                   (format "%-32s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
    ("m" pandoc-set-master-file
     :description (lambda ()
-                   (format "%-27s[%s]" "Master file" (if (= 1 (length (pandoc--get 'input-files)))
+                   (format "%-32s[%s]" "Master file" (if (= 1 (length (pandoc--get 'input-files)))
                                                          (pandoc--pp-option 'input-files)
                                                        ""))))
    ("M" "Use current file as master file" pandoc-set-this-file-as-master)
