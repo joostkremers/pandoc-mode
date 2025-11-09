@@ -845,8 +845,7 @@ These are set by `define-pandoc-alist-option'.")
 (defvar pandoc--options
   `((:yaml . ((writer . "native")))
     (:non-pandoc . ((output)
-                    (output-dir)
-                    (master-file)))
+                    (output-dir)))
     (:type)))
 "Pandoc option alist.
 List of options and their default values.  For each buffer in which
@@ -1795,10 +1794,7 @@ If the current buffer's \"master file\" option is set, that file
 is processed instead.  The output format is taken from the current
 buffer, however, unless one is provided specifically.  REGION is
 also ignored in this case."
-  (let* ((source-buffer (current-buffer))
-         (buffer (if (pandoc--get 'master-file)
-                     (find-file-noselect (pandoc--get 'master-file))
-                   (current-buffer)))
+  (let* ((buffer (current-buffer))
          (input-file (or (buffer-file-name buffer)
                          (expand-file-name (concat "./" (pandoc--create-file-name-from-buffer (buffer-name))))))
          (output-file (pandoc--compose-output-file-name pdf input-file))
@@ -1812,8 +1808,8 @@ also ignored in this case."
                          (buffer-name)))
          (executable (buffer-local-value 'pandoc-executable buffer)))
 
-    ;; If there's a master file, ignore the region.
-    (if (pandoc--get 'master-file)
+    ;; If `input-files' is set, ignore the region.
+    (if (pandoc--get 'input-files)
         (setq region nil))
 
     ;; We need a defaults file, so if we don't have one, create one.
@@ -1836,14 +1832,12 @@ also ignored in this case."
                            (pandoc--log 'message "%s: %s finished successfully"
                                         (file-name-nondirectory file)
                                         (file-name-nondirectory binary))
-                           (with-current-buffer source-buffer
-                             (setq pandoc--latest-run (cons output-format output-file)))))
+                           (setq pandoc--latest-run (cons output-format output-file))))
             (log-failure (lambda (file binary)
                            (pandoc--log 'message "%s: Error in %s process"
                                         (file-name-nondirectory file)
                                         (file-name-nondirectory binary))
-                           (with-current-buffer source-buffer
-                             (setq pandoc--latest-run 'error))))
+                           (setq pandoc--latest-run 'error)))
             (beg (or (car region) (point-min)))
             (end (or (cdr region) (point-max)))
             (args (delq nil (list (format "--defaults=%s" defaults-file)
@@ -1863,13 +1857,17 @@ also ignored in this case."
                                               (run-hooks 'pandoc-async-success-hook))
                                              (t (funcall log-failure display-name executable)
                                                 (display-buffer pandoc--output-buffer-name)))))
-            (process-send-region process beg end)
-            (process-send-eof process)))
+            (unless (pandoc--get 'input-files)
+              (process-send-region process beg end)
+              (process-send-eof process))))
          ((not pandoc-use-async)
-          (if (= 0 (apply #'call-process-region beg end executable nil (get-buffer-create pandoc--output-buffer-name) t args))
-              (funcall log-success display-name executable)
-            (funcall log-failure display-name executable)
-            (display-buffer pandoc--output-buffer-name))))))))
+          (let ((result (if (pandoc--get 'input-files)
+                            (apply #'call-process executable nil (get-buffer-create pandoc--output-buffer-name) t args)
+                          (apply #'call-process-region beg end executable nil (get-buffer-create pandoc--output-buffer-name) t args))))
+            (if (= result 0)
+                (funcall log-success display-name executable)
+              (funcall log-failure display-name executable)
+              (display-buffer pandoc--output-buffer-name)))))))))
 
 (defun pandoc-run-pandoc (&optional prefix)
   "Run pandoc on the current document.
@@ -1911,11 +1909,11 @@ pdf-able format.
 Note that if the user changes the output format for the buffer,
 the format for pdf conversion is unset.
 
-If the region is active, pandoc is run on the region instead of
-the buffer (except when a master file is set, in which case
-pandoc is always run on the master file)."
-  ;; TODO When the region is active, it might be nice to run pandoc on the
-  ;; region but use the master file's settings.
+If the region is active, pandoc is run on the region instead of the
+buffer (except when one or more explicit input files are set, in which
+case Pandoc is always run on the input file or files)."
+  ;; TODO If an input file is set, it might be nice to run Pandoc on the
+  ;; region anyway.
   (interactive "P")
   (let ((ask (and (listp prefix) (eq (car prefix) 4))))
     (cond
@@ -2364,13 +2362,17 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
 
 (defun pandoc-set-master-file (prefix)
   "Set the master file.
-If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), the master file is set to nil, which
-means the current file is the master file."
+If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument]'), the master
+file is set to nil, which means the current file is the master file."
   (interactive "P")
-  (pandoc--set 'master-file (cond
-                             ((eq prefix '-) nil)
-                             (t (pandoc--read-file-name "Master file: " prefix)))))
+  (if (eq prefix '-)
+      (pandoc--set 'input-files nil)
+    (when (or (null (pandoc--get 'input-files))
+              (y-or-n-p "Overwrite current input files? "))
+      ;; TODO Should this be set as an absolute or a relative file name? Or
+      ;; should the user have a choice? And if so, what should be the
+      ;; default?
+      (pandoc--set-file-as-master (pandoc--read-file-name "Master file: " 'absolute)))))
 
 (defun pandoc-set-this-file-as-master ()
   "Set the current file as master file.
@@ -2378,8 +2380,16 @@ This option creates a Project settings file in the current
 directory to ensure that all files use the current file as master
 file."
   (interactive)
-  (pandoc--set 'master-file (buffer-file-name))
+  (pandoc--set-file-as-master (buffer-file-name))
   (pandoc--save-settings 'project (pandoc--get-format 'writer)))
+
+(defun pandoc--set-file-as-master (file)
+  "Set FILE as the master file for the current project."
+  ;; We need to set `input-files' to nil first, because `pandoc--set'
+  ;; just adds an element to the list, it does not overwrite it.
+  (pandoc--set 'input-files nil)
+  (pandoc--set 'input-files file)
+  (pandoc-save-project-settings))
 
 (defun pandoc-set-html-math-method (prefix method)
   "Set the method for rendering mathematics in HTML to METHOD.
@@ -2532,9 +2542,9 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
       ["File Scope" pandoc-set-file-scope :active t
        :style radio :selected (pandoc--get 'file-scope)])
      ("Master File"
-      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'master-file))]
-      ["Use This File As Master File" pandoc-set-this-file-as-master :active t :style radio :selected (equal (pandoc--get 'master-file) (buffer-file-name))]
-      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (and (pandoc--get 'master-file) (not (equal (pandoc--get 'master-file) (buffer-file-name))))]))
+      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'input-files))]
+      ["Use This File As Master File" pandoc-set-this-file-as-master :active t :style radio :selected (equal (car (pandoc--get 'input-files)) (buffer-file-name))]
+      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (and (pandoc--get 'input-files) (not (equal (car (pandoc--get 'input-files)) (buffer-file-name))))]))
 
     ("Reader Options"
      ,@pandoc--reader-menu-list)
@@ -2833,7 +2843,9 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
                    (format "%-27s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
    ("m" pandoc-set-master-file
     :description (lambda ()
-                   (format "%-27s[%s]" "Master file" (pandoc--pp-option 'master-file))))
+                   (format "%-27s[%s]" "Master file" (if (= 1 (length (pandoc--get 'input-files)))
+                                                         (pandoc--pp-option 'input-files)
+                                                       ""))))
    ("M" "Use current file as master file" pandoc-set-this-file-as-master)
    " "
    ("b" "Back" transient-quit-one)
