@@ -2179,7 +2179,7 @@ file exists, display the *Pandoc output* buffer."
                                    (split-string (yaml-encode (alist-get :non-pandoc settings))
                                                  "\n"))
                            "\n")
-              "## end\n"))))
+              "\n## end\n"))))
 
 (defun pandoc-view-log ()
   "Display the log buffer in a temporary window."
