@@ -1973,16 +1973,30 @@ files.  (Therefore, this function is not available on Windows.)"
   (pandoc--save-settings 'local (pandoc--get-format 'writer)))
 
 (defun pandoc-save-project-settings ()
-  "Save the current settings as a project file."
+  "Save the current settings as a project settings file."
   (interactive)
-  (pandoc--save-settings 'project (pandoc--get-format 'writer)))
+  (let* ((format (pandoc--get-format 'writer))
+         (local-settings-file (pandoc--create-defaults-filename 'local format)))
+    (pandoc--save-settings 'project format)
+    (if (and (file-exists-p local-settings-file)
+             (y-or-n-p "A local settings file exists for the current buffer.  Delete? "))
+        (delete-file local-settings-file))))
 
 (defun pandoc-save-global-settings ()
   "Save the current settings to a global settings file."
   (interactive)
   (unless (file-directory-p pandoc-data-dir)
     (make-directory pandoc-data-dir))
-  (pandoc--save-settings 'global (pandoc--get-format 'writer)))
+  (let* ((format (pandoc--get-format 'writer))
+         (local-settings-file (pandoc--create-defaults-filename 'local format))
+         (project-settings-file (pandoc--create-defaults-filename 'project format)))
+    (pandoc--save-settings 'global format)
+    (if (and (file-exists-p local-settings-file)
+             (y-or-n-p "A local settings file exists for the current buffer.  Delete? "))
+        (delete-file local-settings-file))
+    (if (and (file-exists-p project-settings-file)
+             (y-or-n-p "A project settings file exists for the current buffer.  Delete? "))
+        (delete-file project-settings-file))))
 
 (defun pandoc--save-settings (type format &optional no-confirm)
   "Save the settings of the current buffer.
