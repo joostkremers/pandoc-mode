@@ -2807,7 +2807,10 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
    ("c" "Citations"                    pandoc-citations-transient)
    ("m" "Math rendering"               pandoc-math-transient)
    ("O" "Obsolete options"             pandoc-obsolete-options-transient)
-   ("V" "Verbosity"                    pandoc-set-verbosity)
+   ("V" pandoc-set-verbosity
+    :description (lambda ()
+                   (format "%-30s[%s]" "Verbosity" (pandoc--pp-option 'verbosity)))
+    :transient t)
    " "
    ("b" "Back"                         transient-quit-one)
    ("q" "Quit"                         transient-quit-all)])
