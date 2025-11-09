@@ -1788,12 +1788,7 @@ file (i.e., if the output file is set to nil), return nil."
   "Call pandoc on the current buffer.
 OUTPUT-FORMAT is the format to use.  If PDF is non-nil, a pdf file is
 created.  REGION is a cons cell specifying the beginning and end of the
-region to be sent to pandoc.
-
-If the current buffer's \"master file\" option is set, that file
-is processed instead.  The output format is taken from the current
-buffer, however, unless one is provided specifically.  REGION is
-also ignored in this case."
+region to be sent to Pandoc."
   (let* ((buffer (current-buffer))
          (input-file (or (buffer-file-name buffer)
                          (expand-file-name (concat "./" (pandoc--create-file-name-from-buffer (buffer-name))))))
