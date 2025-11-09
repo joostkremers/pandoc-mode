@@ -1967,10 +1967,8 @@ files.  (Therefore, this function is not available on Windows.)"
                             (pandoc--create-defaults-filename 'project "default" (buffer-file-name)) t))
       (message "`%s' set as default output format." (pandoc--get-format 'writer)))))
 
-(defun pandoc-save-settings ()
-  "Save the settings of the current buffer.
-This function just calls pandoc--save-settings with the
-appropriate output format."
+(defun pandoc-save-local-settings ()
+  "Save the current settings as a local settings file."
   (interactive)
   (pandoc--save-settings 'local (pandoc--get-format 'writer)))
 
@@ -2447,7 +2445,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
      ["Insert New Example" pandoc-insert-@ :active t]
      ["Select And Insert Example Label" pandoc-select-@ :active t])
     ("Settings Files"
-     ["Save File Settings" pandoc-save-settings :active t]
+     ["Save File Settings" pandoc-save-local-settings :active t]
      ["Save Project File" pandoc-save-project-settings :active t]
      ["Save Global Settings File" pandoc-save-global-settings :active t]
      ["Revert Settings" pandoc-revert-settings :active t]
@@ -2700,7 +2698,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 (transient-define-prefix pandoc-settings-transient ()
   "Transient for settings files."
   ["Settings files"
-   ("s" "Save file settings"            pandoc-save-settings)
+   ("s" "Save file settings"            pandoc-save-local-settings)
    ("p" "Save project settings"         pandoc-save-project-settings)
    ("g" "Save global settings"          pandoc-save-global-settings)
    ("d" "Set current format as default" pandoc-set-default-format)
