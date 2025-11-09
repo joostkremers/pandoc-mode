@@ -873,8 +873,8 @@ If the cdr of an entry is t, the option takes an optional URL.")
   "The output format and the output file created in the most recent call to Pandoc.")
 
 (defvar pandoc--output-buffer-name " *Pandoc output*")
-(defvar pandoc--log-buffer-name " *Pandoc log*")
-(defvar pandoc--viewer-buffer-name " *Pandoc viewer*")
+(defvar pandoc--log-buffer-name " *Pandoc-mode log*")
+(defvar pandoc--viewer-buffer-name " *Pandoc-mode viewer*")
 
 ;;; Utility functions
 
