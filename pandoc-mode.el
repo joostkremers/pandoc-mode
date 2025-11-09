@@ -2355,37 +2355,6 @@ If called with the PREFIX argument `\\[universal-argument] -' (or
   (interactive "P")
   (pandoc--set 'sandbox (if (eq prefix '-) nil t)))
 
-(defun pandoc-set-master-file (prefix)
-  "Set the master file.
-If called with the PREFIX argument `\\[universal-argument] -' (or `\\[negative-argument]'), the master
-file is set to nil, which means the current file is the master file."
-  (interactive "P")
-  (if (eq prefix '-)
-      (pandoc--set 'input-files nil)
-    (when (or (null (pandoc--get 'input-files))
-              (y-or-n-p "Overwrite current input files? "))
-      ;; TODO Should this be set as an absolute or a relative file name? Or
-      ;; should the user have a choice? And if so, what should be the
-      ;; default?
-      (pandoc--set-file-as-master (pandoc--read-file-name "Master file: " 'absolute)))))
-
-(defun pandoc-set-this-file-as-master ()
-  "Set the current file as master file.
-This option creates a Project settings file in the current
-directory to ensure that all files use the current file as master
-file."
-  (interactive)
-  (pandoc--set-file-as-master (buffer-file-name))
-  (pandoc--save-settings 'project (pandoc--get-format 'writer)))
-
-(defun pandoc--set-file-as-master (file)
-  "Set FILE as the master file for the current project."
-  ;; We need to set `input-files' to nil first, because `pandoc--set'
-  ;; just adds an element to the list, it does not overwrite it.
-  (pandoc--set 'input-files nil)
-  (pandoc--set 'input-files file)
-  (pandoc-save-project-settings))
-
 (defun pandoc-set-html-math-method (prefix method)
   "Set the method for rendering mathematics in HTML to METHOD.
 This function is meant to be called from an interactive function to do
@@ -2535,11 +2504,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
       ["Document Scope" (pandoc--set 'file-scope nil) :active t
        :style radio :selected (null (pandoc--get 'file-scope))]
       ["File Scope" pandoc-set-file-scope :active t
-       :style radio :selected (pandoc--get 'file-scope)])
-     ("Master File"
-      ["No Master File" (pandoc-set-master-file '-) :active t :style radio :selected (null (pandoc--get 'input-files))]
-      ["Use This File As Master File" pandoc-set-this-file-as-master :active t :style radio :selected (equal (car (pandoc--get 'input-files)) (buffer-file-name))]
-      ["Set Master File" pandoc-set-master-file :active t :style radio :selected (and (pandoc--get 'input-files) (not (equal (car (pandoc--get 'input-files)) (buffer-file-name))))]))
+       :style radio :selected (pandoc--get 'file-scope)]))
 
     ("Reader Options"
      ,@pandoc--reader-menu-list)
@@ -2839,12 +2804,6 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
    ("f" pandoc-set-file-scope
     :description (lambda ()
                    (format "%-32s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
-   ("m" pandoc-set-master-file
-    :description (lambda ()
-                   (format "%-32s[%s]" "Master file" (if (= 1 (length (pandoc--get 'input-files)))
-                                                         (pandoc--pp-option 'input-files)
-                                                       ""))))
-   ("M" "Use current file as master file" pandoc-set-this-file-as-master)
    " "
    ("b" "Back" transient-quit-one)
    ("q" "Quit" transient-quit-all)])
