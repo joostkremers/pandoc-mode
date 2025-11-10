@@ -1784,7 +1784,7 @@ file (i.e., if the output file is set to nil), return nil."
         output-file
       (expand-file-name output-file))))
 
-(defun pandoc--call-external (output-format &optional pdf region)
+(defun pandoc--call-pandoc (output-format &optional pdf region)
   "Call pandoc on the current buffer.
 OUTPUT-FORMAT is the format to use.  If PDF is non-nil, a pdf file is
 created.  REGION is a cons cell specifying the beginning and end of the
@@ -1873,14 +1873,14 @@ is used.
 If the region is active, pandoc is run on the region instead of
 the buffer."
   (interactive "P")
-  (pandoc--call-external (if prefix
-                             (completing-read "Output format to use: "
-                                              (pandoc--list-formats 'output)
-                                              nil t)
-                           (pandoc--get-format 'writer))
-                         nil
-                         (if (use-region-p)
-                             (cons (region-beginning) (region-end)))))
+  (pandoc--call-pandoc (if prefix
+                           (completing-read "Output format to use: "
+                                            (pandoc--list-formats 'output)
+                                            nil t)
+                         (pandoc--get-format 'writer))
+                       nil
+                       (if (use-region-p)
+                           (cons (region-beginning) (region-end)))))
 
 (defvar-local pandoc--output-format-for-pdf nil
   "Output format used to for pdf conversion.
@@ -1918,7 +1918,7 @@ case Pandoc is always run on the input file or files)."
      ((or ask
           (not pandoc--output-format-for-pdf))
       (setq pandoc--output-format-for-pdf (completing-read "Specify output format for pdf creation: " pandoc--pdf-able-formats nil t nil nil (car pandoc--pdf-able-formats))))))
-  (pandoc--call-external pandoc--output-format-for-pdf (pandoc--get-format 'writer) (when (use-region-p) (cons (region-beginning) (region-end)))))
+  (pandoc--call-pandoc pandoc--output-format-for-pdf (pandoc--get-format 'writer) (when (use-region-p) (cons (region-beginning) (region-end)))))
 
 ;;; Saving settings
 
