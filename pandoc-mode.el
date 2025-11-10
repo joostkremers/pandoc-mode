@@ -1866,7 +1866,10 @@ region to be sent to Pandoc."
               (display-buffer pandoc--output-buffer-name)))))))))
 
 (defun pandoc--text-from-buffer-p (format settings-file)
-  "Return non-nil if the buffer content should be passed to Pandoc."
+  "Return non-nil if the buffer content should be passed to Pandoc.
+If `input-files' is not set, the buffer contents (or the region) should
+be sent to Pandoc.  If FORMAT is not the output format of the current
+buffer, check the `input-files' setting in SETTINGS-FILE."
   (or (and (null (pandoc--get 'input-files))
            (equal (pandoc--get-format 'writer) format))
       (null (assq 'input-files (alist-get :yaml (pandoc--read-settings-from-file settings-file))))))
