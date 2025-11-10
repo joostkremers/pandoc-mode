@@ -1798,6 +1798,7 @@ region to be sent to Pandoc."
                             "latex"
                           output-format))
          (defaults-file (pandoc--select-defaults-file input-file output-format))
+         (stdin (pandoc--text-from-buffer-p output-format defaults-file))
          (display-name (if (buffer-file-name buffer)
                            (file-name-nondirectory input-file)
                          (buffer-name)))
@@ -1852,17 +1853,23 @@ region to be sent to Pandoc."
                                               (run-hooks 'pandoc-async-success-hook))
                                              (t (funcall log-failure display-name executable)
                                                 (display-buffer pandoc--output-buffer-name)))))
-            (unless (pandoc--get 'input-files)
+            (when stdin
               (process-send-region process beg end)
               (process-send-eof process))))
          ((not pandoc-use-async)
-          (let ((result (if (pandoc--get 'input-files)
-                            (apply #'call-process executable nil (get-buffer-create pandoc--output-buffer-name) t args)
-                          (apply #'call-process-region beg end executable nil (get-buffer-create pandoc--output-buffer-name) t args))))
+          (let ((result (if stdin
+                            (apply #'call-process-region beg end executable nil (get-buffer-create pandoc--output-buffer-name) t args)
+                          (apply #'call-process executable nil (get-buffer-create pandoc--output-buffer-name) t args))))
             (if (= result 0)
                 (funcall log-success display-name executable)
               (funcall log-failure display-name executable)
               (display-buffer pandoc--output-buffer-name)))))))))
+
+(defun pandoc--text-from-buffer-p (format settings-file)
+  "Return non-nil if the buffer content should be passed to Pandoc."
+  (or (and (null (pandoc--get 'input-files))
+           (equal (pandoc--get-format 'writer) format))
+      (null (assq 'input-files (alist-get :yaml (pandoc--read-settings-from-file settings-file))))))
 
 (defun pandoc-run-pandoc (&optional prefix)
   "Run pandoc on the current document.
