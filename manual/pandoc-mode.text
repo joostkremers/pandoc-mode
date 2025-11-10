@@ -82,7 +82,7 @@ Once you've set the output format, you can set other options. You should set the
 
 Saving settings can be done in the “Settings files” submenu, which is accessible from the main menu. Emacs saves the settings to a file in the same directory as the file you are editing, under a name composed of the input file, appended with the name of the output format and the extension `.yaml`. So if your input file is called `mytext.md`, the `html` settings file will be called `mytext.md_html.yaml`. (See the section ['Settings Files'](#settings-files) for details.)
 
-A single document can have a separate settings file for each output format that Pandoc supports. These can simply be created by setting all options the way you want them for the first output format, save them, then choose another output format, set the required options, save again, etc. Because the name of a settings file contains the output format for which it was created, the different settings files won't interfere with each other. 
+A single document can have a separate settings file for each output format that Pandoc supports. These can simply be created by setting all options the way you want them for the first output format, save them, then choose another output format, set the required options, save again, etc. Because the name of a settings file contains the output format for which it was created, the different settings files won't interfere with each other.
 
 When you select a new output format, Emacs checks if a corresponding settings file exists and loads it if one is found. If you change to a different output format and haven't saved the setting for the current output format, Emacs will warn you and ask if you want to save them.
 
@@ -103,7 +103,7 @@ One nice thing about the transient menus is that the value of an option is displ
 
 Restoring an option to its default value can be done by using the negative prefix argument, which can be typed inside the transient menus with `M--` (i.e., hold down the meta (alt) key and press `-`), or with `C-u -`. So for example, if you’re in the files menu (`C-c / o f`), you can set an output file with `o`, and you can unset the output file with `M-- o`.
 
-Options that can be repeated are displayed as lists of values. If you select such an option in a transient menu, you are asked for a value, which is then added to the list. To remove a single item from the list, type the relevant key preceded by the negative prefix argument `M--` (or `C-u -`). You are then asked for an item to remove. The remaining items are retained. To remove all items from the list, press the key with two prefix arguments, i.e., `C-u C-u`. 
+Options that can be repeated are displayed as lists of values. If you select such an option in a transient menu, you are asked for a value, which is then added to the list. To remove a single item from the list, type the relevant key preceded by the negative prefix argument `M--` (or `C-u -`). You are then asked for an item to remove. The remaining items are retained. To remove all items from the list, press the key with two prefix arguments, i.e., `C-u C-u`.
 
 Some repeatable options, such as template variables and metadata items, are key/value pairs. When you set such an option, you are asked both a key and a value. The key/value pair is then added to the list. If you provide a key that is already in the list, the new value replaces the old one.
 
