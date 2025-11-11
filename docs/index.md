@@ -18,45 +18,36 @@ Pandoc 3.8.
 ## Upgrading from `pandoc-mode` 2.x
 
 This release of `pandoc-mode` differs in some important ways from the
-2.x release. If you are upgrading, make sure to read this section. If
-you are installing `pandoc-mode` for the first time, you can safely skip
-this section and move on to the [installation](#installation).
+2.x release. If you are upgrading, make sure to read this section, since
+there are a few changes that you will probably need to make to your
+setup. If you are installing `pandoc-mode` for the first time, you can
+safely skip this section and move on to the
+[installation](#installation).
 
-First of all, `pandoc-mode` 3.0 changes the format of settings files.
-Settings files are now saved as `.yaml` files in a format that is
-compatible with Pandoc’s [`defaults`
-files](https://pandoc.org/MANUAL.html#defaults-files).
-
-The most important thing to know is that `pandoc-mode` 3.0 drops support
-for several features that offered functionality that can now be provided
-by Pandoc directly. These are `@@`-directives, file-local Pandoc
-settings, and the master file. In addition, `pandoc-mode` settings files
-are no longer supported in version 3.0. If you make use of any of these
-features, you will need to convert your setup before being able to use
-the new `pandoc-mode`.
-
-First, `pandoc-mode` 2.x used Lisp data files for its settings files.
-Version 3.0 switches to using `.yaml` files that are compatible with
-Pandoc’s own YAML format for so-called [defaults
+The first change that `pandoc-mode` 3.0 makes is the format of the
+settings files. While `pandoc-mode` 2.x used Lisp data files for its
+settings files, version 3.0 switches to using `.yaml` files that are
+compatible with Pandoc’s own YAML format for so-called [defaults
 files](https://pandoc.org/MANUAL.html#defaults-files). The main reason
-for this change is that it easier to process Markdown files outside of
-Emacs. You can simply call Pandoc and pass it the `.yaml` file and
-things will work as you expect. In fact, `pandoc-mode` now does the
-same: when you run Pandoc, it writes a defaults file and passes it to
-Pandoc. The only exception is the output file, which under certain
-circumstances may still need to be passed on the command line. Details
-are discussed [below](#setting-an-output-file).
+for this change is that it makes it easier to process Markdown files
+outside of Emacs. You can simply call Pandoc and pass it the `.yaml`
+file and things will work as you expect. In fact, `pandoc-mode` actually
+does the same: when you run Pandoc, it writes a settings file if you
+haven’t created one yet and passes it to Pandoc. The only option that
+under certain circumstances may still need to be passed on the command
+line is the output file. Details are discussed
+[below](#setting-an-output-file).
 
 In order to transition from `pandoc-mode` 2.x to 3.0, you will need to
 create defaults files to replace `pandoc-mode`’s settings files.
 Unfortunately, the option names that Pandoc uses on the command line,
 which were used in settings files for `pandoc-mode` 2.x, are not always
-the same as the names used in defaults files. They will therefore have
-to be converted by hand. You can write the defaults files yourself, or
-you can use `pandoc-mode` to do it, by opening a source file, recreating
-the settings for it using the menus, and then saving the settings. If
-you go this route, do remember to first set the output format, because
-all other settings depend on it.
+the same as the names used in defaults files. The settings files will
+therefore have to be converted by hand. You can write the defaults files
+yourself, or you can use `pandoc-mode` to do it, by opening a source
+file, recreating the settings for it using the menus, and then saving
+the settings. If you go this route, do remember to first set the output
+format, because all other settings depend on it.
 
 Also keep in mind that even though `pandoc-mode` writes YAML files that
 Pandoc accepts, not every defaults file that works for Pandoc can be
@@ -64,15 +55,24 @@ read by `pandoc-mode`. One discrepancy is that for certain options,
 Pandoc accepts both a singular and a plural variant (e.g., `input-file`
 and `input-files`), where the singular variant takes a single argument,
 while the plural variant takes a list. `pandoc-mode` always works with
-the plural variant, so it ignores the singular variant.
+the plural variant, so it ignores the singular variant. For a list of
+options that `pandoc-mode` recognised, do
+`C-u M-x pandoc-view-settings`, or `C-c / C-u S` in a buffer with
+`pandoc-mode` enabled.
 
-Second, `@@`-directives are no longer supported. They were added to
-`pandoc-mode` in order to extend Pandoc’s Markdown syntax, but since
-then, filters were introduced to Pandoc, which have the same goal but
-with two big advantages compared to `@@`-directives. Because filters
-modify the internal document structure, they are much more powerful than
-`@@`-directives, which can basically only add text. And because they are
-part of Pandoc, they can be used without Emacs.
+Apart from the change in settings files, there are a few features that
+`pandoc-mode` 3.0 no longer supports, because the functionality that
+they provided is now provided by Pandoc directly. These are
+`@@`-directives, file-local variables for Pandoc settings, and master
+files.
+
+`@@`-directives were added to `pandoc-mode` in order to extend Pandoc’s
+Markdown syntax. Pandoc has long since added support for filters,
+however, which have the same goal but with two advantages compared to
+`@@`-directives. Because filters modify the internal document structure,
+they are much more powerful than `@@`-directives, which can basically
+only add text. And because they are part of Pandoc, they can be used
+without Emacs.
 
 To replace `@@`-directives, you will need to create filters for the
 directives that you used. Pandoc supports two types of filters: [JSON
@@ -83,31 +83,29 @@ and are therefore usually faster. JSON filters fork out to some other
 programming language, which makes them slower but if you are not
 familiar with Lua, they may be easier to write.
 
-Third, `pandoc-mode` no longer supports file-local variables for Pandoc
+`pandoc-mode` 3.0 also drops support for file-local variables for Pandoc
 settings. The easiest replacement is to just write them into the
 defaults `.yaml` file. This is admittedly not a perfect replacement,
 since the settings are now no longer in the source file, but it has the
 advantage that it is compatible with Pandoc, i.e., your input file is no
 longer tied to Emacs.
 
-Fourth, `pandoc-mode` no longer has a master file option. The Pandoc
+Lastly, `pandoc-mode` no longer has a master file option. The Pandoc
 replacement is to set an explicit input file. By default, `pandoc-mode`
-passes the contents of the current buffer to Pandoc, but you can now set
-an explicit input file in the “Options \| Files” menu. When this option
-is set, `pandoc-mode` does not pass the contents of the buffer to
-Pandoc. Rather, Pandoc reads the input file from the defaults file and
-processes it instead.
+passes the contents of the current buffer to Pandoc, but if you set an
+explicit input file (in the “Options \| Files” menu), Pandoc is run on
+that file instead.
 
-If you had a master file with a number of `@@include` directive, you can
-instead use the
+If you had a master file with a number of `@@include` directives, you
+can instead use the
 [include-files](https://github.com/pandoc/lua-filters/tree/master/include-files)
 filter and set the input file to this master file. Alternatively, you
 can set multiple input files, in the order that you want to process
 them. One important thing to keep in mind when you use either of these
-methods is that you need to save the settings as *project* settings, so
-that they apply to all input files in the source directory. See the
-section [Multiple input files](#multiple-input-files) below for some
-more details.
+methods is that you will usually need to save the settings as *project*
+settings, so that they apply to all input files in the source directory.
+See the section [Multiple input files](#multiple-input-files) below for
+some more details.
 
 Another change that was introduced recently in `pandoc-mode` is the move
 from hydras to transients for the menus. Transients offer the advantage
@@ -131,7 +129,7 @@ In order to activate `pandoc-mode` in a buffer, you need to type
 `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load
 e.g., a Markdown file, you can add a hook to your init file:
 
-    (add-hook 'markdown-mode-hook 'pandoc-mode)
+    (add-hook 'markdown-mode-hook #'pandoc-mode)
 
 However, if you do not want to start `pandoc-mode` every time you work
 on a Markdown document, you can use a different function in
@@ -145,7 +143,7 @@ Additionally, if you want to automatically load the default
 `pandoc-mode` settings file for the file you’re opening, you can add the
 following to your init file:
 
-    (add-hook 'pandoc-mode-hook 'pandoc-load-default-settings)
+    (add-hook 'pandoc-mode-hook #'pandoc-load-default-settings)
 
 The function `pandoc-load-default-settings` checks if a default settings
 file exists for the file being loaded and reads its settings if it finds
@@ -172,21 +170,21 @@ buffer and the current settings, set the input and output formats, and
 you can go to the options menu.
 
 Note that if the menu bar is active, `pandoc-mode` also provides a menu
-in the menu bar. It has the same structure as the transient menu and it
-has the advantage that options that do not apply to the current file
-(due to its input or output format), are generally greyed out. On the
-other hand, the transient menu shows the value of the options and allows
-you to change more than one option without having to keep reopening the
-menu. The menu bar menu disappears when you select an option, the
-transient menu (generally) does not. Instead, it can be dismissed with
-`q`. Below, I talk about the transient menu specifically, but most of
-what is said applies to the menu bar menu as well.
+in the menu bar. It has mostly the same structure as the transient menu
+and it has the advantage that options that do not apply to the current
+file (due to its input or output format), are generally greyed out. On
+the other hand, the transient menu shows the value of the options and
+allows you to change more than one option without having to keep
+reopening the menu. The menu bar menu disappears when you select an
+option, the transient menu (generally) does not. Instead, it can be
+dismissed with `q`. Below, I talk about the transient menu specifically,
+but most of what is said applies to the menu bar menu as well.
 
 In the options menu, you can set options for running `pandoc` on your
 input file. All Pandoc options can be set from the menu (except for a
-few do not make sense, e.g., `--print-default-template`). Note that when
-you set options, they (by default) only apply to the current file, and,
-more importantly, they only apply to the **current output format**.
+few that do not make sense, e.g., `--print-default-template`). Note that
+when you set options, they (by default) only apply to the current file,
+and, more importantly, they only apply to the **current output format**.
 
 This is actually an important point to remember: Pandoc makes it easy to
 convert an input document to more than one output format, but the
@@ -249,10 +247,9 @@ the “lighter” for `pandoc-mode` in the mode line has the form
 `Pandoc/<format>`, where `<format>` is the current output format.
 
 The major modes for which `pandoc-mode` selects an input format
-automatically can be customised (user option `pandoc-major-modes`). You
-can add major modes or remove those that you don’t use. Similarly, you
-can customise the file extensions for each output format
-(`pandoc-output-format-extensions`).
+automatically can be customised. The relevant user option is
+`pandoc-major-modes`. Similarly, you can customise the file extensions
+for each output format (`pandoc-output-format-extensions`).
 
 ## The options menu
 
@@ -336,9 +333,9 @@ cannot be interpreted by Pandoc when they appear in a defaults file.
 Some of Pandoc’s file options also allow a URL to be passed instead.
 Since `pandoc-mode` uses file-name completion for file options, passing
 a URL can be problematic. You can bypass file-name completion, however,
-using a numeric prefix argument, i.e., `C-u 1` or `M-1`, before setting
-the option. (The actual number is irrelevant.) `pandoc-mode` then just
-reads a string without any kind of completion.
+using a numeric prefix argument, i.e., `C-u 1` or `M-1`. (The actual
+number is irrelevant.) `pandoc-mode` then just reads a string without
+any kind of completion.
 
 This can also be useful if you want to use the special placeholders that
 Pandoc accepts in file paths in defaults files, i.e., `${HOME}` for the
@@ -377,6 +374,21 @@ include-before-body: ["before-body.texi"]
 ## end
 ```
 
+The commented section at the end starting with
+`"## pandoc-mode settings"` contains settings that are used by
+`pandoc-mode`, not by Pandoc itself. They are commented out because
+Pandoc actually throws an error when it sees them.
+
+Note that you can also display all options that `pandoc-mode` recognises
+(both Pandoc options and its own) using a prefix argument; i.e.,
+`C-c / C-u S` displays a list of all options recognised by
+`pandoc-mode`. You can use this list if you want to write a defaults
+file manually and make sure it can be read by `pandoc-mode`. Option
+variants not in this list are not recognised by `pandoc-mode` and should
+therefore not be used. Note that the list does not show the what form
+the value of each option takes (string, list, key/value, etc.) Consult
+the Pandoc documentation to make sure you set the values correctly.
+
 ## Running Pandoc
 
 The first item in the menu is “Run Pandoc” (accessible with `C-c / r`),
@@ -394,13 +406,16 @@ are logged in a buffer called `*Pandoc-mode log*`. You will rarely need
 to see this, since `pandoc-mode` displays a message telling you whether
 Pandoc finished successfully or not. In the latter case, the output
 buffer is displayed, so you can see the error that Pandoc reported.
-
-Note that when you run Pandoc, Pandoc doesn’t read the file on disk.
-Rather, Emacs feeds it the contents of the buffer through `stdin`. This
-means that you don’t actually have to save your file before running
-Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc.
-Alternatively, if the region is active, only the region is sent to
+Still, you can display the log buffer with `C-c / L`. This can be
+helpful if you want to know the exact command that Emacs executed to run
 Pandoc.
+
+Note that when you run Pandoc, Pandoc normally doesn’t read the input
+file on disk. Rather, Emacs feeds it the contents of the buffer through
+`stdin`. This means that you don’t actually have to save your file
+before running Pandoc. Whatever is in your buffer, saved or not, is
+passed to Pandoc. Alternatively, if the region is active, only the
+region is sent.
 
 If you call the command to run Pandoc with a prefix argument `C-u` (so
 the whole key sequence becomes `C-c / C-u r`), Emacs asks you for an
@@ -430,10 +445,10 @@ the name of the output file. Alternatively, you can also let Emacs
 create an output filename for you. To choose this option, use a numeric
 prefix argument, e.g., `C-u 1` (or `M-1`; the actual number is
 irrelevant). The output file name consists of the base name of the input
-file plus the extensions for the output format, as defined in the sure
+file plus the extensions for the output format, as defined in the user
 option `pandoc-output-file-extensions`.
 
-For a few output formats, e.g., odt or docx, Pandoc does not allow
+For a few output formats, e.g., `odt` or `docx`, Pandoc does not allow
 output to be sent to stdout. Therefore, in those cases, unless you
 specify an output filename yourself, Emacs will create an output
 filename for you even if you did not explicitly asked for one.
@@ -450,7 +465,8 @@ is not actually a Pandoc option, rather it’s a convenience feature of
 `pandoc-mode`. It is mostly useful if you have more than one input file
 in the same directory and you want all their output files to go to
 another directory. This can be done by creating a project settings file,
-as discussed below in the section [Settings Files](#settings-files).
+as discussed below in the section [Settings Files](#settings-files) and
+setting the output directory.
 
 Note that in the Files menu, the output file is usually displayed as a
 full path, even if you only set the filename itself, without the
@@ -472,8 +488,8 @@ and then calling the pdf converter on the output file. So if your output
 format is `latex`, Pandoc first converts your input file to `.tex` and
 then calls LaTeX to convert it to pdf. If your output format is HTML,
 the input file is first converted to HTML and then converted to PDF
-using `weasyprint` or one of the other options, which can be set with
-`pdf-engine`.
+using `weasyprint` (or one of the alternatives; see the option
+`pdf-engine`).
 
 When creating a PDF using `pandoc-mode`, Emacs first checks if the
 output format of the current buffer is set to `latex`, `context`,
@@ -496,9 +512,9 @@ use a different format, use the prefix argument `C-u`.
 
 This setup means that you do not need to switch the output format to
 `latex`, `context` or `html5` every time you wish to create a PDF, which
-can be practical if you’re also converting to another format. However,
-if you wish to change settings for PDF output, you *do* need to switch
-to the relevant output format.
+can be practical if you’re also converting to another format. Keep in
+mind, though, that if you wish to change settings for PDF output, you
+*do* need to switch to the relevant output format.
 
 Note that for `latex`, `beamer` and `html`, you can use different PDF
 engines. For `latex` and `beamer`, these are `pdflatex` (the default),
@@ -579,7 +595,9 @@ By default, Emacs starts `pandoc` as an asynchronous process using a
 tty. If this causes problems for some reason, you can try using a pipe
 instead by customising `pandoc-process-connection-type`. Alternatively,
 you can use a synchronous process by unsetting the user option
-`pandoc-use-async`.
+`pandoc-use-async`. This means Emacs is blocked while Pandoc is running,
+but in some cases it can be used as a way to work around issues with
+asynchronous processes.
 
 ## Citation Jumping
 
@@ -629,7 +647,7 @@ changed in the customisation group `pandoc`.
 
 Whenever `pandoc-mode` loads settings for an input file, it first checks
 if there is a local settings file. If none is found, it looks for a
-project file, and if that isn’t found, it tries to load a global
+project file, and if that isn’t found either, it tries to load a global
 settings file. As such, local settings override project settings and
 project settings override global settings. They do this in an
 all-or-nothing manner: if a local settings file exists, project and
@@ -639,9 +657,11 @@ project and/or global settings files that way.
 
 You can create a project or global settings file through the menu in the
 submenu “Settings Files”. This simply saves all settings for the current
-buffer to a project or global settings file. (Any local settings file
-for the file in the current buffer will be kept. You’ll need to delete
-it manually if you no longer need it.)
+buffer to a project or global settings file. (If there is already a
+local settings file, you’ll be asked if you want to delete it, because
+it would stop the project or global settings file from being loaded. The
+same applies to a project settings file if you save a global settings
+file.)
 
 The name of a global settings file has the form
 `<format>_defaults.yaml`, where `<format>` obviously specifies the
@@ -679,8 +699,8 @@ anything into your document.
 Pandoc can process multiple input files in one go, combining them into a
 single output file. This is also supported in `pandoc-mode`: in the
 “Options \| Files” menu, the option “Input files” can take a list of
-input files. If you use this option, you’ll need to save your settings
-as a project file, so that each input file in the directory
+input files. If you use this option, you’ll usually need to save your
+settings as a project file, so that each input file in the directory
 automatically uses the same settings file and thus the same set of input
 files.
 
@@ -692,3 +712,10 @@ filter, and have a master file that contains an include block for each
 included file and create a project settings file with the input file set
 to this master file. Then, whenever you run Pandoc from one of the
 source files, the master file is processed instead.
+
+Other setups for handling multiple input files are possible by using the
+`defaults` option in the “Options \| Files” menu. You can set the
+`defaults` option to a list of defaults files that are read in addition
+to the defaults file that `pandoc-mode` creates. Pandoc combines the
+settings in all defaults files, unlike `pandoc-mode`, making more
+complex setups possible.
