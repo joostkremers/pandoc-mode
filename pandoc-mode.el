@@ -3152,7 +3152,7 @@ This function is for use in `pandoc-citation-jump-function'."
 
 (define-derived-mode pandoc-@-mode
   fundamental-mode "Pandoc-select"
-  "Major mode for the Pandoc-select buffer."
+  "Major mode for the Pandoc @-selection buffer."
   (setq buffer-read-only t)
   (setq truncate-lines t))
 
