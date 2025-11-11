@@ -3224,8 +3224,7 @@ This function is for use in `pandoc-citation-jump-function'."
 (defun pandoc-insert-@ ()
   "Insert a new labeled (@) list marker at point."
   (interactive)
-  (let ((label (pandoc--@-counter-inc)))
-    (insert (format "(@%s)" label))))
+  (insert (format "(@%s)" (pandoc--@-counter-inc))))
 
 (defun pandoc--collect-@-definitions ()
   "Collect (@)-definitions and return them as a list."
