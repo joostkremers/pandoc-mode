@@ -3214,8 +3214,9 @@ This function is for use in `pandoc-citation-jump-function'."
 (defun pandoc-select-current-@ ()
   "Leave pandoc--@-select-buffer and insert selected (@)-label at point."
   (interactive)
-  (looking-at " \\((@.*?)\\)")
-  (let ((label (match-string 1)))
+  (let ((label (progn
+                 (looking-at " \\((@.*?)\\)")
+                 (match-string 1))))
     (remove-overlays)
     (set-window-configuration pandoc--window-config)
     (switch-to-buffer pandoc--pre-select-buffer)
