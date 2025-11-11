@@ -3232,6 +3232,8 @@ This function is for use in `pandoc-citation-jump-function'."
   (save-excursion
     (goto-char (point-min))
     (let (definitions)
+      ;; We take the entire line, not just the (@) item, so that the items
+      ;; can be more easily identified in the @-selection buffer.
       (while (re-search-forward "^[[:space:]]*\\((@.*?).*\\)$" nil t)
         (push (match-string-no-properties 1) definitions))
       (nreverse definitions))))
