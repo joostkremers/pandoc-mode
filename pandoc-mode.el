@@ -2176,10 +2176,13 @@ file exists, display the *Pandoc output* buffer."
   (interactive)
   (display-buffer pandoc--output-buffer-name))
 
-(defun pandoc-view-settings ()
-  "Displays the settings file in a *Help* buffer."
-  (interactive)
-  (let* ((settings pandoc--local-settings))
+(defun pandoc-view-settings (prefix)
+  "Displays the settings file in a *Help* buffer.
+If PREFIX is non-nil, display all `pandoc-mode' options instead."
+  (interactive "P")
+  (let* ((settings (if prefix
+                       pandoc--options
+                     pandoc--local-settings)))
     (with-help-window " *Pandoc Help*"
       (princ "# Current settings:\n\n")
       (insert (yaml-encode (alist-get :yaml settings))
