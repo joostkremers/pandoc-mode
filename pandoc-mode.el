@@ -875,6 +875,7 @@ If the cdr of an entry is t, the option takes an optional URL.")
 (defconst pandoc--output-buffer-name " *Pandoc output*")
 (defconst pandoc--log-buffer-name " *Pandoc-mode log*")
 (defconst pandoc--viewer-buffer-name " *Pandoc-mode viewer*")
+(defconst pandoc--@-select-buffer-name " *Pandoc-mode select*")
 
 ;;; Utility functions
 
@@ -3161,7 +3162,7 @@ This function is for use in `pandoc-citation-jump-function'."
   (let ((definitions (pandoc--collect-@-definitions)))
     (setq pandoc--window-config (current-window-configuration))
     (setq pandoc--pre-select-buffer (current-buffer))
-    (setq pandoc--@-buffer (get-buffer-create " *Pandoc select*"))
+    (setq pandoc--@-buffer (get-buffer-create pandoc--@-select-buffer-name))
     (set-buffer pandoc--@-buffer)
     (pandoc-@-mode)
     (let ((buffer-read-only nil))
