@@ -313,7 +313,7 @@ it is assumed to be an external viewer, which is called with
 ;; transients for returning to the higher level menu and for quitting,
 ;; respectively.
 
-(defvar pandoc--formats
+(defconst pandoc--formats
   '(("markdown" "Markdown Formats" "m"
      ("markdown"               "Pandoc Markdown"               "m" both)
      ("markdown_mmd"           "MultiMarkdown"                 "M" both)
@@ -435,10 +435,10 @@ returned list only contains the formats, all the other information in
           (pandoc--list-formats 'input))
   "List of items in pandoc-mode's input format menu.")
 
-(defvar pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms" "typst")
+(defconst pandoc--pdf-able-formats '("latex" "context" "beamer" "html" "ms" "typst")
   "List of output formats that can be used to generate pdf output.")
 
-(defvar pandoc--extensions-alist
+(defconst pandoc--extensions-alist
   '(("abbreviations" .
      ("markdown_phpextra" | "plain" "opml" "ipynb" "markdown_strict"
       "markdown_github" "markdown_mmd" "markdown"))
@@ -872,9 +872,9 @@ If the cdr of an entry is t, the option takes an optional URL.")
 (defvar-local pandoc--latest-run nil
   "The output format and the output file created in the most recent call to Pandoc.")
 
-(defvar pandoc--output-buffer-name " *Pandoc output*")
-(defvar pandoc--log-buffer-name " *Pandoc-mode log*")
-(defvar pandoc--viewer-buffer-name " *Pandoc-mode viewer*")
+(defconst pandoc--output-buffer-name " *Pandoc output*")
+(defconst pandoc--log-buffer-name " *Pandoc-mode log*")
+(defconst pandoc--viewer-buffer-name " *Pandoc-mode viewer*")
 
 ;;; Utility functions
 
