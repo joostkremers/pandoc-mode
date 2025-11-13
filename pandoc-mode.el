@@ -1797,7 +1797,8 @@ region to be sent to Pandoc."
                                  (not (member (pandoc--get-format 'writer) pandoc--pdf-able-formats)))
                             "latex"
                           output-format))
-         (defaults-file (pandoc--select-defaults-file input-file output-format))
+         (defaults-file (or (pandoc--select-defaults-file input-file output-format)
+                            (pandoc--save-settings nil output-format t)))
          (pandoc--local-settings (if (equal (pandoc--get-format 'writer) output-format)
                                      pandoc--local-settings
                                    (pandoc--read-settings-from-file defaults-file)))
@@ -1811,14 +1812,10 @@ region to be sent to Pandoc."
     (if (pandoc--get 'input-files)
         (setq region nil))
 
-    ;; We need a defaults file, so if we don't have one, create one.
-    (unless defaults-file
-      (setq defaults-file (pandoc--save-settings 'local output-format t)))
-
     ;; If settings were modified, save them.
     (if (and pandoc--settings-modified-flag
              (y-or-n-p "Settings modified.  Save? "))
-        (pandoc--save-settings (cdr (assq :type pandoc--local-settings)) output-format t))
+        (pandoc--save-settings nil output-format t))
 
     (message "Running %s on %s" (file-name-nondirectory executable) display-name)
     (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
@@ -1956,7 +1953,7 @@ files.  (Therefore, this function is not available on Windows.)"
            (file-name-nondirectory
             (pandoc--create-defaults-filename 'project (pandoc--get-format 'writer) (buffer-file-name)))))
       (when (not (file-exists-p current-defaults-file))
-        (pandoc--save-settings 'local (pandoc--get-format 'writer)))
+        (pandoc--save-settings 'local))
       (make-symbolic-link current-defaults-file
                           (pandoc--create-defaults-filename 'local "default" (buffer-file-name)) t)
       (when (file-exists-p current-project-file)
@@ -1967,7 +1964,7 @@ files.  (Therefore, this function is not available on Windows.)"
 (defun pandoc-save-local-settings ()
   "Save the current settings as a local settings file."
   (interactive)
-  (pandoc--save-settings 'local (pandoc--get-format 'writer)))
+  (pandoc--save-settings 'local))
 
 (defun pandoc-save-project-settings ()
   "Save the current settings as a project settings file."
@@ -1995,18 +1992,32 @@ files.  (Therefore, this function is not available on Windows.)"
              (y-or-n-p "A project settings file exists for the current buffer.  Delete? "))
         (delete-file project-settings-file))))
 
-(defun pandoc--save-settings (type format &optional no-confirm)
+(defun pandoc--save-settings (&optional type format no-confirm)
   "Save the settings of the current buffer.
-TYPE must be a quoted symbol and specifies the type of defaults
-file.  It can be `local', `project', or `global'.  FORMAT is the
-output format for which the settings are to be saved.  If
-NO-CONFIRM is non-nil, any existing defaults file is overwritten
-without asking.
+TYPE must be a quoted symbol and specifies the type of defaults file.
+It can be `local', `project', or `global'.  It can also be nil, in which
+case it is taken from the `:type' entry in `pandoc--local-settings', or
+it defaults to `local' in `:type` is not set.  FORMAT is the output
+format for which the settings are to be saved.  If nil, it defaults to
+the current output format.  If NO-CONFIRM is non-nil, any existing
+defaults file is overwritten without asking.
 
 Return the file path of defaults file upon success, or nil otherwise."
   (let* ((filename (buffer-file-name))
+         (format (or format
+                     (pandoc--get-format 'writer)))
+         (type (or type
+                   (assq :type pandoc--local-settings)
+                   'local))
          (defaults-file (pandoc--create-defaults-filename type format filename))
-         (settings pandoc--local-settings))
+         ;; Check if we're saving settings for the buffer's current output
+         ;; format.  If not, save a minimal defaults file, not the current
+         ;; buffer's settings.
+         (settings (if (equal (pandoc--get-format 'writer) format)
+                       pandoc--local-settings
+                     `((:yaml . ((reader . ,(pandoc--get 'reader))
+                                 (writer . ,format)))
+                       (:non-pandoc . ((output . t)))))))
     (when (or no-confirm
               (not (file-exists-p defaults-file))
               (y-or-n-p (format "%s defaults file `%s' already exists.  Overwrite? "
@@ -2032,8 +2043,12 @@ Return the file path of defaults file upon success, or nil otherwise."
         (message "%s settings file written to `%s'."
                  (capitalize (symbol-name type))
                  (file-name-nondirectory defaults-file)))
-      (setcdr (assq :type pandoc--local-settings) type)
-      (setq pandoc--settings-modified-flag nil)
+      ;; We set the settings' `:type' and we mark the settings as
+      ;; unmodified, but only if we're saving for the buffer's output
+      ;; format.
+      (when (eq settings pandoc--local-settings)
+        (setcdr (assq :type pandoc--local-settings) type)
+        (setq pandoc--settings-modified-flag nil))
       defaults-file)))
 
 (defun pandoc-revert-settings ()
@@ -2073,7 +2088,7 @@ file is found for FILE, otherwise non-nil."
   (when (and (not no-confirm)
              pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for format \"%s\" modified.  Save first? " (pandoc--get-format 'writer))))
-    (pandoc--save-settings 'local (pandoc--get-format 'writer) t))
+    (pandoc--save-settings 'local nil t))
   (let (settings
         type)
     ;; First try to read local settings:
@@ -2236,7 +2251,7 @@ format)."
                                       nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get-format 'writer))))
-    (pandoc--save-settings 'local (pandoc--get-format 'writer) t))
+    (pandoc--save-settings 'local nil t))
   (unless (pandoc--load-settings-profile format t)
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--set 'writer format)
