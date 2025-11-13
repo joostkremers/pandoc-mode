@@ -69,7 +69,7 @@ Note that if the menu bar is active, `pandoc-mode` also provides a menu in the m
 
 In the options menu, you can set options for running `pandoc` on your input file. All Pandoc options can be set from the menu (except for a few that do not make sense, e.g., `--print-default-template`). Note that when you set options, they (by default) only apply to the current file, and, more importantly, they only apply to the **current output format**.
 
-This is actually an important point to remember: Pandoc makes it easy to convert an input document to more than one output format, but the settings may (and usually do) differ between output formats. Therefore, whenever you change and save a setting in `pandoc-mode`, it applies *only* to the *current* output format.
+This is actually an important point to remember: Pandoc makes it easy to convert an input document to more than one output format, but the settings may (and usually do) differ between output formats. Therefore, whenever you change and save a setting in `pandoc-mode`, it *only* applies to the *current* output format.
 
 
 ## Input and output formats ##
@@ -151,7 +151,7 @@ When you run Pandoc, `pandoc-mode` also generates a few messages, which are logg
 
 Note that when you run Pandoc, Pandoc normally doesn't read the input file on disk. Rather, Emacs feeds it the contents of the buffer through `stdin`. This means that you don't actually have to save your file before running Pandoc. Whatever is in your buffer, saved or not, is passed to Pandoc. Alternatively, if the region is active, only the region is sent.
 
-If you call the command to run Pandoc with a prefix argument `C-u` (so the whole key sequence becomes `C-c / C-u r`), Emacs asks you for an output format to use. If there is a settings file for the format you specify, the settings in it will be passed to Pandoc instead of the settings in the current buffer. If there is no settings file, `pandoc-mode` will create one with just the input and output formats.
+If you call the command to run Pandoc with a prefix argument `C-u` (so the whole key sequence becomes `C-c / C-u r`), Emacs asks you for an output format to use. If there is a settings file for the format you specify, the settings in it will be passed to Pandoc instead of the settings in the current buffer. If there is no settings file, `pandoc-mode` will create one with just the input and output formats, and in addition the output file name is set to the same base name as the input file with an extension appropriate for the output format.
 
 Note that specifying an output format this way does not change the output format or any of the settings in the buffer, it just changes the output profile used for calling Pandoc. This can be useful if you use different output formats but don't want to keep switching between profiles when creating the different output files.
 

@@ -189,8 +189,8 @@ and, more importantly, they only apply to the **current output format**.
 This is actually an important point to remember: Pandoc makes it easy to
 convert an input document to more than one output format, but the
 settings may (and usually do) differ between output formats. Therefore,
-whenever you change and save a setting in `pandoc-mode`, it applies
-*only* to the *current* output format.
+whenever you change and save a setting in `pandoc-mode`, it *only*
+applies to the *current* output format.
 
 ## Input and output formats
 
@@ -422,7 +422,9 @@ the whole key sequence becomes `C-c / C-u r`), Emacs asks you for an
 output format to use. If there is a settings file for the format you
 specify, the settings in it will be passed to Pandoc instead of the
 settings in the current buffer. If there is no settings file,
-`pandoc-mode` will create one with just the input and output formats.
+`pandoc-mode` will create one with just the input and output formats,
+and in addition the output file name is set to the same base name as the
+input file with an extension appropriate for the output format.
 
 Note that specifying an output format this way does not change the
 output format or any of the settings in the buffer, it just changes the
