@@ -1966,10 +1966,13 @@ files.  (Therefore, this function is not available on Windows.)"
                             (pandoc--create-defaults-filename 'project "default" (buffer-file-name)) t))
       (message "`%s' set as default output format." (pandoc--get-format 'writer)))))
 
-(defun pandoc-save-local-settings ()
-  "Save the current settings as a local settings file."
-  (interactive)
-  (pandoc--save-settings 'local))
+(defun pandoc-save-settings (prefix)
+  "Save the current settings.
+The settings are saved to the file they were loaded from.  If the
+setting have not been saved before, or if PREFIX is \\[universal-argument], a local
+settings file is created."
+  (interactive "P")
+  (pandoc--save-settings (when (listp prefix) 'local)))
 
 (defun pandoc-save-project-settings ()
   "Save the current settings as a project settings file."
@@ -2256,7 +2259,7 @@ format)."
                                       nil t)))
   (when (and pandoc--settings-modified-flag
              (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get-format 'writer))))
-    (pandoc--save-settings 'local nil t))
+    (pandoc--save-settings nil nil t))
   (unless (pandoc--load-settings-profile format t)
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--set 'writer format)
@@ -2460,7 +2463,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
      ["Insert New Example" pandoc-insert-@ :active t]
      ["Select And Insert Example Label" pandoc-select-@ :active t])
     ("Settings Files"
-     ["Save File Settings" pandoc-save-local-settings :active t]
+     ["Save Settings" pandoc-save-settings :active t]
      ["Save Project File" pandoc-save-project-settings :active t]
      ["Save Global Settings File" pandoc-save-global-settings :active t]
      ["Revert Settings" pandoc-revert-settings :active t]
@@ -2709,7 +2712,7 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
 (transient-define-prefix pandoc-settings-transient ()
   "Transient for settings files."
   ["Settings files"
-   ("s" "Save file settings"            pandoc-save-local-settings)
+   ("s" "Save settings"                 pandoc-save-settings)
    ("p" "Save project settings"         pandoc-save-project-settings)
    ("g" "Save global settings"          pandoc-save-global-settings)
    ("d" "Set current format as default" pandoc-set-default-format)

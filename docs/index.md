@@ -643,9 +643,8 @@ name implies, apply globally, to files for which no local or project
 file is found. Both types of files are specific to a particular output
 format, just like local settings files. Project files live in the
 directory they apply to and are called `Project_<format>.yaml`. Global
-files live in the directory specified by the variable `pandoc-data-dir`,
-which defaults to `~/.emacs.d/pandoc-mode/`, but this can of course be
-changed in the customisation group `pandoc`.
+files live in the directory specified by the user option
+`pandoc-data-dir`, and are named `<format>_defaults.yaml`.
 
 Whenever `pandoc-mode` loads settings for an input file, it first checks
 if there is a local settings file. If none is found, it looks for a
@@ -658,20 +657,18 @@ in the file menu to add more defaults files, so you could refer to the
 project and/or global settings files that way.
 
 You can create a project or global settings file through the menu in the
-submenu “Settings Files”. This simply saves all settings for the current
-buffer to a project or global settings file. (If there is already a
-local settings file, you’ll be asked if you want to delete it, because
-it would stop the project or global settings file from being loaded. The
-same applies to a project settings file if you save a global settings
-file.)
+submenu “Settings Files”. Note that if you save a project settings file,
+`pandoc-mode` checks if there is already a local settings file for the
+current buffer and asks you if you want to delete it, since the local
+settings file would keep the project settings file from being read.
+Similarly, if you save a global settings file, `pandoc-mode` checks for
+a local and a project settings file.
 
-The name of a global settings file has the form
-`<format>_defaults.yaml`, where `<format>` obviously specifies the
-output format. `<format>` can also be `"default"`, however, in which
-case it specifies a default settings file, which is loaded by
-`pandoc-load-default-settings` when no default local or project settings
-file is found. In this way, you can override the default output format
-“native” that `pandoc-mode` normally uses for new files.
+Note that the first option in the “Settings files” menu, “Save file
+settings”, writes a local settings file, unless the settings were read
+from a project or global settings file, in which case the settings are
+written back to the file they were read from. To force the creation of a
+local settings file, use the universal prefix argument `C-u`.
 
 # Managing numbered examples
 
