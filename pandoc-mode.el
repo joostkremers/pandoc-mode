@@ -1799,6 +1799,11 @@ region to be sent to Pandoc."
                           output-format))
          (defaults-file (or (pandoc--select-defaults-file input-file output-format)
                             (pandoc--save-settings nil output-format t)))
+         ;; We shadow `pandoc--local-settings' because we need to check
+         ;; `input-files' to determine how to call Pandoc, and we need the
+         ;; output file settings to create the output file name.  But we
+         ;; need to take these settings from the defaults file of the
+         ;; actual output format.
          (pandoc--local-settings (if (equal (pandoc--get-format 'writer) output-format)
                                      pandoc--local-settings
                                    (pandoc--read-settings-from-file defaults-file)))
