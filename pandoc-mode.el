@@ -218,7 +218,7 @@ matches KEY."
     ("xwiki"                 ".txt") ; Probably.
     ("zimwiki"               ".txt"))
   "List of Pandoc output formats and their associated file extensions.
-These extensions are used when pandoc-mode creates an output
+These extensions are used when `pandoc-mode' creates an output
 file.  The file extension should include a dot.  Note that it does
 not make sense to change the names of the output formats, since
 Pandoc only recognizes the ones listed here.  However, it is
@@ -1457,7 +1457,7 @@ formulated in such a way that the strings \"Set/Change \" and
                ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
 (defun pandoc--alist-option-completion (option)
-  "Return a collection function for pandoc-mode alist OPTION."
+  "Return a collection function for `pandoc-mode' alist OPTION."
   (let ((variables (pandoc--get option)))
     (lambda (str pred flag)
       (if (eq flag 'metadata)
@@ -1709,7 +1709,7 @@ value."
   (let ((map (make-sparse-keymap)))
     (define-key map "\C-c/" #'pandoc-main-transient)
     map)
-  "Keymap for pandoc-mode.")
+  "Keymap for `pandoc-mode'.")
 
 ;;;###autoload
 (define-minor-mode pandoc-mode
@@ -1730,7 +1730,7 @@ value."
 
 ;;;###autoload
 (defun conditionally-turn-on-pandoc ()
-  "Turn on pandoc-mode if a Pandoc defaults file exists.
+  "Turn on `pandoc-mode' if a Pandoc defaults file exists.
 This is for use in major mode hooks."
   (when (and (buffer-file-name)
              (file-exists-p (pandoc--create-defaults-filename 'local "default" (buffer-file-name))))
