@@ -1330,9 +1330,9 @@ or T and indicates whether the option can have a default value."
 This function is meant to be called from an interactive function to do
 the actual work.  PROMPT is used to prompt the user.  PREFIX is the raw
 prefix argument from the calling function.  If PREFIX is `\\[universal-argument] -' (or
-`\\[negative-argument]'), unset the option.  If PREFIX is nil, the user is prompted
-for a value.  With any other PREFIX argument, use the option's default
-value, if it has one, otherwise unset it."
+`\\[negative-argument]'), unset the option.  If PREFIX is nil, the user is prompted for
+a value.  With the universal PREFIX argument \\[universal-argument], use the option's
+default value, if it has one, otherwise unset it."
   ;; DEFAULT is either nil or t; if t, it just signals that the option
   ;; should be passed to Pandoc without a value.  Note that if DEFAULT is
   ;; nil, calling this function with a prefix argument other than `C-u -'
