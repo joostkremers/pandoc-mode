@@ -429,6 +429,9 @@ returned list only contains the formats, all the other information in
                                         (drop 3 formats)))
                           pandoc--formats)))
 
+(defvar pandoc--initialized nil
+  "Non-nil if `pandoc-mode' has been initialized.")
+
 (defvar pandoc--input-formats-menu
   (mapcar (lambda (f)
             (cons (cadr f) (car f)))
@@ -1146,7 +1149,7 @@ value."
 (defvar pandoc--obsolete-menu-list nil)
 (defvar pandoc--citations-menu-list nil)
 
-(defmacro define-pandoc-switch (option menu key description)
+(defmacro pandoc--setup-switch (option menu key description)
   "Create a binary option.
 OPTION must be a symbol and must be identical to the long form of the
 pandoc option (without dashes).  MENU is a symbol naming the menu to
@@ -1172,7 +1175,7 @@ appear in the menu."
                              :transient t))
                ,(intern (concat "pandoc--" (symbol-name menu) "-transient-list"))))))
 
-(defmacro define-pandoc-file-option (option menu key prompt)
+(defmacro pandoc--setup-file-option (option menu key prompt)
   "Define OPTION as a file option.
 The option is added to `pandoc--options'.  Furthermore, a menu entry is
 created under MENU, which is a symbol naming the menu to which the
@@ -1230,7 +1233,7 @@ have a URL as argument."
                 ;; otherwise no prefix or C-u
                 (t (pandoc--read-file-name (concat prompt ": ") prefix)))))
 
-(defmacro define-pandoc-number-option (option menu key prompt)
+(defmacro pandoc--setup-number-option (option menu key prompt)
   "Define OPTION as a numeric option.
 The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
@@ -1280,7 +1283,7 @@ for a value."
                    nil
                  (string-to-number (read-string (concat prompt ": "))))))
 
-(defmacro define-pandoc-string-option (option menu key prompt &optional default)
+(defmacro pandoc--setup-string-option (option menu key prompt &optional default)
   "Define OPTION as a string option.
 The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
@@ -1343,7 +1346,7 @@ default value, if it has one, otherwise unset it."
                 ((null prefix) (read-string (concat prompt ": ")))
                 (t default))))
 
-(defmacro define-pandoc-list-option (option menu key type description prompt)
+(defmacro pandoc--setup-list-option (option menu key type description prompt)
   "Define OPTION as a list option.
 The option is added to `pandoc--options' and `pandoc--list-options'.
 Furthermore, a menu entry is created under MENU, a symbol naming the
@@ -1421,7 +1424,7 @@ options that can take both a file name and a URL as argument."
       (pandoc--remove-from-list-option option value)
       (message (concat prompt " \"%s\" removed.") value)))))
 
-(defmacro define-pandoc-alist-option (option menu key description prompt)
+(defmacro pandoc--setup-alist-option (option menu key description prompt)
   "Define OPTION as an alist option.
 The option is added to `pandoc--options' and `pandoc--alist-options',
 and a menu entry is created under MENU, a symbol naming the menu to
@@ -1504,7 +1507,7 @@ removed from the list.  If it is `\\[universal-argument] \\[universal-argument]'
                                                            (format "added with value `%s'" value)
                                                          "removed")))))))
 
-(defmacro define-pandoc-choice-option (option menu key prompt choices &optional output-formats)
+(defmacro pandoc--setup-choice-option (option menu key prompt choices &optional output-formats)
   "Define OPTION as a choice option.
 The option is added to `pandoc--options'.
 Furthermore, a menu entry is created under MENU, which is a symbol
@@ -1586,122 +1589,141 @@ value."
 ;; is why an object-oriented approach would be better.  In fact, I'm kinda
 ;; implementing one, just in a haphazard way.)
 
-(define-pandoc-string-option reader           nil nil        "Input Format")
-(define-pandoc-list-option   input-files      nil nil file   "Input Files" "Input File")
-(define-pandoc-string-option output-file      nil nil        "Output File")
-(define-pandoc-list-option   defaults         nil nil file   "Defaults Files" "Defaults File")
-(define-pandoc-switch        file-scope       nil nil        "Use File Scope")
-(define-pandoc-switch        sandbox          nil nil        "Run In Sandbox")
-(define-pandoc-file-option   data-dir         nil nil        "Data Directory")
-(define-pandoc-file-option   extract-media    nil nil        "Extract Media Files")
-(define-pandoc-string-option verbosity        nil nil        "Verbosity")
-(define-pandoc-list-option   filters          nil nil file   "Filters" "Filter")
-(define-pandoc-list-option   html-math-method nil nil string "HTML Math Rendering" "")
+(defun pandoc--setup-options ()
+  "Set up Pandoc options."
+  (pandoc--setup-string-option reader           nil nil        "Input Format")
+  (pandoc--setup-list-option   input-files      nil nil file   "Input Files" "Input File")
+  (pandoc--setup-string-option output-file      nil nil        "Output File")
+  (pandoc--setup-list-option   defaults         nil nil file   "Defaults Files" "Defaults File")
+  (pandoc--setup-switch        file-scope       nil nil        "Use File Scope")
+  (pandoc--setup-switch        sandbox          nil nil        "Run In Sandbox")
+  (pandoc--setup-file-option   data-dir         nil nil        "Data Directory")
+  (pandoc--setup-file-option   extract-media    nil nil        "Extract Media Files")
+  (pandoc--setup-string-option verbosity        nil nil        "Verbosity")
+  (pandoc--setup-list-option   filters          nil nil file   "Filters" "Filter")
+  (pandoc--setup-list-option   html-math-method nil nil string "HTML Math Rendering" "")
+  (pandoc--setup-reader-options)
+  (pandoc--setup-general-writer-options)
+  (pandoc--setup-specific-writer-options)
+  (pandoc--setup-html-options)
+  (pandoc--setup-epub-options)
+  (pandoc--setup-obsolete-options)
+  (pandoc--setup-citation-options))
 
-;; Options added to the menus automatically. Note that the options are
-;; added to the menus and transients in reverse order, because we're using
-;; `push' to put them in the lists that we use to define the transients and
-;; menus.
-
-;; Reader options
-(define-pandoc-file-option   abbreviations           reader "a"      "Abbreviations File")
-(define-pandoc-switch        strip-empty-paragraphs  reader "e"      "Strip Empty Paragraphs")
-(define-pandoc-choice-option track-changes           reader "T"      "Track Changes" ("accept" "reject" "all") ("docx"))
-(define-pandoc-number-option tab-stop                reader "t"      "Tab Stop Width")
-(define-pandoc-switch        preserve-tabs           reader "p"      "Preserve Tabs")
-(define-pandoc-list-option   metadata-files          reader "M" file "Metadata Files" "Metadata File")
-(define-pandoc-alist-option  metadata                reader "m"      "Metadata" "Metadata item")
-(define-pandoc-string-option default-image-extension reader "i"      "Default Image Extension")
-(define-pandoc-string-option indented-code-classes   reader "c"      "Indented Code Classes")
-(define-pandoc-number-option shift-heading-level-by  reader "h"      "Header Level Shift")
+(defun pandoc--setup-reader-options ()
+  "Set up Pandoc reader options."
+  (pandoc--setup-number-option shift-heading-level-by  reader "h"      "Header Level Shift")
+  (pandoc--setup-string-option indented-code-classes   reader "c"      "Indented Code Classes")
+  (pandoc--setup-string-option default-image-extension reader "i"      "Default Image Extension")
+  (pandoc--setup-alist-option  metadata                reader "m"      "Metadata" "Metadata item")
+  (pandoc--setup-list-option   metadata-files          reader "M" file "Metadata Files" "Metadata File")
+  (pandoc--setup-switch        preserve-tabs           reader "p"      "Preserve Tabs")
+  (pandoc--setup-number-option tab-stop                reader "t"      "Tab Stop Width")
+  (pandoc--setup-choice-option track-changes           reader "T"      "Track Changes" ("accept" "reject" "all") ("docx"))
+  (pandoc--setup-switch        strip-empty-paragraphs  reader "e"      "Strip Empty Paragraphs")
+  (pandoc--setup-file-option   abbreviations           reader "a"      "Abbreviations File")
+  (setq pandoc--reader-menu-list (nreverse pandoc--reader-menu-list))
+  (setq pandoc--reader-transient-list (nreverse pandoc--reader-transient-list)))
 ;; extract-media
 
-;; TODO for data-dir, output-dir and extract-media, a macro define-pandoc-dir-option might be useful.
+;; TODO for data-dir, output-dir and extract-media, a macro pandoc--setup-dir-option might be useful.
 
-;; General writer options
-(define-pandoc-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
-(define-pandoc-list-option   request-headers       writer "R"  string "HTTP Request Header" "Request Header")
-(define-pandoc-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
-(define-pandoc-list-option   include-after-body    writer "ia" file   "Include After Body" "File")
-(define-pandoc-list-option   include-before-body   writer "ib" file   "Include Before Body" "File")
-(define-pandoc-list-option   include-in-header     writer "ih" file   "Include Header" "File")
-(define-pandoc-list-option   syntax-definitions    writer "y"  file   "Syntax Definition File" "File")
-(define-pandoc-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
-(define-pandoc-switch        strip-comments        writer "C"         "Strip comments")
-(define-pandoc-switch        list-of-tables        writer "lt"        "List of Tables")
-(define-pandoc-switch        list-of-figures       writer "lf"        "List of Figures")
-(define-pandoc-number-option toc-depth             writer "D"         "TOC Depth")
-(define-pandoc-switch        table-of-contents     writer "T"         "Table of Contents")
-(define-pandoc-number-option columns               writer "c"         "Column Width")
-(define-pandoc-choice-option wrap                  writer "w"         "Wrap"                ("auto" "none" "preserve"))
-(define-pandoc-choice-option eol                   writer "e"         "Line Endings Style"  ("crlf" "lf" "native"))
-(define-pandoc-number-option dpi                   writer "d"         "DPI")
-(define-pandoc-alist-option  variable-json         writer "j"         "JSON Variables"      "JSON Variable")
-(define-pandoc-alist-option  variable              writer "v"         "Variables"           "Variable")
-(define-pandoc-file-option   template              writer "t"         "Template File")
-(define-pandoc-switch        standalone            writer "s"         "Standalone")
+(defun pandoc--setup-general-writer-options ()
+  "Set up Pandoc general writer options."
+  (pandoc--setup-switch        standalone            writer "s"         "Standalone")
+  (pandoc--setup-file-option   template              writer "t"         "Template File")
+  (pandoc--setup-alist-option  variable              writer "v"         "Variables"           "Variable")
+  (pandoc--setup-alist-option  variable-json         writer "j"         "JSON Variables"      "JSON Variable")
+  (pandoc--setup-number-option dpi                   writer "d"         "DPI")
+  (pandoc--setup-choice-option eol                   writer "e"         "Line Endings Style"  ("crlf" "lf" "native"))
+  (pandoc--setup-choice-option wrap                  writer "w"         "Wrap"                ("auto" "none" "preserve"))
+  (pandoc--setup-number-option columns               writer "c"         "Column Width")
+  (pandoc--setup-switch        table-of-contents     writer "T"         "Table of Contents")
+  (pandoc--setup-number-option toc-depth             writer "D"         "TOC Depth")
+  (pandoc--setup-switch        list-of-figures       writer "lf"        "List of Figures")
+  (pandoc--setup-switch        list-of-tables        writer "lt"        "List of Tables")
+  (pandoc--setup-switch        strip-comments        writer "C"         "Strip comments")
+  (pandoc--setup-string-option syntax-highlighting   writer "h"         "Syntax Highlighting Type")
+  (pandoc--setup-list-option   syntax-definitions    writer "y"  file   "Syntax Definition File" "File")
+  (pandoc--setup-list-option   include-in-header     writer "ih" file   "Include Header" "File")
+  (pandoc--setup-list-option   include-before-body   writer "ib" file   "Include Before Body" "File")
+  (pandoc--setup-list-option   include-after-body    writer "ia" file   "Include After Body" "File")
+  (pandoc--setup-list-option   resource-path         writer "r"  string "Resource Path" "Resource Path")
+  (pandoc--setup-list-option   request-headers       writer "R"  string "HTTP Request Header" "Request Header")
+  (pandoc--setup-switch        no-check-certificate  writer "N"         "Do Not Check Certificates")
+  (setq pandoc--writer-menu-list (nreverse pandoc--writer-menu-list))
+  (setq pandoc--writer-transient-list (nreverse pandoc--writer-transient-list)))
 ;; print-default-template : not actually included
 ;; print-default-data-file : not actually included
 ;; print-highlight-style : not actually included
 
+(defun pandoc--setup-specific-writer-options ()
+  "Set up Pandoc specific writer options."
+  (pandoc--setup-choice-option top-level-division specific      "T"         "Top Level Division" ("section" "part" "chapter") ("latex" "context" "docbook" "docbook5" "tei"))
+  (pandoc--setup-choice-option reference-location specific      "l"         "Reference Location" ("block" "section" "document") ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
+  (pandoc--setup-switch        reference-links    specific      "r"         "Reference Links")
+  (pandoc--setup-choice-option figure-caption-position specific "f"         "Position of figure captions" ("above" "below"))
+  (pandoc--setup-choice-option table-caption-position specific  "t"         "Position of table captions" ("above" "below"))
+  (pandoc--setup-choice-option markdown-headings  specific      "h"         "Markdown Headings" ("atx" "setext") ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
+  (pandoc--setup-switch        list-tables        specific      "L"         "Render tables as list tables")
+  (pandoc--setup-switch        number-sections    specific      "n"         "Number Sections")
+  (pandoc--setup-switch        incremental        specific      "i"         "Incremental")
+  (pandoc--setup-number-option slide-level        specific      "H"         "Slide Level Header")
+  (pandoc--setup-file-option   reference-doc      specific      "R"         "Reference Doc")
+  (pandoc--setup-choice-option pdf-engine         specific      "e"         "PDF Engine" ("pdflatex" "lualatex" "xelatex" "tectonic" "latexmk" "wkhtmltopdf" "weasyprint" "prince" "pagedjs-cli" "context" "pdfroff"))
+  (pandoc--setup-list-option   pdf-engine-opts    specific      "o"  string "PDF Options" "PDF Option")
+  (pandoc--setup-choice-option ipynb-output       specific      "p"         "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
+  (pandoc--setup-switch        link-images        specific      "I"         "Include Links to Images")
+  (pandoc--setup-switch        ascii              specific      "a"         "Use Only ASCII")
+  (setq pandoc--specific-menu-list (nreverse pandoc--specific-menu-list))
+  (setq pandoc--specific-transient-list (nreverse pandoc--specific-transient-list)))
 
-;;; Options affecting specific writers
+(defun pandoc--setup-html-options ()
+  "Set up Pandoc HTML writer options."
+  (pandoc--setup-switch        embed-resources   html "E"        "Embed All Resources")
+  (pandoc--setup-switch        html-q-tags       html "Q"        "Use <q> Tags for Quotes in HTML")
+  (pandoc--setup-list-option   number-offset     html "o" number "Number Offsets" "Offset")
+  (pandoc--setup-switch        section-divs      html "d"        "Wrap Sections in <div> Tags")
+  (pandoc--setup-choice-option email-obfuscation html "e"        "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
+  (pandoc--setup-string-option identifier-prefix html "i"        "ID Prefix")
+  (pandoc--setup-string-option title-prefix      html "t"        "Title Prefix")
+  (pandoc--setup-list-option   css               html "c"  file  "CSS Style Sheet" "CSS File")
+  (setq pandoc--html-menu-list (nreverse pandoc--html-menu-list))
+  (setq pandoc--html-transient-list (nreverse pandoc--html-transient-list)))
 
-;; General
-(define-pandoc-switch        ascii              specific      "a"         "Use Only ASCII")
-(define-pandoc-switch        link-images        specific      "I"         "Include Links to Images")
-(define-pandoc-choice-option ipynb-output       specific      "p"         "Jupyter Output Cells" ("best" "all" "none") ("ipynb"))
-(define-pandoc-list-option   pdf-engine-opts    specific      "o"  string "PDF Options" "PDF Option")
-(define-pandoc-choice-option pdf-engine         specific      "e"         "PDF Engine"
-                             ("pdflatex" "lualatex" "xelatex" "tectonic" "latexmk" "wkhtmltopdf" "weasyprint" "prince" "pagedjs-cli" "context" "pdfroff"))
-(define-pandoc-file-option   reference-doc      specific      "R"         "Reference Doc")
-(define-pandoc-number-option slide-level        specific      "H"         "Slide Level Header")
-(define-pandoc-switch        incremental        specific      "i"         "Incremental")
-(define-pandoc-switch        number-sections    specific      "n"         "Number Sections")
-(define-pandoc-switch        list-tables        specific      "L"         "Render tables as list tables")
-(define-pandoc-choice-option markdown-headings  specific      "h"         "Markdown Headings" ("atx" "setext")
-                             ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-choice-option table-caption-position specific  "t"         "Position of table captions" ("above" "below"))
-(define-pandoc-choice-option figure-caption-position specific "f"         "Position of figure captions" ("above" "below"))
-(define-pandoc-switch        reference-links    specific      "r"         "Reference Links")
-(define-pandoc-choice-option reference-location specific      "l"         "Reference Location" ("block" "section" "document")
-                             ("markdown" "markdown_github" "markdown_mmd" "markdown_phpextra" "markdown_strict"))
-(define-pandoc-choice-option top-level-division specific      "T"         "Top Level Division" ("section" "part" "chapter")
-                             ("latex" "context" "docbook" "docbook5" "tei"))
+(defun pandoc--setup-epub-options ()
+  "Set up Pandoc EPUB writer options."
+  (pandoc--setup-number-option split-level        epub "l"       "Split at Heading Level")
+  (pandoc--setup-string-option chunk-template     epub "C"       "Template for Chunk Filenames")
+  (pandoc--setup-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
+  (pandoc--setup-switch        epub-title-page    epub "t"       "Add EPUB Title Page")
+  (pandoc--setup-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
+  (pandoc--setup-list-option   epub-fonts         epub "f"  file "EPUB Fonts" "Embed Font")
+  (pandoc--setup-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
 
-;; HTML-based
-(define-pandoc-list-option   css               html "c"  file  "CSS Style Sheet" "CSS File")
-(define-pandoc-string-option title-prefix      html "t"        "Title Prefix")
-(define-pandoc-string-option identifier-prefix html "i"        "ID Prefix")
-(define-pandoc-choice-option email-obfuscation html "e"        "Email Obfuscation" ("none" "javascript" "references") ("html" "html5" "s5" "slidy" "slideous" "dzslides" "revealjs"))
-(define-pandoc-switch        section-divs      html "d"        "Wrap Sections in <div> Tags")
-(define-pandoc-list-option   number-offset     html "o" number "Number Offsets" "Offset")
-(define-pandoc-switch        html-q-tags       html "Q"        "Use <q> Tags for Quotes in HTML")
-(define-pandoc-switch        embed-resources   html "E"        "Embed All Resources")
+  (setq pandoc--epub-menu-list (nreverse pandoc--epub-menu-list))
+  (setq pandoc--epub-transient-list (nreverse pandoc--epub-transient-list)))
 
-;; EPUB
-(define-pandoc-file-option   epub-subdirectory  epub "d"       "EPUB Subdirectory")
-(define-pandoc-list-option   epub-fonts         epub "f"  file "EPUB Fonts" "Embed Font")
-(define-pandoc-file-option   epub-metadata      epub "m"       "EPUB Metadata File")
-(define-pandoc-switch        epub-title-page    epub "t"       "Add EPUB Title Page")
-(define-pandoc-file-option   epub-cover-image   epub "i"       "EPUB Cover Image")
-(define-pandoc-string-option chunk-template     epub "C"       "Template for Chunk Filenames")
-(define-pandoc-number-option split-level        epub "l"       "Split at Heading Level")
+(defun pandoc--setup-obsolete-options ()
+  "Set up Pandoc obsolete options."
+  (pandoc--setup-number-option base-header-level  obsolete "h" "Base Header Level")
+  (pandoc--setup-switch        listings           obsolete "l" "Use LaTeX listings Package")
+  (pandoc--setup-number-option epub-chapter-level obsolete "e" "EPUB Chapter Level")
+  (pandoc--setup-switch        self-contained     obsolete "s" "Self-contained Document")
+  (pandoc--setup-switch        no-highlight       obsolete "n" "No Highlighting")
+  (pandoc--setup-string-option highlight-style    obsolete "s" "Highlighting Style")
+  (setq pandoc--obsolete-menu-list (nreverse pandoc--obsolete-menu-list))
+  (setq pandoc--obsolete-transient-list (nreverse pandoc--obsolete-transient-list)))
 
-;; Obsolete
-(define-pandoc-string-option highlight-style    obsolete "s" "Highlighting Style")
-(define-pandoc-switch        no-highlight       obsolete "n" "No Highlighting")
-(define-pandoc-switch        self-contained     obsolete "s" "Self-contained Document")
-(define-pandoc-number-option epub-chapter-level obsolete "e" "EPUB Chapter Level")
-(define-pandoc-switch        listings           obsolete "l" "Use LaTeX listings Package")
-(define-pandoc-number-option base-header-level  obsolete "h" "Base Header Level")
-
-;;; Citation rendering
-(define-pandoc-choice-option cite-method            citations "m"       "Citation Method" '("natbib" "biblatex"))
-(define-pandoc-file-option   citation-abbreviations citations "a"       "Citation Abbreviations File")
-(define-pandoc-file-option   csl                    citations "C"       "CSL File")
-(define-pandoc-list-option   bibliography           citations "B"  file "Bibliography Files" "Bibliography File")
-(define-pandoc-switch        citeproc               citations "c"       "Process Citations")
+(defun pandoc--setup-citation-options ()
+  "Set up Pandoc citation rendering options."
+  (pandoc--setup-switch        citeproc               citations "c"       "Process Citations")
+  (pandoc--setup-list-option   bibliography           citations "B"  file "Bibliography Files" "Bibliography File")
+  (pandoc--setup-file-option   csl                    citations "C"       "CSL File")
+  (pandoc--setup-file-option   citation-abbreviations citations "a"       "Citation Abbreviations File")
+  (pandoc--setup-choice-option cite-method            citations "m"       "Citation Method" '("natbib" "biblatex"))
+  (setq pandoc--citations-menu-list (nreverse pandoc--citations-menu-list))
+  (setq pandoc--citations-transient-list (nreverse pandoc--citations-transient-list)))
 
 ;;; Main
 
@@ -1717,6 +1739,9 @@ value."
   :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get-format 'writer))) :global nil
   (cond
    (pandoc-mode    ; pandoc-mode is turned on
+    (unless pandoc--initialized
+      (pandoc--setup-options)
+      (setq pandoc--initialized t))
     (setq pandoc--local-settings (copy-tree pandoc--options))
     (pandoc--set 'reader (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc--settings-modified-flag nil)

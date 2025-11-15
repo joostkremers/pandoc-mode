@@ -37,8 +37,6 @@ Another change that was introduced recently in `pandoc-mode` is the move from hy
 
 The easiest way to install `pandoc-mode` is to use the [Melpa](http://melpa.org/) package repository.
 
-Note that if you upgrade `pandoc-mode`, it is best to do so in a fresh Emacs instance, before loading `pandoc-mode`. If you don't, you may end up with double entries in some of the menus.
-
 In order to activate `pandoc-mode` in a buffer, you need to type `M-x pandoc-mode`. To start `pandoc-mode` automatically when you load e.g., a Markdown file, you can add a hook to your init file:
 
 ```
