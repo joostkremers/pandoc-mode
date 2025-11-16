@@ -940,7 +940,8 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 `message'."
   (with-current-buffer (get-buffer-create pandoc--log-buffer-name)
     (goto-char (point-max))
-    (insert (apply #'format format-string args) "\n\n"))
+    (insert  (format "[%s] " (format-time-string "%Y-%m-%dT%H:%M:%S%z")))
+    (insert (apply #'format format-string args) "\n"))
   (when (eq type 'message)
     (apply #'message format-string args)))
 
