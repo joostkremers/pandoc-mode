@@ -997,7 +997,7 @@ RW is a symbol, either `reader' or `writer'."
           (pandoc--set-list-option option value))
          (t (setcdr (assq option (alist-get type pandoc--local-settings)) value)))
         (setq pandoc--settings-modified-flag t))
-    (error "[pandoc-mode] No such option: `%s'" option)))
+    (pandoc--log 'message "No such option: `%s'" option)))
 
 (defun pandoc--set-alist-option (option new-elem)
   "Set an alist OPTION.
