@@ -2154,12 +2154,13 @@ defaults file is found, return nil."
 (defun pandoc--read-settings-from-file (file)
   "Read the settings in FILE and return them.
 If FILE does not exist or cannot be read, return nil."
-  (if (file-readable-p file)
-      (with-temp-buffer
-        (insert-file-contents file)
-        (goto-char (point-min))
-        (list (cons :yaml (yaml-parse-string (buffer-string) :object-type 'alist :sequence-type 'list :null-object nil))
-              (cons :non-pandoc (pandoc--read-non-pandoc-settings))))))
+  (when (file-readable-p file)
+    (pandoc--log 'log "Reading settings: %s" file)
+    (with-temp-buffer
+      (insert-file-contents file)
+      (goto-char (point-min))
+      (list (cons :yaml (yaml-parse-string (buffer-string) :object-type 'alist :sequence-type 'list :null-object nil))
+            (cons :non-pandoc (pandoc--read-non-pandoc-settings))))))
 
 (defun pandoc--read-non-pandoc-settings ()
   "Read non-Pandoc settings in the current buffer.
