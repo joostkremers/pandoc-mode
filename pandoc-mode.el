@@ -943,7 +943,7 @@ it.  The arguments FORMAT-STRING and ARGS function as with
     (insert  (format "[%s] " (format-time-string "%Y-%m-%dT%H:%M:%S%z")))
     (insert (apply #'format format-string args) "\n"))
   (when (eq type 'message)
-    (apply #'message format-string args)))
+    (apply #'message (concat "[pandoc-mode] " format-string) args)))
 
 ;; Pretty-printing
 
