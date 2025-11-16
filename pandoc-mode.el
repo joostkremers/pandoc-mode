@@ -2139,8 +2139,7 @@ file is found for FILE, otherwise non-nil."
     ;; Now set them:
     (when settings
       (setq pandoc--local-settings settings)
-      (push (cons :type type) pandoc--local-settings)
-      (message "%s settings file loaded for format \"%s\"." (capitalize (symbol-name type)) format))))
+      (push (cons :type type) pandoc--local-settings))))
 
 (defun pandoc--select-defaults-file (input-file format)
   "Select a defaults file for INPUT-FILE for conversion to FORMAT.
@@ -2155,7 +2154,7 @@ defaults file is found, return nil."
   "Read the settings in FILE and return them.
 If FILE does not exist or cannot be read, return nil."
   (when (file-readable-p file)
-    (pandoc--log 'log "Reading settings: %s" file)
+    (pandoc--log 'message "Reading settings: %s" file)
     (with-temp-buffer
       (insert-file-contents file)
       (goto-char (point-min))
