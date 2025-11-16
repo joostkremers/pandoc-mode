@@ -1848,7 +1848,6 @@ region to be sent to Pandoc."
              (y-or-n-p "Settings modified.  Save? "))
         (pandoc--save-settings nil output-format t))
 
-    (message "Running %s on %s" (file-name-nondirectory executable) display-name)
     (with-current-buffer (get-buffer-create pandoc--output-buffer-name)
       (erase-buffer))
 
@@ -1871,6 +1870,7 @@ region to be sent to Pandoc."
                                   (if output-file (format "--output=%s" output-file))))))
 
         (pandoc--log 'log "Calling %s with: %s %s" (file-name-nondirectory executable) executable (mapconcat #'identity args " "))
+        (message "Running %s on %s" (file-name-nondirectory executable) display-name)
 
         (cond
          (pandoc-use-async
