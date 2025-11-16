@@ -2450,11 +2450,13 @@ negative prefix argument `\\[universal-argument] -' (or `\\[negative-argument]')
 remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument]', remove all filters."
   (interactive "P")
   (cond
-   ((and (listp prefix) ; Remove all filters.
+   ;; Remove all filters.
+   ((and (listp prefix)
          (eq (car prefix) 16))
     (pandoc--set 'filters nil))
 
-   ((eq prefix '-)                      ; Remove a filter.
+   ;; Remove one filter.
+   ((eq prefix '-)
     ;; The `filters' option is a list where each element is either a string
     ;; or a two-element alist with keys `path' and `type'.  This makes for
     ;; some cumbersome list-handling, so we define a local function
@@ -2467,12 +2469,14 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
              (filter (completing-read "Remove filter: " (mapcar #'get-key filters) nil t)))
         (pandoc--set 'filters (cl-delete filter filters :key #'get-key :test #'equal)))))
 
-   ((and (listp prefix)         ; Add a filter with both `path' and `type'.
+   ;; Add a filter with both `path' and `type'.
+   ((and (listp prefix)
          (eq (car prefix) 4))
     (let ((filter (pandoc--read-file-name "Add filter: "))
           (type (completing-read "Filter type: " '("lua" "json") nil t)))
       (pandoc--set 'filters `((path . ,filter) (type . ,type)))))
 
+   ;; Add a filter without explicit `type'.
    (t (pandoc--set 'filters (pandoc--read-file-name "Add filter: ")))))
 
 ;;; Menu-bar menu
