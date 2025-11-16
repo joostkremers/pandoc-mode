@@ -963,7 +963,7 @@ it.  The arguments FORMAT-STRING and ARGS function as with
 (defun pandoc--get-option-type (option)
   "Get the type of OPTION.
 The type is either `:yaml' or `:non-pandoc'.  See `pandoc--options' for
-details."
+details.  If OPTION is not listed in `pandoc--options', return nil."
   ;; Note: `pandoc--options' is an alist where each value is itself an
   ;; alist.  Hence the somewhat complex `cl-rassoc' call.
   (car (cl-rassoc option pandoc--options
