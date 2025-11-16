@@ -1989,7 +1989,7 @@ files.  (Therefore, this function is not available on Windows.)"
       (when (file-exists-p current-project-file)
         (make-symbolic-link current-project-file
                             (pandoc--create-defaults-filename 'project "default" (buffer-file-name)) t))
-      (message "`%s' set as default output format." (pandoc--get-format 'writer)))))
+      (pandoc--log 'message "`%s' set as default output format." (pandoc--get-format 'writer)))))
 
 (defun pandoc-save-settings (prefix)
   "Save the current settings.
