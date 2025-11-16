@@ -1870,8 +1870,7 @@ region to be sent to Pandoc."
             (args (delq nil (list (format "--defaults=%s" defaults-file)
                                   (if output-file (format "--output=%s" output-file))))))
 
-        (pandoc--log 'log "%s\n%s" (make-string 50 ?=) (current-time-string))
-        (pandoc--log 'log "Calling %s with:\n\n%s %s" (file-name-nondirectory executable) executable (mapconcat #'identity args " "))
+        (pandoc--log 'log "Calling %s with: %s %s" (file-name-nondirectory executable) executable (mapconcat #'identity args " "))
 
         (cond
          (pandoc-use-async
