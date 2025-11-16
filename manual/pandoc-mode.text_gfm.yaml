@@ -1,8 +1,11 @@
+# Emacs pandoc-mode local settings file for pandoc-mode.text
+# Saved on 2025.11.17 00:28
+
 reader: markdown
 writer: gfm
-output-file: "index.md"
+output-file: "/home/joost/src/pandoc-mode/docs/index.md"
 
 ## pandoc-mode settings ##
 # output: null
-# output-dir: "~/src/pandoc-mode/docs/"
+# output-dir: null
 ## end
