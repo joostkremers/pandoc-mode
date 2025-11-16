@@ -2844,25 +2844,32 @@ remove.  With two prefix arguments `\\[universal-argument] \\[universal-argument
   ["File menu"
    ("i" pandoc-set-input-files
     :description (lambda ()
-                   (format "%-32s[%s]" "Input files" (pandoc--pp-option 'input-files))))
+                   (format "%-32s[%s]" "Input files" (pandoc--pp-option 'input-files)))
+    :transient t)
    ("o" pandoc-set-output
     :description (lambda ()
-                   (format "%-32s[%s]" "Output file" (pandoc--pp-option 'output))))
+                   (format "%-32s[%s]" "Output file" (pandoc--pp-option 'output)))
+    :transient t)
    ("O" pandoc-set-output-dir
     :description (lambda ()
-                   (format "%-32s[%s]" "Output directory" (pandoc--pp-option 'output-dir))))
+                   (format "%-32s[%s]" "Output directory" (pandoc--pp-option 'output-dir)))
+    :transient t)
    ("d" pandoc-set-defaults
     :description (lambda ()
-                   (format "%-32s[%s]" "Data directory" (pandoc--pp-option 'data-dir))))
+                   (format "%-32s[%s]" "Data directory" (pandoc--pp-option 'data-dir)))
+    :transient t)
    ("D" pandoc-set-data-dir
     :description (lambda ()
-                   (format "%-32s[%s]" "Defaults file" (pandoc--pp-option 'defaults))))
+                   (format "%-32s[%s]" "Defaults file" (pandoc--pp-option 'defaults)))
+    :transient t)
    ("e" pandoc-set-extract-media
     :description (lambda ()
-                   (format "%-32s[%s]" "Extract media files" (pandoc--pp-option 'extract-media))))
+                   (format "%-32s[%s]" "Extract media files" (pandoc--pp-option 'extract-media)))
+    :transient t)
    ("f" pandoc-set-file-scope
     :description (lambda ()
-                   (format "%-32s[%s]" "File Scope" (pandoc--pp-option 'file-scope))))
+                   (format "%-32s[%s]" "File Scope" (pandoc--pp-option 'file-scope)))
+    :transient t)
    " "
    ("b" "Back" transient-quit-one)
    ("q" "Quit" transient-quit-all)])
