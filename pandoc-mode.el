@@ -2073,9 +2073,9 @@ Return the file path of defaults file upon success, or nil otherwise."
                 "\n## end\n")
         (let ((make-backup-files nil))
           (write-region (point-min) (point-max) defaults-file))
-        (message "%s settings file written to `%s'."
-                 (capitalize (symbol-name type))
-                 (file-name-nondirectory defaults-file)))
+        (pandoc--log 'message "%s settings file written to `%s'."
+                     (capitalize (symbol-name type))
+                     (file-name-nondirectory defaults-file)))
       ;; We set the settings' `:type' and we mark the settings as
       ;; unmodified, but only if we're saving for the buffer's output
       ;; format.
