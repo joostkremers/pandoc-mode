@@ -27,14 +27,16 @@ safely skip this section and move on to the
 The first change that `pandoc-mode` 3.0 makes is the format of the
 settings files. While `pandoc-mode` 2.x used Lisp data files for its
 settings files, version 3.0 switches to using `.yaml` files that are
-compatible with Pandoc’s own YAML format for so-called [defaults
+compatible with Pandoc’s own YAML format for its [defaults
 files](https://pandoc.org/MANUAL.html#defaults-files). The main reason
 for this change is that it makes it easier to process Markdown files
 outside of Emacs. You can simply call Pandoc and pass it the `.yaml`
 file and things will work as you expect. In fact, `pandoc-mode` actually
 does the same: when you run Pandoc, it writes a settings file if you
-haven’t created one yet and passes it to Pandoc. The only option that is
-passed on the command line is the output file. Details are discussed
+haven’t created one yet and passes it to Pandoc. The only option that
+you may need to pass on the command line in addition to the defaults
+file is the output file, though that depends on how exactly you’ve set
+the output file in `pandoc-mode`. Details are discussed
 [below](#setting-an-output-file).
 
 In order to transition from `pandoc-mode` 2.x to 3.0, you will need to
@@ -48,16 +50,14 @@ file, recreating the settings for it using the menus, and then saving
 the settings. If you go this route, do remember to first set the output
 format, because all other settings depend on it.
 
-Also keep in mind that even though `pandoc-mode` writes YAML files that
-Pandoc accepts, not every defaults file that works for Pandoc can be
-read by `pandoc-mode`. One discrepancy is that for certain options,
-Pandoc accepts both a singular and a plural variant (e.g., `input-file`
-and `input-files`), where the singular variant takes a single argument,
-while the plural variant takes a list. `pandoc-mode` always works with
-the plural variant, so it ignores the singular variant. If you want to
-create a settings file by hand, you can see a list of the options that
-`pandoc-mode` recognises by doing `C-u M-x pandoc-view-settings` (or
-`C-c / C-u S` in a buffer with `pandoc-mode` enabled).
+If you write the defaults file by hand, keep in mind that some options
+have variant names that Pandoc accepts but `pandoc-mode` ignores. For
+example, Pandoc accepts both `input-file` (with one argument) and
+`input-files` (with a list of arguments), but `pandoc-mode` only “sees”
+the second variant. If you want to create a settings file by hand, you
+can see a list of the options that `pandoc-mode` recognises by doing
+`C-u M-x pandoc-view-settings`. See the section [Settings
+files](#settings-files) for details.
 
 Apart from the change in settings files, there are a few features that
 `pandoc-mode` 3.0 no longer supports, because the functionality that
@@ -132,7 +132,7 @@ on a Markdown document, you can use a different function in
 `conditionally-turn-on-pandoc`. This function checks if a default
 settings file exists for the file you’re opening and only turns on
 `pandoc-mode` if it finds one. (For more info on the settings file, see
-the section [‘Settings Files’](#settings-files).)
+the section [Settings files](#settings-files).)
 
 Additionally, if you want to automatically load the default
 `pandoc-mode` settings file for the file you’re opening, you can add the
@@ -210,7 +210,7 @@ same directory as the file you are editing, under a name composed of the
 input file, appended with the name of the output format and the
 extension `.yaml`. So if your input file is called `mytext.md`, the
 `html` settings file will be called `mytext.md_html.yaml`. (See the
-section [‘Settings Files’](#settings-files) for details.)
+section [Settings files](#settings-files) for details.)
 
 A single document can have a separate settings file for each output
 format that Pandoc supports. These can be created by selecting the first
@@ -387,10 +387,10 @@ Pandoc documentation to make sure you set the values correctly.
 The first item in the menu is “Run Pandoc” (accessible with `C-c / r`),
 which, as the name suggests, runs Pandoc on the document with all
 options you have set. By default, Pandoc sends the output to stdout
-(except when the output format is `odt`, `epub` or `docx`, in which case
-output is always sent to a file). Emacs captures this output and
-redirects it to the buffer `*Pandoc output*`. The output buffer is not
-normally shown, but you can make it visible through the menu or by
+(except when the output format is `odt`, `epub`, `docx` or `pptx`, in
+which case output is always sent to a file). Emacs captures this output
+and redirects it to the buffer `*Pandoc output*`. The output buffer is
+not normally shown, but you can make it visible through the menu or by
 typing `C-c / B`. Error messages from Pandoc are also displayed in this
 buffer.
 
@@ -432,40 +432,53 @@ set an output file. The Pandoc option to use is `output-file` (or
 `--output` on the command line), and it’s available in the transient
 menu under “Options \| Files”.
 
-In `pandoc-mode`, the output file setting has three options: the default
-is to send output to stdout, in which case it is redirected to the
-buffer `*Pandoc output*`. To set an output file name, press `o` and type
-the name of the output file. Alternatively, you can also let Emacs
-create an output filename for you. To choose this option, use a numeric
-prefix argument, e.g., `C-u 1` (or `M-1`; the actual number is
-irrelevant). The output file name consists of the base name of the input
-file plus the extensions for the output format, as defined in the user
-option `pandoc-output-file-extensions`.
+In Pandoc, you can set `output-file` to a file path. If you leave the
+option empty, output is sent to *stdout*. In `pandoc-mode`, you can
+leave the output file option unset, in which case output is redirected
+to the buffer `*Pandoc output*`. You can also set an explicit output
+filename by pressing `o` in the Files menu and type the name of the
+output file.
 
-For a few output formats, e.g., `odt` or `docx`, Pandoc does not allow
-output to be sent to stdout. Therefore, in those cases, unless you
-specify an output filename yourself, Emacs will create an output
+The output file option in `pandoc-mode` is a bit more versatile,
+however. For one, you can let Emacs create an output filename for you.
+The output file will then be named with the same base name as the input
+file, combined with a file extension corresponding to the output format,
+as defined in the user option `pandoc-output-file-extensions`. To choose
+this option, use a numeric prefix argument, e.g., press `C-u 1 o` (or
+`M-1 o`; the actual number is irrelevant).
+
+Note that for a few output formats, e.g., `odt` or `docx`, Pandoc does
+not allow output to be sent to stdout. Therefore, in those cases, unless
+you specify an output filename yourself, Emacs will create an output
 filename for you even if you did not explicitly ask for one.
 
-One thing to keep in mind is that the output file you set is by default
-just the base filename, it does not specify a directory. This means that
-the output file is created in the same directory as the input file. With
-the prefix argument `C-u`, however, you can also store the fully
-expanded path, if you wish to put the output file in a different
-directory.
+One thing to keep in mind is that by default, `pandoc-mode` puts the
+output file in the same directory as the input file. If you provide a
+file name, only the base name is used, the directory part is cut off.
+Similarly, if you let Emacs create an output filename, the output is
+placed in the same directory as the input file.
 
-Alternatively, you can set an output directory in the Files menu. This
-is not actually a Pandoc option, rather it’s a convenience feature of
-`pandoc-mode`. It is mostly useful if you have more than one input file
-in the same directory and you want all their output files to go to
-another directory. This can be done by creating a project settings file,
-as discussed below in the section [Settings Files](#settings-files).
+If you wish to supply a full path to the output file, use the prefix
+argument `C-u`. In this respect, the output file option works the same
+way as other file options: without any prefix argument, a path relative
+to the working directory is stored, with the prefix argument `C-u` an
+expanded, absolute path is stored. Note, though, that a relative path is
+always relative to the working directory, not to the directories in the
+option `resource-path` (which would not make sense for the output file).
 
-Note that in the Files menu, the output file is usually displayed as a
-full path, even if you only set the filename itself, without the
-directory path. This is because when Pandoc is called, `pandoc-mode`
-always passes it a fully expanded file name and the Files menu shows you
-what that is. The part that `pandoc-mode` infers is displayed using
+`pandoc-mode` also has the option to specify an output *directory*. This
+is not a Pandoc option, and it mostly makes sense in project settings
+file. A project settings file, as discussed below in the section
+[Settings files](#settings-files), is a settings file that applies to
+all input files in a directory. If you want to place the output files in
+a different directory, you can set the output directory and let Emacs
+create the output filename.
+
+Note that in the Files menu, the output file is displayed as a full
+path, even if you only set the filename itself, without the directory
+path. This is because when Pandoc is called, `pandoc-mode` always passes
+it a fully expanded filename and the Files menu shows you what that is.
+The part that `pandoc-mode` infers is displayed using
 `font-lock-comment-face`, however, to remind you that you did not set it
 explicitly.
 
@@ -617,7 +630,7 @@ files.
 lists. The relevant faces can be customised in the customisation group
 `pandoc`.
 
-# Settings Files
+# Settings files
 
 As mentioned above, `pandoc-mode` saves the settings you make for an
 input file to a so-called “defaults file” that can be read by Pandoc.
@@ -659,6 +672,41 @@ settings”, writes a local settings file, unless the settings were read
 from a project or global settings file, in which case the settings are
 written back to the file they were read from. To force the creation of a
 local settings file, use the universal prefix argument `C-u`.
+
+## Format of settings files
+
+The settings file that `pandoc-mode` creates can be read by Pandoc as
+defaults files, but the formats are not identical. In Pandoc’s defaults
+files, some options have variants that `pandoc-mode` does not recognise.
+For example, Pandoc accepts both `toc` and `table-of-contents`, while
+`pandoc-mode` uses only `table-of-contents`. Similarly, some options in
+defaults files have a singular and a plural variant (e.g., `input-file`
+and `input-files`), where the singular variant takes a single argument,
+while the plural variant takes a list of arguments. `pandoc-mode` only
+supports the plural variant.
+
+What this means in practice is that the value of an unsupported option
+is not shown in the transient menus and there is no guarantee that it is
+written back to the settings file when you modify and then save your
+settings (though most of the time it will be). As long as the setting is
+in the `.yaml` file, Pandoc will see, but you cannot see or modify the
+option in the `pandoc-mode` menus.
+
+You can get a list of all the options that `pandoc-mode` recognised with
+`C-u M-x pandoc-view-settings`, or `C-c / C-u S` in a buffer with
+`pandoc-mode` enabled. This list does not show the format of the values
+of the options, though. You can consult the [Pandoc
+documentation](https://pandoc.org/MANUAL.html#defaults-files) to find
+out the exact format of each option value.
+
+In addition, `pandoc-mode` settings files can have an additional section
+with settings that only apply to `pandoc-mode`. This section is at the
+bottom of the file and is commented out, because Pandoc errors out when
+it sees options in a defaults file that it does not know. The section is
+read by `pandoc-mode`, however. Currently, only two options can appear
+here: `output` and `output-dir`. These, in combination with the Pandoc
+setting `output-file` (which can also appear in the settings file), are
+used by `pandoc-mode` to construct the file path of the output file.
 
 # Managing numbered examples
 
