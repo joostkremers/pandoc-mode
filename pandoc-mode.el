@@ -930,6 +930,66 @@ characters `+' (plus sign), `_' (underscore), `.' (dot) and
                       (string-match-p "[[:alpha:][:digit:]+_.-]" (char-to-string c)))
                     buffer-name))
 
+(defun pandoc--compose-output-file-name (&optional pdf input-file no-expand)
+  "Create an output file name for the current buffer based on INPUT-FILE.
+If INPUT-FILE is non-nil, use the file the current buffer is
+visiting.  If the current buffer's output file is set to t, or if
+the target format is odt, epub or docx, create an output file
+name based on INPUT-FILE.  If an output directory is set, use
+this directory, otherwise use the directory of INPUT-FILE (which
+should be a fully qualified file path).
+
+If an explicit output file is set, use that file, combined with
+the output directory, if given.  If an output file name is set
+but no output directory, use the directory of INPUT-FILE.
+
+If PDF is non-nil, use `pdf' as the extension.
+
+If NO-EXPAND is non-nil, do not expand the file name.
+
+If the current buffer's settings do not specify an output
+file (i.e., if the output file is set to nil), return nil."
+  (or input-file
+      (setq input-file (buffer-file-name)))
+  (let ((output (pandoc--get 'output))
+        (output-file (pandoc--get 'output-file))
+        (output-dir (or (pandoc--get 'output-dir)
+                        (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))))
+    (when-let* ((output-file
+                 (cond
+                  ;; If the user set `output' to t, or if the user set no
+                  ;; output file but either (i) we're converting to pdf, or
+                  ;; (ii) the output format is odt, epub, docx or pptx, we
+                  ;; create an output file name:
+                  ((or (eq output t)
+                       (and (null output-file)
+                            (or pdf
+                                (member (pandoc--get-format 'writer) ;
+                                        '("odt" "epub" "docx" "pptx")))))
+                   (format "%s%s%s"
+                           output-dir
+                           (file-name-sans-extension (file-name-nondirectory input-file))
+                           (if pdf
+                               ".pdf"
+                             (cadr (assoc (pandoc--get-format 'writer) pandoc-output-file-extensions)))))
+                  ;; If the user set an output file with a relative path,
+                  ;; we combine it with the output directory. Also, check
+                  ;; if we're converting to PDF.
+                  ((and (stringp output-file)
+                        (not (file-name-absolute-p output-file)))
+                   (format "%s%s"
+                           output-dir
+                           (if pdf
+                               (concat (file-name-sans-extension output-file) ".pdf")
+                             output-file)))
+                  ;; If `output-file' is an absolute path, just return it.
+                  ((stringp output-file) output-file)
+                  ;; If none of these apply, return nil.
+                  (t nil))))
+      (if no-expand
+          output-file
+        (expand-file-name output-file)))))
+
 ;; Logging
 
 (defun pandoc--log (type format-string &rest args)
@@ -1763,53 +1823,6 @@ This is for use in major mode hooks."
     (pandoc-mode 1)))
 
 ;;; Running Pandoc
-
-(defun pandoc--compose-output-file-name (&optional pdf input-file no-expand)
-  "Create an output file name for the current buffer based on INPUT-FILE.
-If INPUT-FILE is non-nil, use the file the current buffer is
-visiting.  If the current buffer's output file is set to t, or if
-the target format is odt, epub or docx, create an output file
-name based on INPUT-FILE.  If an output directory is set, use
-this directory, otherwise use the directory of INPUT-FILE (which
-should be a fully qualified file path).
-
-If an explicit output file is set, use that file, combined with
-the output directory, if given.  If an output file name is set
-but no output directory, use the directory of INPUT-FILE.
-
-If PDF is non-nil, use `pdf' as the extension.
-
-If NO-EXPAND is non-nil, do not expand the file name.
-
-If the current buffer's settings do not specify an output
-file (i.e., if the output file is set to nil), return nil."
-  (or input-file
-      (setq input-file (buffer-file-name)))
-  (when-let* ((output-file
-               (cond
-                ((or (eq (pandoc--get 'output) t) ; If the user set `output' to t.
-                     (and (null (pandoc--get 'output-file)) ; or if the user set no output file but either
-                          (or pdf       ; (i) we're converting to pdf, or
-                              (member (pandoc--get-format 'writer) ; (ii) the output format is one of these:
-                                      '("odt" "epub" "docx" "pptx")))))
-                 (format "%s%s%s"       ; we create an output file name.
-                         (or (pandoc--get 'output-dir)
-                             (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
-                         (file-name-sans-extension (file-name-nondirectory input-file))
-                         (if pdf
-                             ".pdf"
-                           (cadr (assoc (pandoc--get-format 'writer) pandoc-output-file-extensions)))))
-                ((stringp (pandoc--get 'output-file)) ; If the user set an output file,
-                 (format "%s%s"   ; we combine it with the output directory
-                         (or (pandoc--get 'output-dir)
-                             (propertize (file-name-directory input-file) 'face 'font-lock-comment-face))
-                         (if pdf    ; and check if we're converting to pdf.
-                             (concat (file-name-sans-extension (pandoc--get 'output-file)) ".pdf")
-                           (pandoc--get 'output-file))))
-                (t nil))))
-    (if no-expand
-        output-file
-      (expand-file-name output-file))))
 
 (defun pandoc--call-pandoc (output-format &optional pdf region)
   "Call pandoc on the current buffer.
