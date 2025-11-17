@@ -3188,10 +3188,10 @@ This function is for use in `pandoc-citation-jump-function'."
   "Buffer for selecting an (@)-element.")
 
 (defvar pandoc--@-overlay nil
-  "Overlay for pandoc--@-buffer.")
+  "Overlay for `pandoc--@-buffer'.")
 
 (defun pandoc--@-counter-inc ()
-  "Increment pandoc--@-counter and return the new value."
+  "Increment `pandoc--@-counter' and return the new value."
   (when (= pandoc--@-counter 0) ; hasn't been updated in this buffer yet.
     (save-excursion
       (goto-char (point-min))
@@ -3216,7 +3216,7 @@ This function is for use in `pandoc-citation-jump-function'."
     (define-key map [end] #'pandoc-goto-last-@)
     (define-key map [next] #'pandoc-goto-first-@)
     map)
-  "Keymap for pandoc-@-mode.")
+  "Keymap for `pandoc-@-mode'.")
 
 (define-derived-mode pandoc-@-mode
   fundamental-mode "Pandoc-select"
