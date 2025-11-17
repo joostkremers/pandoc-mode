@@ -982,8 +982,11 @@ file (i.e., if the output file is set to nil), return nil."
                            (if pdf
                                (concat (file-name-sans-extension output-file) ".pdf")
                              output-file)))
-                  ;; If `output-file' is an absolute path, just return it.
-                  ((stringp output-file) output-file)
+                  ;; If `output-file' is an absolute path, just return it,
+                  ;; checking for PDF.
+                  ((stringp output-file) (if pdf
+                                             (concat (file-name-sans-extension output-file) ".pdf")
+                                           output-file))
                   ;; If none of these apply, return nil.
                   (t nil))))
       (if no-expand
