@@ -1655,6 +1655,8 @@ value."
 
 (defun pandoc--setup-options ()
   "Set up Pandoc options."
+  ;; First several options that are added to specific menus manually. These
+  ;; also have custom setter functions.
   (pandoc--setup-string-option reader           nil nil        "Input Format")
   (pandoc--setup-list-option   input-files      nil nil file   "Input Files" "Input File")
   (pandoc--setup-string-option output-file      nil nil        "Output File")
@@ -1666,6 +1668,10 @@ value."
   (pandoc--setup-string-option verbosity        nil nil        "Verbosity")
   (pandoc--setup-list-option   filters          nil nil file   "Filters" "Filter")
   (pandoc--setup-list-option   html-math-method nil nil string "HTML Math Rendering" "")
+
+  ;; Then set up the options that are added to their menus
+  ;; automatically. They have generic setter functions that are called from
+  ;; the transients / menus with the appropriate options.
   (pandoc--setup-reader-options)
   (pandoc--setup-general-writer-options)
   (pandoc--setup-specific-writer-options)
