@@ -1655,6 +1655,24 @@ value."
 
 (defun pandoc--setup-options ()
   "Set up Pandoc options."
+  ;; First make sure all the menu & transient lists are empty.
+  (mapc (lambda (l)
+          (set l nil))
+        '(pandoc--reader-transient-list
+          pandoc--writer-transient-list
+          pandoc--specific-transient-list
+          pandoc--html-transient-list
+          pandoc--epub-transient-list
+          pandoc--obsolete-transient-list
+          pandoc--citations-transient-list
+          pandoc--reader-menu-list
+          pandoc--writer-menu-list
+          pandoc--specific-menu-list
+          pandoc--html-menu-list
+          pandoc--epub-menu-list
+          pandoc--obsolete-menu-list
+          pandoc--citations-menu-list))
+
   ;; First several options that are added to specific menus manually. These
   ;; also have custom setter functions.
   (pandoc--setup-string-option reader           nil nil        "Input Format")
