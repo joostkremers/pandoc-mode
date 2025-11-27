@@ -1847,7 +1847,8 @@ value."
     (unless pandoc--initialized
       (pandoc--setup-options)
       (setq pandoc--initialized t))
-    (setq pandoc--local-settings (copy-tree pandoc--options))
+    ;; Locally, we only store settings that have a value.
+    (setq pandoc--local-settings (pandoc--remove-nil-settings pandoc--options))
     (pandoc--set 'reader (cdr (assq major-mode pandoc-major-modes)))
     (setq pandoc--settings-modified-flag nil)
     ;; Make sure the output buffer exists.
