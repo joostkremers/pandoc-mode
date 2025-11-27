@@ -2105,7 +2105,7 @@ Return the file path of defaults file upon success, or nil otherwise."
          ;; format.  If not, save a minimal defaults file, not the current
          ;; buffer's settings.
          (settings (if (equal (pandoc--get-format 'writer) format)
-                       pandoc--local-settings
+                       (pandoc--remove-nil-settings pandoc--local-settings) ; No need to save nil settings.
                      `((:yaml . ((reader . ,(pandoc--get 'reader))
                                  (writer . ,format)))
                        (:non-pandoc . ((output . t)))))))
@@ -2148,7 +2148,7 @@ The settings file is reread from disk, so that any changes made
 to the settings that have not been saved are reverted."
   (interactive)
   (let ((format (pandoc--get-format 'writer)))
-    (setq pandoc--local-settings (copy-tree pandoc--options))
+    (setq pandoc--local-settings (pandoc--remove-nil-settings pandoc--options))
     (pandoc--load-settings-profile format 'no-confirm)))
 
 (defun pandoc-load-default-settings ()
@@ -2344,7 +2344,7 @@ format)."
              (y-or-n-p (format "Current settings for output format \"%s\" changed.  Save? " (pandoc--get-format 'writer))))
     (pandoc--save-settings nil nil t))
   (unless (pandoc--load-settings-profile format t)
-    (setq pandoc--local-settings (copy-tree pandoc--options))
+    (setq pandoc--local-settings (pandoc--remove-nil-settings pandoc--options))
     (pandoc--set 'writer format)
     (pandoc--set 'reader (cdr (assq major-mode pandoc-major-modes))))
   (setq pandoc--settings-modified-flag nil)
