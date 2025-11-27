@@ -1193,6 +1193,23 @@ value."
              (pos (string-match-p (concat "\\b[-+]" extension "\\b") format))
              (state (aref format pos)))))
 
+(defun pandoc--remove-nil-settings (settings)
+  "Remove options from SETTINGS whose value is nil.
+SETTINGS is a settings alist with the same structure as
+`pandoc--options'."
+  (mapcar (lambda (elem)
+            (cond
+             ;; Handle entries that do not have an alist as value;
+             ;; currently, only `:type'.  These are kept as-is.
+             ((atom (cdr elem)) elem)
+             ;; Entries that do have an alist as value.  This is where we
+             ;; remove options set to nil.
+             (t (cons (car elem)
+                      (seq-filter (lambda (e)
+                                    (cdr e))
+                                  (cdr elem))))))
+          settings))
+
 ;;; Helper functions and macros for defining options
 
 ;; Transient variables
