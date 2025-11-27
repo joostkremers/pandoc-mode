@@ -846,7 +846,7 @@ These are set by `define-pandoc-list-option'.")
 These are set by `define-pandoc-alist-option'.")
 
 (defvar pandoc--options
-  `((:yaml . ((writer . "native")))
+  '((:yaml . ((writer . "native")))
     (:non-pandoc . ((output)
                     (output-dir)))
     (:type))
