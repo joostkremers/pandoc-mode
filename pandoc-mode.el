@@ -849,8 +849,8 @@ These are set by `define-pandoc-alist-option'.")
   `((:yaml . ((writer . "native")))
     (:non-pandoc . ((output)
                     (output-dir)))
-    (:type)))
-"Pandoc option alist.
+    (:type))
+  "Pandoc option alist.
 List of options and their default values.  For each buffer in which
 pandoc-mode is activated, a buffer-local copy of this list is made that
 stores the local values of the options.  The `define-pandoc-*-option'
@@ -858,7 +858,7 @@ functions add their options to this list with default value nil.  The
 `:yaml' options are those that Pandoc can read, while the `:non-pandoc'
 options are those that only `pandoc-mode' uses.  The `:type' entry is
 used to keep track of the type of settings file from which the settings
-were loaded or to which they were saved."
+were loaded or to which they were saved.")
 
 (defconst pandoc--html-math-methods '(("mathjax" . t)
                                       ("mathml")
