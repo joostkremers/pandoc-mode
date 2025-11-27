@@ -1826,7 +1826,7 @@ value."
   "Minor mode for interacting with Pandoc."
   :init-value nil :lighter (:eval (concat " Pandoc/" (pandoc--get-format 'writer))) :global nil
   (cond
-   (pandoc-mode    ; pandoc-mode is turned on
+   (pandoc-mode
     (unless pandoc--initialized
       (pandoc--setup-options)
       (setq pandoc--initialized t))
@@ -1836,7 +1836,7 @@ value."
     ;; Make sure the output buffer exists.
     (get-buffer-create pandoc--output-buffer-name)
     (pandoc-faces-load))
-   ((not pandoc-mode)    ; pandoc-mode is turned off
+   ((not pandoc-mode)
     (setq pandoc--local-settings nil
           pandoc--settings-modified-flag nil)
     (pandoc-faces-unload))))
