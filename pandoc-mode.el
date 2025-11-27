@@ -65,7 +65,7 @@ to search the executable."
   :type 'file)
 
 (defcustom pandoc-use-async t
-  "If non-NIL, use an asynchronous process to run pandoc.
+  "If non-nil, use an asynchronous process to run pandoc.
 Using an asynchronous subprocess avoids freezing Emacs, but can
 cause problems sometimes.  Setting this option to nil runs pandoc
 in a synchronous subprocess."
@@ -1066,7 +1066,7 @@ RW is a symbol, either `reader' or `writer'."
   "Set an alist OPTION.
 NEW-ELEM is a cons (<name> . <value>), which is added to the alist
 for OPTION in `pandoc--local-settings'.  If an element with <name>
-already exists, it is replaced, or removed if <value> is NIL.
+already exists, it is replaced, or removed if <value> is nil.
 
 If NEW-ELEM is nil, OPTION is unset entirely."
   (let* ((value (cdr new-elem))
@@ -1360,8 +1360,8 @@ OPTION must be a symbol and must be identical to the long form of
 the pandoc option (without dashes).  PROMPT is a string that is
 used to prompt for setting and unsetting the option.  It must be
 formulated in such a way that the strings \"No \", \"Set \" and
-\"Default \" can be added before it.  DEFAULT must be either NIL
-or T and indicates whether the option can have a default value."
+\"Default \" can be added before it.  DEFAULT must be either nil
+or t and indicates whether the option can have a default value."
   `(progn
      (push (list (quote ,option)) (alist-get :yaml pandoc--options))
      ,(when menu
@@ -2397,7 +2397,7 @@ format."
 (defun pandoc-set-data-dir (prefix)
   "Set the option `Data Directory'.
 If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), the data directory is set to NIL, which
+`\\[negative-argument]'), the data directory is set to nil, which
 means use $HOME/.pandoc."
   (interactive "P")
   (pandoc--set 'data-dir
@@ -2418,7 +2418,7 @@ argument `\\[universal-argument]' to store the full path."
 (defun pandoc-set-output-dir (prefix)
   "Set the option `Output Directory'.
 If called with the PREFIX argument `\\[universal-argument] -' (or
-`\\[negative-argument]'), the output directory is set to NIL,
+`\\[negative-argument]'), the output directory is set to nil,
 which means use the directory of the input file."
   (interactive "P")
   (pandoc--set 'output-dir
