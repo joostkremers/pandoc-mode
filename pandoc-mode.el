@@ -2098,7 +2098,7 @@ Return the file path of defaults file upon success, or nil otherwise."
          (format (or format
                      (pandoc--get-format 'writer)))
          (type (or type
-                   (assq :type pandoc--local-settings)
+                   (cdr (assq :type pandoc--local-settings))
                    'local))
          (defaults-file (pandoc--create-defaults-filename type format filename))
          ;; Check if we're saving settings for the buffer's current output
