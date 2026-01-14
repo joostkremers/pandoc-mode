@@ -857,8 +857,8 @@ as argument."
                (cond
                 ((eq prefix '-)     ; C-u - or M--
                  nil)
-                ((and (listp prefix)
-                      (= (car prefix) 16)) ; C-u C-u
+                ((and (listp prefix))
+                 (= (car prefix) 16) ; C-u C-u
                  (read-string (concat prompt ": ")))
                 ;; otherwise no prefix or C-u
                 (t (pandoc--read-file-name (concat prompt ": ") default-directory (not prefix))))))
